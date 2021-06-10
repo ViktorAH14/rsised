@@ -9,6 +9,13 @@ class DiagramScene : public QGraphicsScene
 
 public:
     explicit DiagramScene(QObject *parent = nullptr);
+
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    QGraphicsLineItem *line;
 };
 
 #endif // DIAGRAMSCENE_H
