@@ -17,8 +17,13 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    bool save();
+
 private:
     Ui::MainWindow *ui;
     DiagramScene *scene;
+
+    QString path;
 };
 #endif // MAINWINDOW_H
