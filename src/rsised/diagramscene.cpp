@@ -22,3 +22,8 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
         line->setLine(newLine);
     }
 }
+
+void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+
+}
