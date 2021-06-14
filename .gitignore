@@ -210,4 +210,7 @@ build/
 lib.*/
 import/
 
+# Images
+*.png
+
 # End of https://www.toptal.com/developers/gitignore/api/linux,windows,qt,qtcreator,qml,libreoffice,lyx,git,c++,cmake
