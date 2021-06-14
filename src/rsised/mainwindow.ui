@@ -46,28 +46,54 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/images/icons/openfolder.png</normaloff>:/images/icons/images/icons/openfolder.png</iconset>
+   </property>
    <property name="text">
     <string>Open</string>
    </property>
+   <property name="toolTip">
+    <string>Open file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionExit">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/images/icons/cancel.png</normaloff>:/images/icons/images/icons/cancel.png</iconset>
+   </property>
    <property name="text">
     <string>Exit</string>
+   </property>
+   <property name="toolTip">
+    <string>Exit </string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="actionSave">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/images/icons/save.png</normaloff>:/images/icons/images/icons/save.png</iconset>
+   </property>
    <property name="text">
     <string>Save</string>
+   </property>
+   <property name="toolTip">
+    <string>Save file</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionExit</sender>
