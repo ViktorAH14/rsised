@@ -212,5 +212,12 @@ import/
 
 # Images
 *.png
+*.svg
+
+# Diagramms
+*.dia
+
+# Text
+*.txt
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,windows,qt,qtcreator,qml,libreoffice,lyx,git,c++,cmake
