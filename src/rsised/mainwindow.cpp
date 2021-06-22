@@ -4,15 +4,26 @@
 #include <QPainter>
 #include <QFileDialog>
 #include <QSvgGenerator>
+#include <QActionGroup>
+#include <QGraphicsItem>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     scene = new DiagramScene(this);
     ui->mainGraphicsView->setScene(scene);
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
+
+    modeGroup = new QActionGroup(this);
+    modeGroup->addAction(ui->actionDrawLine);
+    modeGroup->addAction(ui->actionMoveItem);
+    modeGroup->addAction(ui->actionDrawRectangle);
+    modeGroup->addAction(ui->actionDrawEllipse);
+    modeGroup->addAction(ui->actionDrawCurve);
+    modeGroup->setExclusive(true);
 }
 
 MainWindow::~MainWindow()
@@ -41,5 +52,44 @@ bool MainWindow::save()
     painter.end();
 
     return true;
+}
+
+void MainWindow::drawLine()
+{
+    ui->mainGraphicsView->setCursor(Qt::CrossCursor);
+    scene->setMode(DiagramScene::InsertLine);
+}
+
+void MainWindow::drawRect()
+{
+    ui->mainGraphicsView->setCursor(Qt::CrossCursor);
+    scene->setMode(DiagramScene::InsertRect);
+}
+
+void MainWindow::drawEllipse()
+{
+    ui->mainGraphicsView->setCursor(Qt::CrossCursor);
+    scene->setMode(DiagramScene::InsertEllipse);
+}
+
+void MainWindow::drawCurve()
+{
+    ui->mainGraphicsView->setCursor(Qt::CrossCursor);
+    scene->setMode(DiagramScene::InsertCurve);
+}
+
+void MainWindow::moveItem()
+{
+    ui->mainGraphicsView->setCursor(Qt::ArrowCursor);
+    scene->setMode(DiagramScene::MoveItem);
+}
+
+void MainWindow::deleteItem()
+{
+    QList<QGraphicsItem *> selectedItems = scene->selectedItems();
+    for (QGraphicsItem *item:qAsConst(selectedItems)) {
+        scene->removeItem(item);
+        delete item;
+    }
 }
 

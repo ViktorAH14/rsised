@@ -4,5 +4,9 @@
         <file>images/icons/line.png</file>
         <file>images/icons/openfolder.png</file>
         <file>images/icons/save.png</file>
+        <file>images/icons/cursor.png</file>
+        <file>images/icons/Irectangle.png</file>
+        <file>images/icons/ellipse.png</file>
+        <file>images/icons/curve.png</file>
     </qresource>
 </RCC>

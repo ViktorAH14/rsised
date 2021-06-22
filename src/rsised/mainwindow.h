@@ -7,6 +7,7 @@
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
+class QActionGroup;
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -19,10 +20,19 @@ public:
 
 private slots:
     bool save();
+    //Simple draw
+    void drawLine();
+    void drawRect();
+    void drawEllipse();
+    void drawCurve();
+    void moveItem();
+
+    void deleteItem();
 
 private:
     Ui::MainWindow *ui;
     DiagramScene *scene;
+    QActionGroup *modeGroup;
 
     QString path;
 };
