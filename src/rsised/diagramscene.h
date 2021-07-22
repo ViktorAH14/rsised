@@ -3,10 +3,12 @@
 
 #include <QGraphicsScene>
 
+class Rectangle;
+
 QT_BEGIN_NAMESPACE
 class QGraphicsLineItem;
-class QGraphicsRectItem;
 class QGraphicsEllipseItem;
+class QGraphicsSceneMouseEvent;
 QT_END_NAMESPACE
 
 class DiagramScene : public QGraphicsScene
@@ -27,10 +29,12 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
 
 private:
+    Rectangle *rect;
+
     QGraphicsLineItem *line;
-    QGraphicsRectItem *rect;
     QGraphicsEllipseItem *ellipse;
     QPointF previousPoint;
+//    QPointF endPoint;
 
     Mode m_mode;
 };

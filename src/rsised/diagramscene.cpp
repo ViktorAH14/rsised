@@ -1,8 +1,8 @@
 #include "diagramscene.h"
+#include "rectangle.h"
 
 #include <QGraphicsSceneEvent>
 #include <QGraphicsLineItem>
-#include <QGraphicsRectItem>
 #include <QGraphicsEllipseItem>
 
 DiagramScene::DiagramScene(QObject *parent) : QGraphicsScene(parent)
@@ -25,10 +25,10 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             addItem(line);
             break;
         case InsertRect:
-            rect = new QGraphicsRectItem(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()));
-            rect->setPen(QPen(Qt::red));
-            rect->setBrush(QBrush(Qt::blue));
+            previousPoint = mouseEvent->scenePos();
+            rect = new Rectangle();
             addItem(rect);
+//            rect->setPos(previousPoint);
             break;
         case InsertEllipse:
             ellipse = new QGraphicsEllipseItem(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()));
@@ -47,6 +47,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
+
     if (m_mode == InsertLine && line != nullptr) {
         QLineF newLine(line->line().p1(), mouseEvent->scenePos());
         line->setLine(newLine);
@@ -55,10 +56,14 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 
     if (m_mode == InsertRect && rect != nullptr) {
-        QRectF newRect(rect->rect().topLeft(), mouseEvent->scenePos());
-        rect->setRect(newRect);
-        rect->setFlag(QGraphicsItem::ItemIsSelectable, true);
-        rect->setFlag(QGraphicsItem::ItemIsMovable, true);
+        qreal dx = mouseEvent->scenePos().x() - previousPoint.x();
+        qreal dy = mouseEvent->scenePos().y() - previousPoint.y();
+        rect->setRect( ( dx > 0 ) ? previousPoint.x() : mouseEvent->scenePos().x(),
+                            ( dy > 0 ) ? previousPoint.y() : mouseEvent->scenePos().y(),
+                            qAbs( dx ), qAbs( dy ) );
+
+//        rect->setFlag(QGraphicsItem::ItemIsSelectable, true);
+//        rect->setFlag(QGraphicsItem::ItemIsMovable, true);
     }
 
     if (m_mode == InsertEllipse && ellipse != nullptr) {
@@ -74,6 +79,7 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
         line->setFlag(QGraphicsItem::ItemIsSelectable, true);
         line->setFlag(QGraphicsItem::ItemIsMovable, true);
     }
+    update();
 
     QGraphicsScene::mouseMoveEvent(mouseEvent);
 }

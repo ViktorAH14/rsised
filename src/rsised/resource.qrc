@@ -8,5 +8,6 @@
         <file>images/icons/Irectangle.png</file>
         <file>images/icons/ellipse.png</file>
         <file>images/icons/curve.png</file>
+        <file>images/icons/rotate.png</file>
     </qresource>
 </RCC>
