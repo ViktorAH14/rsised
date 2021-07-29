@@ -1,5 +1,5 @@
 #include "rectangle.h"
-#include "dotsignal.h"
+//#include "dotsignal.h"
 
 #include <math.h>
 
@@ -21,21 +21,21 @@ static qreal normalizeAngle(qreal angle)
     return angle;
 }
 
-Rectangle::Rectangle(QObject *parent) : QObject(parent), m_actionType(Resize), m_cornerFlag(Move)
+Rectangle::Rectangle() : m_actionType(Resize), m_cornerFlag(Move)
 {
     setAcceptHoverEvents(true);
     setFlags(ItemIsSelectable | ItemSendsGeometryChanges);
 
-    for (int i = 0; i < 8; i++) {
-        cornerGrabber[i] = new Dotsignal(this);
-    }
-    setPositionGrabbers();
+//    for (int i = 0; i < 8; i++) {
+//        cornerGrabber[i] = new Dotsignal(this);
+//    }
+//    setPositionGrabbers();
 }
 Rectangle::~Rectangle()
 {
-    for (int i = 0; i <8; i++) {
-        delete cornerGrabber[i];
-    }
+//    for (int i = 0; i <8; i++) {
+//        delete cornerGrabber[i];
+//    }
 }
 
 QPointF Rectangle::previousPosition() const
@@ -49,25 +49,25 @@ void Rectangle::setPreviousPosition(const QPointF previousPosition)
         return;
     }
     m_previousPosition = previousPosition;
-    emit previousPositionChanged();
+//    emit previousPositionChanged();
 }
 
 void Rectangle::setRect(qreal x, qreal y, qreal w, qreal h)
 {
     setRect(QRectF(x, y, w, h));
-    setPositionGrabbers();
+//    setPositionGrabbers();
 }
 
 void Rectangle::setRect(const QRectF rect)
 {
     QGraphicsRectItem::setRect(rect);
-    setPositionGrabbers();
+//    setPositionGrabbers();
 }
 
 void Rectangle::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     m_actionType = (m_actionType == Resize) ? Rotation : Resize;
-    setVisibilityGrabbers();
+//    setVisibilityGrabbers();
 
     QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
 }
@@ -78,7 +78,7 @@ void Rectangle::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     if (mouseEvent->button() == Qt::LeftButton) {
         m_leftMouseButtonPressed =true;
         setPreviousPosition(mouseEvent->scenePos());
-        emit clicked(this);
+//        emit clicked(this);
     }
 
      QGraphicsItem::mousePressEvent( mouseEvent );
@@ -125,7 +125,7 @@ void Rectangle::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 qreal dy = mouseEvent->scenePos().y() -m_previousPosition.y();
                 moveBy(dx, dy);
                 setPreviousPosition(mouseEvent->scenePos());
-                emit signalMove(this, dx, dy);
+//                emit signalMove(this, dx, dy);
             }
             break;
 
@@ -147,7 +147,7 @@ void Rectangle::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 qreal dy = mouseEvent->scenePos().y() -m_previousPosition.y();
                 moveBy(dx, dy);
                 setPreviousPosition(mouseEvent->scenePos());
-                emit signalMove(this, dx, dy);
+//                emit signalMove(this, dx, dy);
             }
             break;
 
@@ -169,41 +169,47 @@ void Rectangle::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsItem::mouseReleaseEvent(mouseEvent);
 }
 
-void Rectangle::hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEvent)
-{
+//void Rectangle::hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEvent)
+//{
 //    setFiltersChildEvents(true);
 //    if (filtersChildEvents()) {
 //        setBrush(QBrush(Qt::green));
 //    }
 
-        setPositionGrabbers();
-        setVisibilityGrabbers();
+//        setPositionGrabbers();
+//        setVisibilityGrabbers();
 
-    QGraphicsItem::hoverEnterEvent(hoverEvent);
-}
+//    QGraphicsItem::hoverEnterEvent(hoverEvent);
+//}
 
-void Rectangle::hoverMoveEvent(QGraphicsSceneHoverEvent *hoverEvent)
-{
-    QPointF currentPos = hoverEvent->pos();
+//void Rectangle::hoverMoveEvent(QGraphicsSceneHoverEvent *hoverEvent)
+//{
+//    QPointF currentPos = hoverEvent->pos();
 
-    qreal drx = currentPos.x() - rect().right();
-    qreal dlx = currentPos.x() - rect().left();
-    qreal dty = currentPos.y() - rect().top();
-    qreal dby = currentPos.y() - rect().bottom();
+//    qreal drx = currentPos.x() - rect().right();
+//    qreal dlx = currentPos.x() - rect().left();
+//    qreal dty = currentPos.y() - rect().top();
+//    qreal dby = currentPos.y() - rect().bottom();
 
-    if (dty < 7 && dty > -7) {
-        m_cornerFlag = Top;
-        setCursor(Qt::SizeVerCursor);
-    } else if (dby < 7 && dby > -7) {
-        m_cornerFlag = Bottom;
-        setCursor(Qt::SizeVerCursor);
-    } else if (drx < 7 && drx > -7) {
-        m_cornerFlag = Right;
-        setCursor(Qt::SizeHorCursor);
-    } else if (dlx < 7 && dlx > -7) {
-        m_cornerFlag = Left;
-        setCursor(Qt::SizeHorCursor);
-    }
+//    if (((hoverEvent->pos().y()) - (rect().top())) == 0) {
+//        m_cornerFlag =Top;
+//        setCursor(Qt::SizeVerCursor);
+//    }
+//    unsetCursor();
+
+//    if (dty < 7 && dty > -7) {
+//        m_cornerFlag = Top;
+//        setCursor(Qt::SizeVerCursor);
+//    } else if (dby < 7 && dby > -7) {
+//        m_cornerFlag = Bottom;
+//        setCursor(Qt::SizeVerCursor);
+//    } else if (drx < 7 && drx > -7) {
+//        m_cornerFlag = Right;
+//        setCursor(Qt::SizeHorCursor);
+//    } else if (dlx < 7 && dlx > -7) {
+//        m_cornerFlag = Left;
+//        setCursor(Qt::SizeHorCursor);
+//    }
 
 //    if (cornerGrabber[GrTopLeft]->isUnderMouse()) {
 //        setBrush(QBrush(Qt::blue));
@@ -260,33 +266,33 @@ void Rectangle::hoverMoveEvent(QGraphicsSceneHoverEvent *hoverEvent)
 //        }
 //    }
 
-    QGraphicsItem::hoverMoveEvent(hoverEvent);
-}
+//    QGraphicsItem::hoverMoveEvent(hoverEvent);
+//}
 
-void Rectangle::hoverLeaveEvent(QGraphicsSceneHoverEvent *hoverEvent)
-{
-    m_cornerFlag = Move;
-    hideGrabbers();
+//void Rectangle::hoverLeaveEvent(QGraphicsSceneHoverEvent *hoverEvent)
+//{
+//    m_cornerFlag = Move;
+//    hideGrabbers();
 //    setFiltersChildEvents(false);
 //    if (!filtersChildEvents()) {
 //        setBrush(QBrush(Qt::yellow));
 //    }
-    unsetCursor();
-    QGraphicsItem::hoverLeaveEvent(hoverEvent);
-}
+//    unsetCursor();
+//    QGraphicsItem::hoverLeaveEvent(hoverEvent);
+//}
 
-QVariant Rectangle::itemChange(GraphicsItemChange change, const QVariant &value)
-{
-    switch (change) {
-    case QGraphicsItem::ItemSelectedChange:
-        m_actionType = Resize;
-        break;
-    default:
-        break;
-    }
+//QVariant Rectangle::itemChange(GraphicsItemChange change, const QVariant &value)
+//{
+//    switch (change) {
+//    case QGraphicsItem::ItemSelectedChange:
+//        m_actionType = Resize;
+//        break;
+//    default:
+//        break;
+//    }
 
-    return QGraphicsItem::itemChange(change, value);
-}
+//    return QGraphicsItem::itemChange(change, value);
+//}
 
 void Rectangle::resizeLeft(const QPointF &currentPoint)
 {
@@ -309,7 +315,7 @@ void Rectangle::resizeLeft(const QPointF &currentPoint)
     prepareGeometryChange();
     setRect(newRect);
     update();
-    setPositionGrabbers();
+//    setPositionGrabbers();
 }
 
 void Rectangle::resizeRight(const QPointF &currentPoint)
@@ -332,7 +338,7 @@ void Rectangle::resizeRight(const QPointF &currentPoint)
     prepareGeometryChange();
     setRect(newRect);
     update();
-    setPositionGrabbers();
+//    setPositionGrabbers();
 }
 
 void Rectangle::resizeBottom(const QPointF &currentPoint)
@@ -355,7 +361,7 @@ void Rectangle::resizeBottom(const QPointF &currentPoint)
     prepareGeometryChange();
     setRect(newRect);
     update();
-    setPositionGrabbers();
+//    setPositionGrabbers();
 }
 
 void Rectangle::resizeTop(const QPointF &currentPoint)
@@ -379,7 +385,7 @@ void Rectangle::resizeTop(const QPointF &currentPoint)
     prepareGeometryChange();
     setRect(newRect);
     update();
-    setPositionGrabbers();
+//    setPositionGrabbers();
 }
 
 void Rectangle::rotateItem(const QPointF &currentPoint)
@@ -432,35 +438,35 @@ void Rectangle::rotateItem(const QPointF &currentPoint)
 
 
 
-void Rectangle::setPositionGrabbers()
-{
-    cornerGrabber[GrTop]->setPos(rect().left() + rect().width()/2, rect().top());
-    cornerGrabber[GrBottom]->setPos(rect().left() + rect().width()/2, rect().bottom());
-    cornerGrabber[GrLeft]->setPos(rect().left(), rect().top() + rect().height()/2);
-    cornerGrabber[GrRight]->setPos(rect().right(), rect().top() + rect().height()/2);
-    cornerGrabber[GrTopLeft]->setPos(rect().left(), rect().top());
-    cornerGrabber[GrTopRight]->setPos(rect().right(), rect().top());
-    cornerGrabber[GrBottomLeft]->setPos(rect().left(), rect().bottom());
-    cornerGrabber[GrBottomRight]->setPos(rect().right(), rect().bottom());
-}
+//void Rectangle::setPositionGrabbers()
+//{
+//    cornerGrabber[GrTop]->setPos(rect().left() + rect().width()/2, rect().top());
+//    cornerGrabber[GrBottom]->setPos(rect().left() + rect().width()/2, rect().bottom());
+//    cornerGrabber[GrLeft]->setPos(rect().left(), rect().top() + rect().height()/2);
+//    cornerGrabber[GrRight]->setPos(rect().right(), rect().top() + rect().height()/2);
+//    cornerGrabber[GrTopLeft]->setPos(rect().left(), rect().top());
+//    cornerGrabber[GrTopRight]->setPos(rect().right(), rect().top());
+//    cornerGrabber[GrBottomLeft]->setPos(rect().left(), rect().bottom());
+//    cornerGrabber[GrBottomRight]->setPos(rect().right(), rect().bottom());
+//}
 
-void Rectangle::setVisibilityGrabbers()
-{    
-    cornerGrabber[GrTopLeft]->setVisible(true);
-    cornerGrabber[GrTopRight]->setVisible(true);
-    cornerGrabber[GrBottomLeft]->setVisible(true);
-    cornerGrabber[GrBottomRight]->setVisible(true);
-    if (m_actionType == Resize) {
-        cornerGrabber[GrTop]->setVisible(true);
-        cornerGrabber[GrBottom]->setVisible(true);
-        cornerGrabber[GrLeft]->setVisible(true);
-        cornerGrabber[GrRight]->setVisible(true);
-    }
-}
+//void Rectangle::setVisibilityGrabbers()
+//{
+//    cornerGrabber[GrTopLeft]->setVisible(true);
+//    cornerGrabber[GrTopRight]->setVisible(true);
+//    cornerGrabber[GrBottomLeft]->setVisible(true);
+//    cornerGrabber[GrBottomRight]->setVisible(true);
+//    if (m_actionType == Resize) {
+//        cornerGrabber[GrTop]->setVisible(true);
+//        cornerGrabber[GrBottom]->setVisible(true);
+//        cornerGrabber[GrLeft]->setVisible(true);
+//        cornerGrabber[GrRight]->setVisible(true);
+//    }
+//}
 
-void Rectangle::hideGrabbers()
-{
-    for (int i = 0; i < 8; i++) {
-        cornerGrabber[i]->setVisible(false);
-    }
-}
+//void Rectangle::hideGrabbers()
+//{
+//    for (int i = 0; i < 8; i++) {
+//        cornerGrabber[i]->setVisible(false);
+//    }
+//}

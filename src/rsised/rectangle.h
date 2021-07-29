@@ -1,25 +1,25 @@
 #ifndef RECTANGLE_H
 #define RECTANGLE_H
 
-#include <QObject>
+//#include <QObject>
 #include <QGraphicsRectItem>
 
-class Dotsignal;
+//class Dotsignal;
 
 QT_BEGIN_NAMESPACE
 class QGraphicsSceneMouseEvent;
-class QGraphicsSceneHoverEvent;
+//class QGraphicsSceneHoverEvent;
 QT_END_NAMESPACE
 
-class Rectangle : public QObject, public QGraphicsRectItem
+class Rectangle : public QGraphicsRectItem
 {
-    Q_OBJECT
-    Q_PROPERTY(QPointF previousPosition READ previousPosition WRITE setPreviousPosition NOTIFY previousPosition)
+//    Q_OBJECT
+//    Q_PROPERTY(QPointF previousPosition READ previousPosition WRITE setPreviousPosition NOTIFY previousPosition)
 
     enum { Type = UserType + 1 };
     enum ActionType { Resize = 0x01, Rotation = 0x02 };
-    enum CornerGrabbers { GrTop, GrBottom, GrLeft, GrRight,
-                          GrTopLeft, GrTopRight, GrBottomLeft, GrBottomRight };
+//    enum CornerGrabbers { GrTop, GrBottom, GrLeft, GrRight,
+//                          GrTopLeft, GrTopRight, GrBottomLeft, GrBottomRight };
     enum CornerFlags
     {
         Move,
@@ -34,7 +34,7 @@ class Rectangle : public QObject, public QGraphicsRectItem
     };
 
 public:
-    explicit Rectangle(QObject *parent = 0);
+    explicit Rectangle();
     ~Rectangle();
 
     QPointF previousPosition() const;
@@ -44,10 +44,10 @@ public:
     void setRect(const QRectF rect);
 
 signals:
-    void rectChanged(Rectangle *rect);
-    void previousPositionChanged();
-    void clicked(Rectangle *rect);
-    void signalMove(QGraphicsItem *item, qreal dx, qreal dy);
+//    void rectChanged(Rectangle *rect);
+//    void previousPositionChanged();
+//    void clicked(Rectangle *rect);
+//    void signalMove(QGraphicsItem *item, qreal dx, qreal dy);
 
 
 
@@ -56,14 +56,14 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEvent) override;
-    void hoverMoveEvent(QGraphicsSceneHoverEvent *hoverEvent) override;
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *hoverEvent) override;
+//    void hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEvent) override;
+//    void hoverMoveEvent(QGraphicsSceneHoverEvent *hoverEvent) override;
+//    void hoverLeaveEvent(QGraphicsSceneHoverEvent *hoverEvent) override;
 
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+//    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
-    Dotsignal *cornerGrabber[8];
+//    Dotsignal *cornerGrabber[8];
     QPointF m_previousPosition;
     bool m_leftMouseButtonPressed;
     unsigned int m_actionType;
@@ -75,9 +75,9 @@ private:
     void resizeTop(const QPointF &currentPoint);
     void rotateItem(const QPointF &currentPoint);
 
-    void setPositionGrabbers();
-    void setVisibilityGrabbers();
-    void hideGrabbers();
+//    void setPositionGrabbers();
+//    void setVisibilityGrabbers();
+//    void hideGrabbers();
 };
 
 #endif // RECTANGLE_H
