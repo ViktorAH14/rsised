@@ -2,6 +2,7 @@
 #define DIAGRAMSCENE_H
 
 #include <QGraphicsScene>
+#include <QObject>
 
 class Rectangle;
 
@@ -16,12 +17,13 @@ class DiagramScene : public QGraphicsScene
     Q_OBJECT
 
 public:
-    enum Mode{InsertLine, InsertRect, InsertEllipse, InsertCurve, MoveItem};
+    enum Mode {InsertLine, InsertRect, InsertEllipse, InsertCurve, MoveItem};
 
     explicit DiagramScene(QObject *parent = nullptr);
 
 public slots:
     void setMode(Mode mode);
+    void setSelectableItems(bool selectable);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
@@ -30,11 +32,12 @@ protected:
 
 private:
     Rectangle *rect;
-
     QGraphicsLineItem *line;
     QGraphicsEllipseItem *ellipse;
+    QGraphicsLineItem *curve;
+
+    bool leftButton;
     QPointF previousPoint;
-//    QPointF endPoint;
 
     Mode m_mode;
 };

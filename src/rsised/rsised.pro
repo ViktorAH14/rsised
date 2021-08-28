@@ -10,14 +10,12 @@ CONFIG += c++11
 
 SOURCES += \
     diagramscene.cpp \
-    dotsignal.cpp \
     main.cpp \
     mainwindow.cpp \
     rectangle.cpp
 
 HEADERS += \
     diagramscene.h \
-    dotsignal.h \
     mainwindow.h \
     rectangle.h
 

@@ -1,13 +1,13 @@
 #include "diagramscene.h"
 #include "rectangle.h"
 
-#include <QGraphicsSceneEvent>
+#include <QGraphicsSceneMouseEvent>
 #include <QGraphicsLineItem>
 #include <QGraphicsEllipseItem>
 
-DiagramScene::DiagramScene(QObject *parent) : QGraphicsScene(parent)
+DiagramScene::DiagramScene(QObject *parent)
+    : QGraphicsScene(parent), leftButton {false}, m_mode {MoveItem}
 {
-
 }
 
 void DiagramScene::setMode(Mode mode)
@@ -15,71 +15,86 @@ void DiagramScene::setMode(Mode mode)
     m_mode = mode;
 }
 
-void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void DiagramScene::setSelectableItems(bool selectable)
 {
-    if (mouseEvent->button() == Qt::LeftButton) {
-        switch (m_mode) {
-        case InsertLine:
-            line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()));
-            line->setPen(QPen(Qt::green));
-            addItem(line);
-            break;
-        case InsertRect:
-            previousPoint = mouseEvent->scenePos();
-            rect = new Rectangle();
-            addItem(rect);
-//            rect->setPos(previousPoint);
-            break;
-        case InsertEllipse:
-            ellipse = new QGraphicsEllipseItem(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()));
-            ellipse->setPen(QPen(Qt::yellow));
-            ellipse->setBrush(QBrush(Qt::magenta));
-            addItem(ellipse);
-            break;
-        case InsertCurve:
-            previousPoint = mouseEvent->scenePos();
-        default:
-            ;
+    if (selectable) {
+        foreach (QGraphicsItem *item, items()) {
+            item->setFlag(QGraphicsItem::ItemIsSelectable, true);
+        }
+    } else {
+        foreach (QGraphicsItem *item, items()){
+            item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
     }
+}
+
+void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->button() != Qt::LeftButton) {
+        return;
+    }
+
+    leftButton = true;
+
+    switch (m_mode) {
+    case InsertLine:
+        line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()));
+        line->setPen(QPen(Qt::green));
+        addItem(line);
+        break;
+    case InsertRect:
+        rect = new Rectangle(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()));
+        addItem(rect);
+        break;
+    case InsertEllipse:
+        ellipse = new QGraphicsEllipseItem(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()));
+        ellipse->setPen(QPen(Qt::yellow));
+        ellipse->setBrush(QBrush(Qt::magenta));
+        addItem(ellipse);
+        break;
+    case InsertCurve:
+        previousPoint = mouseEvent->scenePos();
+        break;
+    default:
+        break;
+    }
+
     QGraphicsScene::mousePressEvent(mouseEvent);
 }
 
 void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
+    if (leftButton) {
 
-    if (m_mode == InsertLine && line != nullptr) {
-        QLineF newLine(line->line().p1(), mouseEvent->scenePos());
-        line->setLine(newLine);
-        line->setFlag(QGraphicsItem::ItemIsSelectable, true);
-        line->setFlag(QGraphicsItem::ItemIsMovable, true);
+        if ((m_mode == InsertLine) && (line != nullptr)) {
+            QLineF newLine(line->line().p1(), mouseEvent->scenePos());
+            line->setLine(newLine);
+            line->setFlag(QGraphicsItem::ItemIsMovable, true);
+        }
+
+        if ((m_mode == InsertRect) && (rect != nullptr)) {
+            qreal dx = mouseEvent->scenePos().x() - rect->rect().left();
+            qreal dy = mouseEvent->scenePos().y() - rect->rect().top();
+            rect->setRect( ( dx > 0 ) ? rect->rect().left() : mouseEvent->scenePos().x(),
+                           ( dy > 0 ) ? rect->rect().top() : mouseEvent->scenePos().y(),
+                           qAbs( dx ), qAbs( dy ) );
+        }
+
+        if ((m_mode == InsertEllipse) && (ellipse != nullptr)) {
+            qreal dx = mouseEvent->scenePos().x() - ellipse->rect().left();
+            qreal dy = mouseEvent->scenePos().y() - ellipse->rect().top();
+            ellipse->setRect( ( dx > 0 ) ? ellipse->rect().left() : mouseEvent->scenePos().x(),
+                              ( dy > 0 ) ? ellipse->rect().top() : mouseEvent->scenePos().y(),
+                              qAbs( dx ), qAbs( dy ) );
+            ellipse->setFlag(QGraphicsItem::ItemIsMovable, true);
+        }
+
+        if (m_mode == InsertCurve) {
+            curve = addLine(previousPoint.x(), previousPoint.y(),
+                            mouseEvent->scenePos().x(), mouseEvent->scenePos().y());
+            previousPoint = mouseEvent->scenePos();
+        }
     }
-
-    if (m_mode == InsertRect && rect != nullptr) {
-        qreal dx = mouseEvent->scenePos().x() - previousPoint.x();
-        qreal dy = mouseEvent->scenePos().y() - previousPoint.y();
-        rect->setRect( ( dx > 0 ) ? previousPoint.x() : mouseEvent->scenePos().x(),
-                            ( dy > 0 ) ? previousPoint.y() : mouseEvent->scenePos().y(),
-                            qAbs( dx ), qAbs( dy ) );
-
-//        rect->setFlag(QGraphicsItem::ItemIsSelectable, true);
-//        rect->setFlag(QGraphicsItem::ItemIsMovable, true);
-    }
-
-    if (m_mode == InsertEllipse && ellipse != nullptr) {
-        QRectF newRect(ellipse->rect().topLeft(), mouseEvent->scenePos());
-        ellipse->setRect(newRect);
-        ellipse->setFlag(QGraphicsItem::ItemIsSelectable, true);
-        ellipse->setFlag(QGraphicsItem::ItemIsMovable, true);
-    }
-
-    if (m_mode == InsertCurve) {
-        line = addLine(previousPoint.x(), previousPoint.y(), mouseEvent->scenePos().x(), mouseEvent->scenePos().y());
-        previousPoint = mouseEvent->scenePos();
-        line->setFlag(QGraphicsItem::ItemIsSelectable, true);
-        line->setFlag(QGraphicsItem::ItemIsMovable, true);
-    }
-    update();
 
     QGraphicsScene::mouseMoveEvent(mouseEvent);
 }
@@ -96,9 +111,13 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     case InsertEllipse:
         ellipse = nullptr;
         break;
+    case InsertCurve:
+        break;
     default:
-        ;
+        break;
     }
+
+    leftButton = false;
 
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }

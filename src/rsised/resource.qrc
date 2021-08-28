@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/images/icons">
+    <qresource prefix="/">
         <file>images/icons/cancel.png</file>
         <file>images/icons/line.png</file>
         <file>images/icons/openfolder.png</file>
@@ -9,5 +9,6 @@
         <file>images/icons/ellipse.png</file>
         <file>images/icons/curve.png</file>
         <file>images/icons/rotate.png</file>
+        <file>images/icons/sizeVer.png</file>
     </qresource>
 </RCC>

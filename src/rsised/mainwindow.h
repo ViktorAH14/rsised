@@ -8,6 +8,7 @@
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 class QActionGroup;
+class QLabel;
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -20,6 +21,7 @@ public:
 
 private slots:
     bool save();
+
     //Simple draw
     void drawLine();
     void drawRect();

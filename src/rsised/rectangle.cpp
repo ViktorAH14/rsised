@@ -1,11 +1,12 @@
-#include "rectangle.h"
-//#include "dotsignal.h"
+﻿#include "rectangle.h"
 
 #include <math.h>
 
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneHoverEvent>
 #include <QCursor>
 #include <QBrush>
+#include <QApplication>
 
 static const double PI = 3.14159265358979323846264338327950288419717;
 static double TWO_PI = 2.0 * PI;
@@ -21,133 +22,100 @@ static qreal normalizeAngle(qreal angle)
     return angle;
 }
 
-Rectangle::Rectangle() : m_actionType(Resize), m_cornerFlag(Move)
+Rectangle::Rectangle(QGraphicsItem *parent)
+    : QGraphicsRectItem(parent),
+      m_actionType {ActionType::Resize},
+      m_cornerFlag {CornerFlags::None}
 {
-    setAcceptHoverEvents(true);
-    setFlags(ItemIsSelectable | ItemSendsGeometryChanges);
+    setFlag(ItemSendsGeometryChanges, true);
+}
 
-//    for (int i = 0; i < 8; i++) {
-//        cornerGrabber[i] = new Dotsignal(this);
-//    }
-//    setPositionGrabbers();
+Rectangle::Rectangle(QRectF rect, QGraphicsItem *parent)
+    : QGraphicsRectItem(parent),
+      m_actionType {ActionType::Resize},
+      m_cornerFlag {CornerFlags::None}
+{
+    QGraphicsRectItem::setRect(rect);
+    setFlag(ItemSendsGeometryChanges, true);
 }
 Rectangle::~Rectangle()
 {
-//    for (int i = 0; i <8; i++) {
-//        delete cornerGrabber[i];
-//    }
-}
-
-QPointF Rectangle::previousPosition() const
-{
-    return m_previousPosition;
-}
-
-void Rectangle::setPreviousPosition(const QPointF previousPosition)
-{
-    if (m_previousPosition == previousPosition) {
-        return;
-    }
-    m_previousPosition = previousPosition;
-//    emit previousPositionChanged();
-}
-
-void Rectangle::setRect(qreal x, qreal y, qreal w, qreal h)
-{
-    setRect(QRectF(x, y, w, h));
-//    setPositionGrabbers();
-}
-
-void Rectangle::setRect(const QRectF rect)
-{
-    QGraphicsRectItem::setRect(rect);
-//    setPositionGrabbers();
 }
 
 void Rectangle::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    m_actionType = (m_actionType == Resize) ? Rotation : Resize;
-//    setVisibilityGrabbers();
+    m_actionType = (m_actionType == ActionType::Resize) ? ActionType::Rotation : ActionType::Resize;
 
     QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
 }
 
 void Rectangle::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    setFiltersChildEvents(true);
-    if (mouseEvent->button() == Qt::LeftButton) {
-        m_leftMouseButtonPressed =true;
-        setPreviousPosition(mouseEvent->scenePos());
-//        emit clicked(this);
+    if ((m_cornerFlag == CornerFlags::None) && isSelected()) {
+        QApplication::setOverrideCursor(Qt::ClosedHandCursor);
     }
 
-     QGraphicsItem::mousePressEvent( mouseEvent );
+    QGraphicsItem::mousePressEvent( mouseEvent );
 }
 
 void Rectangle::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     QPointF currentPos = mouseEvent->pos();
 
-    if (m_actionType == Resize) {
+    if (m_actionType == ActionType::Resize) {
         switch (m_cornerFlag) {
-        case Top:
+        case CornerFlags::Top:
             resizeTop(currentPos);
             break;
-        case Bottom:
+        case CornerFlags::Bottom:
             resizeBottom(currentPos);
             break;
-        case Left:
+        case CornerFlags::Left:
             resizeLeft(currentPos);
             break;
-        case Right:
+        case CornerFlags::Right:
             resizeRight(currentPos);
             break;
-        case TopLeft:
+        case CornerFlags::TopLeft:
             resizeTop(currentPos);
             resizeLeft(currentPos);
             break;
-        case TopRight:
+        case CornerFlags::TopRight:
             resizeTop(currentPos);
             resizeRight(currentPos);
             break;
-        case BottomLeft:
+        case CornerFlags::BottomLeft:
             resizeBottom(currentPos);
             resizeLeft(currentPos);
             break;
-        case BottomRight:
+        case CornerFlags::BottomRight:
             resizeBottom(currentPos);
             resizeRight(currentPos);
             break;
         default:
-            if (m_leftMouseButtonPressed) {
-//                setCursor(Qt::ClosedHandCursor);
-                qreal dx = mouseEvent->scenePos().x() - m_previousPosition.x();
-                qreal dy = mouseEvent->scenePos().y() -m_previousPosition.y();
+            if (mouseEvent->buttons() == Qt::LeftButton) {
+                qreal dx = mouseEvent->scenePos().x() - mouseEvent->lastScenePos().x();
+                qreal dy = mouseEvent->scenePos().y() - mouseEvent->lastScenePos().y();
                 moveBy(dx, dy);
-                setPreviousPosition(mouseEvent->scenePos());
-//                emit signalMove(this, dx, dy);
             }
             break;
 
         }
     } else {
         switch (m_cornerFlag) {
-        case TopLeft:
-        case TopRight:
-        case BottomLeft:
-        case BottomRight:
+        case CornerFlags::TopLeft:
+        case CornerFlags::TopRight:
+        case CornerFlags::BottomLeft:
+        case CornerFlags::BottomRight:
         {
             rotateItem(currentPos);
             break;
         }
         default:
-            if (m_leftMouseButtonPressed) {
-//                setCursor(Qt::ClosedHandCursor);
-                qreal dx = mouseEvent->scenePos().x() - m_previousPosition.x();
-                qreal dy = mouseEvent->scenePos().y() -m_previousPosition.y();
+            if (mouseEvent->buttons() == Qt::LeftButton) {
+                qreal dx = mouseEvent->scenePos().x() - mouseEvent->lastScenePos().x();
+                qreal dy = mouseEvent->scenePos().y() - mouseEvent->lastScenePos().y();
                 moveBy(dx, dy);
-                setPreviousPosition(mouseEvent->scenePos());
-//                emit signalMove(this, dx, dy);
             }
             break;
 
@@ -160,139 +128,98 @@ void Rectangle::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void Rectangle::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (mouseEvent->button() == Qt::LeftButton) {
-        m_leftMouseButtonPressed = false;
-        unsetCursor();
-    }
-    setFiltersChildEvents(false);
+    QApplication::restoreOverrideCursor();
 
     QGraphicsItem::mouseReleaseEvent(mouseEvent);
 }
 
-//void Rectangle::hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEvent)
-//{
-//    setFiltersChildEvents(true);
-//    if (filtersChildEvents()) {
-//        setBrush(QBrush(Qt::green));
-//    }
+void Rectangle::hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEvent)
+{
 
-//        setPositionGrabbers();
-//        setVisibilityGrabbers();
+    QGraphicsItem::hoverEnterEvent(hoverEvent);
+}
 
-//    QGraphicsItem::hoverEnterEvent(hoverEvent);
-//}
+void Rectangle::hoverMoveEvent(QGraphicsSceneHoverEvent *hoverEvent)
+{
+    QPointF currentPos = hoverEvent->pos();
 
-//void Rectangle::hoverMoveEvent(QGraphicsSceneHoverEvent *hoverEvent)
-//{
-//    QPointF currentPos = hoverEvent->pos();
+    qreal drx = currentPos.x() - rect().right();
+    qreal dlx = currentPos.x() - rect().left();
+    qreal dty = currentPos.y() - rect().top();
+    qreal dby = currentPos.y() - rect().bottom();
+    switch (m_actionType) {
+    case ActionType::Resize:
+        if (dty < 5 && dty > 1) {
+            m_cornerFlag = CornerFlags::Top;
+            QApplication::setOverrideCursor(Qt::SizeVerCursor);
+        } else if (dby < -1 && dby > -5) {
+            m_cornerFlag = CornerFlags::Bottom;
+            QApplication::setOverrideCursor(Qt::SizeVerCursor);
+        } else if (drx < -1 && drx > -5) {
+            m_cornerFlag = CornerFlags::Right;
+            QApplication::setOverrideCursor(Qt::SizeHorCursor);
+        } else if (dlx < 5 && dlx > 1) {
+            m_cornerFlag = CornerFlags::Left;
+            QApplication::setOverrideCursor(Qt::SizeHorCursor);
+        } else if ((dty < 9 && dty > -1) && (dlx < 9 && dlx > -1)) {
+            m_cornerFlag = CornerFlags::TopLeft;
+            QApplication::setOverrideCursor(Qt::SizeFDiagCursor);
+        } else if ((dty < 15 && dty > 1) && (drx < -1 && drx > -15)) {
+            m_cornerFlag = CornerFlags::TopRight;
+            QApplication::setOverrideCursor(Qt::SizeBDiagCursor);
+        } else if ((dby < -1 && dby > -15) && (dlx < 15 && dlx > 1)) {
+            m_cornerFlag = CornerFlags::BottomLeft;
+            QApplication::setOverrideCursor(Qt::SizeBDiagCursor);
+        } else if ((dby < -1 && dby > -15) && (drx < -1 && drx > -15)) {
+            m_cornerFlag = CornerFlags::BottomRight;
+            QApplication::setOverrideCursor(Qt::SizeFDiagCursor);
+        } else {
+            m_cornerFlag = CornerFlags::None;
+            QApplication::restoreOverrideCursor();
+        }
+        break;
+    case ActionType::Rotation: {
+         QCursor rotationCursor = QCursor(QPixmap(":/images/icons/rotate.png").scaled(24, 24));
+        if ((dty < 15 && dty > 1) && (dlx < 15 && dlx > 1)) {
+            m_cornerFlag = CornerFlags::TopLeft;
+            QApplication::setOverrideCursor(rotationCursor);
+        } else if ((dty < 15 && dty > 1) && (drx < -1 && drx > -15)) {
+            m_cornerFlag = CornerFlags::TopRight;
+            QApplication::setOverrideCursor(rotationCursor);
+        } else if ((dby < -1 && dby > -15) && (dlx < 15 && dlx > 1)) {
+            m_cornerFlag = CornerFlags::BottomLeft;
+            QApplication::setOverrideCursor(rotationCursor);
+        } else if ((dby < -1 && dby > -15) && (drx < -1 && drx > -15)) {
+            m_cornerFlag = CornerFlags::BottomRight;
+            QApplication::setOverrideCursor(rotationCursor);
+        } else {
+            m_cornerFlag = CornerFlags::None;
+            QApplication::restoreOverrideCursor();
+        }
+        break;
+    }
+    default:
+        break;
+    }
 
-//    qreal drx = currentPos.x() - rect().right();
-//    qreal dlx = currentPos.x() - rect().left();
-//    qreal dty = currentPos.y() - rect().top();
-//    qreal dby = currentPos.y() - rect().bottom();
+    QGraphicsItem::hoverMoveEvent(hoverEvent);
+}
 
-//    if (((hoverEvent->pos().y()) - (rect().top())) == 0) {
-//        m_cornerFlag =Top;
-//        setCursor(Qt::SizeVerCursor);
-//    }
-//    unsetCursor();
+void Rectangle::hoverLeaveEvent(QGraphicsSceneHoverEvent *hoverEvent)
+{
+    QApplication::restoreOverrideCursor();
 
-//    if (dty < 7 && dty > -7) {
-//        m_cornerFlag = Top;
-//        setCursor(Qt::SizeVerCursor);
-//    } else if (dby < 7 && dby > -7) {
-//        m_cornerFlag = Bottom;
-//        setCursor(Qt::SizeVerCursor);
-//    } else if (drx < 7 && drx > -7) {
-//        m_cornerFlag = Right;
-//        setCursor(Qt::SizeHorCursor);
-//    } else if (dlx < 7 && dlx > -7) {
-//        m_cornerFlag = Left;
-//        setCursor(Qt::SizeHorCursor);
-//    }
+    QGraphicsItem::hoverLeaveEvent(hoverEvent);
+}
 
-//    if (cornerGrabber[GrTopLeft]->isUnderMouse()) {
-//        setBrush(QBrush(Qt::blue));
-//        m_cornerFlag = TopLeft;
-//        setCursor(Qt::SizeFDiagCursor);
-//    }
+QVariant Rectangle::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    if (change == GraphicsItemChange::ItemSelectedChange) {
+       isSelected() ? setAcceptHoverEvents(false) : setAcceptHoverEvents(true);
+    }
 
-//    if (m_actionType == Resize) {
-//        QPixmap cursor(":images/icons/cursor.png");
-//        QPixmap resCursor;
-//        QTransform trans = transform();
-//        switch (m_cornerFlag) {
-//        case Top:
-//        case Bottom:
-//            resCursor = cursor.transformed(trans);
-//            setCursor(resCursor.scaled(24, 24, Qt::KeepAspectRatio));
-//            break;
-//        case Left:
-//        case Right:
-//            trans.rotate(90);
-//            resCursor = cursor.transformed(trans);
-//            setCursor(resCursor.scaled(24, 24, Qt::KeepAspectRatio));
-//            break;
-//        case TopRight:
-//        case BottomLeft:
-//            trans.rotate(45);
-//            resCursor = cursor.transformed(trans);
-//            setCursor(resCursor.scaled(24, 24, Qt::KeepAspectRatio));
-//            break;
-//        case TopLeft:
-//        case BottomRight:
-//            trans.rotate(135);
-//            resCursor = cursor.transformed(trans);
-//            setCursor(resCursor.scaled(24, 24, Qt::KeepAspectRatio));
-//            break;
-//        default:
-//           setCursor(Qt::CrossCursor);
-//            break;
-//        }
-//    } else {
-//        switch (m_cornerFlag) {
-//        case TopLeft:
-//        case TopRight:
-//        case BottomLeft:
-//        case BottomRight:
-//        {
-//            QPixmap cursor(":images/icons/rotate.png");
-//            setCursor(QCursor(cursor.scaled(40, 40, Qt::KeepAspectRatio)));
-//            break;
-//        }
-//        default:
-//            setCursor(Qt::CrossCursor);
-//            break;
-//        }
-//    }
-
-//    QGraphicsItem::hoverMoveEvent(hoverEvent);
-//}
-
-//void Rectangle::hoverLeaveEvent(QGraphicsSceneHoverEvent *hoverEvent)
-//{
-//    m_cornerFlag = Move;
-//    hideGrabbers();
-//    setFiltersChildEvents(false);
-//    if (!filtersChildEvents()) {
-//        setBrush(QBrush(Qt::yellow));
-//    }
-//    unsetCursor();
-//    QGraphicsItem::hoverLeaveEvent(hoverEvent);
-//}
-
-//QVariant Rectangle::itemChange(GraphicsItemChange change, const QVariant &value)
-//{
-//    switch (change) {
-//    case QGraphicsItem::ItemSelectedChange:
-//        m_actionType = Resize;
-//        break;
-//    default:
-//        break;
-//    }
-
-//    return QGraphicsItem::itemChange(change, value);
-//}
+    return QGraphicsItem::itemChange(change, value);
+}
 
 void Rectangle::resizeLeft(const QPointF &currentPoint)
 {
@@ -314,8 +241,6 @@ void Rectangle::resizeLeft(const QPointF &currentPoint)
     newRect.translate(rect().width() - newRect.width(), 0);
     prepareGeometryChange();
     setRect(newRect);
-    update();
-//    setPositionGrabbers();
 }
 
 void Rectangle::resizeRight(const QPointF &currentPoint)
@@ -337,8 +262,6 @@ void Rectangle::resizeRight(const QPointF &currentPoint)
 
     prepareGeometryChange();
     setRect(newRect);
-    update();
-//    setPositionGrabbers();
 }
 
 void Rectangle::resizeBottom(const QPointF &currentPoint)
@@ -360,8 +283,6 @@ void Rectangle::resizeBottom(const QPointF &currentPoint)
 
     prepareGeometryChange();
     setRect(newRect);
-    update();
-//    setPositionGrabbers();
 }
 
 void Rectangle::resizeTop(const QPointF &currentPoint)
@@ -384,8 +305,6 @@ void Rectangle::resizeTop(const QPointF &currentPoint)
     newRect.translate(0, rect().height() - newRect.height());
     prepareGeometryChange();
     setRect(newRect);
-    update();
-//    setPositionGrabbers();
 }
 
 void Rectangle::rotateItem(const QPointF &currentPoint)
@@ -395,16 +314,16 @@ void Rectangle::rotateItem(const QPointF &currentPoint)
     QPointF corner;
 
     switch (m_cornerFlag) {
-    case TopLeft:
+    case CornerFlags::TopLeft:
         corner = newRect.topLeft();
         break;
-    case TopRight:
+    case CornerFlags::TopRight:
         corner = newRect.topRight();
         break;
-    case BottomLeft:
+    case CornerFlags::BottomLeft:
         corner = newRect.bottomLeft();
         break;
-    case BottomRight:
+    case CornerFlags::BottomRight:
         corner = newRect.bottomRight();
         break;
     default:
@@ -433,40 +352,6 @@ void Rectangle::rotateItem(const QPointF &currentPoint)
     trans.translate(center.x(), center.y());
     trans.rotateRadians(rotation() + resultAngle, Qt::ZAxis);
     trans.translate(-center.x(), -center.y());
+    prepareGeometryChange();
     setTransform(trans);
 }
-
-
-
-//void Rectangle::setPositionGrabbers()
-//{
-//    cornerGrabber[GrTop]->setPos(rect().left() + rect().width()/2, rect().top());
-//    cornerGrabber[GrBottom]->setPos(rect().left() + rect().width()/2, rect().bottom());
-//    cornerGrabber[GrLeft]->setPos(rect().left(), rect().top() + rect().height()/2);
-//    cornerGrabber[GrRight]->setPos(rect().right(), rect().top() + rect().height()/2);
-//    cornerGrabber[GrTopLeft]->setPos(rect().left(), rect().top());
-//    cornerGrabber[GrTopRight]->setPos(rect().right(), rect().top());
-//    cornerGrabber[GrBottomLeft]->setPos(rect().left(), rect().bottom());
-//    cornerGrabber[GrBottomRight]->setPos(rect().right(), rect().bottom());
-//}
-
-//void Rectangle::setVisibilityGrabbers()
-//{
-//    cornerGrabber[GrTopLeft]->setVisible(true);
-//    cornerGrabber[GrTopRight]->setVisible(true);
-//    cornerGrabber[GrBottomLeft]->setVisible(true);
-//    cornerGrabber[GrBottomRight]->setVisible(true);
-//    if (m_actionType == Resize) {
-//        cornerGrabber[GrTop]->setVisible(true);
-//        cornerGrabber[GrBottom]->setVisible(true);
-//        cornerGrabber[GrLeft]->setVisible(true);
-//        cornerGrabber[GrRight]->setVisible(true);
-//    }
-//}
-
-//void Rectangle::hideGrabbers()
-//{
-//    for (int i = 0; i < 8; i++) {
-//        cornerGrabber[i]->setVisible(false);
-//    }
-//}

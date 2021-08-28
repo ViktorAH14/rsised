@@ -6,6 +6,9 @@
 #include <QSvgGenerator>
 #include <QActionGroup>
 #include <QGraphicsItem>
+#include <QLabel>
+#include <QMouseEvent>
+//#include <QString>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -14,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     scene = new DiagramScene(this);
+    scene->setSceneRect(0, 0, 1920, 1080);
+    scene->setMode(DiagramScene::MoveItem);
     ui->mainGraphicsView->setScene(scene);
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
 
@@ -58,30 +63,35 @@ void MainWindow::drawLine()
 {
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
     scene->setMode(DiagramScene::InsertLine);
+    scene->setSelectableItems(false);
 }
 
 void MainWindow::drawRect()
 {
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
     scene->setMode(DiagramScene::InsertRect);
+    scene->setSelectableItems(false);
 }
 
 void MainWindow::drawEllipse()
 {
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
     scene->setMode(DiagramScene::InsertEllipse);
+    scene->setSelectableItems(false);
 }
 
 void MainWindow::drawCurve()
 {
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
     scene->setMode(DiagramScene::InsertCurve);
+    scene->setSelectableItems(false);
 }
 
 void MainWindow::moveItem()
 {
     ui->mainGraphicsView->setCursor(Qt::ArrowCursor);
     scene->setMode(DiagramScene::MoveItem);
+    scene->setSelectableItems(true);
 }
 
 void MainWindow::deleteItem()
