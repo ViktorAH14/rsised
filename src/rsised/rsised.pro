@@ -11,11 +11,13 @@ CONFIG += c++11
 SOURCES += \
     diagramscene.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    rectangle.cpp
 
 HEADERS += \
     diagramscene.h \
-    mainwindow.h
+    mainwindow.h \
+    rectangle.h
 
 FORMS += \
     mainwindow.ui
@@ -30,3 +32,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     resource.qrc
+
+DISTFILES +=

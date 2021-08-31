@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>802</width>
-    <height>594</height>
+    <width>1180</width>
+    <height>690</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,11 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QGraphicsView" name="mainGraphicsView">
-      <property name="cursor" stdset="0">
-       <cursorShape>CrossCursor</cursorShape>
-      </property>
-     </widget>
+     <widget class="QGraphicsView" name="mainGraphicsView"/>
     </item>
    </layout>
   </widget>
@@ -29,7 +25,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>802</width>
+     <width>1180</width>
      <height>30</height>
     </rect>
    </property>
@@ -42,13 +38,70 @@
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuDraw">
+    <property name="title">
+     <string>Draw</string>
+    </property>
+    <addaction name="actionDrawLine"/>
+    <addaction name="actionDrawRectangle"/>
+    <addaction name="actionDrawEllipse"/>
+    <addaction name="actionDrawCurve"/>
+    <addaction name="separator"/>
+    <addaction name="actionDeleteItems"/>
+   </widget>
    <addaction name="menuFail"/>
+   <addaction name="menuDraw"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpen"/>
+   <addaction name="actionSave"/>
+   <addaction name="actionExit"/>
+  </widget>
+  <widget class="QToolBar" name="simpleDrawToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="floatable">
+    <bool>true</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionMoveItem"/>
+   <addaction name="separator"/>
+   <addaction name="actionDrawLine"/>
+   <addaction name="actionDrawRectangle"/>
+   <addaction name="actionDrawEllipse"/>
+   <addaction name="actionDrawCurve"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="styleToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/icons/images/icons/openfolder.png</normaloff>:/images/icons/images/icons/openfolder.png</iconset>
+     <normaloff>:/images/icons/openfolder.png</normaloff>:/images/icons/openfolder.png</iconset>
    </property>
    <property name="text">
     <string>Open</string>
@@ -63,7 +116,7 @@
   <action name="actionExit">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/icons/images/icons/cancel.png</normaloff>:/images/icons/images/icons/cancel.png</iconset>
+     <normaloff>:/images/icons/cancel.png</normaloff>:/images/icons/cancel.png</iconset>
    </property>
    <property name="text">
     <string>Exit</string>
@@ -78,7 +131,7 @@
   <action name="actionSave">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/icons/images/icons/save.png</normaloff>:/images/icons/images/icons/save.png</iconset>
+     <normaloff>:/images/icons/save.png</normaloff>:/images/icons/save.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -88,6 +141,92 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionDrawLine">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/line.png</normaloff>:/images/icons/line.png</iconset>
+   </property>
+   <property name="text">
+    <string>Line</string>
+   </property>
+   <property name="toolTip">
+    <string>Draw line</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+L</string>
+   </property>
+  </action>
+  <action name="actionMoveItem">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/cursor.png</normaloff>:/images/icons/cursor.png</iconset>
+   </property>
+   <property name="text">
+    <string>MoveItem</string>
+   </property>
+  </action>
+  <action name="actionDrawRectangle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/Irectangle.png</normaloff>:/images/icons/Irectangle.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rectangle</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+R</string>
+   </property>
+  </action>
+  <action name="actionDrawEllipse">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/ellipse.png</normaloff>:/images/icons/ellipse.png</iconset>
+   </property>
+   <property name="text">
+    <string>Ellipse</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+E</string>
+   </property>
+  </action>
+  <action name="actionDrawCurve">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/curve.png</normaloff>:/images/icons/curve.png</iconset>
+   </property>
+   <property name="text">
+    <string>Curve</string>
+   </property>
+  </action>
+  <action name="actionDeleteItems">
+   <property name="text">
+    <string>Delete</string>
+   </property>
+   <property name="toolTip">
+    <string>Delete items</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
    </property>
   </action>
  </widget>
@@ -127,8 +266,110 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionDrawLine</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>drawLine()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>400</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionMoveItem</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>moveItem()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>400</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDrawRectangle</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>drawRect()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>400</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDrawEllipse</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>drawEllipse()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>400</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDrawCurve</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>drawCurve()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>400</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDeleteItems</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>deleteItem()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>400</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>save()</slot>
+  <slot>drawLine()</slot>
+  <slot>moveItem()</slot>
+  <slot>drawRect()</slot>
+  <slot>drawEllipse()</slot>
+  <slot>drawCurve()</slot>
+  <slot>deleteItem()</slot>
  </slots>
 </ui>
