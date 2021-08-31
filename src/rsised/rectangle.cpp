@@ -2,11 +2,10 @@
 
 #include <math.h>
 
+#include <QApplication>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneHoverEvent>
 #include <QCursor>
-#include <QBrush>
-#include <QApplication>
 
 static const double PI = 3.14159265358979323846264338327950288419717;
 static double TWO_PI = 2.0 * PI;

@@ -1,26 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QPainter>
-#include <QFileDialog>
+#include <QtWidgets>
 #include <QSvgGenerator>
-#include <QActionGroup>
-#include <QGraphicsItem>
-#include <QLabel>
-#include <QMouseEvent>
-//#include <QString>
+//#include <QGraphicsItem>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    scene = new DiagramScene(this);
-    scene->setSceneRect(0, 0, 1920, 1080);
-    scene->setMode(DiagramScene::MoveItem);
-    ui->mainGraphicsView->setScene(scene);
-    ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
 
     modeGroup = new QActionGroup(this);
     modeGroup->addAction(ui->actionDrawLine);
@@ -29,6 +17,12 @@ MainWindow::MainWindow(QWidget *parent)
     modeGroup->addAction(ui->actionDrawEllipse);
     modeGroup->addAction(ui->actionDrawCurve);
     modeGroup->setExclusive(true);
+
+    scene = new DiagramScene(this);
+    scene->setSceneRect(0, 0, 1920, 1080);
+    scene->setMode(DiagramScene::MoveItem);
+    ui->mainGraphicsView->setScene(scene);
+    ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
 }
 
 MainWindow::~MainWindow()
@@ -102,4 +96,3 @@ void MainWindow::deleteItem()
         delete item;
     }
 }
-
