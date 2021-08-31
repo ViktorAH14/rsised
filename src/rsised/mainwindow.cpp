@@ -3,7 +3,6 @@
 
 #include <QtWidgets>
 #include <QSvgGenerator>
-//#include <QGraphicsItem>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
