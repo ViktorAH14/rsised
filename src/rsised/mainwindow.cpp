@@ -3,6 +3,8 @@
 
 #include <QtWidgets>
 #include <QSvgGenerator>
+#include <KColorCombo>
+#include <KColorButton>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -17,11 +19,30 @@ MainWindow::MainWindow(QWidget *parent)
     modeGroup->addAction(ui->actionDrawCurve);
     modeGroup->setExclusive(true);
 
+    QFrame *colorPenFrame = new QFrame(this);
+    QHBoxLayout *colorPenHBoxLayout = new QHBoxLayout(this);
+    colorPenFrame->setLayout(colorPenHBoxLayout);
+    KColorButton *colorItemPenButton = new KColorButton(this);
+    colorItemPenButton->setColor(Qt::black);
+    colorItemPenButton->setFixedWidth(28);
+    colorItemPenButton->setFixedHeight(17);
+    colorPenHBoxLayout->addWidget(colorItemPenButton);
+    colorPenHBoxLayout->setAlignment(colorItemPenButton, Qt::AlignBottom);
+    QLabel *colorPenLabel = new QLabel(this);
+    colorPenLabel->setScaledContents(true);
+    colorPenLabel->setPixmap(QPixmap(":/images/icons/pen_l.png"));
+    colorPenLabel->setFixedHeight(28);
+    colorPenLabel->setFixedWidth(28);
+    colorPenHBoxLayout->addWidget(colorPenLabel);
+    ui->styleToolBar->addWidget(colorPenFrame);
+
     scene = new DiagramScene(this);
     scene->setSceneRect(0, 0, 1920, 1080);
     scene->setMode(DiagramScene::MoveItem);
     ui->mainGraphicsView->setScene(scene);
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
+
+    connect(colorItemPenButton, &KColorButton::changed, scene, &DiagramScene::setPenColor);
 }
 
 MainWindow::~MainWindow()

@@ -6,7 +6,7 @@
 #include <QGraphicsEllipseItem>
 
 DiagramScene::DiagramScene(QObject *parent)
-    : QGraphicsScene(parent), leftButton {false}, m_mode {MoveItem}
+    : QGraphicsScene(parent), leftButton {false}, penColor(Qt::black), m_mode {MoveItem}
 {
 }
 
@@ -28,6 +28,25 @@ void DiagramScene::setSelectableItems(bool selectable)
     }
 }
 
+void DiagramScene::setPenColor(const QColor &color)
+{
+    penColor = color;
+    if (!selectedItems().isEmpty()){
+        QList<QGraphicsItem *> selectedItems = this->selectedItems();
+        for (QGraphicsItem *item : qAsConst(selectedItems)) {
+            if (QGraphicsLineItem *lineItem = qgraphicsitem_cast<QGraphicsLineItem *>(item)) {
+                lineItem->setPen(QPen(penColor));
+            }
+            if (Rectangle *rectItem = qgraphicsitem_cast<Rectangle *>(item)) {
+                rectItem->setPen(QPen(penColor));
+            }
+            if (QGraphicsEllipseItem *ellipseItem = qgraphicsitem_cast<QGraphicsEllipseItem *>(item)) {
+                ellipseItem->setPen(QPen(penColor));
+            }
+        }
+    }
+}
+
 void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->button() != Qt::LeftButton) {
@@ -39,7 +58,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     switch (m_mode) {
     case InsertLine:
         line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()));
-        line->setPen(QPen(Qt::green));
+        line->setPen(QPen(penColor));
         addItem(line);
         break;
     case InsertRect:
@@ -48,7 +67,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         break;
     case InsertEllipse:
         ellipse = new QGraphicsEllipseItem(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()));
-        ellipse->setPen(QPen(Qt::yellow));
+        ellipse->setPen(QPen(penColor));
         ellipse->setBrush(QBrush(Qt::magenta));
         addItem(ellipse);
         break;
@@ -78,6 +97,7 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
             rect->setRect( ( dx > 0 ) ? rect->rect().left() : mouseEvent->scenePos().x(),
                            ( dy > 0 ) ? rect->rect().top() : mouseEvent->scenePos().y(),
                            qAbs( dx ), qAbs( dy ) );
+            rect->setPen(QPen(penColor));
         }
 
         if ((m_mode == InsertEllipse) && (ellipse != nullptr)) {
@@ -93,6 +113,7 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
             curve = addLine(previousPoint.x(), previousPoint.y(),
                             mouseEvent->scenePos().x(), mouseEvent->scenePos().y());
             previousPoint = mouseEvent->scenePos();
+            curve->setPen(QPen(penColor));
         }
     }
 
@@ -120,4 +141,11 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     leftButton = false;
 
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
+}
+
+bool DiagramScene::isItemChange(int type) const
+{
+    const QList<QGraphicsItem *> items;
+    const auto cb = [type](const QGraphicsItem *item) {return item->type() == type;};
+    return std::find_if(items.begin(), items.end(), cb) != items.end();
 }

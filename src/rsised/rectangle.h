@@ -10,7 +10,6 @@ QT_END_NAMESPACE
 
 class Rectangle : public QGraphicsRectItem
 {
-    enum { Type = UserType + 1 };
     enum class ActionType { Resize, Rotation };
     enum class CornerFlags
     {
@@ -26,6 +25,8 @@ class Rectangle : public QGraphicsRectItem
     };
 
 public:
+    enum { Type = UserType + 1 };
+
     explicit Rectangle(QGraphicsItem *parent = nullptr);
     explicit Rectangle(QRectF rect, QGraphicsItem *parent = nullptr);
     ~Rectangle();

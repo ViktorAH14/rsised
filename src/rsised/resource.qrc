@@ -10,5 +10,9 @@
         <file>images/icons/curve.png</file>
         <file>images/icons/rotate.png</file>
         <file>images/icons/sizeVer.png</file>
+        <file>images/icons/linecolor.png</file>
+        <file>images/icons/pen.png</file>
+        <file>images/icons/pen_v.png</file>
+        <file>images/icons/pen_l.png</file>
     </qresource>
 </RCC>

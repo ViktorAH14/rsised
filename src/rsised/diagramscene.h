@@ -24,6 +24,7 @@ public:
 public slots:
     void setMode(Mode mode);
     void setSelectableItems(bool selectable);
+    void setPenColor(const QColor &color);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
@@ -31,6 +32,8 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
 
 private:
+    bool isItemChange(int type) const;
+
     Rectangle *rect;
     QGraphicsLineItem *line;
     QGraphicsEllipseItem *ellipse;
@@ -38,6 +41,7 @@ private:
 
     bool leftButton;
     QPointF previousPoint;
+    QColor penColor;
 
     Mode m_mode;
 };
