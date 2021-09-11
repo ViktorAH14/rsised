@@ -64,7 +64,6 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     switch (currentMode) {
     case InsertLine:
         line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()));
-//        line->setPen(QPen(penColor, 1, penStyle));
         line->setPen(*itemPen);
         addItem(line);
         break;
@@ -74,7 +73,6 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         break;
     case InsertEllipse:
         ellipse = new QGraphicsEllipseItem(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()));
-//        ellipse->setPen(QPen(penColor, 1, penStyle));
         ellipse->setPen(*itemPen);
         ellipse->setBrush(QBrush(Qt::magenta));
         addItem(ellipse);
@@ -105,7 +103,6 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
             rect->setRect( ( dx > 0 ) ? rect->rect().left() : mouseEvent->scenePos().x(),
                            ( dy > 0 ) ? rect->rect().top() : mouseEvent->scenePos().y(),
                            qAbs( dx ), qAbs( dy ) );
-//            rect->setPen(QPen(penColor, 1, penStyle));
             rect->setPen(*itemPen);
         }
 
@@ -122,7 +119,6 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
             curve = addLine(previousPoint.x(), previousPoint.y(),
                             mouseEvent->scenePos().x(), mouseEvent->scenePos().y());
             previousPoint = mouseEvent->scenePos();
-//            curve->setPen(QPen(penColor, 1, penStyle));
             curve->setPen(*itemPen);
         }
     }

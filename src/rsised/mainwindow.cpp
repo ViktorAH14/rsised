@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(penColorButton, &KColorButton::changed, this, &MainWindow::changedItemPen);
     connect(penStyleComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &MainWindow::changedItemPen);
+    connect(penSizeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &MainWindow::changedItemPen);
 }
 
 MainWindow::~MainWindow()
@@ -55,7 +57,6 @@ bool MainWindow::save()
 
     return true;
 }
-
 void MainWindow::drawLine()
 {
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
@@ -94,7 +95,7 @@ void MainWindow::moveItem()
 void MainWindow::changedItemPen()
 {
     QColor currentPenColor = penColorButton->color();
-    qreal currentPenWidth = 1; //Fixme
+    qreal currentPenWidth = qvariant_cast<qreal>(penSizeCombobox->currentText());
     Qt::PenStyle currentPenStyle = qvariant_cast<Qt::PenStyle>(penStyleComboBox->currentData());
     scene->setItemPen(currentPenColor, currentPenWidth, currentPenStyle);
 }
@@ -111,6 +112,14 @@ void MainWindow::createStyleToolBar()
     penStyleComboBox->addItem(QIcon(":images/icons/dashdotdot.svg"), tr("DashDotDot"), "Qt::DashDotDotLine");
     penStyleComboBox->setCurrentIndex(1);
     ui->styleToolBar->addWidget(penStyleComboBox);
+
+    // Pen width
+    penSizeCombobox = new QComboBox(this);
+    for (int i = 0; i < 11; ++i) {
+        penSizeCombobox->insertItem(i, QString().setNum(i), QString(i));
+    }
+    penSizeCombobox->setCurrentIndex(1);
+    ui->styleToolBar->addWidget(penSizeCombobox);
 
     // Pen color
     QFrame *penColorFrame = new QFrame(this);

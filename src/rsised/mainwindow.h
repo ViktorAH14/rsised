@@ -43,6 +43,7 @@ private:
     DiagramScene *scene;
     QActionGroup *simpleDrawModeGroup;
     QComboBox *penStyleComboBox;
+    QComboBox *penSizeCombobox;
     KColorButton *penColorButton;
 
     QString filePath;
