@@ -54,7 +54,7 @@
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>Main toolbar</string>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -68,7 +68,7 @@
   </widget>
   <widget class="QToolBar" name="simpleDrawToolBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>Simple draw</string>
    </property>
    <property name="floatable">
     <bool>true</bool>
@@ -89,10 +89,13 @@
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="styleToolBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>Item style</string>
+   </property>
+   <property name="whatsThis">
+    <string>Item style toolbar</string>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextOnly</enum>
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>

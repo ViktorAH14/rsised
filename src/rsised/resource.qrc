@@ -14,5 +14,13 @@
         <file>images/icons/pen.png</file>
         <file>images/icons/pen_v.png</file>
         <file>images/icons/pen_l.png</file>
+        <file>images/icons/dashline_32.png</file>
+        <file>images/icons/dashline_48.png</file>
+        <file>images/icons/solidline_32.png</file>
+        <file>images/icons/solidline_48.png</file>
+        <file>images/icons/dashdotline_32.png</file>
+        <file>images/icons/dotline_32.svg</file>
+        <file>images/icons/dashdotdot.svg</file>
+        <file>images/icons/nopen.svg</file>
     </qresource>
 </RCC>

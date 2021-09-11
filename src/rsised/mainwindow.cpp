@@ -3,7 +3,6 @@
 
 #include <QtWidgets>
 #include <QSvgGenerator>
-#include <KColorCombo>
 #include <KColorButton>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -11,38 +10,22 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    modeGroup = new QActionGroup(this);
-    modeGroup->addAction(ui->actionDrawLine);
-    modeGroup->addAction(ui->actionMoveItem);
-    modeGroup->addAction(ui->actionDrawRectangle);
-    modeGroup->addAction(ui->actionDrawEllipse);
-    modeGroup->addAction(ui->actionDrawCurve);
-    modeGroup->setExclusive(true);
+// Create toolbars
+    createSimpleDrawToolBar();
+    createStyleToolBar();
 
-    QFrame *colorPenFrame = new QFrame(this);
-    QHBoxLayout *colorPenHBoxLayout = new QHBoxLayout(this);
-    colorPenFrame->setLayout(colorPenHBoxLayout);
-    KColorButton *colorItemPenButton = new KColorButton(this);
-    colorItemPenButton->setColor(Qt::black);
-    colorItemPenButton->setFixedWidth(28);
-    colorItemPenButton->setFixedHeight(17);
-    colorPenHBoxLayout->addWidget(colorItemPenButton);
-    colorPenHBoxLayout->setAlignment(colorItemPenButton, Qt::AlignBottom);
-    QLabel *colorPenLabel = new QLabel(this);
-    colorPenLabel->setScaledContents(true);
-    colorPenLabel->setPixmap(QPixmap(":/images/icons/pen_l.png"));
-    colorPenLabel->setFixedHeight(28);
-    colorPenLabel->setFixedWidth(28);
-    colorPenHBoxLayout->addWidget(colorPenLabel);
-    ui->styleToolBar->addWidget(colorPenFrame);
-
+// Create scene and view
     scene = new DiagramScene(this);
     scene->setSceneRect(0, 0, 1920, 1080);
     scene->setMode(DiagramScene::MoveItem);
+    scene->setItemPen(penColorButton->color(), 1,
+                      qvariant_cast<Qt::PenStyle>(penStyleComboBox->currentData()));
     ui->mainGraphicsView->setScene(scene);
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
 
-    connect(colorItemPenButton, &KColorButton::changed, scene, &DiagramScene::setPenColor);
+    connect(penColorButton, &KColorButton::changed, this, &MainWindow::changedItemPen);
+    connect(penStyleComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &MainWindow::changedItemPen);
 }
 
 MainWindow::~MainWindow()
@@ -53,13 +36,13 @@ MainWindow::~MainWindow()
 bool MainWindow::save()
 {
     QString newPath = QFileDialog::getSaveFileName(this, tr("Save SVG"),
-                                                   path, tr("SVG files (*.svg)"));
+                                                   filePath, tr("SVG files (*.svg)"));
     if (newPath.isEmpty())
         return false;
-    path = newPath;
+    filePath = newPath;
 
     QSvgGenerator generator;
-    generator.setFileName(path);
+    generator.setFileName(filePath);
     generator.setSize(QSize(scene->width(), scene->height()));
     generator.setViewBox(QRect(0, 0, scene->width(), scene->height()));
     generator.setTitle(tr("SVG diagramscene"));
@@ -106,6 +89,59 @@ void MainWindow::moveItem()
     ui->mainGraphicsView->setCursor(Qt::ArrowCursor);
     scene->setMode(DiagramScene::MoveItem);
     scene->setSelectableItems(true);
+}
+
+void MainWindow::changedItemPen()
+{
+    QColor currentPenColor = penColorButton->color();
+    qreal currentPenWidth = 1; //Fixme
+    Qt::PenStyle currentPenStyle = qvariant_cast<Qt::PenStyle>(penStyleComboBox->currentData());
+    scene->setItemPen(currentPenColor, currentPenWidth, currentPenStyle);
+}
+
+void MainWindow::createStyleToolBar()
+{
+    // Pen style
+    penStyleComboBox = new QComboBox(this);
+    penStyleComboBox->addItem(QIcon(":images/icons/nopen.svg"), tr("NoPen"), "Qt::NoPen");
+    penStyleComboBox->addItem(QIcon(":images/icons/solidline_48.png"), tr("Solid"), "Qt::SolidLine");
+    penStyleComboBox->addItem(QIcon(":images/icons/dashline_48.png"), tr("Dash"), "Qt::DashLine");
+    penStyleComboBox->addItem(QIcon(":images/icons/dotline_32.svg"), tr("Dot"), "Qt::DotLine");
+    penStyleComboBox->addItem(QIcon(":images/icons/dashdotline_32.png"), tr("DashDot"), "Qt::DashDotLine");
+    penStyleComboBox->addItem(QIcon(":images/icons/dashdotdot.svg"), tr("DashDotDot"), "Qt::DashDotDotLine");
+    penStyleComboBox->setCurrentIndex(1);
+    ui->styleToolBar->addWidget(penStyleComboBox);
+
+    // Pen color
+    QFrame *penColorFrame = new QFrame(this);
+    QHBoxLayout *penColorHBoxLayout = new QHBoxLayout(this);
+    penColorFrame->setLayout(penColorHBoxLayout);
+    penColorButton = new KColorButton(this);
+    penColorButton->setColor(Qt::black);
+    penColorButton->setFixedWidth(32);
+//    penColorButton->setFixedHeight(28);
+    penColorHBoxLayout->addWidget(penColorButton);
+    penColorHBoxLayout->setAlignment(penColorButton, Qt::AlignBottom);
+    QLabel *penColorLabel = new QLabel(this);
+    penColorLabel->setScaledContents(true);
+    penColorLabel->setPixmap(QPixmap(":/images/icons/pen_l.png"));
+    penColorLabel->setFixedHeight(28);
+    penColorLabel->setFixedWidth(28);
+    penColorHBoxLayout->addWidget(penColorLabel);
+    ui->styleToolBar->addWidget(penColorFrame);
+
+    ui->styleToolBar->addSeparator();
+}
+
+void MainWindow::createSimpleDrawToolBar()
+{
+    simpleDrawModeGroup = new QActionGroup(this);
+    simpleDrawModeGroup->addAction(ui->actionDrawLine);
+    simpleDrawModeGroup->addAction(ui->actionMoveItem);
+    simpleDrawModeGroup->addAction(ui->actionDrawRectangle);
+    simpleDrawModeGroup->addAction(ui->actionDrawEllipse);
+    simpleDrawModeGroup->addAction(ui->actionDrawCurve);
+    simpleDrawModeGroup->setExclusive(true);
 }
 
 void MainWindow::deleteItem()

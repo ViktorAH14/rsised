@@ -21,10 +21,11 @@ public:
 
     explicit DiagramScene(QObject *parent = nullptr);
 
+    void setItemPen(const QColor &color, qreal width, Qt::PenStyle penStyle);
+
 public slots:
     void setMode(Mode mode);
     void setSelectableItems(bool selectable);
-    void setPenColor(const QColor &color);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
@@ -41,9 +42,8 @@ private:
 
     bool leftButton;
     QPointF previousPoint;
-    QColor penColor;
-
-    Mode m_mode;
+    QPen *itemPen;
+    Mode currentMode;
 };
 
 #endif // DIAGRAMSCENE_H
