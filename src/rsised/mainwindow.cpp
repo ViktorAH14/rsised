@@ -115,7 +115,7 @@ void MainWindow::createStyleToolBar()
 
     // Pen width
     penSizeCombobox = new QComboBox(this);
-    for (int i = 0; i < 11; ++i) {
+    for (int i = 0; i < 10; ++i) {
         penSizeCombobox->insertItem(i, QString().setNum(i), QString(i));
     }
     penSizeCombobox->setCurrentIndex(1);
