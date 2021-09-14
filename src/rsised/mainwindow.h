@@ -34,17 +34,21 @@ private slots:
 
 // Style toolbar
     void changedItemPen();
+    void changedItemBrush();
 
 private:
     void createStyleToolBar();
     void createSimpleDrawToolBar();
 
     Ui::MainWindow *ui;
+    QToolBar *styleToolBar;
     DiagramScene *scene;
     QActionGroup *simpleDrawModeGroup;
     QComboBox *penStyleComboBox;
     QComboBox *penSizeCombobox;
     KColorButton *penColorButton;
+    QComboBox *brushStyleComboBox;
+    KColorButton *brushColorButton;
 
     QString filePath;
 };

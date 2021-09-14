@@ -14,13 +14,27 @@
         <file>images/icons/pen.png</file>
         <file>images/icons/pen_v.png</file>
         <file>images/icons/pen_l.png</file>
-        <file>images/icons/dashline_32.png</file>
         <file>images/icons/dashline_48.png</file>
-        <file>images/icons/solidline_32.png</file>
         <file>images/icons/solidline_48.png</file>
         <file>images/icons/dashdotline_32.png</file>
         <file>images/icons/dotline_32.svg</file>
         <file>images/icons/dashdotdot.svg</file>
-        <file>images/icons/nopen.svg</file>
+        <file>images/icons/brush_32.png</file>
+        <file>images/icons/brushpaint_32.png</file>
+        <file>images/icons/bdiagbrush.png</file>
+        <file>images/icons/verticalbrush.png</file>
+        <file>images/icons/horizontalbrush.png</file>
+        <file>images/icons/gridbrush.png</file>
+        <file>images/icons/fdiagbrush.png</file>
+        <file>images/icons/diagcrossbrush.png</file>
+        <file>images/icons/dense_1.png</file>
+        <file>images/icons/dense_2.png</file>
+        <file>images/icons/dense_3.png</file>
+        <file>images/icons/dense_4.png</file>
+        <file>images/icons/dense_5.png</file>
+        <file>images/icons/dense_6.png</file>
+        <file>images/icons/dense_7.png</file>
+        <file>images/icons/nobrush.png</file>
+        <file>images/icons/solidbrush.png</file>
     </qresource>
 </RCC>

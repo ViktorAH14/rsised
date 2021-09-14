@@ -22,6 +22,7 @@ public:
     explicit DiagramScene(QObject *parent = nullptr);
 
     void setItemPen(const QColor &color, qreal width, Qt::PenStyle penStyle);
+    void setItemBrush(const QColor &color, Qt::BrushStyle brushStyle);
 
 public slots:
     void setMode(Mode mode);
@@ -43,6 +44,7 @@ private:
     bool leftButton;
     QPointF previousPoint;
     QPen *itemPen;
+    QBrush *itemBrush;
     Mode currentMode;
 };
 

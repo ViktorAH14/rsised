@@ -18,16 +18,13 @@ MainWindow::MainWindow(QWidget *parent)
     scene = new DiagramScene(this);
     scene->setSceneRect(0, 0, 1920, 1080);
     scene->setMode(DiagramScene::MoveItem);
-    scene->setItemPen(penColorButton->color(), 1,
+    scene->setItemPen(penColorButton->color(),
+                      qvariant_cast<qreal>(penSizeCombobox->currentText()),
                       qvariant_cast<Qt::PenStyle>(penStyleComboBox->currentData()));
+    scene->setItemBrush(brushColorButton->color(),
+                        qvariant_cast<Qt::BrushStyle>(brushStyleComboBox->currentData()));
     ui->mainGraphicsView->setScene(scene);
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
-
-    connect(penColorButton, &KColorButton::changed, this, &MainWindow::changedItemPen);
-    connect(penStyleComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &MainWindow::changedItemPen);
-    connect(penSizeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &MainWindow::changedItemPen);
 }
 
 MainWindow::~MainWindow()
@@ -100,18 +97,26 @@ void MainWindow::changedItemPen()
     scene->setItemPen(currentPenColor, currentPenWidth, currentPenStyle);
 }
 
+void MainWindow::changedItemBrush()
+{
+    QColor currentBrushColor = brushColorButton->color();
+    Qt::BrushStyle currentBrushStyle = qvariant_cast<Qt::BrushStyle>(brushStyleComboBox->currentData());
+    scene->setItemBrush(currentBrushColor, currentBrushStyle);
+}
+
 void MainWindow::createStyleToolBar()
 {
     // Pen style
     penStyleComboBox = new QComboBox(this);
-    penStyleComboBox->addItem(QIcon(":images/icons/nopen.svg"), tr("NoPen"), "Qt::NoPen");
+    penStyleComboBox->addItem(QIcon(":images/icons/nobrush.png"), tr("NoPen"), "Qt::NoPen");
     penStyleComboBox->addItem(QIcon(":images/icons/solidline_48.png"), tr("Solid"), "Qt::SolidLine");
     penStyleComboBox->addItem(QIcon(":images/icons/dashline_48.png"), tr("Dash"), "Qt::DashLine");
     penStyleComboBox->addItem(QIcon(":images/icons/dotline_32.svg"), tr("Dot"), "Qt::DotLine");
     penStyleComboBox->addItem(QIcon(":images/icons/dashdotline_32.png"), tr("DashDot"), "Qt::DashDotLine");
     penStyleComboBox->addItem(QIcon(":images/icons/dashdotdot.svg"), tr("DashDotDot"), "Qt::DashDotDotLine");
     penStyleComboBox->setCurrentIndex(1);
-    ui->styleToolBar->addWidget(penStyleComboBox);
+    connect(penStyleComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &MainWindow::changedItemPen);
 
     // Pen width
     penSizeCombobox = new QComboBox(this);
@@ -119,7 +124,8 @@ void MainWindow::createStyleToolBar()
         penSizeCombobox->insertItem(i, QString().setNum(i), QString(i));
     }
     penSizeCombobox->setCurrentIndex(1);
-    ui->styleToolBar->addWidget(penSizeCombobox);
+    connect(penSizeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &MainWindow::changedItemPen);
 
     // Pen color
     QFrame *penColorFrame = new QFrame(this);
@@ -130,16 +136,58 @@ void MainWindow::createStyleToolBar()
     penColorButton->setFixedWidth(32);
 //    penColorButton->setFixedHeight(28);
     penColorHBoxLayout->addWidget(penColorButton);
-    penColorHBoxLayout->setAlignment(penColorButton, Qt::AlignBottom);
+//    penColorHBoxLayout->setAlignment(penColorButton, Qt::AlignBottom);
     QLabel *penColorLabel = new QLabel(this);
     penColorLabel->setScaledContents(true);
     penColorLabel->setPixmap(QPixmap(":/images/icons/pen_l.png"));
-    penColorLabel->setFixedHeight(28);
-    penColorLabel->setFixedWidth(28);
+    penColorLabel->setFixedSize(28, 28);
     penColorHBoxLayout->addWidget(penColorLabel);
-    ui->styleToolBar->addWidget(penColorFrame);
+    connect(penColorButton, &KColorButton::changed, this, &MainWindow::changedItemPen);
 
-    ui->styleToolBar->addSeparator();
+    // Brush style
+    brushStyleComboBox = new QComboBox(this);
+    brushStyleComboBox->addItem(QIcon(":images/icons/nobrush.png"), tr("No brush"), "Qt::NoBrush");
+    brushStyleComboBox->addItem(QIcon(":images/icons/solidbrush.png"), tr("Solid"), "Qt::SolidPattern");
+    brushStyleComboBox->addItem(QIcon(":images/icons/horizontalbrush.png"), tr("Horizontal"), "Qt::HorPattern");
+    brushStyleComboBox->addItem(QIcon(":images/icons/verticalbrush.png"), tr("Vertical"), "Qt::VerPattern");
+    brushStyleComboBox->addItem(QIcon(":images/icons/gridbrush.png"), tr("Cross"), "Qt::CrossPattern");
+    brushStyleComboBox->addItem(QIcon(":images/icons/bdiagbrush.png"), tr("BDiag"), "Qt::BDiagPattern");
+    brushStyleComboBox->addItem(QIcon(":images/icons/fdiagbrush.png"), tr("FDiag"), "Qt::FDiagPattern");
+    brushStyleComboBox->addItem(QIcon(":images/icons/diagcrossbrush.png"), tr("DiagCross"), "Qt::DiagCrossPattern");
+    brushStyleComboBox->addItem(QIcon(":images/icons/dense_1.png"), tr("Dense 1"), "Qt::Dense1Pattern");
+    brushStyleComboBox->addItem(QIcon(":images/icons/dense_2.png"), tr("Dense 2"), "Qt::Dense2Pattern");
+    brushStyleComboBox->addItem(QIcon(":images/icons/dense_3.png"), tr("Dense 3"), "Qt::Dense3Pattern");
+    brushStyleComboBox->addItem(QIcon(":images/icons/dense_4.png"), tr("Dense 4"), "Qt::Dense4Pattern");
+    brushStyleComboBox->addItem(QIcon(":images/icons/dense_5.png"), tr("Dense 5"), "Qt::Dense5Pattern");
+    brushStyleComboBox->addItem(QIcon(":images/icons/dense_6.png"), tr("Dense 6"), "Qt::Dense6Pattern");
+    brushStyleComboBox->addItem(QIcon(":images/icons/dense_7.png"), tr("Dense 7"), "Qt::Dense7Pattern");
+    brushStyleComboBox->setCurrentIndex(1);
+    connect(brushStyleComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &MainWindow::changedItemBrush);
+
+    // Brush color
+    QFrame *brushColorFrame = new QFrame(this);
+    QHBoxLayout *brushColorHBoxLayout = new QHBoxLayout(this);
+    brushColorFrame->setLayout(brushColorHBoxLayout);
+    brushColorButton = new KColorButton(this);
+    brushColorButton->setColor(Qt::white);
+    brushColorButton->setFixedWidth(32);
+    brushColorHBoxLayout->addWidget(brushColorButton);
+    QLabel *brushColorLabel = new QLabel(this);
+    brushColorLabel->setScaledContents(true);
+    brushColorLabel->setPixmap(QPixmap(":/images/icons/brushpaint_32.png"));
+    brushColorLabel->setFixedSize(28, 28);
+    brushColorHBoxLayout->addWidget(brushColorLabel);
+    connect(brushColorButton, &KColorButton::changed, this, &MainWindow::changedItemBrush);
+
+    // Create item style ToolBar
+    styleToolBar = addToolBar(tr("Item style"));
+    styleToolBar->addWidget(penStyleComboBox);
+    styleToolBar->addWidget(penSizeCombobox);
+    styleToolBar->addWidget(penColorFrame);
+    styleToolBar->addSeparator();
+    styleToolBar->addWidget(brushStyleComboBox);
+    styleToolBar->addWidget(brushColorFrame);
 }
 
 void MainWindow::createSimpleDrawToolBar()
