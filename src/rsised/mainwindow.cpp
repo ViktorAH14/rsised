@@ -141,6 +141,7 @@ void MainWindow::createStyleToolBar()
     penStyleCombo->addItem(QIcon(":images/icons/dashdotline_32.png"), tr("DashDot"), "Qt::DashDotLine");
     penStyleCombo->addItem(QIcon(":images/icons/dashdotdot.svg"), tr("DashDotDot"), "Qt::DashDotDotLine");
     penStyleCombo->setCurrentIndex(1);
+    penStyleCombo->setToolTip(tr("Changing the pen style"));
     connect(penStyleCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &MainWindow::changedItemPen);
 
@@ -150,6 +151,7 @@ void MainWindow::createStyleToolBar()
         penSizeCombo->insertItem(i, QString().setNum(i), QString(i));
     }
     penSizeCombo->setCurrentIndex(1);
+    penSizeCombo->setToolTip(tr("Changing the pen thickness"));
     connect(penSizeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &MainWindow::changedItemPen);
 
@@ -160,6 +162,7 @@ void MainWindow::createStyleToolBar()
     penColorButton = new KColorButton(this);
     penColorButton->setColor(Qt::black);
     penColorButton->setFixedWidth(32);
+    penColorButton->setToolTip(tr("Changing the color of the pen"));
     penColorHBoxLayout->addWidget(penColorButton);
     QLabel *penColorLabel = new QLabel(this);
     penColorLabel->setScaledContents(true);
@@ -186,6 +189,7 @@ void MainWindow::createStyleToolBar()
     brushStyleCombo->addItem(QIcon(":images/icons/dense_6.png"), tr("Dense 6"), "Qt::Dense6Pattern");
     brushStyleCombo->addItem(QIcon(":images/icons/dense_7.png"), tr("Dense 7"), "Qt::Dense7Pattern");
     brushStyleCombo->setCurrentIndex(1);
+    brushStyleCombo->setToolTip(tr("Changing the fill style"));
     connect(brushStyleCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &MainWindow::changedItemBrush);
 
@@ -196,6 +200,7 @@ void MainWindow::createStyleToolBar()
     brushColorButton = new KColorButton(this);
     brushColorButton->setColor(Qt::white);
     brushColorButton->setFixedWidth(32);
+    brushColorButton->setToolTip(tr("Changing the fill color"));
     brushColorHBoxLayout->addWidget(brushColorButton);
     QLabel *brushColorLabel = new QLabel(this);
     brushColorLabel->setScaledContents(true);
@@ -234,6 +239,7 @@ void MainWindow::createSceneScaleToolBar()
     sceneScaleCombo->addItems(scales);
     sceneScaleCombo->setCurrentIndex(3);
     sceneScaleCombo->setEditable(true);
+    sceneScaleCombo->setToolTip("Changing the scene scale");
     connect(sceneScaleCombo, &QComboBox::currentTextChanged,
             this, &MainWindow::sceneScaleChanged);
 

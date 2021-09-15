@@ -117,7 +117,7 @@
     <string>Exit</string>
    </property>
    <property name="toolTip">
-    <string>Exit </string>
+    <string>Exit the program</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
@@ -150,7 +150,7 @@
     <string>Line</string>
    </property>
    <property name="toolTip">
-    <string>Draw line</string>
+    <string>Draw a line</string>
    </property>
    <property name="shortcut">
     <string>Alt+L</string>
@@ -170,6 +170,9 @@
    <property name="text">
     <string>MoveItem</string>
    </property>
+   <property name="toolTip">
+    <string>Selecting an element on the stage</string>
+   </property>
   </action>
   <action name="actionDrawRectangle">
    <property name="checkable">
@@ -181,6 +184,9 @@
    </property>
    <property name="text">
     <string>Rectangle</string>
+   </property>
+   <property name="toolTip">
+    <string>Draw a rectangle</string>
    </property>
    <property name="shortcut">
     <string>Alt+R</string>
@@ -197,6 +203,9 @@
    <property name="text">
     <string>Ellipse</string>
    </property>
+   <property name="toolTip">
+    <string>Draw a ellipse</string>
+   </property>
    <property name="shortcut">
     <string>Alt+E</string>
    </property>
@@ -212,13 +221,16 @@
    <property name="text">
     <string>Curve</string>
    </property>
+   <property name="toolTip">
+    <string>Draw a curved line</string>
+   </property>
   </action>
   <action name="actionDeleteItems">
    <property name="text">
     <string>Delete</string>
    </property>
    <property name="toolTip">
-    <string>Delete items</string>
+    <string>Remove elements from the scene</string>
    </property>
    <property name="shortcut">
     <string>Del</string>
