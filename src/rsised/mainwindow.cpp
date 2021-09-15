@@ -10,19 +10,23 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    createActions();
+    createMenu();
+
 // Create toolbars
     createSimpleDrawToolBar();
     createStyleToolBar();
+    createSceneScaleToolBar();
 
 // Create scene and view
     scene = new DiagramScene(this);
     scene->setSceneRect(0, 0, 1920, 1080);
     scene->setMode(DiagramScene::MoveItem);
     scene->setItemPen(penColorButton->color(),
-                      qvariant_cast<qreal>(penSizeCombobox->currentText()),
-                      qvariant_cast<Qt::PenStyle>(penStyleComboBox->currentData()));
+                      qvariant_cast<qreal>(penSizeCombo->currentText()),
+                      qvariant_cast<Qt::PenStyle>(penStyleCombo->currentData()));
     scene->setItemBrush(brushColorButton->color(),
-                        qvariant_cast<Qt::BrushStyle>(brushStyleComboBox->currentData()));
+                        qvariant_cast<Qt::BrushStyle>(brushStyleCombo->currentData()));
     ui->mainGraphicsView->setScene(scene);
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
 }
@@ -92,51 +96,71 @@ void MainWindow::moveItem()
 void MainWindow::changedItemPen()
 {
     QColor currentPenColor = penColorButton->color();
-    qreal currentPenWidth = qvariant_cast<qreal>(penSizeCombobox->currentText());
-    Qt::PenStyle currentPenStyle = qvariant_cast<Qt::PenStyle>(penStyleComboBox->currentData());
+    qreal currentPenWidth = qvariant_cast<qreal>(penSizeCombo->currentText());
+    Qt::PenStyle currentPenStyle = qvariant_cast<Qt::PenStyle>(penStyleCombo->currentData());
     scene->setItemPen(currentPenColor, currentPenWidth, currentPenStyle);
 }
 
 void MainWindow::changedItemBrush()
 {
     QColor currentBrushColor = brushColorButton->color();
-    Qt::BrushStyle currentBrushStyle = qvariant_cast<Qt::BrushStyle>(brushStyleComboBox->currentData());
+    Qt::BrushStyle currentBrushStyle = qvariant_cast<Qt::BrushStyle>
+            (brushStyleCombo->currentData());
     scene->setItemBrush(currentBrushColor, currentBrushStyle);
+}
+
+void MainWindow::createActions()
+{
+    sceneScaleMinAction = new QAction(QIcon(":images/icons/zoomminus.png"),
+                                      tr("Zoom out"), this);
+    sceneScaleMinAction->setShortcut(tr("Ctrl+-"));
+    sceneScaleMinAction->setToolTip(tr("Zoom out the scene by 10%"));
+    connect(sceneScaleMinAction, &QAction::triggered, this, &MainWindow::sceneZoomInOut);
+
+    sceneScaleMaxAction = new QAction(QIcon(":images/icons/zoomplus.png"),
+                                      tr("Zoom in"), this);
+    sceneScaleMaxAction->setShortcut(tr("Ctrl++"));
+    sceneScaleMaxAction->setToolTip(tr("Zoom in on the scene by 10%"));
+    connect(sceneScaleMaxAction, &QAction::triggered, this, &MainWindow::sceneZoomInOut);
+}
+
+void MainWindow::createMenu()
+{
+    ui->menuView->addAction(sceneScaleMinAction);
+    ui->menuView->addAction(sceneScaleMaxAction);
 }
 
 void MainWindow::createStyleToolBar()
 {
     // Pen style
-    penStyleComboBox = new QComboBox(this);
-    penStyleComboBox->addItem(QIcon(":images/icons/nobrush.png"), tr("NoPen"), "Qt::NoPen");
-    penStyleComboBox->addItem(QIcon(":images/icons/solidline_48.png"), tr("Solid"), "Qt::SolidLine");
-    penStyleComboBox->addItem(QIcon(":images/icons/dashline_48.png"), tr("Dash"), "Qt::DashLine");
-    penStyleComboBox->addItem(QIcon(":images/icons/dotline_32.svg"), tr("Dot"), "Qt::DotLine");
-    penStyleComboBox->addItem(QIcon(":images/icons/dashdotline_32.png"), tr("DashDot"), "Qt::DashDotLine");
-    penStyleComboBox->addItem(QIcon(":images/icons/dashdotdot.svg"), tr("DashDotDot"), "Qt::DashDotDotLine");
-    penStyleComboBox->setCurrentIndex(1);
-    connect(penStyleComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+    penStyleCombo = new QComboBox(this);
+    penStyleCombo->addItem(QIcon(":images/icons/nobrush.png"), tr("NoPen"), "Qt::NoPen");
+    penStyleCombo->addItem(QIcon(":images/icons/solidline_48.png"), tr("Solid"), "Qt::SolidLine");
+    penStyleCombo->addItem(QIcon(":images/icons/dashline_48.png"), tr("Dash"), "Qt::DashLine");
+    penStyleCombo->addItem(QIcon(":images/icons/dotline_32.svg"), tr("Dot"), "Qt::DotLine");
+    penStyleCombo->addItem(QIcon(":images/icons/dashdotline_32.png"), tr("DashDot"), "Qt::DashDotLine");
+    penStyleCombo->addItem(QIcon(":images/icons/dashdotdot.svg"), tr("DashDotDot"), "Qt::DashDotDotLine");
+    penStyleCombo->setCurrentIndex(1);
+    connect(penStyleCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &MainWindow::changedItemPen);
 
     // Pen width
-    penSizeCombobox = new QComboBox(this);
+    penSizeCombo = new QComboBox(this);
     for (int i = 0; i < 10; ++i) {
-        penSizeCombobox->insertItem(i, QString().setNum(i), QString(i));
+        penSizeCombo->insertItem(i, QString().setNum(i), QString(i));
     }
-    penSizeCombobox->setCurrentIndex(1);
-    connect(penSizeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+    penSizeCombo->setCurrentIndex(1);
+    connect(penSizeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &MainWindow::changedItemPen);
 
     // Pen color
     QFrame *penColorFrame = new QFrame(this);
-    QHBoxLayout *penColorHBoxLayout = new QHBoxLayout(this);
+    QHBoxLayout *penColorHBoxLayout = new QHBoxLayout;
     penColorFrame->setLayout(penColorHBoxLayout);
     penColorButton = new KColorButton(this);
     penColorButton->setColor(Qt::black);
     penColorButton->setFixedWidth(32);
-//    penColorButton->setFixedHeight(28);
     penColorHBoxLayout->addWidget(penColorButton);
-//    penColorHBoxLayout->setAlignment(penColorButton, Qt::AlignBottom);
     QLabel *penColorLabel = new QLabel(this);
     penColorLabel->setScaledContents(true);
     penColorLabel->setPixmap(QPixmap(":/images/icons/pen_l.png"));
@@ -145,24 +169,24 @@ void MainWindow::createStyleToolBar()
     connect(penColorButton, &KColorButton::changed, this, &MainWindow::changedItemPen);
 
     // Brush style
-    brushStyleComboBox = new QComboBox(this);
-    brushStyleComboBox->addItem(QIcon(":images/icons/nobrush.png"), tr("No brush"), "Qt::NoBrush");
-    brushStyleComboBox->addItem(QIcon(":images/icons/solidbrush.png"), tr("Solid"), "Qt::SolidPattern");
-    brushStyleComboBox->addItem(QIcon(":images/icons/horizontalbrush.png"), tr("Horizontal"), "Qt::HorPattern");
-    brushStyleComboBox->addItem(QIcon(":images/icons/verticalbrush.png"), tr("Vertical"), "Qt::VerPattern");
-    brushStyleComboBox->addItem(QIcon(":images/icons/gridbrush.png"), tr("Cross"), "Qt::CrossPattern");
-    brushStyleComboBox->addItem(QIcon(":images/icons/bdiagbrush.png"), tr("BDiag"), "Qt::BDiagPattern");
-    brushStyleComboBox->addItem(QIcon(":images/icons/fdiagbrush.png"), tr("FDiag"), "Qt::FDiagPattern");
-    brushStyleComboBox->addItem(QIcon(":images/icons/diagcrossbrush.png"), tr("DiagCross"), "Qt::DiagCrossPattern");
-    brushStyleComboBox->addItem(QIcon(":images/icons/dense_1.png"), tr("Dense 1"), "Qt::Dense1Pattern");
-    brushStyleComboBox->addItem(QIcon(":images/icons/dense_2.png"), tr("Dense 2"), "Qt::Dense2Pattern");
-    brushStyleComboBox->addItem(QIcon(":images/icons/dense_3.png"), tr("Dense 3"), "Qt::Dense3Pattern");
-    brushStyleComboBox->addItem(QIcon(":images/icons/dense_4.png"), tr("Dense 4"), "Qt::Dense4Pattern");
-    brushStyleComboBox->addItem(QIcon(":images/icons/dense_5.png"), tr("Dense 5"), "Qt::Dense5Pattern");
-    brushStyleComboBox->addItem(QIcon(":images/icons/dense_6.png"), tr("Dense 6"), "Qt::Dense6Pattern");
-    brushStyleComboBox->addItem(QIcon(":images/icons/dense_7.png"), tr("Dense 7"), "Qt::Dense7Pattern");
-    brushStyleComboBox->setCurrentIndex(1);
-    connect(brushStyleComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+    brushStyleCombo = new QComboBox(this);
+    brushStyleCombo->addItem(QIcon(":images/icons/nobrush.png"), tr("No brush"), "Qt::NoBrush");
+    brushStyleCombo->addItem(QIcon(":images/icons/solidbrush.png"), tr("Solid"), "Qt::SolidPattern");
+    brushStyleCombo->addItem(QIcon(":images/icons/horizontalbrush.png"), tr("Horizontal"), "Qt::HorPattern");
+    brushStyleCombo->addItem(QIcon(":images/icons/verticalbrush.png"), tr("Vertical"), "Qt::VerPattern");
+    brushStyleCombo->addItem(QIcon(":images/icons/gridbrush.png"), tr("Cross"), "Qt::CrossPattern");
+    brushStyleCombo->addItem(QIcon(":images/icons/bdiagbrush.png"), tr("BDiag"), "Qt::BDiagPattern");
+    brushStyleCombo->addItem(QIcon(":images/icons/fdiagbrush.png"), tr("FDiag"), "Qt::FDiagPattern");
+    brushStyleCombo->addItem(QIcon(":images/icons/diagcrossbrush.png"), tr("DiagCross"), "Qt::DiagCrossPattern");
+    brushStyleCombo->addItem(QIcon(":images/icons/dense_1.png"), tr("Dense 1"), "Qt::Dense1Pattern");
+    brushStyleCombo->addItem(QIcon(":images/icons/dense_2.png"), tr("Dense 2"), "Qt::Dense2Pattern");
+    brushStyleCombo->addItem(QIcon(":images/icons/dense_3.png"), tr("Dense 3"), "Qt::Dense3Pattern");
+    brushStyleCombo->addItem(QIcon(":images/icons/dense_4.png"), tr("Dense 4"), "Qt::Dense4Pattern");
+    brushStyleCombo->addItem(QIcon(":images/icons/dense_5.png"), tr("Dense 5"), "Qt::Dense5Pattern");
+    brushStyleCombo->addItem(QIcon(":images/icons/dense_6.png"), tr("Dense 6"), "Qt::Dense6Pattern");
+    brushStyleCombo->addItem(QIcon(":images/icons/dense_7.png"), tr("Dense 7"), "Qt::Dense7Pattern");
+    brushStyleCombo->setCurrentIndex(1);
+    connect(brushStyleCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &MainWindow::changedItemBrush);
 
     // Brush color
@@ -182,23 +206,41 @@ void MainWindow::createStyleToolBar()
 
     // Create item style ToolBar
     styleToolBar = addToolBar(tr("Item style"));
-    styleToolBar->addWidget(penStyleComboBox);
-    styleToolBar->addWidget(penSizeCombobox);
+    styleToolBar->addWidget(penStyleCombo);
+    styleToolBar->addWidget(penSizeCombo);
     styleToolBar->addWidget(penColorFrame);
     styleToolBar->addSeparator();
-    styleToolBar->addWidget(brushStyleComboBox);
+    styleToolBar->addWidget(brushStyleCombo);
     styleToolBar->addWidget(brushColorFrame);
 }
 
 void MainWindow::createSimpleDrawToolBar()
 {
-    simpleDrawModeGroup = new QActionGroup(this);
-    simpleDrawModeGroup->addAction(ui->actionDrawLine);
-    simpleDrawModeGroup->addAction(ui->actionMoveItem);
-    simpleDrawModeGroup->addAction(ui->actionDrawRectangle);
-    simpleDrawModeGroup->addAction(ui->actionDrawEllipse);
-    simpleDrawModeGroup->addAction(ui->actionDrawCurve);
-    simpleDrawModeGroup->setExclusive(true);
+    simpleDrawModeActionGr = new QActionGroup(this);
+    simpleDrawModeActionGr->addAction(ui->actionDrawLine);
+    simpleDrawModeActionGr->addAction(ui->actionMoveItem);
+    simpleDrawModeActionGr->addAction(ui->actionDrawRectangle);
+    simpleDrawModeActionGr->addAction(ui->actionDrawEllipse);
+    simpleDrawModeActionGr->addAction(ui->actionDrawCurve);
+    simpleDrawModeActionGr->setExclusive(true);
+}
+
+void MainWindow::createSceneScaleToolBar()
+{
+    sceneScaleCombo = new QComboBox(this);
+    QStringList scales;
+    scales << tr("25%") << tr("50%") << tr("75%") << tr("100%") << tr("125%")
+           << tr("150%") << tr("200%") << tr("300%") << tr("500%");
+    sceneScaleCombo->addItems(scales);
+    sceneScaleCombo->setCurrentIndex(3);
+    sceneScaleCombo->setEditable(true);
+    connect(sceneScaleCombo, &QComboBox::currentTextChanged,
+            this, &MainWindow::sceneScaleChanged);
+
+    sceneScaleToolBar = addToolBar(tr("Scene scale"));
+    sceneScaleToolBar->addAction(sceneScaleMinAction);
+    sceneScaleToolBar->addAction(sceneScaleMaxAction);
+    sceneScaleToolBar->addWidget(sceneScaleCombo);
 }
 
 void MainWindow::deleteItem()
@@ -208,4 +250,27 @@ void MainWindow::deleteItem()
         scene->removeItem(item);
         delete item;
     }
+}
+
+void MainWindow::sceneZoomInOut()
+{
+    double oldScale = sceneScaleCombo->currentText().leftRef
+            (sceneScaleCombo->currentText().indexOf(tr("%"))).toDouble();
+    if (sender() == sceneScaleMinAction) {
+        oldScale = oldScale - 10;
+    } else if (sender() == sceneScaleMaxAction) {
+        oldScale = oldScale + 10;
+    }
+    QString newScale = QString().setNum(oldScale) + tr("%");
+    sceneScaleCombo->setCurrentText(newScale);
+    sceneScaleChanged(newScale);
+}
+
+void MainWindow::sceneScaleChanged(const QString &scale)
+{
+    double newScale = scale.leftRef(scale.indexOf(tr("%"))).toDouble() / 100.0;
+    QTransform oldMatrix = ui->mainGraphicsView->transform();
+    ui->mainGraphicsView->resetTransform();
+    ui->mainGraphicsView->translate(oldMatrix.dx(), oldMatrix.dy());
+    ui->mainGraphicsView->scale(newScale, newScale);
 }

@@ -24,6 +24,8 @@ public:
 private slots:
     bool save();
     void deleteItem();
+    void sceneZoomInOut();
+    void sceneScaleChanged(const QString &scale);
 
 // Simple draw
     void drawLine();
@@ -37,19 +39,29 @@ private slots:
     void changedItemBrush();
 
 private:
+    void createActions();
+    void createMenu();
     void createStyleToolBar();
     void createSimpleDrawToolBar();
+    void createSceneScaleToolBar();
 
     Ui::MainWindow *ui;
-    QToolBar *styleToolBar;
     DiagramScene *scene;
-    QActionGroup *simpleDrawModeGroup;
-    QComboBox *penStyleComboBox;
-    QComboBox *penSizeCombobox;
-    KColorButton *penColorButton;
-    QComboBox *brushStyleComboBox;
-    KColorButton *brushColorButton;
-
     QString filePath;
+
+    QToolBar *styleToolBar;
+    QToolBar *sceneScaleToolBar;
+
+    QAction *sceneScaleMinAction;
+    QAction *sceneScaleMaxAction;
+    QActionGroup *simpleDrawModeActionGr;
+
+    QComboBox *penStyleCombo;
+    QComboBox *penSizeCombo;
+    QComboBox *brushStyleCombo;
+    QComboBox *sceneScaleCombo;
+
+    KColorButton *penColorButton;
+    KColorButton *brushColorButton;
 };
 #endif // MAINWINDOW_H
