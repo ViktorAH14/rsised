@@ -10,8 +10,7 @@
 static const double PI = 3.14159265358979323846264338327950288419717;
 static double TWO_PI = 2.0 * PI;
 
-static qreal normalizeAngle(qreal angle)
-{
+static qreal normalizeAngle(qreal angle) {
     while (angle < 0) {
         angle += TWO_PI;
     }
@@ -43,7 +42,8 @@ Rectangle::~Rectangle()
 
 void Rectangle::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    m_actionType = (m_actionType == ActionType::Resize) ? ActionType::Rotation : ActionType::Resize;
+    m_actionType = (m_actionType == ActionType::Resize) ? ActionType::Rotation
+                                                        : ActionType::Resize;
 
     QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
 }

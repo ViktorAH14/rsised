@@ -252,7 +252,7 @@ void MainWindow::createSceneScaleToolBar()
 void MainWindow::deleteItem()
 {
     QList<QGraphicsItem *> selectedItems = scene->selectedItems();
-    for (QGraphicsItem *item:qAsConst(selectedItems)) {
+    for (QGraphicsItem *item : qAsConst(selectedItems)) {
         scene->removeItem(item);
         delete item;
     }

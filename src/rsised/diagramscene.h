@@ -5,6 +5,7 @@
 #include <QObject>
 
 class Rectangle;
+class Ellipse;
 
 QT_BEGIN_NAMESPACE
 class QGraphicsLineItem;
@@ -25,7 +26,7 @@ public:
     void setItemBrush(const QColor &color, Qt::BrushStyle brushStyle);
 
 public slots:
-    void setMode(Mode mode);
+    void setMode(DiagramScene::Mode mode);
     void setSelectableItems(bool selectable);
 
 protected:
@@ -38,13 +39,13 @@ private:
 
     Rectangle *rect;
     QGraphicsLineItem *line;
-    QGraphicsEllipseItem *ellipse;
+    Ellipse *ellipse;
     QGraphicsLineItem *curve;
 
-    bool leftButton;
+    bool leftButtonPressed;
     QPointF previousPoint;
-    QPen *itemPen;
-    QBrush *itemBrush;
+    QPen itemPen;
+    QBrush itemBrush;
     Mode currentMode;
 };
 
