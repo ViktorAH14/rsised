@@ -12,14 +12,20 @@ CONFIG += c++11
 
 SOURCES += \
     diagramscene.cpp \
+    ellipse.cpp \
+    ellipseresizer.cpp \
     main.cpp \
     mainwindow.cpp \
-    rectangle.cpp
+    rectangle.cpp \
+    sizegripitem.cpp
 
 HEADERS += \
     diagramscene.h \
+    ellipse.h \
+    ellipseresizer.h \
     mainwindow.h \
-    rectangle.h
+    rectangle.h \
+    sizegripitem.h
 
 FORMS += \
     mainwindow.ui

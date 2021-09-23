@@ -5,6 +5,7 @@
 #include <QObject>
 
 class Rectangle;
+class Ellipse;
 
 QT_BEGIN_NAMESPACE
 class QGraphicsLineItem;
@@ -38,10 +39,10 @@ private:
 
     Rectangle *rect;
     QGraphicsLineItem *line;
-    QGraphicsEllipseItem *ellipse;
+    Ellipse *ellipse;
     QGraphicsLineItem *curve;
 
-    bool leftButton;
+    bool leftButtonPressed;
     QPointF previousPoint;
     QPen *itemPen;
     QBrush *itemBrush;

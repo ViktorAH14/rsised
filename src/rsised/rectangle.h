@@ -4,7 +4,7 @@
 #include <QGraphicsRectItem>
 
 QT_BEGIN_NAMESPACE
-class QGraphicsSceneMouseEvent;
+//class QGraphicsSceneMouseEvent;
 class QGraphicsSceneHoverEvent;
 QT_END_NAMESPACE
 
