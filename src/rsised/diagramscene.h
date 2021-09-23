@@ -26,7 +26,7 @@ public:
     void setItemBrush(const QColor &color, Qt::BrushStyle brushStyle);
 
 public slots:
-    void setMode(Mode mode);
+    void setMode(DiagramScene::Mode mode);
     void setSelectableItems(bool selectable);
 
 protected:
@@ -44,8 +44,8 @@ private:
 
     bool leftButtonPressed;
     QPointF previousPoint;
-    QPen *itemPen;
-    QBrush *itemBrush;
+    QPen itemPen;
+    QBrush itemBrush;
     Mode currentMode;
 };
 

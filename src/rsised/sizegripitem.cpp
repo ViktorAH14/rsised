@@ -190,6 +190,8 @@ SizeGripItem::SizeGripItem(Resizer *resizer, QGraphicsItem *parent)
         parentItemRect = parentItem()->boundingRect();
     }
 
+    setActionType(Resize);
+
     handleItemList.append(new HandleItem(TopLeft, this));
     handleItemList.append(new HandleItem(Top, this));
     handleItemList.append(new HandleItem(TopRight, this));

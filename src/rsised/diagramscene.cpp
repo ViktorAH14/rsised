@@ -10,8 +10,6 @@ DiagramScene::DiagramScene(QObject *parent)
       leftButtonPressed {false},
       currentMode {MoveItem}
 {
-    itemPen = new QPen();
-    itemBrush = new QBrush();
 }
 
 void DiagramScene::setMode(Mode mode)
@@ -35,21 +33,21 @@ void DiagramScene::setSelectableItems(bool selectable)
 
 void DiagramScene::setItemPen(const QColor &color, qreal width, Qt::PenStyle penStyle)
 {
-    itemPen->setColor(color);
-    itemPen->setWidth(width);
-    itemPen->setStyle(penStyle);
+    itemPen.setColor(color);
+    itemPen.setWidth(width);
+    itemPen.setStyle(penStyle);
 
     if (!selectedItems().isEmpty()){
         QList<QGraphicsItem *> selectedItems = this->selectedItems();
         for (QGraphicsItem *item : qAsConst(selectedItems)) {
             if (QGraphicsLineItem *lineItem = qgraphicsitem_cast<QGraphicsLineItem *>(item)) {
-                lineItem->setPen(*itemPen);
+                lineItem->setPen(itemPen);
             }
             if (Rectangle *rectItem = qgraphicsitem_cast<Rectangle *>(item)) {
-                rectItem->setPen(*itemPen);
+                rectItem->setPen(itemPen);
             }
             if (Ellipse *ellipseItem = qgraphicsitem_cast<Ellipse *>(item)) {
-                ellipseItem->setPen(*itemPen);
+                ellipseItem->setPen(itemPen);
             }
         }
     }
@@ -57,17 +55,17 @@ void DiagramScene::setItemPen(const QColor &color, qreal width, Qt::PenStyle pen
 
 void DiagramScene::setItemBrush(const QColor &color, Qt::BrushStyle brushStyle)
 {
-    itemBrush->setColor(color);
-    itemBrush->setStyle(brushStyle);
+    itemBrush.setColor(color);
+    itemBrush.setStyle(brushStyle);
 
     if (!selectedItems().isEmpty()){
         QList<QGraphicsItem *> selectedItems = this->selectedItems();
         for (QGraphicsItem *item : qAsConst(selectedItems)) {
             if (Rectangle *rectItem = qgraphicsitem_cast<Rectangle *>(item)) {
-                rectItem->setBrush(*itemBrush);
+                rectItem->setBrush(itemBrush);
             }
             if (Ellipse *ellipseItem = qgraphicsitem_cast<Ellipse *>(item)) {
-                ellipseItem->setBrush(*itemBrush);
+                ellipseItem->setBrush(itemBrush);
             }
         }
     }
@@ -84,7 +82,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     switch (currentMode) {
     case InsertLine:
         line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()));
-        line->setPen(*itemPen);
+        line->setPen(itemPen);
         addItem(line);
         break;
     case InsertRect:
@@ -121,8 +119,8 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
             rect->setRect( ( dx > 0 ) ? rect->rect().left() : mouseEvent->scenePos().x(),
                            ( dy > 0 ) ? rect->rect().top() : mouseEvent->scenePos().y(),
                            qAbs( dx ), qAbs( dy ) );
-            rect->setPen(*itemPen);
-            rect->setBrush(*itemBrush);
+            rect->setPen(itemPen);
+            rect->setBrush(itemBrush);
         }
 
         if ((currentMode == InsertEllipse) && (ellipse != nullptr)) {
@@ -131,15 +129,15 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
             ellipse->setRect( ( dx > 0 ) ? ellipse->rect().left() : mouseEvent->scenePos().x(),
                               ( dy > 0 ) ? ellipse->rect().top() : mouseEvent->scenePos().y(),
                               qAbs( dx ), qAbs( dy ) );
-            ellipse->setPen(*itemPen);
-            ellipse->setBrush(*itemBrush);
+            ellipse->setPen(itemPen);
+            ellipse->setBrush(itemBrush);
         }
 
         if (currentMode == InsertCurve) {
             curve = addLine(previousPoint.x(), previousPoint.y(),
                             mouseEvent->scenePos().x(), mouseEvent->scenePos().y());
             previousPoint = mouseEvent->scenePos();
-            curve->setPen(*itemPen);
+            curve->setPen(itemPen);
         }
     }
 
