@@ -20,7 +20,6 @@ Ellipse::Ellipse(QRectF rect, QGraphicsItem *parent) : QGraphicsEllipseItem(pare
 
 Ellipse::~Ellipse()
 {
-
 }
 
 void Ellipse::hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEvent)
@@ -78,11 +77,10 @@ QVariant Ellipse::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == GraphicsItemChange::ItemSelectedChange && value == true) {
         ellipseSizeGripItem = new SizeGripItem(new EllipseResizer, this);
-        ellipseSizeGripItem->setActionType(SizeGripItem::Resize);
     }
     if (change == GraphicsItemChange::ItemSelectedChange && value == false) {
         delete ellipseSizeGripItem;
     }
 
-    return value;
+    return QGraphicsItem::itemChange(change, value);
 }

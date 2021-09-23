@@ -17,6 +17,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     rectangle.cpp \
+    rectangleresizer.cpp \
     sizegripitem.cpp
 
 HEADERS += \
@@ -25,6 +26,7 @@ HEADERS += \
     ellipseresizer.h \
     mainwindow.h \
     rectangle.h \
+    rectangleresizer.h \
     sizegripitem.h
 
 FORMS += \
