@@ -167,9 +167,9 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
 
-bool DiagramScene::isItemChange(int type) const
-{
-    const QList<QGraphicsItem *> items;
-    const auto cb = [type](const QGraphicsItem *item) {return item->type() == type;};
-    return std::find_if(items.begin(), items.end(), cb) != items.end();
-}
+//bool DiagramScene::isItemChange(int type) const
+//{
+//    const QList<QGraphicsItem *> items;
+//    const auto cb = [type](const QGraphicsItem *item) {return item->type() == type;};
+//    return std::find_if(items.begin(), items.end(), cb) != items.end();
+//}

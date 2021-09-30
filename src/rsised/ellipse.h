@@ -8,7 +8,7 @@ class SizeGripItem;
 class Ellipse : public QGraphicsEllipseItem
 {
 public:
-    enum { Type = UserType + 5 };
+    enum { Type = UserType + 2 };
 
     explicit Ellipse(QGraphicsItem *parent = nullptr);
     explicit Ellipse(QRectF rect, QGraphicsItem *parent = nullptr);

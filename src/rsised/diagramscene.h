@@ -35,7 +35,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
 
 private:
-    bool isItemChange(int type) const;
+//    bool isItemChange(int type) const;
 
     Rectangle *rect;
     QGraphicsLineItem *line;

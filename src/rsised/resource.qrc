@@ -40,5 +40,6 @@
         <file>images/icons/zoom_plus.png</file>
         <file>images/icons/zoomminus.png</file>
         <file>images/icons/zoomplus.png</file>
+        <file>images/icons/car-48.png</file>
     </qresource>
 </RCC>

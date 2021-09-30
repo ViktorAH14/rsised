@@ -1,4 +1,4 @@
-QT       += core gui svg
+QT       += core gui svg xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -18,7 +18,8 @@ SOURCES += \
     mainwindow.cpp \
     rectangle.cpp \
     rectangleresizer.cpp \
-    sizegripitem.cpp
+    sizegripitem.cpp \
+    svg_reader.cpp
 
 HEADERS += \
     diagramscene.h \
@@ -27,7 +28,8 @@ HEADERS += \
     mainwindow.h \
     rectangle.h \
     rectangleresizer.h \
-    sizegripitem.h
+    sizegripitem.h \
+    svg_reader.h
 
 FORMS += \
     mainwindow.ui

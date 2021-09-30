@@ -22,7 +22,8 @@ public:
     ~MainWindow();
 
 private slots:
-    bool save();
+    bool openSVG();
+    bool saveSVG();
     void deleteItem();
     void sceneZoomInOut();
     void sceneScaleChanged(const QString &scale);

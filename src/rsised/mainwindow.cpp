@@ -1,5 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "svg_reader.h"
+#include "rectangle.h"
+#include "ellipse.h"
 
 #include <QtWidgets>
 #include <QSvgGenerator>
@@ -36,7 +39,40 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-bool MainWindow::save()
+bool MainWindow::openSVG()
+{
+    QString newPath = QFileDialog::getOpenFileName(this, tr("Open SVG"),
+                                                   filePath, tr("SVG files (*.svg)"));
+        if (newPath.isEmpty())
+            return false;
+
+        filePath = newPath;
+        setWindowTitle(filePath + " - RSiSed");
+        scene->clear();
+        scene->setSceneRect(SVGreader::getSize(filePath));
+
+        QList<QGraphicsItem *> itemList = SVGreader::getElements(filePath);
+        for (QGraphicsItem *item : qAsConst(itemList)) {
+            if (Rectangle *rectangleItem = dynamic_cast<Rectangle *>(item)) {
+                scene->addItem(rectangleItem);
+            }
+            if (Ellipse *ellipseItem = dynamic_cast<Ellipse *>(item)) {
+                scene->addItem(ellipseItem);
+            }
+            if (QGraphicsLineItem *lineItem = dynamic_cast<QGraphicsLineItem *>(item)) {
+                scene->addItem(lineItem);
+            }
+            if (QGraphicsPathItem *pathItem = dynamic_cast<QGraphicsPathItem *>(item)) {
+                scene->addItem(pathItem);
+            }
+        }
+
+        scene->setSelectableItems(true);
+
+    return true;
+}
+
+bool MainWindow::saveSVG()
 {
     QString newPath = QFileDialog::getSaveFileName(this, tr("Save SVG"),
                                                    filePath, tr("SVG files (*.svg)"));
@@ -48,8 +84,8 @@ bool MainWindow::save()
     generator.setFileName(filePath);
     generator.setSize(QSize(scene->width(), scene->height()));
     generator.setViewBox(QRect(0, 0, scene->width(), scene->height()));
-    generator.setTitle(tr("SVG diagramscene"));
-    generator.setDescription(tr("File created by SVG diagramscene"));
+    generator.setTitle(tr("SVG RSiSed"));
+    generator.setDescription(tr("File created by RSiSed"));
 
     QPainter painter;
     painter.begin(&generator);
