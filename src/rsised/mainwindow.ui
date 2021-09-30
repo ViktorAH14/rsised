@@ -50,9 +50,9 @@
      <addaction name="actionOpenSVG"/>
     </widget>
     <addaction name="menuSave_As"/>
+    <addaction name="menuImport"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
-    <addaction name="menuImport"/>
    </widget>
    <widget class="QMenu" name="menuDraw">
     <property name="title">
