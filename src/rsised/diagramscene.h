@@ -24,10 +24,13 @@ public:
 
     void setItemPen(const QColor &color, qreal width, Qt::PenStyle penStyle);
     void setItemBrush(const QColor &color, Qt::BrushStyle brushStyle);
+    bool isChanged();
+
 
 public slots:
     void setMode(DiagramScene::Mode mode);
     void setSelectableItems(bool selectable);
+    void setSceneChanged(bool changed);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
@@ -35,7 +38,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
 
 private:
-//    bool isItemChange(int type) const;
+    bool isItemChange(int type) const;
 
     Rectangle *rect;
     QGraphicsLineItem *line;
@@ -43,6 +46,7 @@ private:
     QGraphicsLineItem *curve;
 
     bool leftButtonPressed;
+    bool sceneChanged;
     QPointF previousPoint;
     QPen itemPen;
     QBrush itemBrush;

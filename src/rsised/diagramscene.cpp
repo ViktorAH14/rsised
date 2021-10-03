@@ -71,6 +71,21 @@ void DiagramScene::setItemBrush(const QColor &color, Qt::BrushStyle brushStyle)
     }
 }
 
+bool DiagramScene::isChanged()
+{
+    return sceneChanged;
+}
+
+void DiagramScene::setSceneChanged(bool changed)
+{
+    if (changed) {
+        sceneChanged = true;
+        update();
+    } else {
+        sceneChanged = false;
+    }
+}
+
 void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->button() != Qt::LeftButton) {
@@ -163,13 +178,14 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 
     leftButtonPressed = false;
+    setSceneChanged(true);
 
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
 
-//bool DiagramScene::isItemChange(int type) const
-//{
-//    const QList<QGraphicsItem *> items;
-//    const auto cb = [type](const QGraphicsItem *item) {return item->type() == type;};
-//    return std::find_if(items.begin(), items.end(), cb) != items.end();
-//}
+bool DiagramScene::isItemChange(int type) const //NOTE удалить если не нужна?
+{
+    const QList<QGraphicsItem *> items;
+    const auto cb = [type](const QGraphicsItem *item) {return item->type() == type;};
+    return std::find_if(items.begin(), items.end(), cb) != items.end();
+}

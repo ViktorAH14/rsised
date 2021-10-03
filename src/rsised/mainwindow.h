@@ -21,8 +21,14 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
+
 private slots:
-    bool openSVG();
+    bool save();
+    bool saveAs();
+    void openSVG();
     bool saveSVG();
     void deleteItem();
     void sceneZoomInOut();
@@ -46,9 +52,13 @@ private:
     void createSimpleDrawToolBar();
     void createSceneScaleToolBar();
 
+    bool maybeSave();
+    bool saveFile(const QString &fileName);
+    void setCurrentFile(const QString &fileName);
+
     Ui::MainWindow *ui;
     DiagramScene *scene;
-    QString filePath;
+    QString currentFile;
 
     QToolBar *styleToolBar;
     QToolBar *sceneScaleToolBar;

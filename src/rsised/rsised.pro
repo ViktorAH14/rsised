@@ -18,6 +18,7 @@ SOURCES += \
     mainwindow.cpp \
     rectangle.cpp \
     rectangleresizer.cpp \
+    rse_writer.cpp \
     sizegripitem.cpp \
     svg_reader.cpp
 
@@ -28,6 +29,7 @@ HEADERS += \
     mainwindow.h \
     rectangle.h \
     rectangleresizer.h \
+    rse_writer.h \
     sizegripitem.h \
     svg_reader.h
 

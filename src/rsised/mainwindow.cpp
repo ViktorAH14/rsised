@@ -3,13 +3,14 @@
 #include "svg_reader.h"
 #include "rectangle.h"
 #include "ellipse.h"
+#include "rse_writer.h"
 
 #include <QtWidgets>
 #include <QSvgGenerator>
 #include <KColorButton>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow), currentFile("")
 {
     ui->setupUi(this);
 
@@ -32,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent)
                         qvariant_cast<Qt::BrushStyle>(brushStyleCombo->currentData()));
     ui->mainGraphicsView->setScene(scene);
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
+    setCurrentFile(QString());
+    setUnifiedTitleAndToolBarOnMac(true);
 }
 
 MainWindow::~MainWindow()
@@ -39,19 +42,48 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-bool MainWindow::openSVG()
+void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QString newPath = QFileDialog::getOpenFileName(this, tr("Open SVG"),
-                                                   filePath, tr("SVG files (*.svg)"));
-        if (newPath.isEmpty())
-            return false;
+    if (maybeSave()) {
+        event->accept();
+    } else {
+        event->ignore();
+    }
+}
 
-        filePath = newPath;
-        setWindowTitle(filePath + " - RSiSed");
+bool MainWindow::save()
+{
+    if (currentFile.isEmpty()) {
+        return saveAs();
+    } else {
+        return saveFile(currentFile);
+    }
+}
+
+bool MainWindow::saveAs()
+{
+    QFileDialog fileDialog(this, tr("Save"), currentFile, tr("RSiSed files (*.rse)"));
+    fileDialog.setWindowModality(Qt::WindowModal);
+    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    if (fileDialog.exec() != QDialog::Accepted) {
+        return false;
+    }
+    return saveFile(fileDialog.selectedFiles().constFirst());
+}
+
+void MainWindow::openSVG()
+{
+    if (maybeSave()) {
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open SVG"),
+                                                       "", tr("SVG files (*.svg)"));
+        if (fileName.isEmpty()) {
+            return;
+        }
+
         scene->clear();
-        scene->setSceneRect(SVGreader::getSize(filePath));
+        scene->setSceneRect(SVGreader::getSize(fileName));
 
-        QList<QGraphicsItem *> itemList = SVGreader::getElements(filePath);
+        QList<QGraphicsItem *> itemList = SVGreader::getElements(fileName);
         for (QGraphicsItem *item : qAsConst(itemList)) {
             if (Rectangle *rectangleItem = dynamic_cast<Rectangle *>(item)) {
                 scene->addItem(rectangleItem);
@@ -66,22 +98,22 @@ bool MainWindow::openSVG()
                 scene->addItem(pathItem);
             }
         }
-
         scene->setSelectableItems(true);
-
-    return true;
+        setCurrentFile(fileName);
+        return;
+    }
 }
 
 bool MainWindow::saveSVG()
 {
     QString newPath = QFileDialog::getSaveFileName(this, tr("Save SVG"),
-                                                   filePath, tr("SVG files (*.svg)"));
+                                                   currentFile, tr("SVG files (*.svg)"));
     if (newPath.isEmpty())
         return false;
-    filePath = newPath;
+    currentFile = newPath;
 
     QSvgGenerator generator;
-    generator.setFileName(filePath);
+    generator.setFileName(currentFile);
     generator.setSize(QSize(scene->width(), scene->height()));
     generator.setViewBox(QRect(0, 0, scene->width(), scene->height()));
     generator.setTitle(tr("SVG RSiSed"));
@@ -283,6 +315,72 @@ void MainWindow::createSceneScaleToolBar()
     sceneScaleToolBar->addAction(sceneScaleMinAction);
     sceneScaleToolBar->addAction(sceneScaleMaxAction);
     sceneScaleToolBar->addWidget(sceneScaleCombo);
+}
+
+bool MainWindow::maybeSave()
+{
+    if (!scene->isChanged()) {
+        return true;
+    }
+    const QMessageBox::StandardButton ret
+            = QMessageBox::warning(this, tr("RSiSed"),
+                                   tr("The document has been modified.\n"
+                                      "Do you want to save your changes?"),
+                                   QMessageBox::Save | QMessageBox::Discard
+                                   | QMessageBox::Cancel);
+    switch (ret) {
+    case QMessageBox::Save:
+        return save();
+    case QMessageBox::Cancel:
+        return false;
+    default:
+        break;
+    }
+    return true;
+}
+
+bool MainWindow::saveFile(const QString &fileName)
+{
+    QString errorMessage;
+    QGuiApplication::setOverrideCursor(Qt::WaitCursor);
+    QFileInfo fi(fileName);
+    QString suffix = fi.suffix();
+    QSaveFile file(fileName);
+    if (file.open(QFile::WriteOnly) && suffix == "rse") {
+        QList<QGraphicsItem *> itemsList = scene->items();
+        RSEwriter *writer = new RSEwriter();
+        writer->writeRSE(&file, itemsList);
+        if (!file.commit()) {
+            errorMessage = tr("Cannot write file %1:\n%2.")
+                    .arg(QDir::toNativeSeparators(fileName), file.errorString());
+        }
+    } else {
+        errorMessage = tr("Cannot open file %1 for writing:\n%2.")
+                .arg(QDir::toNativeSeparators(fileName), file.errorString());
+    }
+    QGuiApplication::restoreOverrideCursor();
+
+    if (!errorMessage.isEmpty()) {
+        QMessageBox::warning(this, tr("RSiSed"), errorMessage);
+        return false;
+    }
+
+    ui->statusBar->showMessage(tr("File saved"), 2000);
+    setCurrentFile(fileName);
+
+    return true;
+}
+
+void MainWindow::setCurrentFile(const QString &fileName)
+{
+    currentFile = fileName;
+    QString showName = currentFile;
+    if (currentFile.isEmpty()) {
+        showName = "untitled.rse";
+    }
+    setWindowTitle(showName + " - RSiSed");
+    setWindowModified(false); // NOTE для Setting
+    scene->setSceneChanged(false);
 }
 
 void MainWindow::deleteItem()
