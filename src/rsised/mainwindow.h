@@ -35,6 +35,7 @@ private slots:
     void openSVG();
     bool saveSVG();
     void deleteItem();
+    void selectAll();
     void sceneZoomInOut();
     void sceneScaleChanged(const QString &scale);
 

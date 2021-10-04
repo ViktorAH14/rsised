@@ -201,6 +201,7 @@ void MainWindow::drawLine()
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
     scene->setMode(DiagramScene::InsertLine);
     scene->setSelectableItems(false);
+    ui->actionSelect_All->setDisabled(true);
 }
 
 void MainWindow::drawRect()
@@ -208,6 +209,7 @@ void MainWindow::drawRect()
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
     scene->setMode(DiagramScene::InsertRect);
     scene->setSelectableItems(false);
+    ui->actionSelect_All->setDisabled(true);
 }
 
 void MainWindow::drawEllipse()
@@ -215,6 +217,7 @@ void MainWindow::drawEllipse()
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
     scene->setMode(DiagramScene::InsertEllipse);
     scene->setSelectableItems(false);
+    ui->actionSelect_All->setDisabled(true);
 }
 
 void MainWindow::drawCurve()
@@ -222,6 +225,7 @@ void MainWindow::drawCurve()
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
     scene->setMode(DiagramScene::InsertCurve);
     scene->setSelectableItems(false);
+    ui->actionSelect_All->setDisabled(true);
 }
 
 void MainWindow::moveItem()
@@ -229,6 +233,7 @@ void MainWindow::moveItem()
     ui->mainGraphicsView->setCursor(Qt::ArrowCursor);
     scene->setMode(DiagramScene::MoveItem);
     scene->setSelectableItems(true);
+    ui->actionSelect_All->setEnabled(true);
 }
 
 void MainWindow::changedItemPen()
@@ -460,6 +465,14 @@ void MainWindow::deleteItem()
     for (QGraphicsItem *item : qAsConst(selectedItems)) {
         scene->removeItem(item);
         delete item;
+    }
+}
+
+void MainWindow::selectAll()
+{
+    QList<QGraphicsItem *> items = scene->items();
+    for (QGraphicsItem *item : qAsConst(items)) {
+        item->setSelected(true);
     }
 }
 
