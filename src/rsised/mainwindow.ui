@@ -68,7 +68,6 @@
     <addaction name="actionDrawEllipse"/>
     <addaction name="actionDrawCurve"/>
     <addaction name="separator"/>
-    <addaction name="actionDeleteItems"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -80,9 +79,16 @@
      <string>Help</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionDeleteItem"/>
+   </widget>
    <addaction name="menuFail"/>
-   <addaction name="menuDraw"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
+   <addaction name="menuDraw"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -239,9 +245,9 @@
     <string>Draw a curved line</string>
    </property>
   </action>
-  <action name="actionDeleteItems">
+  <action name="actionDeleteItem">
    <property name="text">
-    <string>Delete</string>
+    <string>Delete item</string>
    </property>
    <property name="toolTip">
     <string>Remove elements from the scene</string>
@@ -421,7 +427,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionDeleteItems</sender>
+   <sender>actionDeleteItem</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>deleteItem()</slot>
