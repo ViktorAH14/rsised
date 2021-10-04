@@ -3,13 +3,13 @@
 
 #include <QGraphicsItem>
 
-class SVGreader
+class SvgReader
 {
 public:
-    SVGreader();
+    SvgReader();
 
-    static QRectF getSize(const QString filePath);
-    static QList<QGraphicsItem *> getElements(const QString filePath);
+    QRectF getSize(const QString fileName);
+    QList<QGraphicsItem *> getElements(const QString fileName);
 };
 
 #endif // SVG_READER_H

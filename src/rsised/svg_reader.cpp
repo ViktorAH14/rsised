@@ -6,14 +6,14 @@
 #include <QFile>
 #include <QPen>
 
-SVGreader::SVGreader()
+SvgReader::SvgReader()
 {
 }
 
-QRectF SVGreader::getSize(const QString filePath)
+QRectF SvgReader::getSize(const QString fileName)
 {
     QDomDocument doc;
-    QFile file(filePath);
+    QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly) || !doc.setContent(&file)) {
         return QRectF(0,0,1920,1080);
     }
@@ -32,11 +32,11 @@ QRectF SVGreader::getSize(const QString filePath)
     return QRectF(0,0,1920,1080);
 }
 
-QList<QGraphicsItem *> SVGreader::getElements(const QString filePath)
+QList<QGraphicsItem *> SvgReader::getElements(const QString fileName)
 {
     QList<QGraphicsItem *> itemList;
     QDomDocument doc;
-    QFile file(filePath);
+    QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly) || !doc.setContent(&file)) {
         return itemList;
     }

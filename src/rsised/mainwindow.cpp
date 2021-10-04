@@ -1,9 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "svg_reader.h"
 #include "rectangle.h"
 #include "ellipse.h"
 #include "rse_writer.h"
+#include "rse_reader.h"
+#include "svg_reader.h"
 
 #include <QtWidgets>
 #include <QSvgGenerator>
@@ -42,12 +43,71 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::loadFile(const QString &fileName)
+{
+    QFile file(fileName);
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, tr("RSiSed"), tr("Cannot read file %1:\n%2.")
+                             .arg(QDir::toNativeSeparators(fileName), file.errorString()));
+        return;
+    }
+#ifndef QT_NO_CURSOR
+    QGuiApplication::setOverrideCursor(Qt::WaitCursor);
+#endif
+
+    scene->clear();
+
+    RseReader *rseReader = new RseReader();
+    QRectF sceneRect = rseReader->getSceneRect(&file);
+    scene->setSceneRect(sceneRect);
+    file.close();
+
+    if (!file.open(QFile::ReadOnly)) {
+        QMessageBox::warning(this, tr("RSiSed"), tr("Cannot read file %1:\n%2.")
+                             .arg(QDir::toNativeSeparators(fileName), file.errorString()));
+        return;
+    }
+
+    QList<QGraphicsItem *> itemList = rseReader->getElement(&file);
+    for (QGraphicsItem *item : qAsConst(itemList)) {
+        if (Rectangle *rectangleItem = dynamic_cast<Rectangle *>(item)) {
+            scene->addItem(rectangleItem);
+        }
+        if (Ellipse *ellipseItem = dynamic_cast<Ellipse *>(item)) {
+            scene->addItem(ellipseItem);
+        }
+        if (QGraphicsLineItem *lineItem = dynamic_cast<QGraphicsLineItem *>(item)) {
+            scene->addItem(lineItem);
+        }
+    }
+    file.close();
+
+#ifndef QT_NO_CURSOR
+    QGuiApplication::restoreOverrideCursor();
+#endif
+
+    scene->setSelectableItems(true);
+    setCurrentFile(fileName);
+    ui->statusBar->showMessage(tr("File loaded"), 2000);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (maybeSave()) {
         event->accept();
     } else {
         event->ignore();
+    }
+}
+
+void MainWindow::open()
+{
+    if (maybeSave()) {
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open")
+                                                        , currentFile, tr("RSE files (*.rse)"));
+        if (!fileName.isEmpty()) {
+            loadFile(fileName);
+        }
     }
 }
 
@@ -74,16 +134,17 @@ bool MainWindow::saveAs()
 void MainWindow::openSVG()
 {
     if (maybeSave()) {
-        QString fileName = QFileDialog::getOpenFileName(this, tr("Open SVG"),
-                                                       "", tr("SVG files (*.svg)"));
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open SVG")
+                                                        , "", tr("SVG files (*.svg)"));
         if (fileName.isEmpty()) {
             return;
         }
 
         scene->clear();
-        scene->setSceneRect(SVGreader::getSize(fileName));
+        SvgReader *svgReader = new SvgReader();
+        scene->setSceneRect(svgReader->getSize(fileName));
 
-        QList<QGraphicsItem *> itemList = SVGreader::getElements(fileName);
+        QList<QGraphicsItem *> itemList = svgReader->getElements(fileName);
         for (QGraphicsItem *item : qAsConst(itemList)) {
             if (Rectangle *rectangleItem = dynamic_cast<Rectangle *>(item)) {
                 scene->addItem(rectangleItem);
@@ -126,6 +187,7 @@ bool MainWindow::saveSVG()
 
     return true;
 }
+
 void MainWindow::drawLine()
 {
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
@@ -348,8 +410,9 @@ bool MainWindow::saveFile(const QString &fileName)
     QSaveFile file(fileName);
     if (file.open(QFile::WriteOnly) && suffix == "rse") {
         QList<QGraphicsItem *> itemsList = scene->items();
-        RSEwriter *writer = new RSEwriter();
-        writer->writeRSE(&file, itemsList);
+        QRectF sceneRect = scene->sceneRect();
+        RseWriter *writer = new RseWriter();
+        writer->writeRse(&file, itemsList, sceneRect);
         if (!file.commit()) {
             errorMessage = tr("Cannot write file %1:\n%2.")
                     .arg(QDir::toNativeSeparators(fileName), file.errorString());

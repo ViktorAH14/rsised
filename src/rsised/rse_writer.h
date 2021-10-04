@@ -3,12 +3,12 @@
 
 #include <QGraphicsItem>
 
-class RSEwriter
+class RseWriter
 {
 public:
-    RSEwriter();
+    RseWriter();
 
-    void writeRSE(QIODevice *file, const QList<QGraphicsItem *> items);
+    void writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QRectF sceneRect);
 };
 
 #endif // RSEWRITER_H

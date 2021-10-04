@@ -49,8 +49,10 @@
      </property>
      <addaction name="actionOpenSVG"/>
     </widget>
+    <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_As"/>
+    <addaction name="separator"/>
     <addaction name="menuSave_As"/>
     <addaction name="menuImport"/>
     <addaction name="separator"/>
@@ -92,6 +94,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
    <addaction name="actionExit"/>
   </widget>
@@ -266,6 +269,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/openfolder.png</normaloff>:/images/icons/openfolder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+   <property name="toolTip">
+    <string>Open File</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
  </widget>
@@ -449,6 +467,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionOpen</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>open()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>589</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>drawLine()</slot>
@@ -461,5 +495,6 @@
   <slot>saveSVG()</slot>
   <slot>saveAs()</slot>
   <slot>save()</slot>
+  <slot>open()</slot>
  </slots>
 </ui>
