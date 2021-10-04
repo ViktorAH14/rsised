@@ -100,6 +100,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
+void MainWindow::newFile()
+{
+    if (maybeSave()) {
+        scene->clear();
+        setCurrentFile(QString());
+    }
+}
+
 void MainWindow::open()
 {
     if (maybeSave()) {
