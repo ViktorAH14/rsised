@@ -48,8 +48,6 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString fileName)
         QDomElement elementRect = gNode.firstChildElement("rect");
         if (!elementRect.isNull()){
             Rectangle *rectangle = new Rectangle(itemMenu);
-            rectangle->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
-            rectangle->setAcceptHoverEvents(true);
             rectangle->setRect(elementRect.attribute("x").toInt(),
                                elementRect.attribute("y").toInt(),
                                elementRect.attribute("width").toInt(),
@@ -71,9 +69,6 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString fileName)
         QDomElement elementEllipse = gNode.firstChildElement("ellipse");
         if (!elementEllipse.isNull()) {
             Ellipse *ellipse = new Ellipse(itemMenu);
-            ellipse->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
-            ellipse->setAcceptHoverEvents(true);
-
             qreal cx = elementEllipse.attribute("cx").toFloat();
             qreal cy = elementEllipse.attribute("cy").toFloat();
             qreal rx = elementEllipse.attribute("rx").toFloat();

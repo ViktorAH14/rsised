@@ -60,8 +60,6 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device)
         if (rseItemReader.isStartElement()) {
             if (rseItemReader.name() == "rect") {
                 Rectangle *rectangle = new Rectangle(itemMenu);
-                rectangle->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
-                rectangle->setAcceptHoverEvents(true);
                 qreal x{0.0};
                 qreal y{0.0};
                 qreal width{0.0};
@@ -110,8 +108,6 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device)
             }
             if (rseItemReader.name() == "ellipse") {
                 Ellipse *ellipse = new Ellipse(itemMenu);
-                ellipse->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
-                ellipse->setAcceptHoverEvents(true);
                 qreal x{0.0};
                 qreal y{0.0};
                 qreal width{0.0};

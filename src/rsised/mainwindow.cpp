@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->actionCopy->setDisabled(true);
+    ui->actionPaste->setDisabled(true);
 
     createActions();
     createMenu();
@@ -98,6 +99,7 @@ void MainWindow::loadFile(const QString &fileName)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (maybeSave()) {
+        scene->clearSelection();
         event->accept();
     } else {
         event->ignore();
@@ -145,7 +147,49 @@ bool MainWindow::saveAs()
 
 void MainWindow::copy()
 {
+    copyList.clear();
     copyList = scene->selectedItems();
+    if (!copyList.isEmpty()) {
+        ui->actionPaste->setEnabled(true);
+    }
+}
+
+void MainWindow::paste()
+{
+    for (QGraphicsItem *item : qAsConst(copyList)) {
+        if (Rectangle *oldRect = dynamic_cast<Rectangle *>(item)) {
+            Rectangle *newRect = new Rectangle(ui->menuEdit);
+//            newRect->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+//            newRect->setAcceptHoverEvents(true);
+            newRect->setRect(oldRect->rect());
+            newRect->setX(oldRect->x() + 10.0);
+            newRect->setY(oldRect->y() + 10.0);
+            newRect->setPen(oldRect->pen());
+            newRect->setBrush(oldRect->brush());
+            scene->addItem(newRect);
+        }
+        if (Ellipse *oldEllipse = dynamic_cast<Ellipse *>(item)) {
+            Ellipse *newEllipse = new Ellipse(ui->menuEdit);
+//            newEllipse->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+//            newEllipse->setAcceptHoverEvents(true);
+            newEllipse->setRect(oldEllipse->rect());
+            newEllipse->setX(oldEllipse->x() + 10.0);
+            newEllipse->setY(oldEllipse->y() + 10.0);
+            newEllipse->setPen(oldEllipse->pen());
+            newEllipse->setBrush(oldEllipse->brush());
+            scene->addItem(newEllipse);
+        }
+        if (QGraphicsLineItem *oldLine = dynamic_cast<QGraphicsLineItem *>(item)) {
+            QGraphicsLineItem *newLine = new QGraphicsLineItem();
+            newLine->setFlag(QGraphicsItem::ItemIsMovable, true);
+            newLine->setLine(oldLine->line());
+            newLine->setX(oldLine->x() + 10.0);
+            newLine->setY(oldLine->y() + 10.0);
+            newLine->setPen(oldLine->pen());
+            scene->addItem(newLine);
+        }
+    }
+    scene->setSelectableItems(true);
 }
 
 void MainWindow::openSVG()

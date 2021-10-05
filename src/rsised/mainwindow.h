@@ -33,6 +33,8 @@ private slots:
     bool save();
     bool saveAs();
     void copy();
+    void paste();
+    void copyEnable();
     void openSVG();
     bool saveSVG();
     void deleteItem();
@@ -52,7 +54,6 @@ private slots:
     void changedItemBrush();
 
 private:
-    void copyEnable();
     void createActions();
     void createMenu();
     void createStyleToolBar();
