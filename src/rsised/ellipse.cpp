@@ -4,14 +4,18 @@
 
 #include <QGraphicsSceneMouseEvent>
 #include <QApplication>
+#include <QGraphicsScene>
+#include <QMenu>
 
-Ellipse::Ellipse(QGraphicsItem *parent) : QGraphicsEllipseItem(parent)
+Ellipse::Ellipse(QMenu *contextMenu, QGraphicsItem *parent)
+    : QGraphicsEllipseItem(parent), contextMenu{contextMenu}
 {
     setAcceptHoverEvents(true);
     setFlag(ItemSendsGeometryChanges, true);
 }
 
-Ellipse::Ellipse(QRectF rect, QGraphicsItem *parent) : QGraphicsEllipseItem(parent)
+Ellipse::Ellipse(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent)
+    : QGraphicsEllipseItem(parent), contextMenu{contextMenu}
 {
     QGraphicsEllipseItem::setRect(rect);
     setFlag(ItemSendsGeometryChanges, true);
@@ -71,6 +75,13 @@ void Ellipse::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
                                        ? SizeGripItem::Rotate : SizeGripItem::Resize);
 
     QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
+}
+
+void Ellipse::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    scene()->clearSelection();
+    setSelected(true);
+    contextMenu->exec(event->screenPos());
 }
 
 QVariant Ellipse::itemChange(GraphicsItemChange change, const QVariant &value)

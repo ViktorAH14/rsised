@@ -4,11 +4,13 @@
 
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsLineItem>
+#include <QMenu>
 
-DiagramScene::DiagramScene(QObject *parent)
+DiagramScene::DiagramScene(QMenu *editMenu, QObject *parent)
     : QGraphicsScene(parent),
-      leftButtonPressed {false},
-      currentMode {MoveItem}
+      leftButtonPressed{false},
+      currentMode{MoveItem},
+      itemMenu{editMenu}
 {
 }
 
@@ -101,11 +103,11 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         addItem(line);
         break;
     case InsertRect:
-        rect = new Rectangle(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()));
+        rect = new Rectangle(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()), itemMenu);
         addItem(rect);
         break;
     case InsertEllipse:
-        ellipse = new Ellipse(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()));
+        ellipse = new Ellipse(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()), itemMenu);
         addItem(ellipse);
         break;
     case InsertCurve:

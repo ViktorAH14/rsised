@@ -4,14 +4,18 @@
 
 #include <QApplication>
 #include <QGraphicsSceneMouseEvent>
+#include <QMenu>
+#include <QGraphicsScene>
 
-Rectangle::Rectangle(QGraphicsItem *parent) : QGraphicsRectItem(parent)
+Rectangle::Rectangle(QMenu *contextMenu, QGraphicsItem *parent)
+    : QGraphicsRectItem(parent), contextMenu{contextMenu}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
 }
 
-Rectangle::Rectangle(QRectF rect, QGraphicsItem *parent) : QGraphicsRectItem(parent)
+Rectangle::Rectangle(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent)
+    : QGraphicsRectItem(parent), contextMenu{contextMenu}
 {
     QGraphicsRectItem::setRect(rect);
     setFlag(ItemSendsGeometryChanges, true);
@@ -73,6 +77,14 @@ void Rectangle::hoverLeaveEvent(QGraphicsSceneHoverEvent *hoverEvent)
     QApplication::restoreOverrideCursor();
 
     QGraphicsItem::hoverLeaveEvent(hoverEvent);
+}
+
+void Rectangle::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    scene()->clearSelection();
+    setSelected(true);
+    contextMenu->exec(event->screenPos());
+
 }
 
 QVariant Rectangle::itemChange(GraphicsItemChange change, const QVariant &value)

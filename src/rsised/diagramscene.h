@@ -11,6 +11,7 @@ QT_BEGIN_NAMESPACE
 class QGraphicsLineItem;
 class QGraphicsEllipseItem;
 class QGraphicsSceneMouseEvent;
+class QMenu;
 QT_END_NAMESPACE
 
 class DiagramScene : public QGraphicsScene
@@ -20,7 +21,7 @@ class DiagramScene : public QGraphicsScene
 public:
     enum Mode {InsertLine, InsertRect, InsertEllipse, InsertCurve, MoveItem};
 
-    explicit DiagramScene(QObject *parent = nullptr);
+    explicit DiagramScene(QMenu *editMenu, QObject *parent = nullptr);
 
     void setItemPen(const QColor &color, qreal width, Qt::PenStyle penStyle);
     void setItemBrush(const QColor &color, Qt::BrushStyle brushStyle);
@@ -51,6 +52,7 @@ private:
     QPen itemPen;
     QBrush itemBrush;
     Mode currentMode;
+    QMenu *itemMenu;
 };
 
 #endif // DIAGRAMSCENE_H

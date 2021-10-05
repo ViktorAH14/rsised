@@ -5,13 +5,17 @@
 
 class SizeGripItem;
 
+QT_BEGIN_NAMESPACE
+class QMenu;
+QT_END_MOC_NAMESPACE
+
 class Ellipse : public QGraphicsEllipseItem
 {
 public:
     enum { Type = UserType + 2 };
 
-    explicit Ellipse(QGraphicsItem *parent = nullptr);
-    explicit Ellipse(QRectF rect, QGraphicsItem *parent = nullptr);
+    explicit Ellipse(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
+    explicit Ellipse(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent = nullptr);
     ~Ellipse();
 
     int type() const override { return Type;}
@@ -23,10 +27,13 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
+
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
     SizeGripItem *ellipseSizeGripItem;
+    QMenu *contextMenu;
 };
 
 #endif // ELLIPSE_H

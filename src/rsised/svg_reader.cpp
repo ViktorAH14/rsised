@@ -6,7 +6,7 @@
 #include <QFile>
 #include <QPen>
 
-SvgReader::SvgReader()
+SvgReader::SvgReader(QMenu *itemMenu) : itemMenu{itemMenu}
 {
 }
 
@@ -47,7 +47,7 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString fileName)
 
         QDomElement elementRect = gNode.firstChildElement("rect");
         if (!elementRect.isNull()){
-            Rectangle *rectangle = new Rectangle();
+            Rectangle *rectangle = new Rectangle(itemMenu);
             rectangle->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
             rectangle->setAcceptHoverEvents(true);
             rectangle->setRect(elementRect.attribute("x").toInt(),
@@ -70,7 +70,7 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString fileName)
 
         QDomElement elementEllipse = gNode.firstChildElement("ellipse");
         if (!elementEllipse.isNull()) {
-            Ellipse *ellipse = new Ellipse();
+            Ellipse *ellipse = new Ellipse(itemMenu);
             ellipse->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
             ellipse->setAcceptHoverEvents(true);
 

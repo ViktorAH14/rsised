@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     createSceneScaleToolBar();
 
 // Create scene and view
-    scene = new DiagramScene(this);
+    scene = new DiagramScene(ui->menuEdit, this);
     scene->setSceneRect(0, 0, 1920, 1080);
     scene->setMode(DiagramScene::MoveItem);
     scene->setItemPen(penColorButton->color(),
@@ -57,7 +57,7 @@ void MainWindow::loadFile(const QString &fileName)
 
     scene->clear();
 
-    RseReader *rseReader = new RseReader();
+    RseReader *rseReader = new RseReader(ui->menuEdit);
     QRectF sceneRect = rseReader->getSceneRect(&file);
     scene->setSceneRect(sceneRect);
     file.close();
@@ -149,7 +149,7 @@ void MainWindow::openSVG()
         }
 
         scene->clear();
-        SvgReader *svgReader = new SvgReader();
+        SvgReader *svgReader = new SvgReader(ui->menuEdit);
         scene->setSceneRect(svgReader->getSize(fileName));
 
         QList<QGraphicsItem *> itemList = svgReader->getElements(fileName);
@@ -202,6 +202,7 @@ void MainWindow::drawLine()
     scene->setMode(DiagramScene::InsertLine);
     scene->setSelectableItems(false);
     ui->actionSelect_All->setDisabled(true);
+    ui->actionDeleteItem->setDisabled(true);
 }
 
 void MainWindow::drawRect()
@@ -210,6 +211,7 @@ void MainWindow::drawRect()
     scene->setMode(DiagramScene::InsertRect);
     scene->setSelectableItems(false);
     ui->actionSelect_All->setDisabled(true);
+    ui->actionDeleteItem->setDisabled(true);
 }
 
 void MainWindow::drawEllipse()
@@ -218,6 +220,7 @@ void MainWindow::drawEllipse()
     scene->setMode(DiagramScene::InsertEllipse);
     scene->setSelectableItems(false);
     ui->actionSelect_All->setDisabled(true);
+    ui->actionDeleteItem->setDisabled(true);
 }
 
 void MainWindow::drawCurve()
@@ -226,6 +229,7 @@ void MainWindow::drawCurve()
     scene->setMode(DiagramScene::InsertCurve);
     scene->setSelectableItems(false);
     ui->actionSelect_All->setDisabled(true);
+    ui->actionDeleteItem->setDisabled(true);
 }
 
 void MainWindow::moveItem()
@@ -234,6 +238,7 @@ void MainWindow::moveItem()
     scene->setMode(DiagramScene::MoveItem);
     scene->setSelectableItems(true);
     ui->actionSelect_All->setEnabled(true);
+    ui->actionDeleteItem->setEnabled(true);
 }
 
 void MainWindow::changedItemPen()

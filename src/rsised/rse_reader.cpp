@@ -5,7 +5,7 @@
 #include <QXmlStreamReader>
 #include <QPen>
 
-RseReader::RseReader()
+RseReader::RseReader(QMenu *itemMenu) :itemMenu{itemMenu}
 {
 }
 
@@ -59,7 +59,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device)
     while (!rseItemReader.atEnd()) {
         if (rseItemReader.isStartElement()) {
             if (rseItemReader.name() == "rect") {
-                Rectangle *rectangle = new Rectangle();
+                Rectangle *rectangle = new Rectangle(itemMenu);
                 rectangle->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
                 rectangle->setAcceptHoverEvents(true);
                 qreal x{0.0};
@@ -109,7 +109,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device)
                 itemList.append(rectangle);
             }
             if (rseItemReader.name() == "ellipse") {
-                Ellipse *ellipse = new Ellipse();
+                Ellipse *ellipse = new Ellipse(itemMenu);
                 ellipse->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
                 ellipse->setAcceptHoverEvents(true);
                 qreal x{0.0};
