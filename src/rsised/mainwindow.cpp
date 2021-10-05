@@ -14,9 +14,12 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), currentFile("")
 {
     ui->setupUi(this);
+    ui->actionCopy->setDisabled(true);
 
     createActions();
     createMenu();
+    setCurrentFile(QString());
+    setUnifiedTitleAndToolBarOnMac(true);
 
 // Create toolbars
     createSimpleDrawToolBar();
@@ -34,8 +37,9 @@ MainWindow::MainWindow(QWidget *parent)
                         qvariant_cast<Qt::BrushStyle>(brushStyleCombo->currentData()));
     ui->mainGraphicsView->setScene(scene);
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
-    setCurrentFile(QString());
-    setUnifiedTitleAndToolBarOnMac(true);
+    copyList = scene->selectedItems();
+
+    connect(scene, &QGraphicsScene::selectionChanged, this, &MainWindow::copyEnable);
 }
 
 MainWindow::~MainWindow()
@@ -137,6 +141,11 @@ bool MainWindow::saveAs()
         return false;
     }
     return saveFile(fileDialog.selectedFiles().constFirst());
+}
+
+void MainWindow::copy()
+{
+    copyList = scene->selectedItems();
 }
 
 void MainWindow::openSVG()
@@ -255,6 +264,16 @@ void MainWindow::changedItemBrush()
     Qt::BrushStyle currentBrushStyle = qvariant_cast<Qt::BrushStyle>
             (brushStyleCombo->currentData());
     scene->setItemBrush(currentBrushColor, currentBrushStyle);
+}
+
+void MainWindow::copyEnable()
+{
+    QList<QGraphicsItem *> selectedItems = scene->selectedItems();
+    if (selectedItems.isEmpty()) {
+        ui->actionCopy->setDisabled(true);
+    } else {
+        ui->actionCopy->setEnabled(true);
+    }
 }
 
 void MainWindow::createActions()

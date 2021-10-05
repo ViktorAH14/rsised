@@ -84,6 +84,7 @@
      <string>Edit</string>
     </property>
     <addaction name="separator"/>
+    <addaction name="actionCopy"/>
     <addaction name="actionDeleteItem"/>
     <addaction name="separator"/>
     <addaction name="actionSelect_All"/>
@@ -108,6 +109,8 @@
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
    <addaction name="actionExit"/>
+   <addaction name="separator"/>
+   <addaction name="actionCopy"/>
   </widget>
   <widget class="QToolBar" name="simpleDrawToolBar">
    <property name="windowTitle">
@@ -321,6 +324,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/copy_48.png</normaloff>:/images/icons/copy_48.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="toolTip">
+    <string>Copy Elements</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
    </property>
   </action>
  </widget>
@@ -552,6 +570,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionCopy</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>copy()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>589</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>drawLine()</slot>
@@ -567,5 +601,6 @@
   <slot>open()</slot>
   <slot>newFile()</slot>
   <slot>selectAll()</slot>
+  <slot>copy()</slot>
  </slots>
 </ui>

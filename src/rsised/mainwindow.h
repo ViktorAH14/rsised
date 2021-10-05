@@ -32,6 +32,7 @@ private slots:
     void open();
     bool save();
     bool saveAs();
+    void copy();
     void openSVG();
     bool saveSVG();
     void deleteItem();
@@ -51,6 +52,7 @@ private slots:
     void changedItemBrush();
 
 private:
+    void copyEnable();
     void createActions();
     void createMenu();
     void createStyleToolBar();
@@ -63,7 +65,9 @@ private:
 
     Ui::MainWindow *ui;
     DiagramScene *scene;
+
     QString currentFile;
+    QList<QGraphicsItem *> copyList;
 
     QToolBar *styleToolBar;
     QToolBar *sceneScaleToolBar;
