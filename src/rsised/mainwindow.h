@@ -35,7 +35,7 @@ private slots:
     void copy();
     void paste();
     void cut();
-    void enableCopyCut();
+    void enableAction();
     void openSVG();
     bool saveSVG();
     void deleteItem();
@@ -55,6 +55,7 @@ private slots:
     void changedItemBrush();
 
 private:
+    void disableAction();
     void createActions();
     void createMenu();
     void createStyleToolBar();
@@ -70,7 +71,6 @@ private:
 
     QString currentFile;
     QList<QGraphicsItem *> copyList;
-//    QList<QGraphicsItem *> cutList;
 
     QToolBar *styleToolBar;
     QToolBar *sceneScaleToolBar;

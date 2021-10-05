@@ -14,12 +14,10 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), currentFile("")
 {
     ui->setupUi(this);
-    ui->actionCopy->setDisabled(true);
-    ui->actionPaste->setDisabled(true);
-    ui->actionCut->setDisabled(true);
 
     createActions();
     createMenu();
+    disableAction();
     setCurrentFile(QString());
     setUnifiedTitleAndToolBarOnMac(true);
 
@@ -41,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
     copyList = scene->selectedItems();
 
-    connect(scene, &QGraphicsScene::selectionChanged, this, &MainWindow::enableCopyCut);
+    connect(scene, &QGraphicsScene::selectionChanged, this, &MainWindow::enableAction);
 }
 
 MainWindow::~MainWindow()
@@ -326,7 +324,6 @@ void MainWindow::moveItem()
     scene->setMode(DiagramScene::MoveItem);
     scene->setSelectableItems(true);
     ui->actionSelect_All->setEnabled(true);
-    ui->actionDeleteItem->setEnabled(true);
 }
 
 void MainWindow::changedItemPen()
@@ -345,15 +342,25 @@ void MainWindow::changedItemBrush()
     scene->setItemBrush(currentBrushColor, currentBrushStyle);
 }
 
-void MainWindow::enableCopyCut()
+void MainWindow::disableAction()
+{
+    ui->actionCopy->setDisabled(true);
+    ui->actionPaste->setDisabled(true);
+    ui->actionCut->setDisabled(true);
+    ui->actionDeleteItem->setDisabled(true);
+}
+
+void MainWindow::enableAction()
 {
     QList<QGraphicsItem *> selectedItems = scene->selectedItems();
     if (selectedItems.isEmpty()) {
         ui->actionCopy->setDisabled(true);
         ui->actionCut->setDisabled(true);
+        ui->actionDeleteItem->setDisabled(true);
     } else {
         ui->actionCopy->setEnabled(true);
         ui->actionCut->setEnabled(true);
+        ui->actionDeleteItem->setEnabled(true);
     }
 }
 
