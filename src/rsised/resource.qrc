@@ -44,5 +44,7 @@
         <file>images/icons/new_32.png</file>
         <file>images/icons/copy_48.png</file>
         <file>images/icons/paste_48.png</file>
+        <file>images/icons/cut_48.png</file>
+        <file>images/icons/exit_48.png</file>
     </qresource>
 </RCC>

@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->actionCopy->setDisabled(true);
     ui->actionPaste->setDisabled(true);
+    ui->actionCut->setDisabled(true);
 
     createActions();
     createMenu();
@@ -40,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
     copyList = scene->selectedItems();
 
-    connect(scene, &QGraphicsScene::selectionChanged, this, &MainWindow::copyEnable);
+    connect(scene, &QGraphicsScene::selectionChanged, this, &MainWindow::enableCopyCut);
 }
 
 MainWindow::~MainWindow()
@@ -159,8 +160,6 @@ void MainWindow::paste()
     for (QGraphicsItem *item : qAsConst(copyList)) {
         if (Rectangle *oldRect = dynamic_cast<Rectangle *>(item)) {
             Rectangle *newRect = new Rectangle(ui->menuEdit);
-//            newRect->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
-//            newRect->setAcceptHoverEvents(true);
             newRect->setRect(oldRect->rect());
             newRect->setX(oldRect->x() + 10.0);
             newRect->setY(oldRect->y() + 10.0);
@@ -170,8 +169,6 @@ void MainWindow::paste()
         }
         if (Ellipse *oldEllipse = dynamic_cast<Ellipse *>(item)) {
             Ellipse *newEllipse = new Ellipse(ui->menuEdit);
-//            newEllipse->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
-//            newEllipse->setAcceptHoverEvents(true);
             newEllipse->setRect(oldEllipse->rect());
             newEllipse->setX(oldEllipse->x() + 10.0);
             newEllipse->setY(oldEllipse->y() + 10.0);
@@ -190,6 +187,44 @@ void MainWindow::paste()
         }
     }
     scene->setSelectableItems(true);
+}
+
+void MainWindow::cut()
+{
+    QList<QGraphicsItem *> cutList;
+    copy();
+    for (QGraphicsItem *item : qAsConst(copyList)) {
+        if (Rectangle *oldRect = dynamic_cast<Rectangle *>(item)) {
+            Rectangle *newRect = new Rectangle(ui->menuEdit);
+            newRect->setRect(oldRect->rect());
+            newRect->setX(oldRect->x() + 10.0);
+            newRect->setY(oldRect->y() + 10.0);
+            newRect->setPen(oldRect->pen());
+            newRect->setBrush(oldRect->brush());
+            cutList.append(newRect);
+        }
+        if (Ellipse *oldEllipse = dynamic_cast<Ellipse *>(item)) {
+            Ellipse *newEllipse = new Ellipse(ui->menuEdit);
+            newEllipse->setRect(oldEllipse->rect());
+            newEllipse->setX(oldEllipse->x() + 10.0);
+            newEllipse->setY(oldEllipse->y() + 10.0);
+            newEllipse->setPen(oldEllipse->pen());
+            newEllipse->setBrush(oldEllipse->brush());
+            cutList.append(newEllipse);
+        }
+        if (QGraphicsLineItem *oldLine = dynamic_cast<QGraphicsLineItem *>(item)) {
+            QGraphicsLineItem *newLine = new QGraphicsLineItem();
+            newLine->setFlag(QGraphicsItem::ItemIsMovable, true);
+            newLine->setLine(oldLine->line());
+            newLine->setX(oldLine->x() + 10.0);
+            newLine->setY(oldLine->y() + 10.0);
+            newLine->setPen(oldLine->pen());
+            cutList.append(newLine);
+        }
+    }
+    copyList = cutList;
+    cutList.clear();
+    deleteItem();
 }
 
 void MainWindow::openSVG()
@@ -310,13 +345,15 @@ void MainWindow::changedItemBrush()
     scene->setItemBrush(currentBrushColor, currentBrushStyle);
 }
 
-void MainWindow::copyEnable()
+void MainWindow::enableCopyCut()
 {
     QList<QGraphicsItem *> selectedItems = scene->selectedItems();
     if (selectedItems.isEmpty()) {
         ui->actionCopy->setDisabled(true);
+        ui->actionCut->setDisabled(true);
     } else {
         ui->actionCopy->setEnabled(true);
+        ui->actionCut->setEnabled(true);
     }
 }
 

@@ -86,6 +86,7 @@
     <addaction name="separator"/>
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
+    <addaction name="actionCut"/>
     <addaction name="actionDeleteItem"/>
     <addaction name="separator"/>
     <addaction name="actionSelect_All"/>
@@ -113,6 +114,8 @@
    <addaction name="separator"/>
    <addaction name="actionCopy"/>
    <addaction name="actionPaste"/>
+   <addaction name="actionCut"/>
+   <addaction name="actionDeleteItem"/>
   </widget>
   <widget class="QToolBar" name="simpleDrawToolBar">
    <property name="windowTitle">
@@ -146,7 +149,7 @@
   <action name="actionExit">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/icons/cancel.png</normaloff>:/images/icons/cancel.png</iconset>
+     <normaloff>:/images/icons/exit_48.png</normaloff>:/images/icons/exit_48.png</iconset>
    </property>
    <property name="text">
     <string>Exit</string>
@@ -254,6 +257,10 @@
    </property>
   </action>
   <action name="actionDeleteItem">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/cancel.png</normaloff>:/images/icons/cancel.png</iconset>
+   </property>
    <property name="text">
     <string>Delete item</string>
    </property>
@@ -356,6 +363,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionCut">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/cut_48.png</normaloff>:/images/icons/cut_48.png</iconset>
+   </property>
+   <property name="text">
+    <string>Cut</string>
+   </property>
+   <property name="toolTip">
+    <string>Delete to Clipboard</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
    </property>
   </action>
  </widget>
@@ -619,6 +641,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionCut</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>cut()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>589</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>drawLine()</slot>
@@ -636,5 +674,6 @@
   <slot>selectAll()</slot>
   <slot>copy()</slot>
   <slot>paste()</slot>
+  <slot>cut()</slot>
  </slots>
 </ui>
