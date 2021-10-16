@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "rectangle.h"
 #include "ellipse.h"
+#include "polyline.h"
 #include "rse_writer.h"
 #include "rse_reader.h"
 #include "svg_reader.h"
@@ -29,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
 // Create scene and view
     scene = new DiagramScene(ui->menuEdit, this);
     scene->setSceneRect(0, 0, 1920, 1080);
-    scene->setMode(DiagramScene::MoveItem);
+    scene->setMode(DiagramScene::SelectItem);
     scene->setItemPen(penColorButton->color(),
                       qvariant_cast<qreal>(penSizeCombo->currentText()),
                       qvariant_cast<Qt::PenStyle>(penStyleCombo->currentData()));
@@ -79,6 +80,9 @@ void MainWindow::loadFile(const QString &fileName)
         }
         if (Ellipse *ellipseItem = dynamic_cast<Ellipse *>(item)) {
             scene->addItem(ellipseItem);
+        }
+        if (Polyline *polylineItem = dynamic_cast<Polyline *>(item)) {
+            scene->addItem(polylineItem);
         }
         if (QGraphicsLineItem *lineItem = dynamic_cast<QGraphicsLineItem *>(item)) {
             scene->addItem(lineItem);
@@ -174,6 +178,14 @@ void MainWindow::paste()
             newEllipse->setBrush(oldEllipse->brush());
             scene->addItem(newEllipse);
         }
+        if (Polyline *oldPolyline = dynamic_cast<Polyline *>(item)) {
+            Polyline *newPolyline = new Polyline(ui->menuEdit);
+            newPolyline->setPath(oldPolyline->path());
+            newPolyline->setX(oldPolyline->x() + 10.0);
+            newPolyline->setY(oldPolyline->y() + 10.0);
+            newPolyline->setPen(oldPolyline->pen());
+            scene->addItem(newPolyline);
+        }
         if (QGraphicsLineItem *oldLine = dynamic_cast<QGraphicsLineItem *>(item)) {
             QGraphicsLineItem *newLine = new QGraphicsLineItem();
             newLine->setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -209,6 +221,14 @@ void MainWindow::cut()
             newEllipse->setPen(oldEllipse->pen());
             newEllipse->setBrush(oldEllipse->brush());
             cutList.append(newEllipse);
+        }
+        if (Polyline *oldPolyline = dynamic_cast<Polyline *>(item)) {
+            Polyline *newPolyline = new Polyline(ui->menuEdit);
+            newPolyline->setPath(oldPolyline->path());
+            newPolyline->setX(oldPolyline->x() + 10.0);
+            newPolyline->setY(oldPolyline->y() + 10.0);
+            newPolyline->setPen(oldPolyline->pen());
+            cutList.append(newPolyline);
         }
         if (QGraphicsLineItem *oldLine = dynamic_cast<QGraphicsLineItem *>(item)) {
             QGraphicsLineItem *newLine = new QGraphicsLineItem();
@@ -246,6 +266,9 @@ void MainWindow::openSVG()
             if (Ellipse *ellipseItem = dynamic_cast<Ellipse *>(item)) {
                 scene->addItem(ellipseItem);
             }
+            if (Polyline *polylineItem = dynamic_cast<Polyline *>(item)) {
+                scene->addItem(polylineItem);
+            }
             if (QGraphicsLineItem *lineItem = dynamic_cast<QGraphicsLineItem *>(item)) {
                 scene->addItem(lineItem);
             }
@@ -282,10 +305,10 @@ bool MainWindow::saveSVG()
     return true;
 }
 
-void MainWindow::drawLine()
+void MainWindow::drawPolyline()
 {
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
-    scene->setMode(DiagramScene::InsertLine);
+    scene->setMode(DiagramScene::InsertPolyline);
     scene->setSelectableItems(false);
     ui->actionSelect_All->setDisabled(true);
     ui->actionDeleteItem->setDisabled(true);
@@ -318,10 +341,10 @@ void MainWindow::drawCurve()
     ui->actionDeleteItem->setDisabled(true);
 }
 
-void MainWindow::moveItem()
+void MainWindow::selectedItem()
 {
     ui->mainGraphicsView->setCursor(Qt::ArrowCursor);
-    scene->setMode(DiagramScene::MoveItem);
+    scene->setMode(DiagramScene::SelectItem);
     scene->setSelectableItems(true);
     ui->actionSelect_All->setEnabled(true);
 }
@@ -477,8 +500,8 @@ void MainWindow::createStyleToolBar()
 void MainWindow::createSimpleDrawToolBar()
 {
     simpleDrawModeActionGr = new QActionGroup(this);
-    simpleDrawModeActionGr->addAction(ui->actionDrawLine);
-    simpleDrawModeActionGr->addAction(ui->actionMoveItem);
+    simpleDrawModeActionGr->addAction(ui->actionDrawPolyline);
+    simpleDrawModeActionGr->addAction(ui->actionSelectedItem);
     simpleDrawModeActionGr->addAction(ui->actionDrawRectangle);
     simpleDrawModeActionGr->addAction(ui->actionDrawEllipse);
     simpleDrawModeActionGr->addAction(ui->actionDrawCurve);

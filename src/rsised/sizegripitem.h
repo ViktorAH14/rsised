@@ -1,7 +1,6 @@
 #ifndef SIZEGRIPITEM_H
 #define SIZEGRIPITEM_H
 
-#include <QGraphicsItem>
 #include <QGraphicsRectItem>
 
 class SizeGripItem : public QGraphicsItem
@@ -11,8 +10,8 @@ public:
     class Resizer
     {
     public:
-        virtual ~Resizer();
-        virtual void operator()(QGraphicsItem *item, const QRectF &rect) = 0;
+        virtual ~Resizer() = 0;
+        virtual void operator()(QGraphicsItem *item, const QVariant &value) = 0;
     };
 
     SizeGripItem(Resizer *resizer = nullptr, QGraphicsItem *parent = nullptr);
@@ -29,11 +28,14 @@ public:
     void setBottomLeft(const QPointF &pos);
     void setLeft(qreal x);
 
-    void setActionType(int actionType);
-    int actionType();
+    void setActionType(unsigned int actionType);
+    unsigned int actionType();
+    QPainterPath parentItemPath();
+    void setParentItemPath(QPainterPath newPath);
 
 private:
     enum PositionFlags {
+        PathLine    = 0x0,
         Top         = 0x1,
         Bottom      = 0x2,
         Left        = 0x4,
@@ -44,11 +46,14 @@ private:
         BottomRight = Bottom | Right
     };
 
+    enum ItemType { Rectangle, Path };
+
     class HandleItem : public QGraphicsRectItem
     {
     public:
         HandleItem(int positionFlags, SizeGripItem *parent);
         int positionFlags() const;
+        void setPathElementNum(int num);
 
     protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
@@ -64,16 +69,20 @@ private:
         int handlePositionFlags;
         SizeGripItem *parentItem;
         bool leftButtonPressed;
+        int pathElementNum;
     };
 
     void doResize();
     void updateHandleItemPositions();
     void rotateParentItem(const QPointF &currentPos, int positionFlag);
+    void setItemType(unsigned int type);
 
     QList<HandleItem *> handleItemList;
-    QRectF parentItemRect;
     Resizer *itemResizer;
-    int currentActionType;
+    QRectF parentItemRect;
+    QPainterPath parentPath;
+    unsigned int currentActionType;
+    unsigned int currentItemType;
 };
 
 #endif // SIZEGRIPITEM_H

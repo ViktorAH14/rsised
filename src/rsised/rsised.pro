@@ -16,6 +16,8 @@ SOURCES += \
     ellipseresizer.cpp \
     main.cpp \
     mainwindow.cpp \
+    polyline.cpp \
+    polylineresizer.cpp \
     rectangle.cpp \
     rectangleresizer.cpp \
     rse_reader.cpp \
@@ -28,6 +30,8 @@ HEADERS += \
     ellipse.h \
     ellipseresizer.h \
     mainwindow.h \
+    polyline.h \
+    polylineresizer.h \
     rectangle.h \
     rectangleresizer.h \
     rse_reader.h \

@@ -12,11 +12,11 @@ class SvgReader
 public:
     SvgReader(QMenu *itemMenu);
 
-    QRectF getSize(const QString fileName);
-    QList<QGraphicsItem *> getElements(const QString fileName);
+    QRectF getSize(const QString &fileName);
+    QList<QGraphicsItem *> getElements(const QString &fileName);
 
 private:
-    QMenu *itemMenu;
+    QMenu   *itemMenu;
 };
 
 #endif // SVG_READER_H

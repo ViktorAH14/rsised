@@ -7,7 +7,7 @@
 class EllipseResizer : public SizeGripItem::Resizer
 {
 public:
-    virtual void operator()(QGraphicsItem *item, const QRectF &rect);
+    virtual void operator()(QGraphicsItem *item, const QVariant &rect);
 
 };
 

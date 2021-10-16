@@ -1,4 +1,7 @@
 #include "sizegripitem.h"
+#include "rectangle.h"
+#include "ellipse.h"
+#include "polyline.h"
 
 #include <cmath>
 
@@ -7,10 +10,13 @@
 #include <QApplication>
 #include <QCursor>
 
+Q_DECLARE_METATYPE(QPainterPath)
+
 static const double PI = 3.14159265358979323846264338327950288419717;
 static double TWO_PI = 2.0 * PI;
 
-static qreal normalizeAngle(qreal angle) {
+static qreal normalizeAngle(qreal angle)
+{
     while (angle < 0) {
         angle += TWO_PI;
     }
@@ -21,14 +27,15 @@ static qreal normalizeAngle(qreal angle) {
 }
 
 SizeGripItem::HandleItem::HandleItem(int positionFlags, SizeGripItem *parent)
-    : QGraphicsRectItem(-4, -4, 8, 8, parent),
-      handlePositionFlags(positionFlags),
-      parentItem(parent)
+    : QGraphicsRectItem(-4, -4, 8, 8, parent)
+    , handlePositionFlags(positionFlags)
+    , parentItem(parent)
 {
     setBrush(QBrush(Qt::lightGray));
     setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
     setAcceptHoverEvents(true);
+    leftButtonPressed = false;
 }
 
 int SizeGripItem::HandleItem::positionFlags() const
@@ -36,13 +43,20 @@ int SizeGripItem::HandleItem::positionFlags() const
     return handlePositionFlags;
 }
 
-void SizeGripItem::HandleItem::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) {
+void SizeGripItem::HandleItem::setPathElementNum(int num)
+{
+    pathElementNum = num;
+}
+
+void SizeGripItem::HandleItem::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
     leftButtonPressed = true;
 
     QGraphicsItem::mousePressEvent(mouseEvent);
 }
 
-void SizeGripItem::HandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) {
+void SizeGripItem::HandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
     if ((parentItem->actionType() == Rotate) && (leftButtonPressed)) {
         QPointF currentPos = mapToParent(mouseEvent->pos());
         parentItem->rotateParentItem(currentPos, positionFlags());
@@ -51,7 +65,8 @@ void SizeGripItem::HandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEve
     }
 }
 
-void SizeGripItem::HandleItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) {
+void SizeGripItem::HandleItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
     leftButtonPressed = false;
 
     QGraphicsItem::mouseReleaseEvent(mouseEvent);
@@ -85,6 +100,8 @@ void SizeGripItem::HandleItem::hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEv
         case BottomLeft:
             QApplication::setOverrideCursor(Qt::SizeBDiagCursor);
             break;
+        case PathLine:
+            QApplication::setOverrideCursor(Qt::SizeAllCursor);
         }
     } else if (parentItem->actionType() ==Rotate) {
         QCursor rotateCursor = QCursor(QPixmap(":images/icons/rotate.png").scaled(22, 22));
@@ -124,33 +141,54 @@ QVariant SizeGripItem::HandleItem::itemChange(GraphicsItemChange change,
         }
         else if (change == ItemPositionHasChanged)
         {
-            QPointF pos = value.toPointF();
+            QPointF newPos = value.toPointF();
 
             switch (handlePositionFlags)
             {
             case TopLeft:
-                parentItem->setTopLeft(pos);
+                parentItem->setTopLeft(newPos);
                 break;
             case Top:
-                parentItem->setTop(pos.y());
+                parentItem->setTop(newPos.y());
                 break;
             case TopRight:
-                parentItem->setTopRight(pos);
+                parentItem->setTopRight(newPos);
                 break;
             case Right:
-                parentItem->setRight(pos.x());
+                parentItem->setRight(newPos.x());
                 break;
             case BottomRight:
-                parentItem->setBottomRight(pos);
+                parentItem->setBottomRight(newPos);
                 break;
             case Bottom:
-                parentItem->setBottom(pos.y());
+                parentItem->setBottom(newPos.y());
                 break;
             case BottomLeft:
-                parentItem->setBottomLeft(pos);
+                parentItem->setBottomLeft(newPos);
                 break;
             case Left:
-                parentItem->setLeft(pos.x());
+                parentItem->setLeft(newPos.x());
+                break;
+            case PathLine:
+                QPainterPath oldPath = parentItem->parentItemPath();
+                QPainterPath newPath;
+                for (int i = 0; i < oldPath.elementCount(); i++) {
+                    if (i == 0) {
+                        if (i == pathElementNum) {
+                            newPath.moveTo(newPos);
+                        } else {
+                            newPath.moveTo(oldPath.elementAt(i));
+                        }
+                    } else {
+                        if (i == pathElementNum) {
+                            newPath.lineTo(newPos);
+                        } else {
+                            newPath.lineTo(oldPath.elementAt(i));
+                        }
+                    }
+                }
+                parentItem->setParentItemPath(newPath);
+                parentItem->doResize();
                 break;
             }
         }
@@ -169,6 +207,11 @@ QPointF SizeGripItem::HandleItem::restrictPosition(const QPointF &newPos)
     if (handlePositionFlags & Left || handlePositionFlags & Right)
         retVal.setX(newPos.x());
 
+    if (handlePositionFlags == PathLine) {
+        retVal.setX(newPos.x());
+        retVal.setY(newPos.y());
+    }
+
     if (handlePositionFlags & Top && retVal.y() > parentItem->parentItemRect.bottom())
         retVal.setY(parentItem->parentItemRect.bottom());
     else if (handlePositionFlags & Bottom && retVal.y() < parentItem->parentItemRect.top())
@@ -183,23 +226,37 @@ QPointF SizeGripItem::HandleItem::restrictPosition(const QPointF &newPos)
 }
 
 SizeGripItem::SizeGripItem(Resizer *resizer, QGraphicsItem *parent)
-    : QGraphicsItem(parent),
-      itemResizer(resizer)
+    : QGraphicsItem(parent)
+    , itemResizer(resizer)
 {
-    if (parentItem()) {
+    if ((parent->type() == Rectangle::Type) || (parent->type() == Ellipse::Type)) {
         parentItemRect = parentItem()->boundingRect();
+        setItemType(Rectangle);
+        int handleNum = -1;
+
+        handleItemList.append(new HandleItem(TopLeft, this));
+        handleItemList.append(new HandleItem(Top, this));
+        handleItemList.append(new HandleItem(TopRight, this));
+        handleItemList.append(new HandleItem(Right, this));
+        handleItemList.append(new HandleItem(BottomRight, this));
+        handleItemList.append(new HandleItem(Bottom, this));
+        handleItemList.append(new HandleItem(BottomLeft, this));
+        handleItemList.append(new HandleItem(Left, this));
+        for (HandleItem *item :qAsConst(handleItemList)) {
+            item->setPathElementNum(handleNum);
+        }
+    }
+    if (Polyline *polylineItem = dynamic_cast<Polyline *>(parent)) {
+        setItemType(Path);
+        parentPath = polylineItem->path();
+        for (int i = 0; i < parentPath.elementCount(); i++) {
+            handleItemList.append(new HandleItem(PathLine, this));
+            HandleItem *item = handleItemList.at(i);
+            item->setPathElementNum(i);
+        }
     }
 
     setActionType(Resize);
-
-    handleItemList.append(new HandleItem(TopLeft, this));
-    handleItemList.append(new HandleItem(Top, this));
-    handleItemList.append(new HandleItem(TopRight, this));
-    handleItemList.append(new HandleItem(Right, this));
-    handleItemList.append(new HandleItem(BottomRight, this));
-    handleItemList.append(new HandleItem(Bottom, this));
-    handleItemList.append(new HandleItem(BottomLeft, this));
-    handleItemList.append(new HandleItem(Left, this));
     updateHandleItemPositions();
 }
 
@@ -243,47 +300,56 @@ void SizeGripItem::doResize()
 {
     if (itemResizer)
     {
-        (*itemResizer)(parentItem(), parentItemRect);
-        updateHandleItemPositions();
+        if (currentItemType == Rectangle) {
+            (*itemResizer)(parentItem(), parentItemRect);
+            updateHandleItemPositions();
+        }
+        if (currentItemType == Path) {
+            (*itemResizer)(parentItem(), QVariant::fromValue(parentPath));
+            updateHandleItemPositions();
+        }
     }
 }
 
 void SizeGripItem::updateHandleItemPositions()
 {
-    foreach (HandleItem *item, handleItemList)
-    {
+    for (int i = 0; i < handleItemList.count(); i++) {
+        HandleItem *item = handleItemList.at(i);
         item->setFlag(ItemSendsGeometryChanges, false);
 
         switch (item->positionFlags())
         {
-            case TopLeft:
-                item->setPos(parentItemRect.topLeft());
-                break;
-            case Top:
-                item->setPos(parentItemRect.left() + parentItemRect.width() / 2 - 1,
-                             parentItemRect.top());
-                break;
-            case TopRight:
-                item->setPos(parentItemRect.topRight());
-                break;
-            case Right:
-                item->setPos(parentItemRect.right(),
-                             parentItemRect.top() + parentItemRect.height() / 2 - 1);
-                break;
-            case BottomRight:
-                item->setPos(parentItemRect.bottomRight());
-                break;
-            case Bottom:
-                item->setPos(parentItemRect.left() + parentItemRect.width() / 2 - 1,
-                             parentItemRect.bottom());
-                break;
-            case BottomLeft:
-                item->setPos(parentItemRect.bottomLeft());
-                break;
-            case Left:
-                item->setPos(parentItemRect.left(),
-                             parentItemRect.top() + parentItemRect.height() / 2 - 1);
-                break;
+        case TopLeft:
+            item->setPos(parentItemRect.topLeft());
+            break;
+        case Top:
+            item->setPos(parentItemRect.left() + parentItemRect.width() / 2 - 1,
+                         parentItemRect.top());
+            break;
+        case TopRight:
+            item->setPos(parentItemRect.topRight());
+            break;
+        case Right:
+            item->setPos(parentItemRect.right(),
+                         parentItemRect.top() + parentItemRect.height() / 2 - 1);
+            break;
+        case BottomRight:
+            item->setPos(parentItemRect.bottomRight());
+            break;
+        case Bottom:
+            item->setPos(parentItemRect.left() + parentItemRect.width() / 2 - 1,
+                         parentItemRect.bottom());
+            break;
+        case BottomLeft:
+            item->setPos(parentItemRect.bottomLeft());
+            break;
+        case Left:
+            item->setPos(parentItemRect.left(),
+                         parentItemRect.top() + parentItemRect.height() / 2 - 1);
+            break;
+        case PathLine:
+            item->setPos(parentPath.elementAt(i));
+            break;
         }
 
         item->setFlag(ItemSendsGeometryChanges, true);
@@ -292,8 +358,11 @@ void SizeGripItem::updateHandleItemPositions()
 
 SizeGripItem::Resizer::~Resizer()
 {
+
 }
-void SizeGripItem::rotateParentItem(const QPointF &currentPos, int positionFlag) {
+
+void SizeGripItem::rotateParentItem(const QPointF &currentPos, int positionFlag)
+{
     QPointF parentItemCenter = parentItemRect.center();
     QPointF corner;
 
@@ -337,7 +406,23 @@ void SizeGripItem::rotateParentItem(const QPointF &currentPos, int positionFlag)
     updateHandleItemPositions();
 }
 
-void SizeGripItem::setActionType(int actionType) {
+void SizeGripItem::setItemType(unsigned int type)
+{
+    currentItemType = type;
+}
+
+QPainterPath SizeGripItem::parentItemPath()
+{
+    return parentPath;
+}
+
+void SizeGripItem::setParentItemPath(QPainterPath newPath)
+{
+    parentPath.swap(newPath);
+}
+
+void SizeGripItem::setActionType(unsigned int actionType)
+{
     currentActionType = actionType;
     if (actionType == Rotate) {
         for (HandleItem *item : qAsConst(handleItemList)) {
@@ -353,6 +438,7 @@ void SizeGripItem::setActionType(int actionType) {
     }
 }
 
-int SizeGripItem::actionType() {
+unsigned int SizeGripItem::actionType()
+{
     return currentActionType;
 }

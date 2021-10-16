@@ -44,11 +44,11 @@ private slots:
     void sceneScaleChanged(const QString &scale);
 
 // Simple draw
-    void drawLine();
+    void drawPolyline();
     void drawRect();
     void drawEllipse();
     void drawCurve();
-    void moveItem();
+    void selectedItem();
 
 // Style toolbar
     void changedItemPen();

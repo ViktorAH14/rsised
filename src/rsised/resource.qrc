@@ -46,5 +46,6 @@
         <file>images/icons/paste_48.png</file>
         <file>images/icons/cut_48.png</file>
         <file>images/icons/exit_48.png</file>
+        <file>images/icons/pollyline_48.png</file>
     </qresource>
 </RCC>

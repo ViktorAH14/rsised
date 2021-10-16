@@ -63,7 +63,7 @@
     <property name="title">
      <string>Draw</string>
     </property>
-    <addaction name="actionDrawLine"/>
+    <addaction name="actionDrawPolyline"/>
     <addaction name="actionDrawRectangle"/>
     <addaction name="actionDrawEllipse"/>
     <addaction name="actionDrawCurve"/>
@@ -130,12 +130,12 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionMoveItem"/>
+   <addaction name="actionSelectedItem"/>
    <addaction name="separator"/>
-   <addaction name="actionDrawLine"/>
+   <addaction name="actionDrawPolyline"/>
+   <addaction name="actionDrawCurve"/>
    <addaction name="actionDrawRectangle"/>
    <addaction name="actionDrawEllipse"/>
-   <addaction name="actionDrawCurve"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpenSVG">
@@ -169,25 +169,25 @@
     <string>Save SVG file</string>
    </property>
   </action>
-  <action name="actionDrawLine">
+  <action name="actionDrawPolyline">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/icons/line.png</normaloff>:/images/icons/line.png</iconset>
+     <normaloff>:/images/icons/pollyline_48.png</normaloff>:/images/icons/pollyline_48.png</iconset>
    </property>
    <property name="text">
-    <string>Line</string>
+    <string>Polyline</string>
    </property>
    <property name="toolTip">
-    <string>Draw a line</string>
+    <string>Draw a polyline</string>
    </property>
    <property name="shortcut">
     <string>Alt+L</string>
    </property>
   </action>
-  <action name="actionMoveItem">
+  <action name="actionSelectedItem">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -199,7 +199,7 @@
      <normaloff>:/images/icons/cursor.png</normaloff>:/images/icons/cursor.png</iconset>
    </property>
    <property name="text">
-    <string>MoveItem</string>
+    <string>Selected</string>
    </property>
    <property name="toolTip">
     <string>Selecting an element on the stage</string>
@@ -418,10 +418,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionDrawLine</sender>
+   <sender>actionDrawPolyline</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>drawLine()</slot>
+   <slot>drawPolyline()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -434,10 +434,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionMoveItem</sender>
+   <sender>actionSelectedItem</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>moveItem()</slot>
+   <slot>selectedItem()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -659,8 +659,8 @@
   </connection>
  </connections>
  <slots>
-  <slot>drawLine()</slot>
-  <slot>moveItem()</slot>
+  <slot>drawPolyline()</slot>
+  <slot>selectedItem()</slot>
   <slot>drawRect()</slot>
   <slot>drawEllipse()</slot>
   <slot>drawCurve()</slot>
