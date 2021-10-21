@@ -7,6 +7,7 @@
 class Rectangle;
 class Ellipse;
 class Polyline;
+class Curve;
 
 QT_BEGIN_NAMESPACE
 class QMenu;
@@ -27,7 +28,7 @@ public:
 
 
 public slots:
-    void setMode(Mode mode);
+    void setMode(DiagramScene::Mode mode);
     void setSelectableItems(bool selectable);
     void setSceneChanged(bool changed);
 
@@ -41,13 +42,13 @@ private:
     Rectangle   *rectangle;
     Polyline    *polyline;
     Ellipse     *ellipse;
-    QGraphicsLineItem *curve;
+    Curve       *curve;
     QMenu       *itemMenu;
     Mode        currentMode; // Initialized in mainwindow.cpp
-    QPointF     startPoint;
     QPen        itemPen; // Initialized in mainwindow.cpp
     QBrush      itemBrush; // Initialized in mainwindow.cpp
-    QList<QPointF>  polylinePoint;
+    QList<QPointF>  pathPoint;
+    QPointF     startPoint; // NOTE Without this variable, a segmentation fault occurs???
     bool        leftButtonPressed;
     bool        sceneChanged;
 };

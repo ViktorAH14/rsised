@@ -2,6 +2,7 @@
 #include "rectangle.h"
 #include "ellipse.h"
 #include "polyline.h"
+#include "curve.h"
 
 #include <QXmlStreamReader>
 #include <QPen>
@@ -328,8 +329,72 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device)
                 polyline->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
                 polyline->setTransform(trans);
-
                 itemList.append(polyline);
+            }
+            if (rseItemReader.name() == "curve") {
+                Curve *curve = new Curve(itemMenu);
+                QPainterPath path;
+                QPen itemPen;
+                qreal zValue{0.0};
+                qreal m11{0.0};
+                qreal m12{0.0};
+                qreal m13{0.0};
+                qreal m21{0.0};
+                qreal m22{0.0};
+                qreal m23{0.0};
+                qreal m31{0.0};
+                qreal m32{0.0};
+                qreal m33{0.0};
+                QXmlStreamAttributes attributes = rseItemReader.attributes();
+                for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
+                    if (attr.name() == "m") {
+                        QList<QStringRef > point(attr.value().split(",").toList());
+                        QPointF startPoint(point.at(0).toFloat(), point.at(1).toFloat());
+                        path.moveTo(startPoint);
+                    }
+                    if (attr.name() == "c") {
+                        QList<QStringRef> curvePoints(attr.value().split(" ").toList());
+                        for (int i = 0; i < curvePoints.count(); i += 3) {
+                            QList<QStringRef> ctr_1_List(curvePoints.at(i).split(",").toList());
+                            QPointF ctr_1_Point(ctr_1_List.at(0).toFloat(), ctr_1_List.at(1).toFloat());
+                            QList<QStringRef> ctr_2_List(curvePoints.at(i + 1).split(",").toList());
+                            QPointF ctr_2_Point(ctr_2_List.at(0).toFloat(), ctr_2_List.at(1).toFloat());
+                            QList<QStringRef> curveList(curvePoints.at(i + 2).split(",").toList());
+                            QPointF curvePoint(curveList.at(0).toFloat(), curveList.at(1).toFloat());
+                            path.cubicTo(ctr_1_Point, ctr_2_Point, curvePoint);
+                        }
+                    }
+                    if (attr.name() == "pen-color") {
+                        itemPen.setColor(attr.value().toString());
+                    }
+                    if (attr.name() == "pen-width") {
+                        itemPen.setWidth(attr.value().toInt());
+                    }
+                    if (attr.name() == "pen-style") {
+                        itemPen.setStyle(Qt::PenStyle(attr.value().toInt()));
+                    }
+                    if (attr.name() == "z") {
+                        zValue = attr.value().toFloat();
+                    }
+                    if (attr.name() == "transform") {
+                        QList<QStringRef> transList(attr.value().split(",").toList());
+                        m11 = transList.at(0).toFloat();
+                        m12 = transList.at(1).toFloat();
+                        m13 = transList.at(2).toFloat();
+                        m21 = transList.at(3).toFloat();
+                        m22 = transList.at(4).toFloat();
+                        m23 = transList.at(5).toFloat();
+                        m31 = transList.at(6).toFloat();
+                        m32 = transList.at(7).toFloat();
+                        m33 = transList.at(8).toFloat();
+                    }
+                }
+                curve->setPath(path);
+                curve->setPen(itemPen);
+                curve->setZValue(zValue);
+                QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
+                curve->setTransform(trans);
+                itemList.append(curve);
             }
         }
         rseItemReader.readNext();

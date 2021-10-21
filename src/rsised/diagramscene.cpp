@@ -2,20 +2,20 @@
 #include "rectangle.h"
 #include "ellipse.h"
 #include "polyline.h"
+#include "curve.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
 
 DiagramScene::DiagramScene(QMenu *editMenu, QObject *parent)
-    : QGraphicsScene(parent),
-      rectangle{nullptr},
-      polyline{nullptr},
-      ellipse{nullptr},
-      curve{nullptr},
-      itemMenu{editMenu},
-      currentMode{SelectItem},
-      leftButtonPressed{false},
-      sceneChanged{false}
+    : QGraphicsScene(parent)
+    , rectangle{nullptr}
+    , polyline{nullptr}
+    , ellipse{nullptr}
+    , curve{nullptr}
+    , itemMenu{editMenu}
+    , currentMode{SelectItem}
+    , leftButtonPressed{false}
 {
 
 }
@@ -60,6 +60,9 @@ void DiagramScene::setItemPen(const QColor &color, const qreal width, const Qt::
             if (Polyline *polylineItem = qgraphicsitem_cast<Polyline *>(item)) {
                 polylineItem->setPen(itemPen);
             }
+            if (Curve *curveItem = qgraphicsitem_cast<Curve *>(item)) {
+                curveItem->setPen(itemPen);
+            }
         }
     }
 }
@@ -101,7 +104,11 @@ void DiagramScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (currentMode == InsertPolyline) {
         polyline = nullptr;
-        polylinePoint.clear();
+        pathPoint.clear();
+    }
+    if (currentMode == InsertCurve) {
+        curve = nullptr;
+        pathPoint.clear();
     }
 
     QGraphicsScene::mouseDoubleClickEvent(mouseEvent);
@@ -114,22 +121,28 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
         switch (currentMode) {
         case InsertPolyline:
-            polylinePoint.append(mouseEvent->scenePos());
+            pathPoint.append(mouseEvent->scenePos());
             if (polyline == nullptr) {
                 polyline = new Polyline(itemMenu);
                 addItem(polyline);
             }
             break;
         case InsertRect:
-            rectangle = new Rectangle(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()), itemMenu);
+            rectangle = new Rectangle(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos())
+                                      , itemMenu);
             addItem(rectangle);
             break;
         case InsertEllipse:
-            ellipse = new Ellipse(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()), itemMenu);
+            ellipse = new Ellipse(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos())
+                                  , itemMenu);
             addItem(ellipse);
             break;
         case InsertCurve:
-            startPoint = mouseEvent->scenePos();
+            pathPoint.append(mouseEvent->scenePos());
+            if (curve == nullptr) {
+                curve = new Curve(itemMenu);
+                addItem(curve);
+            }
             break;
         default:
             break;
@@ -160,23 +173,27 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
             ellipse->setPen(itemPen);
             ellipse->setBrush(itemBrush);
         }
-        if (currentMode == InsertCurve) {
-            curve = addLine(startPoint.x(), startPoint.y(),
-                            mouseEvent->scenePos().x(), mouseEvent->scenePos().y());
-            startPoint = mouseEvent->scenePos();
-            curve->setPen(itemPen);
+
+    }
+    if (currentMode == InsertCurve && (curve != nullptr)) {
+        QPainterPath newPath;
+        newPath.moveTo(pathPoint.at(0));
+        for (int i = 2; i < pathPoint.count(); i += 2) {
+            newPath.quadTo(pathPoint.at(i - 1), pathPoint.at(i));
         }
+        newPath.quadTo(pathPoint.back(), mouseEvent->scenePos());
+        curve->setPath(newPath);
+        curve->setPen(itemPen);
     }
     if ((currentMode == InsertPolyline) && (polyline != nullptr)) {
         QPainterPath newPath;
-        newPath.moveTo(polylinePoint.at(0));
-        for (int i = 1; i < polylinePoint.count(); i++) {
-            newPath.lineTo(polylinePoint.at(i));
+        newPath.moveTo(pathPoint.at(0));
+        for (int i = 1; i < pathPoint.count(); i++) {
+            newPath.lineTo(pathPoint.at(i));
         }
         newPath.lineTo(mouseEvent->scenePos());
         polyline->setPath(newPath);
         polyline->setPen(itemPen);
-//        addItem(polyline);
     }
 
     QGraphicsScene::mouseMoveEvent(mouseEvent);

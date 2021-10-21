@@ -2,12 +2,13 @@
 #include "rectangle.h"
 #include "ellipse.h"
 #include "polyline.h"
+#include "curve.h"
 
 #include <QDomDocument>
 #include <QFile>
 #include <QPen>
 
-SvgReader::SvgReader(QMenu *itemMenu) : itemMenu{itemMenu}
+SvgReader::SvgReader(QMenu *itemMenu) : itemMenu{itemMenu}, currentPathType{PathType::Polyline}
 {
 }
 
@@ -33,8 +34,6 @@ QRectF SvgReader::getSize(const QString &fileName)
     return QRectF(0,0,1920,1080);
 }
 
-// NOTE refactoring
-// NOTE возможны конфликты между path и polyline
 QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
 {
     QList<QGraphicsItem *> itemList;
@@ -315,80 +314,37 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             continue;
         }
 
-        QDomElement elementPolyline = gNode.firstChildElement("polyline");
-        if (!elementPolyline.isNull()) {
-            QGraphicsPathItem *polyline = new QGraphicsPathItem();
-            polyline->setFlag(QGraphicsItem::ItemIsMovable, true);
-
-            QStringList listDotes = elementPolyline.attribute("points").split(" ");
-            listDotes.removeLast();
-            QString firstDotes = listDotes.at(0);
-            QStringList listFirstDotes = firstDotes.split(",");
-            QPainterPath painterPath;
-            painterPath.moveTo(listFirstDotes.at(0).toFloat(), listFirstDotes.at(1).toFloat());
-            for (int i = 1; i < listDotes.length(); i++) {
-                QString dotes = listDotes.at(i);
-                QStringList nextDotes = dotes.split(",");
-                painterPath.lineTo(nextDotes.at(0).toFloat(), nextDotes.at(1).toFloat());
-            }
-            polyline->setPath(painterPath);
-            QDomElement gElement = gNode.toElement();
-// Pen
-            QColor strokeColor(gElement.attribute("stroke", "#000000"));
-            strokeColor.setAlphaF(gElement.attribute("stroke-opacity").toFloat());
-            qreal strokeWidth(gElement.attribute("stroke-width", "0").toInt());
-            QStringList strokeDasharray(gElement.attribute("stroke-dasharray").split(","));
-            Qt::PenStyle penStyle(Qt::SolidLine);
-            switch (strokeDasharray.count()) {
-            case 2:
-                if ((strokeDasharray.at(0).toInt()) <= (strokeDasharray.at(1).toInt())) {
-                    penStyle = Qt::DotLine;
-                } else {
-                    penStyle = Qt::DashLine;
-                }
-                break;
-            case 4:
-                penStyle = Qt::DashDotLine;
-                break;
-            case 6:
-                penStyle = Qt::DashDotDotLine;
-                break;
-            default:
-                break;
-            }
-            polyline->setPen(QPen(strokeColor, strokeWidth, penStyle));
-// Tronsfomation
-            QString transStr = gElement.attribute("transform");
-            transStr.replace(QString("matrix("), QString(""));
-            transStr.replace(QString(")"), QString(""));
-            QStringList transList(transStr.split(","));
-            qreal m11{transList.at(0).toFloat()};   // Horizontal scaling
-            qreal m12{transList.at(1).toFloat()};   // Vertical shearing
-            qreal m21{transList.at(2).toFloat()};   // Horizontal shearing
-            qreal m22{transList.at(3).toFloat()};   // Vertical scaling
-            qreal m31{transList.at(4).toFloat()};   // Horizontal position (dx)
-            qreal m32{transList.at(5).toFloat()};   // Vertical position (dy)
-            QTransform transformation(m11, m12, m21, m22, m31, m32);
-            polyline->setTransform(transformation);
-
-            itemList.append(polyline);
-            continue;
-        }
-
         QDomElement elementPath = gNode.firstChildElement("path");
         if (!elementPath.isNull()) {
-            Polyline *polylineItem = new Polyline(itemMenu);
             QPainterPath path;
-            QStringList listDotes = elementPath.attribute("d").split(" ");
-            QString first = listDotes.at(0);
-            QStringList firstElement = first.replace(QString("M"), QString("")).split(",");
-            path.moveTo(firstElement.at(0).toInt(), firstElement.at(1).toInt());
-            for (int i = 1; i < listDotes.length(); i++) {
-                QString other = listDotes.at(i);
-                QStringList dot = other.replace(QString("L"), QString("")).split(",");
-                path.lineTo(dot.at(0).toInt(), dot.at(1).toInt());
+            QStringList pointsList = elementPath.attribute("d").split(" ");
+            if (pointsList.back() == "") {
+                pointsList.removeLast();
             }
-            polylineItem->setPath(path);
+            QString firstPoint = pointsList.at(0);
+            QStringList firstPointList = firstPoint.replace(QString("M"), QString("")).split(",");
+            path.moveTo(firstPointList.at(0).toFloat(), firstPointList.at(1).toFloat());
+            for (int i = 1; i < pointsList.size(); i++) {
+                QString pathPoints = pointsList.at(i);
+                if (pathPoints.at(0) == 'L') {
+                    currentPathType = PathType::Polyline;
+                    QStringList pointList = pathPoints.replace(QString("L"), QString("")).split(",");
+                    path.lineTo(pointList.at(0).toFloat(), pointList.at(1).toFloat());
+                }
+                if (pathPoints.at(0) == 'C') {
+                    currentPathType = PathType::Curve;
+                    QStringList c1PointList = pathPoints.replace(QString("C"), QString("")).split(" ");
+                    QStringList c1(c1PointList.at(0).split(","));
+                    QPointF ctr_1_Point(c1.at(0).toFloat(), c1.at(1).toFloat());
+                    i++;
+                    QStringList c2(pointsList.at(i).split(","));
+                    QPointF ctr_2_Point(c2.at(0).toFloat(), c2.at(1).toFloat());
+                    i++;
+                    QStringList cur(pointsList.at(i).split(","));
+                    QPointF curvePoint(cur.at(0).toFloat(), cur.at(1).toFloat());
+                    path.cubicTo(ctr_1_Point, ctr_2_Point, curvePoint);
+                }
+            }
             QDomElement gElement = gNode.toElement();
 // Pen
             QColor strokeColor(gElement.attribute("stroke", "#000000"));
@@ -413,7 +369,6 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             default:
                 break;
             }
-            polylineItem->setPen(QPen(strokeColor, strokeWidth, penStyle));
 // Tronsfomation
             QString transStr = gElement.attribute("transform");
             transStr.replace(QString("matrix("), QString(""));
@@ -426,9 +381,22 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             qreal m31{transList.at(4).toFloat()};   // Horizontal position (dx)
             qreal m32{transList.at(5).toFloat()};   // Vertical position (dy)
             QTransform transformation(m11, m12, m21, m22, m31, m32);
-            polylineItem->setTransform(transformation);
 
-            itemList.append(polylineItem);
+            if (currentPathType == PathType::Polyline) {
+                Polyline *polylineItem = new Polyline(itemMenu);
+                polylineItem->setPath(path);
+                polylineItem->setPen(QPen(strokeColor, strokeWidth, penStyle));
+                polylineItem->setTransform(transformation);
+                itemList.append(polylineItem);
+            }
+            if (currentPathType == PathType::Curve) {
+                Curve *curveItem = new Curve(itemMenu);
+                curveItem->setPath(path);
+                curveItem->setPen(QPen(strokeColor, strokeWidth, penStyle));
+                curveItem->setTransform(transformation);
+                itemList.append(curveItem);
+            }
+
             continue;
         }
     }

@@ -2,6 +2,7 @@
 #include "rectangle.h"
 #include "ellipse.h"
 #include "polyline.h"
+#include "curve.h"
 
 #include <cmath>
 
@@ -172,18 +173,55 @@ QVariant SizeGripItem::HandleItem::itemChange(GraphicsItemChange change,
             case PathLine:
                 QPainterPath oldPath = parentItem->parentItemPath();
                 QPainterPath newPath;
-                for (int i = 0; i < oldPath.elementCount(); i++) {
-                    if (i == 0) {
-                        if (i == pathElementNum) {
-                            newPath.moveTo(newPos);
+                if (parentItem->parentItem()->type() == Polyline::Type) {
+                    for (int i = 0; i < oldPath.elementCount(); i++) {
+                        if (i == 0) {
+                            if (i == pathElementNum) {
+                                newPath.moveTo(newPos);
+                            } else {
+                                newPath.moveTo(oldPath.elementAt(i));
+                            }
                         } else {
-                            newPath.moveTo(oldPath.elementAt(i));
+                            if (i == pathElementNum) {
+                                newPath.lineTo(newPos);
+                            } else {
+                                newPath.lineTo(oldPath.elementAt(i));
+                            }
                         }
-                    } else {
-                        if (i == pathElementNum) {
-                            newPath.lineTo(newPos);
-                        } else {
-                            newPath.lineTo(oldPath.elementAt(i));
+                    }
+                }
+                if (parentItem->parentItem()->type() == Curve::Type) {
+                    for (int i = 0; i < oldPath.elementCount(); i++) {
+                        int identPoint(i % 3); // control point or a path point
+                        switch (identPoint) {
+                        case 0:
+                            if (i == 0) {
+                                if (i == pathElementNum) {
+                                    newPath.moveTo(newPos);
+                                } else {
+                                    newPath.moveTo(oldPath.elementAt(0));
+                                }
+                            } else {
+                                if (i == pathElementNum) {
+                                    newPath.cubicTo(oldPath.elementAt(i - 2), oldPath.elementAt(i - 1), newPos);
+                                } else {
+                                    newPath.cubicTo(oldPath.elementAt(i - 2), oldPath.elementAt(i - 1), oldPath.elementAt(i));
+                                }
+                            }
+                            break;
+
+                        case 1: // control point 1
+                            if (i == pathElementNum) {
+                                newPath.cubicTo(newPos, oldPath.elementAt(i + 1),oldPath.elementAt(i + 2));
+                                i += 2; // moving to the next element of the path
+                            }
+                            break;
+                        case 2: // control point 2
+                            if (i == pathElementNum) {
+                                newPath.cubicTo(oldPath.elementAt(i - 1), newPos, oldPath.elementAt(i + 1));
+                                i++; // moving to the next element of the path
+                            }
+                            break;
                         }
                     }
                 }
@@ -249,6 +287,15 @@ SizeGripItem::SizeGripItem(Resizer *resizer, QGraphicsItem *parent)
     if (Polyline *polylineItem = dynamic_cast<Polyline *>(parent)) {
         setItemType(Path);
         parentPath = polylineItem->path();
+        for (int i = 0; i < parentPath.elementCount(); i++) {
+            handleItemList.append(new HandleItem(PathLine, this));
+            HandleItem *item = handleItemList.at(i);
+            item->setPathElementNum(i);
+        }
+    }
+    if (Curve *curveItem = dynamic_cast<Curve *>(parent)) {
+        setItemType(Path);
+        parentPath = curveItem->path();
         for (int i = 0; i < parentPath.elementCount(); i++) {
             handleItemList.append(new HandleItem(PathLine, this));
             HandleItem *item = handleItemList.at(i);

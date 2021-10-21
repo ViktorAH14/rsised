@@ -16,7 +16,9 @@ public:
     QList<QGraphicsItem *> getElements(const QString &fileName);
 
 private:
+    enum class PathType{ Polyline, Curve };
     QMenu   *itemMenu;
+    PathType currentPathType;
 };
 
 #endif // SVG_READER_H

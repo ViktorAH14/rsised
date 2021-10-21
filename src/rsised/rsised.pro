@@ -11,6 +11,8 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    curve.cpp \
+    curveresizer.cpp \
     diagramscene.cpp \
     ellipse.cpp \
     ellipseresizer.cpp \
@@ -26,6 +28,8 @@ SOURCES += \
     svg_reader.cpp
 
 HEADERS += \
+    curve.h \
+    curveresizer.h \
     diagramscene.h \
     ellipse.h \
     ellipseresizer.h \

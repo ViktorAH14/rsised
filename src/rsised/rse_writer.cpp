@@ -2,6 +2,7 @@
 #include "rectangle.h"
 #include "ellipse.h"
 #include "polyline.h"
+#include "curve.h"
 
 #include <QXmlStreamWriter>
 #include <QGraphicsItem>
@@ -109,6 +110,36 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
             rseWriter.writeAttribute("z", QString::number(polyline->zValue()));
             rseWriter.writeAttribute("transform", transStr);
             rseWriter.writeEndElement(); // polyline
+        }
+        if (item->type() == Curve::Type) {
+            Curve *curve = qgraphicsitem_cast<Curve *>(item);
+            QPainterPath curvePath = curve->path();
+            QStringList dotList;
+            for (int i = 0; i < curvePath.elementCount(); i++) {
+                dotList << QString::number(curvePath.elementAt(i).x) + ","
+                           + QString::number(curvePath.elementAt(i).y);
+            }
+            rseWriter.writeStartElement("curve");
+            rseWriter.writeAttribute("m", dotList.at(0));
+            QString dotLine;
+            for (int i = 1; i < dotList.count(); i ++) {
+                dotLine += dotList.at(i) + " ";
+            }
+            dotLine.chop(1);
+            QTransform trans(curve->sceneTransform());
+            QString transStr(QString::number(trans.m11()) + "," + QString::number(trans.m12())
+                             + "," + QString::number(trans.m13()) + ","
+                             + QString::number(trans.m21()) + "," + QString::number(trans.m22())
+                             + "," + QString::number(trans.m23()) + ","
+                             + QString::number(trans.m31()) + "," + QString::number(trans.m32())
+                             + "," + QString::number(trans.m33()));
+            rseWriter.writeAttribute("c", dotLine);
+            rseWriter.writeAttribute("pen-color", curve->pen().color().name());
+            rseWriter.writeAttribute("pen-width", QString::number(curve->pen().width()));
+            rseWriter.writeAttribute("pen-style", QString::number(curve->pen().style()));
+            rseWriter.writeAttribute("z", QString::number(curve->zValue()));
+            rseWriter.writeAttribute("transform", transStr);
+            rseWriter.writeEndElement(); // curve
         }
         if (item->type() == QGraphicsLineItem::Type) {
             QGraphicsLineItem *lineItem = qgraphicsitem_cast<QGraphicsLineItem *>(item);

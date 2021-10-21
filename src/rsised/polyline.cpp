@@ -11,7 +11,6 @@ Polyline::Polyline(QMenu *contextMenu, QGraphicsItem *parent)
     : QGraphicsPathItem(parent), contextMenu{contextMenu}
 {
     setFlag(ItemSendsGeometryChanges, true);
-    setAcceptHoverEvents(true);
 }
 
 void Polyline::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -77,22 +76,6 @@ void Polyline::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 
     QGraphicsItem::mouseReleaseEvent(mouseEvent);
-}
-
-void Polyline::hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEvent)
-{
-    if (isSelected()) {
-//        QApplication::setOverrideCursor(Qt::OpenHandCursor);
-    }
-
-    QGraphicsItem::hoverEnterEvent(hoverEvent);
-}
-
-void Polyline::hoverLeaveEvent(QGraphicsSceneHoverEvent *hoverEvent)
-{
-//    QApplication::restoreOverrideCursor();
-
-    QGraphicsItem::hoverLeaveEvent(hoverEvent);
 }
 
 void Polyline::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)

@@ -3,6 +3,7 @@
 #include "rectangle.h"
 #include "ellipse.h"
 #include "polyline.h"
+#include "curve.h"
 #include "rse_writer.h"
 #include "rse_reader.h"
 #include "svg_reader.h"
@@ -83,6 +84,9 @@ void MainWindow::loadFile(const QString &fileName)
         }
         if (Polyline *polylineItem = dynamic_cast<Polyline *>(item)) {
             scene->addItem(polylineItem);
+        }
+        if (Curve *curveItem = dynamic_cast<Curve *>(item)) {
+            scene->addItem(curveItem);
         }
         if (QGraphicsLineItem *lineItem = dynamic_cast<QGraphicsLineItem *>(item)) {
             scene->addItem(lineItem);
@@ -186,6 +190,14 @@ void MainWindow::paste()
             newPolyline->setPen(oldPolyline->pen());
             scene->addItem(newPolyline);
         }
+        if (Curve *oldCurve = dynamic_cast<Curve *>(item)) {
+            Curve *newCurve = new Curve(ui->menuEdit);
+            newCurve->setPath(oldCurve->path());
+            newCurve->setX(oldCurve->x() + 10.0);
+            newCurve->setY(oldCurve->y() + 10.0);
+            newCurve->setPen(oldCurve->pen());
+            scene->addItem(newCurve);
+        }
         if (QGraphicsLineItem *oldLine = dynamic_cast<QGraphicsLineItem *>(item)) {
             QGraphicsLineItem *newLine = new QGraphicsLineItem();
             newLine->setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -230,6 +242,14 @@ void MainWindow::cut()
             newPolyline->setPen(oldPolyline->pen());
             cutList.append(newPolyline);
         }
+        if (Curve *oldCurve = dynamic_cast<Curve *>(item)) {
+            Curve *newCurve = new Curve(ui->menuEdit);
+            newCurve->setPath(oldCurve->path());
+            newCurve->setX(oldCurve->x() + 10.0);
+            newCurve->setY(oldCurve->y() + 10.0);
+            newCurve->setPen(oldCurve->pen());
+            cutList.append(newCurve);
+        }
         if (QGraphicsLineItem *oldLine = dynamic_cast<QGraphicsLineItem *>(item)) {
             QGraphicsLineItem *newLine = new QGraphicsLineItem();
             newLine->setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -268,6 +288,9 @@ void MainWindow::openSVG()
             }
             if (Polyline *polylineItem = dynamic_cast<Polyline *>(item)) {
                 scene->addItem(polylineItem);
+            }
+            if (Curve *curveItem = dynamic_cast<Curve *>(item)) {
+                scene->addItem(curveItem);
             }
             if (QGraphicsLineItem *lineItem = dynamic_cast<QGraphicsLineItem *>(item)) {
                 scene->addItem(lineItem);
