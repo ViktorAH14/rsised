@@ -11,6 +11,7 @@ Curve::Curve(QMenu *contextMenu, QGraphicsItem *parent)
     : QGraphicsPathItem(parent), contextMenu{contextMenu}
 {
     setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
 }
 
 void Curve::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)

@@ -11,6 +11,7 @@ Polyline::Polyline(QMenu *contextMenu, QGraphicsItem *parent)
     : QGraphicsPathItem(parent), contextMenu{contextMenu}
 {
     setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
 }
 
 void Polyline::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
