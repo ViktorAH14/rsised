@@ -4,6 +4,7 @@
 #include "ellipse.h"
 #include "polyline.h"
 #include "curve.h"
+#include "textitem.h"
 #include "rse_writer.h"
 #include "rse_reader.h"
 #include "svg_reader.h"
@@ -20,12 +21,12 @@ MainWindow::MainWindow(QWidget *parent)
     createActions();
     createMenu();
     disableAction();
-    setCurrentFile(QString());
     setUnifiedTitleAndToolBarOnMac(true);
 
 // Create toolbars
     createSimpleDrawToolBar();
     createStyleToolBar();
+    createFontStyleToolBar();
     createSceneScaleToolBar();
 
 // Create scene and view
@@ -42,6 +43,9 @@ MainWindow::MainWindow(QWidget *parent)
     copyList = scene->selectedItems();
 
     connect(scene, &QGraphicsScene::selectionChanged, this, &MainWindow::enableAction);
+
+    setCurrentFile(QString());
+    changedFont();
 }
 
 MainWindow::~MainWindow()
@@ -90,6 +94,9 @@ void MainWindow::loadFile(const QString &fileName)
         }
         if (QGraphicsLineItem *lineItem = dynamic_cast<QGraphicsLineItem *>(item)) {
             scene->addItem(lineItem);
+        }
+        if (TextItem *textItem = dynamic_cast<TextItem *>(item)) {
+            scene->addItem(textItem);
         }
     }
     file.close();
@@ -207,6 +214,15 @@ void MainWindow::paste()
             newLine->setPen(oldLine->pen());
             scene->addItem(newLine);
         }
+        if (TextItem *oldText = dynamic_cast<TextItem *>(item)) {
+            TextItem *newText = new TextItem(ui->menuEdit);
+            newText->setPlainText(oldText->document()->toPlainText());
+            newText->setPos(QPointF(oldText->x() + 10, oldText->y() + 10));
+            newText->setFont(oldText->font());
+            newText->setDefaultTextColor(oldText->defaultTextColor());
+            newText->setZValue(oldText->zValue());
+            scene->addItem(newText);
+        }
     }
     scene->setSelectableItems(true);
 }
@@ -259,6 +275,15 @@ void MainWindow::cut()
             newLine->setPen(oldLine->pen());
             cutList.append(newLine);
         }
+        if (TextItem *oldText = dynamic_cast<TextItem *>(item)) {
+            TextItem *newText = new TextItem(ui->menuEdit);
+            newText->setPlainText(oldText->document()->toPlainText());
+            newText->setPos(QPointF(oldText->x() + 10, oldText->y() + 10));
+            newText->setFont(oldText->font());
+            newText->setDefaultTextColor(oldText->defaultTextColor());
+            newText->setZValue(oldText->zValue());
+            cutList.append(newText);
+        }
     }
     copyList = cutList;
     cutList.clear();
@@ -295,8 +320,8 @@ void MainWindow::openSVG()
             if (QGraphicsLineItem *lineItem = dynamic_cast<QGraphicsLineItem *>(item)) {
                 scene->addItem(lineItem);
             }
-            if (QGraphicsPathItem *pathItem = dynamic_cast<QGraphicsPathItem *>(item)) {
-                scene->addItem(pathItem);
+            if (TextItem *textItem = dynamic_cast<TextItem *>(item)) {
+                scene->addItem(textItem);
             }
         }
         scene->setSelectableItems(true);
@@ -364,6 +389,15 @@ void MainWindow::drawCurve()
     ui->actionDeleteItem->setDisabled(true);
 }
 
+void MainWindow::insertText()
+{
+    ui->mainGraphicsView->setCursor(Qt::IBeamCursor);
+    scene->setMode(DiagramScene::InserText);
+    scene->setSelectableItems(false);
+    ui->actionSelect_All->setDisabled(true);
+    ui->actionDeleteItem->setDisabled(true);
+}
+
 void MainWindow::selectedItem()
 {
     ui->mainGraphicsView->setCursor(Qt::ArrowCursor);
@@ -386,6 +420,17 @@ void MainWindow::changedItemBrush()
     Qt::BrushStyle currentBrushStyle = qvariant_cast<Qt::BrushStyle>
             (brushStyleCombo->currentData());
     scene->setItemBrush(currentBrushColor, currentBrushStyle);
+}
+
+void MainWindow::changedFont()
+{
+    currentFont = fontCombo->currentFont();
+    currentFont.setPointSize(fontSizeCombo->currentText().toInt());
+    currentFont.setWeight(boldAction->isChecked() ? QFont::Bold : QFont::Normal);
+    currentFont.setItalic(italicAction->isChecked());
+    currentFont.setUnderline(underLineAction->isChecked());
+    QColor currentTextColor(textColorButton->color());
+    scene->setItemFont(currentFont, currentTextColor);
 }
 
 void MainWindow::disableAction()
@@ -423,6 +468,21 @@ void MainWindow::createActions()
     sceneScaleMaxAction->setShortcut(tr("Ctrl++"));
     sceneScaleMaxAction->setToolTip(tr("Zoom in on the scene by 10%"));
     connect(sceneScaleMaxAction, &QAction::triggered, this, &MainWindow::sceneZoomInOut);
+
+    boldAction = new QAction(QIcon(":images/icons/bold_48.png"), tr("Bold"), this);
+    boldAction->setCheckable(true);
+    boldAction->setShortcut(tr("Ctrl+B"));
+    connect(boldAction, &QAction::triggered, this, &MainWindow::changedFont);
+
+    italicAction = new QAction(QIcon(":images/icons/italic_48.png"), tr("Italic"), this);
+    italicAction->setCheckable(true);
+    italicAction->setShortcut(tr("Ctrl+I"));
+    connect(italicAction, &QAction::triggered, this, &MainWindow::changedFont);
+
+    underLineAction = new QAction(QIcon(":images/icons/underline_48.png"), tr("Underline"), this);
+    underLineAction->setCheckable(true);
+    underLineAction->setShortcut(tr("Ctrl+U"));
+    connect(underLineAction, &QAction::triggered, this, &MainWindow::changedFont);
 }
 
 void MainWindow::createMenu()
@@ -520,14 +580,47 @@ void MainWindow::createStyleToolBar()
     styleToolBar->addWidget(brushColorFrame);
 }
 
+void MainWindow::createFontStyleToolBar()
+{
+    fontCombo = new QFontComboBox();
+    fontCombo->setWritingSystem(QFontDatabase::Cyrillic);
+    fontCombo->setToolTip(tr("Change the font of the text"));
+    connect(fontCombo, &QFontComboBox::currentFontChanged, this, &MainWindow::changedFont);
+
+    fontSizeCombo = new QComboBox;
+    fontSizeCombo->setEditable(true);
+    for (int i = 8; i < 30; i = i + 2)
+        fontSizeCombo->addItem(QString().setNum(i));
+    QIntValidator *validator = new QIntValidator(2, 64, this);
+    fontSizeCombo->setValidator(validator);
+    fontSizeCombo->setCurrentIndex(2);
+    fontCombo->setToolTip(tr("Change the font size of the text"));
+    connect(fontSizeCombo, &QComboBox::currentTextChanged, this, &MainWindow::changedFont);
+
+    textColorButton = new KColorButton(this);
+    textColorButton->setColor(Qt::black);
+    textColorButton->setFixedWidth(32);
+    textColorButton->setToolTip(tr("Changing the color of the text"));
+    connect(textColorButton, &KColorButton::changed, this, &MainWindow::changedFont);
+
+    textStyleToolBar = addToolBar(tr("Font style")) ;
+    textStyleToolBar->addWidget(fontCombo);
+    textStyleToolBar->addWidget(fontSizeCombo);
+    textStyleToolBar->addAction(boldAction);
+    textStyleToolBar->addAction(italicAction);
+    textStyleToolBar->addAction(underLineAction);
+    textStyleToolBar->addWidget(textColorButton);
+}
+
 void MainWindow::createSimpleDrawToolBar()
 {
     simpleDrawModeActionGr = new QActionGroup(this);
-    simpleDrawModeActionGr->addAction(ui->actionDrawPolyline);
     simpleDrawModeActionGr->addAction(ui->actionSelectedItem);
+    simpleDrawModeActionGr->addAction(ui->actionDrawPolyline);
+    simpleDrawModeActionGr->addAction(ui->actionDrawCurve);
     simpleDrawModeActionGr->addAction(ui->actionDrawRectangle);
     simpleDrawModeActionGr->addAction(ui->actionDrawEllipse);
-    simpleDrawModeActionGr->addAction(ui->actionDrawCurve);
+    simpleDrawModeActionGr->addAction(ui->actionInsertText);
     simpleDrawModeActionGr->setExclusive(true);
 }
 

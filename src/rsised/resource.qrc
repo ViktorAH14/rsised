@@ -47,5 +47,9 @@
         <file>images/icons/cut_48.png</file>
         <file>images/icons/exit_48.png</file>
         <file>images/icons/pollyline_48.png</file>
+        <file>images/icons/text_48.png</file>
+        <file>images/icons/bold_48.png</file>
+        <file>images/icons/underline_48.png</file>
+        <file>images/icons/italic_48.png</file>
     </qresource>
 </RCC>

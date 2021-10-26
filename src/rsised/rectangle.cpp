@@ -84,7 +84,6 @@ void Rectangle::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     scene()->clearSelection();
     setSelected(true);
     contextMenu->exec(event->screenPos());
-
 }
 
 QVariant Rectangle::itemChange(GraphicsItemChange change, const QVariant &value)

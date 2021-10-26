@@ -27,7 +27,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEvent) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *hoverEvent) override;
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;    
 
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 

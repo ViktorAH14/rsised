@@ -3,10 +3,12 @@
 #include "ellipse.h"
 #include "polyline.h"
 #include "curve.h"
+#include "textitem.h"
 
 #include <QXmlStreamWriter>
 #include <QGraphicsItem>
 #include <QPen>
+#include <QTextDocument>
 
 RseWriter::RseWriter()
 {
@@ -161,6 +163,21 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
             rseWriter.writeAttribute("z", QString::number(lineItem->zValue()));
             rseWriter.writeAttribute("transform", transStr);
             rseWriter.writeEndElement(); // lineItem
+        }
+        if (item->type() == TextItem::Type) {
+            TextItem *textItem = qgraphicsitem_cast<TextItem *>(item);
+            rseWriter.writeStartElement("text");
+            rseWriter.writeAttribute("x", QString::number(textItem->x()));
+            rseWriter.writeAttribute("y", QString::number(textItem->y()));
+            rseWriter.writeAttribute("font", textItem->font().family());
+            rseWriter.writeAttribute("font-size", QString::number(textItem->font().pointSize()));
+            rseWriter.writeAttribute("bold", QString::number(textItem->font().bold()));
+            rseWriter.writeAttribute("italic", QString::number(textItem->font().italic()));
+            rseWriter.writeAttribute("underline", QString::number(textItem->font().underline()));
+            rseWriter.writeAttribute("color", textItem->defaultTextColor().name());
+            rseWriter.writeAttribute("z", QString::number(textItem->zValue()));
+            rseWriter.writeCharacters(textItem->document()->toPlainText());
+            rseWriter.writeEndElement(); // textItem
         }
     }
     rseWriter.writeEndElement(); // ItemList

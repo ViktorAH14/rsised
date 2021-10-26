@@ -3,10 +3,12 @@
 #include "ellipse.h"
 #include "polyline.h"
 #include "curve.h"
+#include "textitem.h"
 
 #include <QDomDocument>
 #include <QFile>
 #include <QPen>
+#include <QFont>
 
 SvgReader::SvgReader(QMenu *itemMenu) : itemMenu{itemMenu}, currentPathType{PathType::Polyline}
 {
@@ -396,7 +398,46 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
                 curveItem->setTransform(transformation);
                 itemList.append(curveItem);
             }
+            continue;
+        }
+        QDomElement elementText = gNode.firstChildElement("text");
+        if (!elementText.isNull()) {
+            TextItem *textItem = new TextItem(itemMenu);
+            QString text = elementText.text();
+            textItem->setPlainText(text);
+            qreal x = elementText.attribute("x").toFloat();
+            qreal y = elementText.attribute("y").toFloat();
+            textItem->setPos(x, y);
+            QFont textFont(elementText.attribute("font-family"));
+            int fontSize{elementText.attribute("font-size").toInt()};
+            textFont.setPointSize(fontSize);
+            int fontWeight{elementText.attribute("font-weight").toInt()};
+            textFont.setWeight(fontWeight < 700 ? QFont::Normal : QFont::Bold);
+            bool italic{false};
+            if (elementText.attribute("font-style") == "italic") {
+                italic = true;
+            }
+            textFont.setItalic(italic);
+            //  The underlining of the text is not saved, so there is no definition of it.
+            textItem->setFont(textFont);
+            QColor textColor(elementText.attribute("fill"));
+            textItem->setDefaultTextColor(textColor);
+            QDomElement gElement = gNode.toElement();
+// Tronsfomation
+            QString transStr = gElement.attribute("transform");
+            transStr.replace(QString("matrix("), QString(""));
+            transStr.replace(QString(")"), QString(""));
+            QStringList transList(transStr.split(","));
+            qreal m11{transList.at(0).toFloat()};   // Horizontal scaling
+            qreal m12{transList.at(1).toFloat()};   // Vertical shearing
+            qreal m21{transList.at(2).toFloat()};   // Horizontal shearing
+            qreal m22{transList.at(3).toFloat()};   // Vertical scaling
+            qreal m31{transList.at(4).toFloat()};   // Horizontal position (dx)
+            qreal m32{transList.at(5).toFloat()};   // Vertical position (dy)
+            QTransform transformation(m11, m12, m21, m22, m31, m32);
+            textItem->setTransform(transformation);
 
+            itemList.append(textItem);
             continue;
         }
     }

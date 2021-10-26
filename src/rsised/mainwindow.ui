@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1180</width>
+    <width>1662</width>
     <height>690</height>
    </rect>
   </property>
@@ -29,7 +29,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1180</width>
+     <width>1662</width>
      <height>30</height>
     </rect>
    </property>
@@ -68,6 +68,7 @@
     <addaction name="actionDrawEllipse"/>
     <addaction name="actionDrawCurve"/>
     <addaction name="separator"/>
+    <addaction name="actionInsertText"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -98,6 +99,12 @@
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="windowTitle">
     <string>Main toolbar</string>
    </property>
@@ -118,6 +125,12 @@
    <addaction name="actionDeleteItem"/>
   </widget>
   <widget class="QToolBar" name="simpleDrawToolBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="windowTitle">
     <string>Simple draw</string>
    </property>
@@ -136,6 +149,7 @@
    <addaction name="actionDrawCurve"/>
    <addaction name="actionDrawRectangle"/>
    <addaction name="actionDrawEllipse"/>
+   <addaction name="actionInsertText"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpenSVG">
@@ -192,7 +206,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="resource.qrc">
@@ -378,6 +392,24 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionInsertText">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/text_48.png</normaloff>:/images/icons/text_48.png</iconset>
+   </property>
+   <property name="text">
+    <string>Text</string>
+   </property>
+   <property name="toolTip">
+    <string>Insert text</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+T</string>
    </property>
   </action>
  </widget>
@@ -657,6 +689,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionInsertText</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>insertText()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>589</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>drawPolyline()</slot>
@@ -675,5 +723,6 @@
   <slot>copy()</slot>
   <slot>paste()</slot>
   <slot>cut()</slot>
+  <slot>insertText()</slot>
  </slots>
 </ui>
