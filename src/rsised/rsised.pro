@@ -25,7 +25,8 @@ SOURCES += \
     rse_reader.cpp \
     rse_writer.cpp \
     sizegripitem.cpp \
-    svg_reader.cpp
+    svg_reader.cpp \
+    textitem.cpp
 
 HEADERS += \
     curve.h \
@@ -41,7 +42,8 @@ HEADERS += \
     rse_reader.h \
     rse_writer.h \
     sizegripitem.h \
-    svg_reader.h
+    svg_reader.h \
+    textitem.h
 
 FORMS += \
     mainwindow.ui

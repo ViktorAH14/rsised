@@ -8,6 +8,7 @@ class Rectangle;
 class Ellipse;
 class Polyline;
 class Curve;
+class TextItem;
 
 QT_BEGIN_NAMESPACE
 class QMenu;
@@ -18,12 +19,13 @@ class DiagramScene : public QGraphicsScene
     Q_OBJECT
 
 public:
-    enum Mode {InsertPolyline, InsertRect, InsertEllipse, InsertCurve, SelectItem};
+    enum Mode {InsertPolyline, InsertRect, InsertEllipse, InsertCurve, InserText, SelectItem};
 
     explicit DiagramScene(QMenu *editMenu, QObject *parent = nullptr);
 
     void setItemPen(const QColor &color, const qreal width, const Qt::PenStyle &penStyle);
     void setItemBrush(const QColor &color, const Qt::BrushStyle &brushStyle);
+    void setItemFont(const QFont &font , const QColor &textColor);
     bool isChanged();
 
 
@@ -43,10 +45,13 @@ private:
     Polyline    *polyline;
     Ellipse     *ellipse;
     Curve       *curve;
+    TextItem    *textItem;
     QMenu       *itemMenu;
     Mode        currentMode; // Initialized in mainwindow.cpp
     QPen        itemPen; // Initialized in mainwindow.cpp
     QBrush      itemBrush; // Initialized in mainwindow.cpp
+    QFont       itemFont; // Initialized in mainwindow.cpp
+    QColor      fontColor;
     QList<QPointF>  pathPoint;
     QPointF     startPoint; // NOTE Without this variable, a segmentation fault occurs???
     bool        leftButtonPressed;

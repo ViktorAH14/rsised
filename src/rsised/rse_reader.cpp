@@ -3,9 +3,11 @@
 #include "ellipse.h"
 #include "polyline.h"
 #include "curve.h"
+#include "textitem.h"
 
 #include <QXmlStreamReader>
 #include <QPen>
+#include <QFont>
 
 RseReader::RseReader(QMenu *itemMenu) : itemMenu{itemMenu}
 {
@@ -395,6 +397,65 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device)
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
                 curve->setTransform(trans);
                 itemList.append(curve);
+            }
+            if (rseItemReader.name() == "text") {
+                qreal x{0.0};
+                qreal y{0.0};
+                qreal zValue{0.0};
+                int fontSize{0};
+                bool bold{false};
+                bool italic{false};
+                bool underline{false};
+                QFont font;
+                QColor colorText;
+                QXmlStreamAttributes attributes = rseItemReader.attributes();
+                for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
+                    if (attr.name() == "x") {
+                        x = attr.value().toFloat();
+                    }
+                    if (attr.name() == "y") {
+                        y = attr.value().toFloat();
+                    }
+                    if (attr.name() == "font") {
+                        font = attr.value().toString();
+                    }
+                    if (attr.name() == "font-size") {
+                        fontSize = attr.value().toInt();
+                    }
+                    if (attr.name() == "bold") {
+                        bold = attr.value().toInt();
+                    }
+                    if (attr.name() == "italic") {
+                        italic = attr.value().toInt();
+                    }
+                    if (attr.name() == "underline") {
+                        underline = attr.value().toInt();
+                    }
+                    if (attr.name() == "color") {
+                        colorText = attr.value().toString();
+                    }
+                    if (attr.name() == "z") {
+                        zValue = attr.value().toFloat();
+                    }
+                }
+                QString text(rseItemReader.readElementText());
+                TextItem *textItem = new TextItem(itemMenu);
+                textItem->setPlainText(text);
+                textItem->setPos(x, y);
+                font.setPointSize(fontSize);
+                if (bold) {
+                    font.setBold(true);
+                }
+                if (italic) {
+                    font.setItalic(true);
+                }
+                if (underline) {
+                    font.setUnderline(true);
+                }
+                textItem->setFont(font);
+                textItem->setDefaultTextColor(colorText);
+                textItem->setZValue(zValue);
+                itemList.append(textItem);
             }
         }
         rseItemReader.readNext();

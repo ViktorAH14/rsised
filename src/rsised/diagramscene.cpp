@@ -3,6 +3,7 @@
 #include "ellipse.h"
 #include "polyline.h"
 #include "curve.h"
+#include "textitem.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
@@ -13,6 +14,7 @@ DiagramScene::DiagramScene(QMenu *editMenu, QObject *parent)
     , polyline{nullptr}
     , ellipse{nullptr}
     , curve{nullptr}
+    , textItem{nullptr}
     , itemMenu{editMenu}
     , currentMode{SelectItem}
     , leftButtonPressed{false}
@@ -72,7 +74,7 @@ void DiagramScene::setItemBrush(const QColor &color, const Qt::BrushStyle &brush
     itemBrush.setColor(color);
     itemBrush.setStyle(brushStyle);
 
-    if (!selectedItems().isEmpty()){
+    if (!selectedItems().isEmpty()) {
         QList<QGraphicsItem *> selectedItems = this->selectedItems();
         for (QGraphicsItem *item : qAsConst(selectedItems)) {
             if (Rectangle *rectItem = qgraphicsitem_cast<Rectangle *>(item)) {
@@ -80,6 +82,22 @@ void DiagramScene::setItemBrush(const QColor &color, const Qt::BrushStyle &brush
             }
             if (Ellipse *ellipseItem = qgraphicsitem_cast<Ellipse *>(item)) {
                 ellipseItem->setBrush(itemBrush);
+            }
+        }
+    }
+}
+
+void DiagramScene::setItemFont(const QFont &font, const QColor &textColor)
+{
+    itemFont = font;
+    fontColor = textColor;
+
+    if (!selectedItems().isEmpty()) {
+        QList<QGraphicsItem *> selectedItems = this->selectedItems();
+        for (QGraphicsItem *item : qAsConst(selectedItems)) {
+            if (TextItem *textItem = qgraphicsitem_cast<TextItem *>(item)) {
+                textItem->setFont(itemFont);
+                textItem->setDefaultTextColor(fontColor);
             }
         }
     }
@@ -143,6 +161,15 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 curve = new Curve(itemMenu);
                 addItem(curve);
             }
+            break;
+        case InserText:
+            textItem = new TextItem(itemMenu);
+            textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
+            textItem->setPos(mouseEvent->scenePos());
+            textItem->setFont(itemFont);
+            textItem->setDefaultTextColor(fontColor);
+            textItem->setZValue(1000.0);
+            addItem(textItem);
             break;
         default:
             break;
