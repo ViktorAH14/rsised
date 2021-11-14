@@ -24,7 +24,7 @@ protected:
 
 private:
     SizeGripItem *curveSizeGripItem;
-    QMenu *contextMenu;
+    QMenu *m_contextMenu;
 };
 
 #endif // CURVE_H

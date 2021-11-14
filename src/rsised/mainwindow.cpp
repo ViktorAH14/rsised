@@ -5,6 +5,7 @@
 #include "polyline.h"
 #include "curve.h"
 #include "textitem.h"
+#include "pixmapitem.h"
 #include "rse_writer.h"
 #include "rse_reader.h"
 #include "svg_reader.h"
@@ -32,17 +33,17 @@ MainWindow::MainWindow(QWidget *parent)
 // Create scene and view
     scene = new DiagramScene(ui->menuEdit, this);
     scene->setSceneRect(0, 0, 1920, 1080);
-    scene->setMode(DiagramScene::SelectItem);
+    scene->setMode(DiagramScene::SelectItem); // TODO delete?
     scene->setItemPen(penColorButton->color(),
                       qvariant_cast<qreal>(penSizeCombo->currentText()),
                       qvariant_cast<Qt::PenStyle>(penStyleCombo->currentData()));
     scene->setItemBrush(brushColorButton->color(),
                         qvariant_cast<Qt::BrushStyle>(brushStyleCombo->currentData()));
+    connect(scene, &QGraphicsScene::selectionChanged, this, &MainWindow::enableAction);
     ui->mainGraphicsView->setScene(scene);
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
-    copyList = scene->selectedItems();
 
-    connect(scene, &QGraphicsScene::selectionChanged, this, &MainWindow::enableAction);
+    copyList = scene->selectedItems();
 
     setCurrentFile(QString());
     changedFont();
@@ -97,6 +98,9 @@ void MainWindow::loadFile(const QString &fileName)
         }
         if (TextItem *textItem = dynamic_cast<TextItem *>(item)) {
             scene->addItem(textItem);
+        }
+        if (PixmapItem *pixmapItem = dynamic_cast<PixmapItem *>(item)) {
+            scene->addItem(pixmapItem);
         }
     }
     file.close();
@@ -323,6 +327,9 @@ void MainWindow::openSVG()
             if (TextItem *textItem = dynamic_cast<TextItem *>(item)) {
                 scene->addItem(textItem);
             }
+            if (PixmapItem *pixmapItem = dynamic_cast<PixmapItem *>(item)) {
+                scene->addItem(pixmapItem);
+            }
         }
         scene->setSelectableItems(true);
         setCurrentFile(fileName);
@@ -351,6 +358,21 @@ bool MainWindow::saveSVG()
     painter.end();
 
     return true;
+}
+
+void MainWindow::insertImage()
+{
+    imagePath = QFileDialog::getOpenFileName(this, tr("Insert image"), ""
+                                             , tr("Images (*.bmp *.gif *.jpg *.jpeg *.png *.pbm *.pgm *.ppm *.xbm *.xpm)"));
+    if (imagePath.isEmpty()) {
+        return;
+    }
+    ui->mainGraphicsView->setCursor(Qt::ArrowCursor);
+    scene->setMode(DiagramScene::InsertImage);
+    scene->setSelectableItems(false);
+    scene->insertPixmap(imagePath);
+    ui->actionSelect_All->setDisabled(true);
+    ui->actionDeleteItem->setDisabled(true);
 }
 
 void MainWindow::drawPolyline()
@@ -621,6 +643,7 @@ void MainWindow::createSimpleDrawToolBar()
     simpleDrawModeActionGr->addAction(ui->actionDrawRectangle);
     simpleDrawModeActionGr->addAction(ui->actionDrawEllipse);
     simpleDrawModeActionGr->addAction(ui->actionInsertText);
+    simpleDrawModeActionGr->addAction(ui->actionInsertImage);
     simpleDrawModeActionGr->setExclusive(true);
 }
 

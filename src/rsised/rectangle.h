@@ -16,7 +16,6 @@ public:
 
     explicit Rectangle(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
     explicit Rectangle(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent = nullptr);
-    ~Rectangle();
 
     int type() const override { return Type;}
 
@@ -33,7 +32,7 @@ protected:
 
 private:
     SizeGripItem *rectangleSizeGripItem;
-    QMenu *contextMenu;
+    QMenu *m_contextMenu;
 };
 
 #endif // RECTANGLE_H

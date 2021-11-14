@@ -7,7 +7,7 @@
 class CurveResizer : public SizeGripItem::Resizer
 {
 public:
-    virtual void operator()(QGraphicsItem *item, const QVariant &path);
+    void operator()(QGraphicsItem *item, const QVariant &path) override;
 };
 
 #endif // CURVERESIZER_H

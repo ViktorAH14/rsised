@@ -61,14 +61,15 @@
    </widget>
    <widget class="QMenu" name="menuDraw">
     <property name="title">
-     <string>Draw</string>
+     <string>Insert</string>
     </property>
     <addaction name="actionDrawPolyline"/>
     <addaction name="actionDrawRectangle"/>
     <addaction name="actionDrawEllipse"/>
     <addaction name="actionDrawCurve"/>
-    <addaction name="separator"/>
     <addaction name="actionInsertText"/>
+    <addaction name="actionInsertImage"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -150,6 +151,7 @@
    <addaction name="actionDrawRectangle"/>
    <addaction name="actionDrawEllipse"/>
    <addaction name="actionInsertText"/>
+   <addaction name="actionInsertImage"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpenSVG">
@@ -410,6 +412,21 @@
    </property>
    <property name="shortcut">
     <string>Alt+T</string>
+   </property>
+  </action>
+  <action name="actionInsertImage">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/insertimage_48.png</normaloff>:/images/icons/insertimage_48.png</iconset>
+   </property>
+   <property name="text">
+    <string>Insert image</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>
@@ -705,6 +722,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionInsertImage</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>insertImage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>830</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>drawPolyline()</slot>
@@ -724,5 +757,6 @@
   <slot>paste()</slot>
   <slot>cut()</slot>
   <slot>insertText()</slot>
+  <slot>insertImage()</slot>
  </slots>
 </ui>

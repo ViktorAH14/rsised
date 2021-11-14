@@ -19,7 +19,7 @@ protected:
     void focusOutEvent(QFocusEvent *focusEvent) override;
 
 private:
-    QMenu *contextMenu;
+    QMenu *m_contextMenu;
 };
 
 #endif // TEXTITEM_H

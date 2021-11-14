@@ -8,7 +8,7 @@
 #include <QMenu>
 
 Curve::Curve(QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsPathItem(parent), contextMenu{contextMenu}
+    : QGraphicsPathItem(parent), m_contextMenu{contextMenu}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
@@ -47,7 +47,7 @@ void Curve::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     scene()->clearSelection();
     setSelected(true);
-    contextMenu->exec(event->screenPos());
+    m_contextMenu->exec(event->screenPos());
 }
 
 QVariant Curve::itemChange(GraphicsItemChange change, const QVariant &value)

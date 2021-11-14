@@ -4,16 +4,17 @@
 #include "polyline.h"
 #include "curve.h"
 #include "textitem.h"
+#include "pixmapitem.h"
 
 #include <QXmlStreamReader>
 #include <QPen>
 #include <QFont>
 
-RseReader::RseReader(QMenu *itemMenu) : itemMenu{itemMenu}
+RseReader::RseReader(QMenu *itemMenu) : m_itemMenu{itemMenu}
 {
 }
 
-QRectF RseReader::getSceneRect(QIODevice *device)
+QRectF RseReader::getSceneRect(QIODevice *device) const
 {
     QRectF sceneRect;
     QXmlStreamReader rseSceneReader;
@@ -55,7 +56,7 @@ QRectF RseReader::getSceneRect(QIODevice *device)
 }
 
 //NOTE refactoring
-QList<QGraphicsItem *> RseReader::getElement(QIODevice *device)
+QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
 {
     QList<QGraphicsItem *> itemList;
     QXmlStreamReader rseItemReader;
@@ -64,7 +65,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device)
     while (!rseItemReader.atEnd()) {
         if (rseItemReader.isStartElement()) {
             if (rseItemReader.name() == "rect") {
-                Rectangle *rectangle = new Rectangle(itemMenu);
+                Rectangle *rectangle = new Rectangle(m_itemMenu);
                 qreal x{0.0};
                 qreal y{0.0};
                 qreal width{0.0};
@@ -136,7 +137,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device)
                 itemList.append(rectangle);
             }
             if (rseItemReader.name() == "ellipse") {
-                Ellipse *ellipse = new Ellipse(itemMenu);
+                Ellipse *ellipse = new Ellipse(m_itemMenu);
                 qreal x{0.0};
                 qreal y{0.0};
                 qreal width{0.0};
@@ -273,7 +274,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device)
                 itemList.append(line);
             }
             if (rseItemReader.name() == "polyline") {
-                Polyline *polyline = new Polyline(itemMenu);
+                Polyline *polyline = new Polyline(m_itemMenu);
                 QPainterPath path;
                 QPen itemPen;
                 qreal zValue{0.0};
@@ -334,7 +335,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device)
                 itemList.append(polyline);
             }
             if (rseItemReader.name() == "curve") {
-                Curve *curve = new Curve(itemMenu);
+                Curve *curve = new Curve(m_itemMenu);
                 QPainterPath path;
                 QPen itemPen;
                 qreal zValue{0.0};
@@ -439,7 +440,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device)
                     }
                 }
                 QString text(rseItemReader.readElementText());
-                TextItem *textItem = new TextItem(itemMenu);
+                TextItem *textItem = new TextItem(m_itemMenu);
                 textItem->setPlainText(text);
                 textItem->setPos(x, y);
                 font.setPointSize(fontSize);
@@ -456,6 +457,59 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device)
                 textItem->setDefaultTextColor(colorText);
                 textItem->setZValue(zValue);
                 itemList.append(textItem);
+            }
+            if (rseItemReader.name() == "pixmap") {
+                qreal x{0.0};
+                qreal y{0.0};
+                qreal width{0.0};
+                qreal height{0.0};
+                qreal m11{0.0};
+                qreal m12{0.0};
+                qreal m13{0.0};
+                qreal m21{0.0};
+                qreal m22{0.0};
+                qreal m23{0.0};
+                qreal m31{0.0};
+                qreal m32{0.0};
+                qreal m33{0.0};
+                QXmlStreamAttributes attributes = rseItemReader.attributes();
+                for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
+                    if (attr.name() == "x") {
+                        x = attr.value().toFloat();
+                    }
+                    if (attr.name() == "y") {
+                        y = attr.value().toFloat();
+                    }
+                    if (attr.name() == "width") {
+                        width = attr.value().toFloat();
+                    }
+                    if (attr.name() == "height") {
+                        height = attr.value().toFloat();
+                    }
+                    if (attr.name() == "transform") {
+                        QList<QStringRef> transList(attr.value().split(",").toList());
+                        m11 = transList.at(0).toFloat();
+                        m12 = transList.at(1).toFloat();
+                        m13 = transList.at(2).toFloat();
+                        m21 = transList.at(3).toFloat();
+                        m22 = transList.at(4).toFloat();
+                        m23 = transList.at(5).toFloat();
+                        m31 = transList.at(6).toFloat();
+                        m32 = transList.at(7).toFloat();
+                        m33 = transList.at(8).toFloat();
+                    }
+                }
+                const QString base64Pixmap(rseItemReader.readElementText());
+                const QByteArray &pixmapArray = QByteArray::fromBase64(base64Pixmap.toLatin1());
+                QPixmap pixmap(width, height);
+                pixmap.loadFromData(pixmapArray);
+                PixmapItem *pixmapItem = new PixmapItem();
+                pixmapItem->setPixmap(pixmap);
+                pixmapItem->setPos(QPointF(x, y));
+                QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
+                pixmapItem->setTransform(trans);
+
+                itemList.append(pixmapItem);
             }
         }
         rseItemReader.readNext();

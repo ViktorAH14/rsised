@@ -4,17 +4,18 @@
 #include "polyline.h"
 #include "curve.h"
 #include "textitem.h"
+#include "pixmapitem.h"
 
 #include <QDomDocument>
 #include <QFile>
 #include <QPen>
 #include <QFont>
 
-SvgReader::SvgReader(QMenu *itemMenu) : itemMenu{itemMenu}, currentPathType{PathType::Polyline}
+SvgReader::SvgReader(QMenu *itemMenu) : m_itemMenu{itemMenu}, currentPathType{PathType::Polyline}
 {
 }
 
-QRectF SvgReader::getSize(const QString &fileName)
+QRectF SvgReader::getSize(const QString &fileName) const
 {
     QDomDocument doc;
     QFile file(fileName);
@@ -51,7 +52,7 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
 
         QDomElement elementRect = gNode.firstChildElement("rect");
         if (!elementRect.isNull()){
-            Rectangle *rectangle = new Rectangle(itemMenu);
+            Rectangle *rectangle = new Rectangle(m_itemMenu);
 // Position and size
             rectangle->setRect(elementRect.attribute("x").toInt(),
                                elementRect.attribute("y").toInt(),
@@ -156,7 +157,7 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
 
         QDomElement elementEllipse = gNode.firstChildElement("ellipse");
         if (!elementEllipse.isNull()) {
-            Ellipse *ellipse = new Ellipse(itemMenu);
+            Ellipse *ellipse = new Ellipse(m_itemMenu);
 // Position and size
             qreal cx = elementEllipse.attribute("cx").toFloat();
             qreal cy = elementEllipse.attribute("cy").toFloat();
@@ -385,14 +386,14 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             QTransform transformation(m11, m12, m21, m22, m31, m32);
 
             if (currentPathType == PathType::Polyline) {
-                Polyline *polylineItem = new Polyline(itemMenu);
+                Polyline *polylineItem = new Polyline(m_itemMenu);
                 polylineItem->setPath(path);
                 polylineItem->setPen(QPen(strokeColor, strokeWidth, penStyle));
                 polylineItem->setTransform(transformation);
                 itemList.append(polylineItem);
             }
             if (currentPathType == PathType::Curve) {
-                Curve *curveItem = new Curve(itemMenu);
+                Curve *curveItem = new Curve(m_itemMenu);
                 curveItem->setPath(path);
                 curveItem->setPen(QPen(strokeColor, strokeWidth, penStyle));
                 curveItem->setTransform(transformation);
@@ -402,7 +403,7 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
         }
         QDomElement elementText = gNode.firstChildElement("text");
         if (!elementText.isNull()) {
-            TextItem *textItem = new TextItem(itemMenu);
+            TextItem *textItem = new TextItem(m_itemMenu);
             QString text = elementText.text();
             textItem->setPlainText(text);
             qreal x = elementText.attribute("x").toFloat();
@@ -438,6 +439,41 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             textItem->setTransform(transformation);
 
             itemList.append(textItem);
+            continue;
+        }
+        QDomElement elementImage = gNode.firstChildElement("image");
+        if (!elementImage.isNull()) {
+            PixmapItem *pixmapItem = new PixmapItem();
+
+            qreal x = elementImage.attribute("x").toFloat();
+            qreal y = elementImage.attribute("y").toFloat();
+            pixmapItem->setPos(x, y);
+
+            qreal width = elementImage.attribute("width").toFloat();
+            qreal height = elementImage.attribute("height").toFloat();
+            QPixmap pixmap(width, height);
+            QString imageData = elementImage.attribute("xlink:href");
+            imageData.replace(QString("data:image/png;base64,"), QString(""));
+            const QByteArray &pixmapArray = QByteArray::fromBase64(imageData.toLatin1());
+            pixmap.loadFromData(pixmapArray);
+            pixmapItem->setPixmap(pixmap);
+
+            QDomElement gElement = gNode.toElement();
+// Tronsfomation
+            QString transStr = gElement.attribute("transform");
+            transStr.replace(QString("matrix("), QString(""));
+            transStr.replace(QString(")"), QString(""));
+            QStringList transList(transStr.split(","));
+            qreal m11{transList.at(0).toFloat()};   // Horizontal scaling
+            qreal m12{transList.at(1).toFloat()};   // Vertical shearing
+            qreal m21{transList.at(2).toFloat()};   // Horizontal shearing
+            qreal m22{transList.at(3).toFloat()};   // Vertical scaling
+            qreal m31{transList.at(4).toFloat()};   // Horizontal position (dx)
+            qreal m32{transList.at(5).toFloat()};   // Vertical position (dy)
+            QTransform transformation(m11, m12, m21, m22, m31, m32);
+            pixmapItem->setTransform(transformation);
+
+            itemList.append(pixmapItem);
             continue;
         }
     }

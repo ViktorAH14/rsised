@@ -8,7 +8,7 @@
 #include <QMenu>
 
 Polyline::Polyline(QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsPathItem(parent), contextMenu{contextMenu}
+    : QGraphicsPathItem(parent), m_contextMenu{contextMenu}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
@@ -83,7 +83,7 @@ void Polyline::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     scene()->clearSelection();
     setSelected(true);
-    contextMenu->exec(event->screenPos());
+    m_contextMenu->exec(event->screenPos());
 }
 
 QVariant Polyline::itemChange(GraphicsItemChange change, const QVariant &value)

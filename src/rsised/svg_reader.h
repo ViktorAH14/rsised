@@ -12,12 +12,12 @@ class SvgReader
 public:
     SvgReader(QMenu *itemMenu);
 
-    QRectF getSize(const QString &fileName);
+    QRectF getSize(const QString &fileName) const;
     QList<QGraphicsItem *> getElements(const QString &fileName);
 
 private:
     enum class PathType{ Polyline, Curve };
-    QMenu   *itemMenu;
+    QMenu   *m_itemMenu;
     PathType currentPathType;
 };
 
