@@ -36,6 +36,7 @@ private slots:
     void enableAction();
     void openSVG();
     bool saveSVG();
+    void insertImage();
     void deleteItem();
     void selectAll();
     void sceneZoomInOut();
@@ -74,6 +75,7 @@ private:
     DiagramScene *scene;
 
     QString currentFile;
+    QString imagePath;
     QList<QGraphicsItem *> copyList;
 
     QToolBar *styleToolBar;

@@ -73,9 +73,9 @@ private:
     };
 
     void doResize();
-    void updateHandleItemPositions();
     void rotateParentItem(const QPointF &currentPos, int positionFlag);
     void setItemType(unsigned int type);
+    void updateHandleItemPositions();
 
     QList<HandleItem *> handleItemList;
     Resizer *itemResizer;

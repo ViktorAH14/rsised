@@ -25,7 +25,7 @@ protected:
 
 private:
     SizeGripItem *polylineSizeGripItem;
-    QMenu *contextMenu;
+    QMenu *m_contextMenu;
 };
 
 #endif // POLYLINE_H

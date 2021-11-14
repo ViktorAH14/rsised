@@ -5,7 +5,7 @@
 #include <QMenu>
 
 TextItem::TextItem(QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsTextItem(parent), contextMenu{contextMenu}
+    : QGraphicsTextItem(parent), m_contextMenu{contextMenu}
 {
 }
 
@@ -32,7 +32,7 @@ void TextItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     scene()->clearSelection();
     setSelected(true);
-    contextMenu->exec(event->screenPos());
+    m_contextMenu->exec(event->screenPos());
 }
 
 void TextItem::focusOutEvent(QFocusEvent *focusEvent)

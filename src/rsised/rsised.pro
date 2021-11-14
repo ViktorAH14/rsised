@@ -18,6 +18,8 @@ SOURCES += \
     ellipseresizer.cpp \
     main.cpp \
     mainwindow.cpp \
+    pixmapitem.cpp \
+    pixmapresizer.cpp \
     polyline.cpp \
     polylineresizer.cpp \
     rectangle.cpp \
@@ -35,6 +37,8 @@ HEADERS += \
     ellipse.h \
     ellipseresizer.h \
     mainwindow.h \
+    pixmapitem.h \
+    pixmapresizer.h \
     polyline.h \
     polylineresizer.h \
     rectangle.h \

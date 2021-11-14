@@ -4,11 +4,14 @@
 #include "polyline.h"
 #include "curve.h"
 #include "textitem.h"
+#include "pixmapitem.h"
 
 #include <QXmlStreamWriter>
 #include <QGraphicsItem>
 #include <QPen>
 #include <QTextDocument>
+#include <QPixmap>
+#include <QBuffer>
 
 RseWriter::RseWriter()
 {
@@ -178,6 +181,29 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
             rseWriter.writeAttribute("z", QString::number(textItem->zValue()));
             rseWriter.writeCharacters(textItem->document()->toPlainText());
             rseWriter.writeEndElement(); // textItem
+        }
+        if (item->type() == PixmapItem::Type) {
+            PixmapItem *pixmapItem = qgraphicsitem_cast<PixmapItem *> (item);
+            rseWriter.writeStartElement("pixmap");
+            rseWriter.writeAttribute("x", QString::number(pixmapItem->scenePos().x()));
+            rseWriter.writeAttribute("y", QString::number(pixmapItem->scenePos().y()));
+            rseWriter.writeAttribute("width", QString::number(pixmapItem->pixmap().width()));
+            rseWriter.writeAttribute("height", QString::number(pixmapItem->pixmap().height()));
+            QTransform trans(pixmapItem->transform());
+            QString transPixmap(QString::number(trans.m11()) + "," + QString::number(trans.m12())
+                                + "," + QString::number(trans.m13()) + ","
+                                + QString::number(trans.m21()) + "," + QString::number(trans.m22())
+                                + "," + QString::number(trans.m23()) + ","
+                                + QString::number(trans.m31()) + "," + QString::number(trans.m32())
+                                + "," + QString::number(trans.m33()));
+            rseWriter.writeAttribute("transform", transPixmap);
+            QByteArray pixmapArray;
+            QBuffer buffer(&pixmapArray);
+            buffer.open(QIODevice::WriteOnly);
+            pixmapItem->pixmap().save(&buffer, "png");
+            const QString &strPixmap(pixmapArray.toBase64());
+            rseWriter.writeCharacters(strPixmap);
+            rseWriter.writeEndElement(); // pixmapitems
         }
     }
     rseWriter.writeEndElement(); // ItemList

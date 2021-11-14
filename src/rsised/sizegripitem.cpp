@@ -3,6 +3,7 @@
 #include "ellipse.h"
 #include "polyline.h"
 #include "curve.h"
+#include "pixmapitem.h"
 
 #include <cmath>
 
@@ -13,8 +14,8 @@
 
 Q_DECLARE_METATYPE(QPainterPath)
 
-static const double PI = 3.14159265358979323846264338327950288419717;
-static double TWO_PI = 2.0 * PI;
+static const double PI {3.14159265358979323846264338327950288419717};
+static double TWO_PI {2.0 * PI};
 
 static qreal normalizeAngle(qreal angle)
 {
@@ -29,14 +30,14 @@ static qreal normalizeAngle(qreal angle)
 
 SizeGripItem::HandleItem::HandleItem(int positionFlags, SizeGripItem *parent)
     : QGraphicsRectItem(-4, -4, 8, 8, parent)
-    , handlePositionFlags(positionFlags)
-    , parentItem(parent)
+    , handlePositionFlags {positionFlags}
+    , parentItem {parent}
+    , leftButtonPressed {false}
 {
     setBrush(QBrush(Qt::lightGray));
-    setFlag(ItemIsMovable);
-    setFlag(ItemSendsGeometryChanges);
+    setFlag(ItemIsMovable, true);
+    setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
-    leftButtonPressed = false;
 }
 
 int SizeGripItem::HandleItem::positionFlags() const
@@ -134,7 +135,7 @@ void SizeGripItem::HandleItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *hovereE
 QVariant SizeGripItem::HandleItem::itemChange(GraphicsItemChange change,
                                               const QVariant &value)
 {
-    QVariant retVal = value;
+    QVariant retVal {value};
     if (parentItem->actionType() == SizeGripItem::Resize) {
         if (change == ItemPositionChange)
         {
@@ -142,7 +143,7 @@ QVariant SizeGripItem::HandleItem::itemChange(GraphicsItemChange change,
         }
         else if (change == ItemPositionHasChanged)
         {
-            QPointF newPos = value.toPointF();
+            QPointF newPos {value.toPointF()};
 
             switch (handlePositionFlags)
             {
@@ -171,7 +172,7 @@ QVariant SizeGripItem::HandleItem::itemChange(GraphicsItemChange change,
                 parentItem->setLeft(newPos.x());
                 break;
             case PathLine:
-                QPainterPath oldPath = parentItem->parentItemPath();
+                QPainterPath oldPath {parentItem->parentItemPath()};
                 QPainterPath newPath;
                 if (parentItem->parentItem()->type() == Polyline::Type) {
                     for (int i = 0; i < oldPath.elementCount(); i++) {
@@ -237,7 +238,7 @@ QVariant SizeGripItem::HandleItem::itemChange(GraphicsItemChange change,
 
 QPointF SizeGripItem::HandleItem::restrictPosition(const QPointF &newPos)
 {
-    QPointF retVal = pos();
+    QPointF retVal {pos()};
 
     if (handlePositionFlags & Top || handlePositionFlags & Bottom)
         retVal.setY(newPos.y());
@@ -267,10 +268,11 @@ SizeGripItem::SizeGripItem(Resizer *resizer, QGraphicsItem *parent)
     : QGraphicsItem(parent)
     , itemResizer(resizer)
 {
-    if ((parent->type() == Rectangle::Type) || (parent->type() == Ellipse::Type)) {
+    if ((parent->type() == Rectangle::Type) || (parent->type() == Ellipse::Type)
+            || (parent->type() == PixmapItem::Type)) {
         parentItemRect = parentItem()->boundingRect();
         setItemType(Rectangle);
-        int handleNum = -1;
+        int handleNum {-1};
 
         handleItemList.append(new HandleItem(TopLeft, this));
         handleItemList.append(new HandleItem(Top, this));
@@ -289,7 +291,7 @@ SizeGripItem::SizeGripItem(Resizer *resizer, QGraphicsItem *parent)
         parentPath = polylineItem->path();
         for (int i = 0; i < parentPath.elementCount(); i++) {
             handleItemList.append(new HandleItem(PathLine, this));
-            HandleItem *item = handleItemList.at(i);
+            HandleItem *item {handleItemList.at(i)};
             item->setPathElementNum(i);
         }
     }
@@ -298,7 +300,7 @@ SizeGripItem::SizeGripItem(Resizer *resizer, QGraphicsItem *parent)
         parentPath = curveItem->path();
         for (int i = 0; i < parentPath.elementCount(); i++) {
             handleItemList.append(new HandleItem(PathLine, this));
-            HandleItem *item = handleItemList.at(i);
+            HandleItem *item {handleItemList.at(i)};
             item->setPathElementNum(i);
         }
     }
@@ -349,6 +351,9 @@ void SizeGripItem::doResize()
     {
         if (currentItemType == Rectangle) {
             (*itemResizer)(parentItem(), parentItemRect);
+            if (parentItem()->type() == PixmapItem::Type) {
+                parentItemRect = parentItem()->boundingRect();
+            }
             updateHandleItemPositions();
         }
         if (currentItemType == Path) {
@@ -361,7 +366,7 @@ void SizeGripItem::doResize()
 void SizeGripItem::updateHandleItemPositions()
 {
     for (int i = 0; i < handleItemList.count(); i++) {
-        HandleItem *item = handleItemList.at(i);
+        HandleItem *item {handleItemList.at(i)};
         item->setFlag(ItemSendsGeometryChanges, false);
 
         switch (item->positionFlags())
@@ -405,12 +410,11 @@ void SizeGripItem::updateHandleItemPositions()
 
 SizeGripItem::Resizer::~Resizer()
 {
-
 }
 
 void SizeGripItem::rotateParentItem(const QPointF &currentPos, int positionFlag)
 {
-    QPointF parentItemCenter = parentItemRect.center();
+    QPointF parentItemCenter {parentItemRect.center()};
     QPointF corner;
 
     switch (positionFlag) {
@@ -430,8 +434,8 @@ void SizeGripItem::rotateParentItem(const QPointF &currentPos, int positionFlag)
     QLineF lineToTarget(parentItemCenter, corner);
     QLineF lineToCursor(parentItemCenter, currentPos);
 
-    qreal angleToTarget = ::acos(lineToTarget.dx() / lineToTarget.length());
-    qreal angleToCursor = ::acos(lineToCursor.dx() / lineToCursor.length());
+    qreal angleToTarget {::acos(lineToTarget.dx() / lineToTarget.length())};
+    qreal angleToCursor {::acos(lineToCursor.dx() / lineToCursor.length())};
 
     if (lineToTarget.dy() < 0) {
         angleToTarget = (TWO_PI - angleToTarget);
@@ -443,9 +447,9 @@ void SizeGripItem::rotateParentItem(const QPointF &currentPos, int positionFlag)
     }
     angleToCursor = normalizeAngle((PI - angleToCursor) + PI / 2);
 
-    qreal resultAngle = angleToTarget - angleToCursor;
+    qreal resultAngle {angleToTarget - angleToCursor};
 
-    QTransform parentTransformation = parentItem()->transform();
+    QTransform parentTransformation {parentItem()->transform()};
     parentTransformation.translate(parentItemCenter.x(), parentItemCenter.y());
     parentTransformation.rotateRadians(parentItem()->rotation() + resultAngle, Qt::ZAxis);
     parentTransformation.translate(-parentItemCenter.x(), -parentItemCenter.y());

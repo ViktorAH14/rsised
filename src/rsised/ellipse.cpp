@@ -8,22 +8,18 @@
 #include <QMenu>
 
 Ellipse::Ellipse(QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsEllipseItem(parent), contextMenu{contextMenu}
+    : QGraphicsEllipseItem(parent), m_contextMenu{contextMenu}
 {
     setAcceptHoverEvents(true);
     setFlag(ItemSendsGeometryChanges, true);
 }
 
 Ellipse::Ellipse(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsEllipseItem(parent), contextMenu{contextMenu}
+    : QGraphicsEllipseItem(parent), m_contextMenu{contextMenu}
 {
     QGraphicsEllipseItem::setRect(rect);
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
-}
-
-Ellipse::~Ellipse()
-{
 }
 
 void Ellipse::hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEvent)
@@ -81,7 +77,7 @@ void Ellipse::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     scene()->clearSelection();
     setSelected(true);
-    contextMenu->exec(event->screenPos());
+    m_contextMenu->exec(event->screenPos());
 }
 
 QVariant Ellipse::itemChange(GraphicsItemChange change, const QVariant &value)

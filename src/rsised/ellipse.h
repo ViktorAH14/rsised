@@ -16,7 +16,6 @@ public:
 
     explicit Ellipse(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
     explicit Ellipse(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent = nullptr);
-    ~Ellipse();
 
     int type() const override { return Type;}
 
@@ -33,7 +32,7 @@ protected:
 
 private:
     SizeGripItem *ellipseSizeGripItem;
-    QMenu *contextMenu;
+    QMenu *m_contextMenu;
 };
 
 #endif // ELLIPSE_H

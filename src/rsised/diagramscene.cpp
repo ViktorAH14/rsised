@@ -4,18 +4,21 @@
 #include "polyline.h"
 #include "curve.h"
 #include "textitem.h"
+#include "pixmapitem.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
+#include <QGraphicsPixmapItem>
 
-DiagramScene::DiagramScene(QMenu *editMenu, QObject *parent)
+DiagramScene::DiagramScene(QMenu *itemMenu, QObject *parent)
     : QGraphicsScene(parent)
     , rectangle{nullptr}
     , polyline{nullptr}
     , ellipse{nullptr}
     , curve{nullptr}
     , textItem{nullptr}
-    , itemMenu{editMenu}
+    , pixmapItem{nullptr}
+    , m_itemMenu{itemMenu}
     , currentMode{SelectItem}
     , leftButtonPressed{false}
 {
@@ -118,6 +121,14 @@ void DiagramScene::setSceneChanged(bool changed)
     }
 }
 
+void DiagramScene::insertPixmap(const QString &imageFile)
+{
+    pixmapItem = new PixmapItem();
+    QPixmap image(imageFile);
+    pixmapItem->setPixmap(image);
+    addItem(pixmapItem);
+}
+
 void DiagramScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (currentMode == InsertPolyline) {
@@ -141,29 +152,29 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         case InsertPolyline:
             pathPoint.append(mouseEvent->scenePos());
             if (polyline == nullptr) {
-                polyline = new Polyline(itemMenu);
+                polyline = new Polyline(m_itemMenu);
                 addItem(polyline);
             }
             break;
         case InsertRect:
             rectangle = new Rectangle(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos())
-                                      , itemMenu);
+                                      , m_itemMenu);
             addItem(rectangle);
             break;
         case InsertEllipse:
             ellipse = new Ellipse(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos())
-                                  , itemMenu);
+                                  , m_itemMenu);
             addItem(ellipse);
             break;
         case InsertCurve:
             pathPoint.append(mouseEvent->scenePos());
             if (curve == nullptr) {
-                curve = new Curve(itemMenu);
+                curve = new Curve(m_itemMenu);
                 addItem(curve);
             }
             break;
         case InserText:
-            textItem = new TextItem(itemMenu);
+            textItem = new TextItem(m_itemMenu);
             textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
             textItem->setPos(mouseEvent->scenePos());
             textItem->setFont(itemFont);

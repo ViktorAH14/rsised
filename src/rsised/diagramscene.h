@@ -9,6 +9,7 @@ class Ellipse;
 class Polyline;
 class Curve;
 class TextItem;
+class PixmapItem;
 
 QT_BEGIN_NAMESPACE
 class QMenu;
@@ -19,9 +20,15 @@ class DiagramScene : public QGraphicsScene
     Q_OBJECT
 
 public:
-    enum Mode {InsertPolyline, InsertRect, InsertEllipse, InsertCurve, InserText, SelectItem};
+    enum Mode {InsertPolyline
+               , InsertRect
+               , InsertEllipse
+               , InsertCurve
+               , InserText
+               , InsertImage
+               , SelectItem};
 
-    explicit DiagramScene(QMenu *editMenu, QObject *parent = nullptr);
+    explicit DiagramScene(QMenu *itemMenu, QObject *parent = nullptr);
 
     void setItemPen(const QColor &color, const qreal width, const Qt::PenStyle &penStyle);
     void setItemBrush(const QColor &color, const Qt::BrushStyle &brushStyle);
@@ -33,6 +40,7 @@ public slots:
     void setMode(DiagramScene::Mode mode);
     void setSelectableItems(bool selectable);
     void setSceneChanged(bool changed);
+    void insertPixmap(const QString &imageFile);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
@@ -46,7 +54,8 @@ private:
     Ellipse     *ellipse;
     Curve       *curve;
     TextItem    *textItem;
-    QMenu       *itemMenu;
+    PixmapItem  *pixmapItem;
+    QMenu       *m_itemMenu;
     Mode        currentMode; // Initialized in mainwindow.cpp
     QPen        itemPen; // Initialized in mainwindow.cpp
     QBrush      itemBrush; // Initialized in mainwindow.cpp
