@@ -28,8 +28,8 @@ public:
     void setBottomLeft(const QPointF &pos);
     void setLeft(qreal x);
 
-    void setActionType(unsigned int actionType);
-    unsigned int actionType();
+    void setActionType(ActionType actionType);
+    ActionType actionType();
     QPainterPath parentItemPath();
     void setParentItemPath(QPainterPath newPath);
 
@@ -74,15 +74,15 @@ private:
 
     void doResize();
     void rotateParentItem(const QPointF &currentPos, int positionFlag);
-    void setItemType(unsigned int type);
+    void setItemType(ItemType type);
     void updateHandleItemPositions();
 
     QList<HandleItem *> handleItemList;
     Resizer *itemResizer;
-    QRectF parentItemRect;
-    QPainterPath parentPath;
-    unsigned int currentActionType;
-    unsigned int currentItemType;
+    QRectF m_parentItemRect;
+    QPainterPath m_parentPath;
+    ActionType m_actionType;
+    ItemType m_itemType;
 };
 
 #endif // SIZEGRIPITEM_H

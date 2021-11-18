@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     createActions();
+    createShapeToolBox();
     createMenu();
     disableAction();
     setUnifiedTitleAndToolBarOnMac(true);
@@ -32,8 +33,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 // Create scene and view
     scene = new DiagramScene(ui->menuEdit, this);
-    scene->setSceneRect(0, 0, 1920, 1080);
-    scene->setMode(DiagramScene::SelectItem); // TODO delete?
+    scene->setSceneRect(0, 0, 1240, 877); //A3
+//    scene->setMode(DiagramScene::SelectItem); // TODO delete?
     scene->setItemPen(penColorButton->color(),
                       qvariant_cast<qreal>(penSizeCombo->currentText()),
                       qvariant_cast<Qt::PenStyle>(penStyleCombo->currentData()));
@@ -42,6 +43,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(scene, &QGraphicsScene::selectionChanged, this, &MainWindow::enableAction);
     ui->mainGraphicsView->setScene(scene);
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
+// TODO сделать выделение резиновой нитью   ui->mainGraphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
+    QHBoxLayout *mainHBoxLayout = new QHBoxLayout;
+    mainHBoxLayout->addWidget(shapeToolBox);
+    mainHBoxLayout->addWidget(ui->mainGraphicsView);
+    QWidget *mainWidget = new QWidget;
+    mainWidget->setLayout(mainHBoxLayout);
+    setCentralWidget(mainWidget);
 
     copyList = scene->selectedItems();
 
@@ -101,6 +110,9 @@ void MainWindow::loadFile(const QString &fileName)
         }
         if (PixmapItem *pixmapItem = dynamic_cast<PixmapItem *>(item)) {
             scene->addItem(pixmapItem);
+        }
+        if (TechnicsShape *technicsShapeItem = dynamic_cast<TechnicsShape *>(item)) {
+            scene->addItem(technicsShapeItem);
         }
     }
     file.close();
@@ -227,6 +239,16 @@ void MainWindow::paste()
             newText->setZValue(oldText->zValue());
             scene->addItem(newText);
         }
+        if (TechnicsShape *oldTechnicsShape = dynamic_cast<TechnicsShape *>(item)) {
+            TechnicsShape::ShapeType shapeType = oldTechnicsShape->shapeType();
+            QTransform shapeTransform = oldTechnicsShape->transform();
+            TechnicsShape *newTechnicsShape = new TechnicsShape(ui->menuEdit, shapeType);
+            newTechnicsShape->setPos(QPointF(oldTechnicsShape->x() + 10
+                                             , oldTechnicsShape->y() + 10));
+            newTechnicsShape->setZValue(oldTechnicsShape->zValue());
+            newTechnicsShape->setTransform(shapeTransform);
+            scene->addItem(newTechnicsShape);
+        }
     }
     scene->setSelectableItems(true);
 }
@@ -287,6 +309,16 @@ void MainWindow::cut()
             newText->setDefaultTextColor(oldText->defaultTextColor());
             newText->setZValue(oldText->zValue());
             cutList.append(newText);
+        }
+        if (TechnicsShape *oldTechnicsShape = dynamic_cast<TechnicsShape *>(item)) {
+            TechnicsShape::ShapeType shapeType = oldTechnicsShape->shapeType();
+            QTransform shapeTransform = oldTechnicsShape->transform();
+            TechnicsShape *newTechnicsShape = new TechnicsShape(ui->menuEdit, shapeType);
+            newTechnicsShape->setPos(QPointF(oldTechnicsShape->x() + 10
+                                             , oldTechnicsShape->y() + 10));
+            newTechnicsShape->setZValue(oldTechnicsShape->zValue());
+            newTechnicsShape->setTransform(shapeTransform);
+            cutList.append(newTechnicsShape);
         }
     }
     copyList = cutList;
@@ -420,6 +452,26 @@ void MainWindow::insertText()
     ui->actionDeleteItem->setDisabled(true);
 }
 
+void MainWindow::insertTechnicsShape(QAbstractButton *button)
+{
+    const QList<QAbstractButton *> buttons = technicsButtonGroup->buttons();
+    for (QAbstractButton *m_button : buttons) {
+        if (m_button != button)
+            button->setChecked(false);
+    }
+    const int id = technicsButtonGroup->id(button);
+    TechnicsShape::ShapeType type {TechnicsShape::ShapeType(id)};
+    TechnicsShape technicsShape(ui->menuEdit, type);
+    ui->mainGraphicsView->setCursor(QCursor(technicsShape.image()));
+    scene->setMode(DiagramScene::InsertShape);
+    scene->setTechnicsShapeType(TechnicsShape::ShapeType(id));
+    scene->setSelectableItems(false);
+    if (simpleDrawModeActionGr->checkedAction() != nullptr)
+        simpleDrawModeActionGr->checkedAction()->setChecked(false);
+    ui->actionSelect_All->setDisabled(true);
+    ui->actionDeleteItem->setDisabled(true);
+}
+
 void MainWindow::selectedItem()
 {
     ui->mainGraphicsView->setCursor(Qt::ArrowCursor);
@@ -453,6 +505,28 @@ void MainWindow::changedFont()
     currentFont.setUnderline(underLineAction->isChecked());
     QColor currentTextColor(textColorButton->color());
     scene->setItemFont(currentFont, currentTextColor);
+}
+
+void MainWindow::createShapeToolBox()
+{
+    technicsButtonGroup = new QButtonGroup(this);
+    technicsButtonGroup->setExclusive(false);
+    connect(technicsButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked),
+            this, &MainWindow::insertTechnicsShape);
+
+    QGridLayout *technicsLayout = new QGridLayout;
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Car"), TechnicsShape::Base), 0, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Tanker"), TechnicsShape::Tanker), 0, 1);
+    technicsLayout->setRowStretch(3, 10);
+    technicsLayout->setColumnStretch(2, 10);
+
+    QWidget *technicsWidget = new QWidget;
+    technicsWidget->setLayout(technicsLayout);
+
+    shapeToolBox = new QToolBox;
+    shapeToolBox->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored));
+    shapeToolBox->setMinimumWidth(technicsWidget->sizeHint().width());
+    shapeToolBox->addItem(technicsWidget, tr("Technics"));
 }
 
 void MainWindow::disableAction()
@@ -664,6 +738,27 @@ void MainWindow::createSceneScaleToolBar()
     sceneScaleToolBar->addAction(sceneScaleMinAction);
     sceneScaleToolBar->addAction(sceneScaleMaxAction);
     sceneScaleToolBar->addWidget(sceneScaleCombo);
+}
+
+QWidget *MainWindow::createTechnicsCellWidget(const QString &text, TechnicsShape::ShapeType type)
+{
+    TechnicsShape shapeItem(ui->menuEdit, type);
+    QIcon icon(shapeItem.image());
+
+    QToolButton *technicsButton = new QToolButton;
+    technicsButton->setIcon(icon);
+    technicsButton->setIconSize(QSize(18, 38));
+    technicsButton->setCheckable(true);
+    technicsButtonGroup->addButton(technicsButton, int(type));
+
+    QGridLayout *technicsShapeLayout = new QGridLayout;
+    technicsShapeLayout->addWidget(technicsButton, 0, 0, Qt::AlignHCenter);
+    technicsShapeLayout->addWidget(new QLabel(text), 1, 0, Qt::AlignCenter);
+
+    QWidget *technicsShapeWidget = new QWidget;
+    technicsShapeWidget->setLayout(technicsShapeLayout);
+
+    return technicsShapeWidget;
 }
 
 bool MainWindow::maybeSave()

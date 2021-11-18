@@ -31,6 +31,7 @@ void Rectangle::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
 }
 
+//NOTE наверное лучше отключить эти функции
 void Rectangle::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (isSelected()){

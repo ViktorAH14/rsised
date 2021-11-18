@@ -19,15 +19,15 @@ DiagramScene::DiagramScene(QMenu *itemMenu, QObject *parent)
     , textItem{nullptr}
     , pixmapItem{nullptr}
     , m_itemMenu{itemMenu}
-    , currentMode{SelectItem}
+    , m_sceneMode{SelectItem}
     , leftButtonPressed{false}
 {
 
 }
 
-void DiagramScene::setMode(Mode mode)
+void DiagramScene::setMode(SceneMode mode)
 {
-    currentMode = mode;
+    m_sceneMode = mode;
 }
 
 void DiagramScene::setSelectableItems(bool selectable)
@@ -121,21 +121,27 @@ void DiagramScene::setSceneChanged(bool changed)
     }
 }
 
+void DiagramScene::setTechnicsShapeType(TechnicsShape::ShapeType type)
+{
+    m_technicsShapeType = type;
+}
+
 void DiagramScene::insertPixmap(const QString &imageFile)
 {
     pixmapItem = new PixmapItem();
     QPixmap image(imageFile);
     pixmapItem->setPixmap(image);
+    pixmapItem->setZValue(-1000.0);
     addItem(pixmapItem);
 }
 
 void DiagramScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (currentMode == InsertPolyline) {
+    if (m_sceneMode == InsertPolyline) {
         polyline = nullptr;
         pathPoint.clear();
     }
-    if (currentMode == InsertCurve) {
+    if (m_sceneMode == InsertCurve) {
         curve = nullptr;
         pathPoint.clear();
     }
@@ -148,7 +154,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     if (mouseEvent->button() == Qt::LeftButton) {
         leftButtonPressed = true;
 
-        switch (currentMode) {
+        switch (m_sceneMode) {
         case InsertPolyline:
             pathPoint.append(mouseEvent->scenePos());
             if (polyline == nullptr) {
@@ -182,6 +188,11 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             textItem->setZValue(1000.0);
             addItem(textItem);
             break;
+        case InsertShape:
+            technicsShape = new TechnicsShape(m_itemMenu, m_technicsShapeType);
+            technicsShape->setPos(mouseEvent->scenePos());
+            addItem(technicsShape);
+            break;
         default:
             break;
         }
@@ -193,7 +204,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (leftButtonPressed) {
-        if ((currentMode == InsertRect) && (rectangle != nullptr)) {
+        if ((m_sceneMode == InsertRect) && (rectangle != nullptr)) {
             qreal dx = mouseEvent->scenePos().x() - rectangle->rect().left();
             qreal dy = mouseEvent->scenePos().y() - rectangle->rect().top();
             rectangle->setRect( ( dx > 0 ) ? rectangle->rect().left() : mouseEvent->scenePos().x(),
@@ -202,7 +213,7 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
             rectangle->setPen(itemPen);
             rectangle->setBrush(itemBrush);
         }
-        if ((currentMode == InsertEllipse) && (ellipse != nullptr)) {
+        if ((m_sceneMode == InsertEllipse) && (ellipse != nullptr)) {
             qreal dx = mouseEvent->scenePos().x() - ellipse->rect().left();
             qreal dy = mouseEvent->scenePos().y() - ellipse->rect().top();
             ellipse->setRect( ( dx > 0 ) ? ellipse->rect().left() : mouseEvent->scenePos().x(),
@@ -213,7 +224,7 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
         }
 
     }
-    if (currentMode == InsertCurve && (curve != nullptr)) {
+    if (m_sceneMode == InsertCurve && (curve != nullptr)) {
         QPainterPath newPath;
         newPath.moveTo(pathPoint.at(0));
         for (int i = 2; i < pathPoint.count(); i += 2) {
@@ -223,7 +234,7 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
         curve->setPath(newPath);
         curve->setPen(itemPen);
     }
-    if ((currentMode == InsertPolyline) && (polyline != nullptr)) {
+    if ((m_sceneMode == InsertPolyline) && (polyline != nullptr)) {
         QPainterPath newPath;
         newPath.moveTo(pathPoint.at(0));
         for (int i = 1; i < pathPoint.count(); i++) {
@@ -239,7 +250,7 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    switch (currentMode) {
+    switch (m_sceneMode) {
     case InsertPolyline:
         break;
     case InsertRect:
@@ -249,6 +260,9 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         ellipse = nullptr;
         break;
     case InsertCurve:
+        break;
+    case InsertShape:
+        technicsShape = nullptr;
         break;
     default:
         break;

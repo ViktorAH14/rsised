@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "diagramscene.h"
+#include "technics_shape.h"
 
 #include <QMainWindow>
 
@@ -11,6 +12,9 @@ class QActionGroup;
 class QLabel;
 class QComboBox;
 class QFontComboBox;
+class QToolBox;
+class QButtonGroup;
+class QAbstractButton;
 class KColorButton;
 QT_END_NAMESPACE
 
@@ -50,6 +54,9 @@ private slots:
     void drawCurve();
     void insertText();
 
+// Shapes
+    void insertTechnicsShape(QAbstractButton *button);
+
 // Style toolbar
     void changedItemPen();
     void changedItemBrush();
@@ -58,6 +65,7 @@ private slots:
     void changedFont();
 
 private:
+    void createShapeToolBox();
     void disableAction();
     void createActions();
     void createMenu();
@@ -65,6 +73,7 @@ private:
     void createFontStyleToolBar();
     void createSimpleDrawToolBar();
     void createSceneScaleToolBar();
+    QWidget *createTechnicsCellWidget(const QString &text, TechnicsShape::ShapeType type);
 
     void loadFile(const QString &fileName);
     bool maybeSave();
@@ -100,5 +109,8 @@ private:
     KColorButton *penColorButton;
     KColorButton *brushColorButton;
     KColorButton *textColorButton;
+
+    QToolBox *shapeToolBox;
+    QButtonGroup *technicsButtonGroup;
 };
 #endif // MAINWINDOW_H

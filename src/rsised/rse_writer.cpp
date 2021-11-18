@@ -5,6 +5,7 @@
 #include "curve.h"
 #include "textitem.h"
 #include "pixmapitem.h"
+#include "technics_shape.h"
 
 #include <QXmlStreamWriter>
 #include <QGraphicsItem>
@@ -189,6 +190,7 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
             rseWriter.writeAttribute("y", QString::number(pixmapItem->scenePos().y()));
             rseWriter.writeAttribute("width", QString::number(pixmapItem->pixmap().width()));
             rseWriter.writeAttribute("height", QString::number(pixmapItem->pixmap().height()));
+            rseWriter.writeAttribute("z", QString::number(pixmapItem->zValue()));
             QTransform trans(pixmapItem->transform());
             QString transPixmap(QString::number(trans.m11()) + "," + QString::number(trans.m12())
                                 + "," + QString::number(trans.m13()) + ","
@@ -204,6 +206,27 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
             const QString &strPixmap(pixmapArray.toBase64());
             rseWriter.writeCharacters(strPixmap);
             rseWriter.writeEndElement(); // pixmapitems
+        }
+        if (item->type() == TechnicsShape::Type) {
+            TechnicsShape *technicsShapeItem = qgraphicsitem_cast<TechnicsShape *>(item);
+            rseWriter.writeStartElement("technics_shape");
+            rseWriter.writeAttribute("x", QString::number(technicsShapeItem->scenePos().x()));
+            rseWriter.writeAttribute("y", QString::number(technicsShapeItem->scenePos().y()));
+            TechnicsShape::ShapeType shapeType = technicsShapeItem->shapeType();
+            rseWriter.writeAttribute("shape_type", QString::number(shapeType));
+            rseWriter.writeAttribute("z", QString::number(technicsShapeItem->zValue()));
+            QTransform transform(technicsShapeItem->transform());
+            QString transfomTechnicsShape(QString::number(transform.m11()) + ","
+                                          + QString::number(transform.m12()) + ","
+                                          + QString::number(transform.m13()) + ","
+                                          + QString::number(transform.m21()) + ","
+                                          + QString::number(transform.m22()) + ","
+                                          + QString::number(transform.m23()) + ","
+                                          + QString::number(transform.m31()) + ","
+                                          + QString::number(transform.m32()) + ","
+                                          + QString::number(transform.m33()));
+            rseWriter.writeAttribute("transform", transfomTechnicsShape);
+            rseWriter.writeEndElement(); // technicsShapeItem
         }
     }
     rseWriter.writeEndElement(); // ItemList

@@ -28,6 +28,7 @@ SOURCES += \
     rse_writer.cpp \
     sizegripitem.cpp \
     svg_reader.cpp \
+    technics_shape.cpp \
     textitem.cpp
 
 HEADERS += \
@@ -47,6 +48,7 @@ HEADERS += \
     rse_writer.h \
     sizegripitem.h \
     svg_reader.h \
+    technics_shape.h \
     textitem.h
 
 FORMS += \

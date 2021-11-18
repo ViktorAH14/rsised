@@ -13,7 +13,8 @@ PixmapItem::PixmapItem(QGraphicsItem *parent)
     setAcceptHoverEvents(true);
 }
 
-// TODO не совсем адекватное поведение при изменении размеров, вариант с масштабирование QPixmap даёт худшие результаты
+// TODO не совсем адекватное поведение при изменении размеров,
+// вариант с масштабирование QPixmap даёт худшие результаты
 void PixmapItem::scalePixmap(const QRectF &newBoundingRect)
 {
     prepareGeometryChange();

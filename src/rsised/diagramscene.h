@@ -1,6 +1,8 @@
 #ifndef DIAGRAMSCENE_H
 #define DIAGRAMSCENE_H
 
+#include "technics_shape.h"
+
 #include <QGraphicsScene>
 #include <QObject>
 
@@ -10,6 +12,7 @@ class Polyline;
 class Curve;
 class TextItem;
 class PixmapItem;
+class TechnicsShape;
 
 QT_BEGIN_NAMESPACE
 class QMenu;
@@ -20,12 +23,13 @@ class DiagramScene : public QGraphicsScene
     Q_OBJECT
 
 public:
-    enum Mode {InsertPolyline
+    enum SceneMode {InsertPolyline
                , InsertRect
                , InsertEllipse
                , InsertCurve
                , InserText
                , InsertImage
+               , InsertShape
                , SelectItem};
 
     explicit DiagramScene(QMenu *itemMenu, QObject *parent = nullptr);
@@ -35,11 +39,11 @@ public:
     void setItemFont(const QFont &font , const QColor &textColor);
     bool isChanged();
 
-
 public slots:
-    void setMode(DiagramScene::Mode mode);
+    void setMode(DiagramScene::SceneMode mode);
     void setSelectableItems(bool selectable);
     void setSceneChanged(bool changed);
+    void setTechnicsShapeType(TechnicsShape::ShapeType type);
     void insertPixmap(const QString &imageFile);
 
 protected:
@@ -49,6 +53,8 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
 
 private:
+    TechnicsShape::ShapeType m_technicsShapeType;
+    TechnicsShape *technicsShape;
     Rectangle   *rectangle;
     Polyline    *polyline;
     Ellipse     *ellipse;
@@ -56,7 +62,7 @@ private:
     TextItem    *textItem;
     PixmapItem  *pixmapItem;
     QMenu       *m_itemMenu;
-    Mode        currentMode; // Initialized in mainwindow.cpp
+    SceneMode   m_sceneMode; // Initialized in mainwindow.cpp
     QPen        itemPen; // Initialized in mainwindow.cpp
     QBrush      itemBrush; // Initialized in mainwindow.cpp
     QFont       itemFont; // Initialized in mainwindow.cpp
