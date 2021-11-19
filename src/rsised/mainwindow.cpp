@@ -516,8 +516,25 @@ void MainWindow::createShapeToolBox()
 
     QGridLayout *technicsLayout = new QGridLayout;
     technicsLayout->addWidget(createTechnicsCellWidget(tr("Car"), TechnicsShape::Base), 0, 0);
-    technicsLayout->addWidget(createTechnicsCellWidget(tr("Tanker"), TechnicsShape::Tanker), 0, 1);
-    technicsLayout->setRowStretch(3, 10);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Tanker")
+                                                       , TechnicsShape::Tanker), 0, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Auto pump")
+                                                       , TechnicsShape::AutoPump), 1, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Auto ladder")
+                                                       , TechnicsShape::AutoLadder), 1, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Crank lift")
+                                                       , TechnicsShape::CrankLift), 2, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Telescopic lift")
+                                                       , TechnicsShape::TelescopicLift), 2, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Tracked")
+                                                       , TechnicsShape::Tracked), 3, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Adapted")
+                                                       , TechnicsShape::Adapted), 3, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Ambulance")
+                                                       , TechnicsShape::Ambulance), 4, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Police")
+                                                       , TechnicsShape::Police), 4, 1);
+    technicsLayout->setRowStretch(5, 10);
     technicsLayout->setColumnStretch(2, 10);
 
     QWidget *technicsWidget = new QWidget;

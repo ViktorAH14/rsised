@@ -9,7 +9,16 @@ class TechnicsShape : public QAbstractGraphicsShapeItem
 {
 public:
     enum { Type = UserType + 20};
-    enum ShapeType{Base, Tanker};
+    enum ShapeType{ Base
+                    , Tanker
+                    , AutoPump
+                    , AutoLadder
+                    , CrankLift
+                    , TelescopicLift
+                    , Tracked
+                    , Adapted
+                    , Ambulance
+                    , Police };
 
     TechnicsShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
@@ -34,6 +43,9 @@ private:
     ShapeType m_shapeType;
     SizeGripItem *m_sizeGripItem;
     QMenu *m_contextMenu;
+    QPolygonF autoBase;
+    QPolygonF adaptedPolygon;
+    QPolygonF ambulancePolygon;
 };
 
 #endif // TECHNICS_SHAPE_H
