@@ -14,16 +14,50 @@ TechnicsShape::TechnicsShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsI
     , m_shapeType{shapeType}
     , m_contextMenu{contextMenu}
 {
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+}
+
+void TechnicsShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
+                          , QWidget *widget)
+{
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    drawShape(painter);
+}
+
+QRectF TechnicsShape::boundingRect() const
+{
+    qreal penWidth {1.0};
+    return QRectF(-15.0 - penWidth / 2.0, -37.5 - penWidth / 2.0
+                  , 30.0 + penWidth, 75.0 + penWidth);
+}
+
+QPainterPath TechnicsShape::shape() const
+{
+    return m_path;
+}
+
+void TechnicsShape::drawShape(QPainter *painter)
+{
+    QPolygonF autoBase;
     autoBase << QPointF(0.0, -37.5) << QPointF(15.0, -12.5) << QPointF(15.0, 37.5)
             << QPointF(-15.0, 37.5) << QPointF(-15.0, -12.5) << QPointF(0.0, -37.5);
     m_path.setFillRule(Qt::WindingFill);
     switch (m_shapeType) {
     case Base:
         m_path.addPolygon(autoBase);
+        painter->setPen(QPen(Qt::red, 1));
+        painter->drawPath(m_path);
         break;
     case Tanker:
         m_path.addPolygon(autoBase);
         m_path.addRoundedRect(-10.0, -12.0, 20.0, 45.0, 5.0, 5.0);
+        painter->setPen(QPen(Qt::red, 1));
+        painter->drawPath(m_path);
         break;
     case AutoPump: {
         m_path.addPolygon(autoBase);
@@ -31,6 +65,8 @@ TechnicsShape::TechnicsShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsI
         pump << QPointF(-10.0, 37.5) << QPointF(-10.0, 25.0) << QPointF(10.0, 25.0)
              << QPointF(10.0, 37.5);
         m_path.addPolygon(pump);
+        painter->setPen(QPen(Qt::red, 1));
+        painter->drawPath(m_path);
         break;
     }
     case AutoLadder:
@@ -53,6 +89,8 @@ TechnicsShape::TechnicsShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsI
         m_path.lineTo(10.0, 0.0);
         m_path.moveTo(-10.0, -5.0);
         m_path.lineTo(10.0, -5.0);
+        painter->setPen(QPen(Qt::red, 1));
+        painter->drawPath(m_path);
         break;
     case CrankLift:
         m_path.addPolygon(autoBase);
@@ -60,6 +98,8 @@ TechnicsShape::TechnicsShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsI
         m_path.lineTo(-10.0, 32.5);
         m_path.lineTo(10.0, -12.5);
         m_path.lineTo(10.0, 32.5);
+        painter->setPen(QPen(Qt::red, 1));
+        painter->drawPath(m_path);
         break;
     case TelescopicLift:
         m_path.addPolygon(autoBase);
@@ -69,6 +109,8 @@ TechnicsShape::TechnicsShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsI
         m_path.lineTo(0.0, -25.0);
         m_path.moveTo(10.0, 32.5);
         m_path.lineTo(10.0, -12.5);
+        painter->setPen(QPen(Qt::red, 1));
+        painter->drawPath(m_path);
         break;
     case Tracked:
         m_path.addPolygon(autoBase);
@@ -76,74 +118,44 @@ TechnicsShape::TechnicsShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsI
         m_path.lineTo(-10.0, -20.5);
         m_path.moveTo(10.0, 37.5);
         m_path.lineTo(10.0, -20.5);
+        painter->setPen(QPen(Qt::red, 1));
+        painter->drawPath(m_path);
         break;
-    case Adapted:
+    case Adapted: {
         m_path.addPolygon(autoBase);
+        QPolygonF adaptedPolygon;
         adaptedPolygon << QPointF(-8.0, 36.5) << QPointF(-8.0, -22.5) << QPointF(0.0, -36.0)
                        << QPointF(8.0, -22.5) << QPointF(8.0, 36.5);
-        break;
-    case Ambulance:
-        m_path.addPolygon(autoBase);
-        ambulancePolygon << QPointF(-3.0, 9.0) << QPointF(-3.0, 3.0) << QPointF(-9.0, 3.0)
-                         << QPointF(-9.0, -3.0) << QPointF(-3.0, -3.0) << QPointF(-3.0, -9.0)
-                         << QPointF(3.0, -9.0) << QPointF(3.0, -3.0) << QPointF(9.0, -3.0)
-                         << QPointF(9.0, 3.0) << QPointF(3.0, 3.0) << QPointF(3.0, 9.0);
-        break;
-    case Police:
-        m_path.addPolygon(autoBase);
-    default:
-        break;
-    }
-    setFlag(ItemSendsGeometryChanges, true);
-    setAcceptHoverEvents(true);
-}
-
-void TechnicsShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
-                          , QWidget *widget)
-{
-    Q_UNUSED(option);
-    Q_UNUSED(widget);
-
-    painter->setRenderHint(QPainter::Antialiasing);
-    painter->setRenderHint(QPainter::SmoothPixmapTransform);
-    switch (m_shapeType) {
-    case Adapted:
         painter->setPen(QPen(Qt::black, 1));
         painter->drawPath(m_path);
         painter->setPen(QPen(Qt::red, 1));
         painter->setBrush(QBrush(Qt::red));
         painter->drawPolygon(adaptedPolygon);
         break;
-    case Ambulance:
+    }
+    case Ambulance: {
+        m_path.addPolygon(autoBase);
+        QPolygonF ambulancePolygon;
+        ambulancePolygon << QPointF(-3.0, 9.0) << QPointF(-3.0, 3.0) << QPointF(-9.0, 3.0)
+                         << QPointF(-9.0, -3.0) << QPointF(-3.0, -3.0) << QPointF(-3.0, -9.0)
+                         << QPointF(3.0, -9.0) << QPointF(3.0, -3.0) << QPointF(9.0, -3.0)
+                         << QPointF(9.0, 3.0) << QPointF(3.0, 3.0) << QPointF(3.0, 9.0);
         painter->setPen(QPen(Qt::black, 1));
         painter->drawPath(m_path);
         painter->setPen(QPen(Qt::red, 1));
         painter->setBrush(QBrush(Qt::red));
         painter->drawPolygon(ambulancePolygon);
         break;
+    }
     case Police:
+        m_path.addPolygon(autoBase);
         painter->setPen(QPen(Qt::black, 1));
         painter->drawPath(m_path);
         painter->rotate(-90);
         painter->drawText(boundingRect(), Qt::AlignCenter, "МВД");
-        break;
     default:
-        painter->setPen(QPen(Qt::red, 1));
-        painter->drawPath(m_path);
         break;
     }
-}
-
-QRectF TechnicsShape::boundingRect() const
-{
-    qreal penWidth {1.0};
-    return QRectF(-15.0 - penWidth / 2.0, -37.5 - penWidth / 2.0
-                  , 30.0 + penWidth, 75.0 + penWidth);
-}
-
-QPainterPath TechnicsShape::shape() const
-{
-    return m_path;
 }
 
 QVariant TechnicsShape::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -158,38 +170,13 @@ QVariant TechnicsShape::itemChange(GraphicsItemChange change, const QVariant &va
     return QGraphicsItem::itemChange(change, value);
 }
 
-QPixmap TechnicsShape::image() const
+QPixmap TechnicsShape::image()
 {
     QPixmap pixmap(36, 76);
     pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    painter.translate(18, 38);
-    switch (m_shapeType) {
-    case Adapted:
-        painter.setPen(QPen(Qt::black, 2));
-        painter.drawPath(m_path);
-        painter.setPen(QPen(Qt::red, 1));
-        painter.setBrush(QBrush(Qt::red));
-        painter.drawPolygon(adaptedPolygon);
-        break;
-    case Ambulance:
-        painter.setPen(QPen(Qt::black, 2));
-        painter.drawPath(m_path);
-        painter.setPen(QPen(Qt::red, 1));
-        painter.setBrush(QBrush(Qt::red));
-        painter.drawPolygon(ambulancePolygon);
-        break;
-    case Police:
-        painter.setPen(QPen(Qt::black, 2));
-        painter.drawPath(m_path);
-        painter.rotate(-90);
-        painter.drawText(boundingRect(), Qt::AlignCenter, "МВД");
-        break;
-    default:
-        painter.setPen(QPen(Qt::red, 2));
-        painter.drawPath(m_path);
-        break;
-    }
+    QPainter *painter = new QPainter(&pixmap);
+    painter->translate(18, 38);
+    drawShape(painter);
 
     return pixmap;
 }

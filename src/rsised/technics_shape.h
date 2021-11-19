@@ -27,7 +27,7 @@ public:
     QPainterPath shape() const override;
     int type() const override { return Type;}
 
-    QPixmap image() const;
+    QPixmap image();
     void scaleTechnicsShape(const QRectF &newRect);
     ShapeType shapeType() const;
 
@@ -39,13 +39,11 @@ protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
+    void drawShape(QPainter *painter);
     QPainterPath m_path;
     ShapeType m_shapeType;
     SizeGripItem *m_sizeGripItem;
     QMenu *m_contextMenu;
-    QPolygonF autoBase;
-    QPolygonF adaptedPolygon;
-    QPolygonF ambulancePolygon;
 };
 
 #endif // TECHNICS_SHAPE_H
