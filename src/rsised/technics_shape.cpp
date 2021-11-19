@@ -24,8 +24,6 @@ void TechnicsShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
-    painter->setRenderHint(QPainter::Antialiasing);
-    painter->setRenderHint(QPainter::SmoothPixmapTransform);
     drawShape(painter);
 }
 
@@ -36,123 +34,126 @@ QRectF TechnicsShape::boundingRect() const
                   , 30.0 + penWidth, 75.0 + penWidth);
 }
 
-QPainterPath TechnicsShape::shape() const
-{
-    return m_path;
-}
-
 void TechnicsShape::drawShape(QPainter *painter)
 {
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
     QPolygonF autoBase;
     autoBase << QPointF(0.0, -37.5) << QPointF(15.0, -12.5) << QPointF(15.0, 37.5)
             << QPointF(-15.0, 37.5) << QPointF(-15.0, -12.5) << QPointF(0.0, -37.5);
-    m_path.setFillRule(Qt::WindingFill);
     switch (m_shapeType) {
-    case Base:
-        m_path.addPolygon(autoBase);
+    case Base: {
         painter->setPen(QPen(Qt::red, 1));
-        painter->drawPath(m_path);
+        painter->drawPolygon(autoBase);
         break;
-    case Tanker:
-        m_path.addPolygon(autoBase);
-        m_path.addRoundedRect(-10.0, -12.0, 20.0, 45.0, 5.0, 5.0);
+    }
+    case Tanker: {
         painter->setPen(QPen(Qt::red, 1));
-        painter->drawPath(m_path);
+        painter->drawPolygon(autoBase);
+        painter->drawRoundedRect(-10.0, -12.0, 20.0, 45.0, 5.0, 5.0);
         break;
+    }
     case AutoPump: {
-        m_path.addPolygon(autoBase);
         QPolygonF pump;
         pump << QPointF(-10.0, 37.5) << QPointF(-10.0, 25.0) << QPointF(10.0, 25.0)
              << QPointF(10.0, 37.5);
-        m_path.addPolygon(pump);
         painter->setPen(QPen(Qt::red, 1));
-        painter->drawPath(m_path);
+        painter->drawPolygon(autoBase);
+        painter->drawPolygon(pump);
         break;
     }
-    case AutoLadder:
-        m_path.addPolygon(autoBase);
-        m_path.moveTo(-10.0, 32.5);
-        m_path.lineTo(-10.0,-12.5);
-        m_path.moveTo(10.0, 32.5);
-        m_path.lineTo(10.0, -12.5);
-        m_path.moveTo(-10.0, 25.0);
-        m_path.lineTo(10.0, 25.0);
-        m_path.moveTo(-10.0, 20.0);
-        m_path.lineTo(10.0, 20.0);
-        m_path.moveTo(-10.0, 15.0);
-        m_path.lineTo(10.0, 15.0);
-        m_path.moveTo(-10.0, 10.0);
-        m_path.lineTo(10.0, 10.0);
-        m_path.moveTo(-10.0, 5.0);
-        m_path.lineTo(10.0, 5.0);
-        m_path.moveTo(-10.0, 0.0);
-        m_path.lineTo(10.0, 0.0);
-        m_path.moveTo(-10.0, -5.0);
-        m_path.lineTo(10.0, -5.0);
+    case AutoLadder: {
         painter->setPen(QPen(Qt::red, 1));
-        painter->drawPath(m_path);
+        painter->drawPolygon(autoBase);
+        QVector<QLineF> ladder;
+        ladder.append(QLineF(-10.0, 32.5, -10.0, -12.5));
+        ladder.append(QLineF(10.0, 32.5, 10.0, -12.5));
+        ladder.append(QLineF(-10.0, 25.0, 10.0, 25.0));
+        ladder.append(QLineF(-10.0, 20.0, 10.0, 20.0));
+        ladder.append(QLineF(-10.0, 15.0, 10.0, 15.0));
+        ladder.append(QLineF(-10.0, 10.0, 10.0, 10.0));
+        ladder.append(QLineF(-10.0, 5.0, 10.0, 5.0));
+        ladder.append(QLineF(-10.0, 0.0, 10.0, 0.0));
+        ladder.append(QLineF(-10.0, -5.0, 10.0, -5.0));
+        painter->drawLines(ladder);
         break;
-    case CrankLift:
-        m_path.addPolygon(autoBase);
-        m_path.moveTo(-10.0, -12.5);
-        m_path.lineTo(-10.0, 32.5);
-        m_path.lineTo(10.0, -12.5);
-        m_path.lineTo(10.0, 32.5);
+    }
+    case CrankLift: {
         painter->setPen(QPen(Qt::red, 1));
-        painter->drawPath(m_path);
+        painter->drawPolygon(autoBase);
+        QPolygonF crank;
+        crank << QPointF(-10.0, -12.5) << QPointF(-10.0, 32.5) << QPointF(10.0, -12.5)
+              <<QPointF(10.0, 32.5);
+        painter->drawPolyline(crank);
         break;
-    case TelescopicLift:
-        m_path.addPolygon(autoBase);
-        m_path.moveTo(-10.0, 32.5);
-        m_path.lineTo(-10.0, -12.5);
-        m_path.moveTo(0.0, 20.0);
-        m_path.lineTo(0.0, -25.0);
-        m_path.moveTo(10.0, 32.5);
-        m_path.lineTo(10.0, -12.5);
+    }
+    case TelescopicLift: {
         painter->setPen(QPen(Qt::red, 1));
-        painter->drawPath(m_path);
+        painter->drawPolygon(autoBase);
+        QVector<QLineF> telescopic;
+        telescopic.append(QLineF(-10.0, 32.5, -10.0, -12.5));
+        telescopic.append(QLineF(0.0, 20.0, 0.0, -25.0));
+        telescopic.append(QLineF(10.0, 32.5, 10.0, -12.5));
+        painter->drawLines(telescopic);
         break;
-    case Tracked:
-        m_path.addPolygon(autoBase);
-        m_path.moveTo(-10.0, 37.5);
-        m_path.lineTo(-10.0, -20.5);
-        m_path.moveTo(10.0, 37.5);
-        m_path.lineTo(10.0, -20.5);
+    }
+    case Tracked: {
         painter->setPen(QPen(Qt::red, 1));
-        painter->drawPath(m_path);
+        painter->drawPolygon(autoBase);
+        painter->drawLine(QLineF(-10.0, 37.5, -10.0, -20.5));
+        painter->drawLine(QLineF(10.0, 37.5, 10.0, -20.5));
         break;
+    }
     case Adapted: {
-        m_path.addPolygon(autoBase);
+        painter->setPen(QPen(Qt::black, 1));
+        painter->drawPolygon(autoBase);
         QPolygonF adaptedPolygon;
         adaptedPolygon << QPointF(-8.0, 36.5) << QPointF(-8.0, -22.5) << QPointF(0.0, -36.0)
                        << QPointF(8.0, -22.5) << QPointF(8.0, 36.5);
-        painter->setPen(QPen(Qt::black, 1));
-        painter->drawPath(m_path);
         painter->setPen(QPen(Qt::red, 1));
         painter->setBrush(QBrush(Qt::red));
         painter->drawPolygon(adaptedPolygon);
         break;
     }
     case Ambulance: {
-        m_path.addPolygon(autoBase);
+        painter->setPen(QPen(Qt::black, 1));
+        painter->drawPolygon(autoBase);
         QPolygonF ambulancePolygon;
         ambulancePolygon << QPointF(-3.0, 9.0) << QPointF(-3.0, 3.0) << QPointF(-9.0, 3.0)
                          << QPointF(-9.0, -3.0) << QPointF(-3.0, -3.0) << QPointF(-3.0, -9.0)
                          << QPointF(3.0, -9.0) << QPointF(3.0, -3.0) << QPointF(9.0, -3.0)
                          << QPointF(9.0, 3.0) << QPointF(3.0, 3.0) << QPointF(3.0, 9.0);
-        painter->setPen(QPen(Qt::black, 1));
-        painter->drawPath(m_path);
         painter->setPen(QPen(Qt::red, 1));
         painter->setBrush(QBrush(Qt::red));
         painter->drawPolygon(ambulancePolygon);
         break;
     }
-    case Police:
-        m_path.addPolygon(autoBase);
+    case Police: {
         painter->setPen(QPen(Qt::black, 1));
-        painter->drawPath(m_path);
+        painter->drawPolygon(autoBase);
         painter->rotate(-90);
         painter->drawText(boundingRect(), Qt::AlignCenter, "МВД");
+        break;
+    }
+    case Train: {
+        QPolygonF train;
+        train << QPointF(-15.0, 25.0) << QPointF(-15.0, 10.0) << QPointF(-7.0, 10.0)
+              << QPointF(-7.0, -25.0) << QPointF(7.0, -25.0) << QPointF(7.0, 10.0)
+              << QPointF(15.0, 10.0) << QPointF(15.0, 25.0);
+        painter->setPen(QPen(Qt::red, 1));
+        painter->drawPolygon(train);
+        break;
+    }
+    case OtherAdapted: {
+        painter->setPen(QPen(Qt::black, 1));
+        painter->drawRect(QRectF(-15.0, -10.0, 30.0, 41));
+        painter->drawLine(QLineF(0.0, -10.0, 0.0, -30.0));
+        painter->drawEllipse(QRectF(-4.0, -38.0, 8.0, 8.0));
+        painter->setPen(QPen(Qt::red, 1));
+        painter->setBrush(QBrush(Qt::red));
+        painter->drawRect(QRectF(-8.0, -9.0, 16.0, 39.0));
+        break;
+    }
     default:
         break;
     }

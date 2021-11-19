@@ -18,13 +18,14 @@ public:
                     , Tracked
                     , Adapted
                     , Ambulance
-                    , Police };
+                    , Police
+                    , Train
+                    , OtherAdapted };
 
     TechnicsShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QRectF boundingRect() const override;
-    QPainterPath shape() const override;
     int type() const override { return Type;}
 
     QPixmap image();
@@ -40,7 +41,6 @@ protected:
 
 private:
     void drawShape(QPainter *painter);
-    QPainterPath m_path;
     ShapeType m_shapeType;
     SizeGripItem *m_sizeGripItem;
     QMenu *m_contextMenu;
