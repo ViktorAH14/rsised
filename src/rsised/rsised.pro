@@ -12,19 +12,15 @@ CONFIG += c++11
 
 SOURCES += \
     curve.cpp \
-    curveresizer.cpp \
     device_shape.cpp \
     diagramscene.cpp \
     ellipse.cpp \
-    ellipseresizer.cpp \
+    item_resizer.cpp \
     main.cpp \
     mainwindow.cpp \
     pixmapitem.cpp \
-    pixmapresizer.cpp \
     polyline.cpp \
-    polylineresizer.cpp \
     rectangle.cpp \
-    rectangleresizer.cpp \
     rse_reader.cpp \
     rse_writer.cpp \
     sizegripitem.cpp \
@@ -34,18 +30,14 @@ SOURCES += \
 
 HEADERS += \
     curve.h \
-    curveresizer.h \
     device_shape.h \
     diagramscene.h \
     ellipse.h \
-    ellipseresizer.h \
+    item_resizer.h \
     mainwindow.h \
     pixmapitem.h \
-    pixmapresizer.h \
     polyline.h \
-    polylineresizer.h \
     rectangle.h \
-    rectangleresizer.h \
     rse_reader.h \
     rse_writer.h \
     sizegripitem.h \

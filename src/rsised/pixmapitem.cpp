@@ -1,6 +1,6 @@
 #include "pixmapitem.h"
 #include "sizegripitem.h"
-#include "pixmapresizer.h"
+#include "item_resizer.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
@@ -41,7 +41,7 @@ void PixmapItem::scalePixmap(const QRectF &newBoundingRect)
 void PixmapItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (isSelected()) {
-        pixmapSizeGripItem->setActionType((pixmapSizeGripItem->actionType()
+        m_sizeGripItem->setActionType((m_sizeGripItem->actionType()
                                            == SizeGripItem::Resize) ? SizeGripItem::Rotate
                                                                     :SizeGripItem::Resize);
     } else {
@@ -73,10 +73,10 @@ void PixmapItem::wheelEvent(QGraphicsSceneWheelEvent *wheelEvent)
 QVariant PixmapItem::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == GraphicsItemChange::ItemSelectedChange && value == true) {
-        pixmapSizeGripItem = new SizeGripItem(new PixmapResizer, this);
+        m_sizeGripItem = new SizeGripItem(new ItemResizer, this);
     }
     if (change == GraphicsItemChange::ItemSelectedChange && value == false) {
-        delete  pixmapSizeGripItem;
+        delete  m_sizeGripItem;
     }
 
     return QGraphicsItem::itemChange(change, value);

@@ -15,15 +15,12 @@ public:
     int type() const override {return Type;}
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
-    SizeGripItem *curveSizeGripItem;
+    SizeGripItem *m_sizeGripItem;
     QMenu *m_contextMenu;
 };
 

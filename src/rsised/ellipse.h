@@ -20,18 +20,14 @@ public:
     int type() const override { return Type;}
 
 protected:
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEvent) override;
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *hoverEvent) override;
-    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
 
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
-    SizeGripItem *ellipseSizeGripItem;
+    SizeGripItem *m_sizeGripItem;
     QMenu *m_contextMenu;
 };
 

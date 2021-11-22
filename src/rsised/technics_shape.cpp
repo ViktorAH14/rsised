@@ -1,6 +1,6 @@
 #include "technics_shape.h"
 #include "sizegripitem.h"
-#include "rectangleresizer.h"
+#include "item_resizer.h"
 
 #include <cmath>
 
@@ -162,7 +162,7 @@ void TechnicsShape::drawShape(QPainter *painter)
 QVariant TechnicsShape::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == GraphicsItemChange::ItemSelectedChange && value == true) {
-        m_sizeGripItem = new SizeGripItem(new RectangleResizer, this);
+        m_sizeGripItem = new SizeGripItem(new ItemResizer, this);
     }
     if (change == GraphicsItemChange::ItemSelectedChange && value == false) {
         delete  m_sizeGripItem;

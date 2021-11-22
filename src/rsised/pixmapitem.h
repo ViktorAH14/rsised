@@ -27,7 +27,7 @@ protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
-    SizeGripItem *pixmapSizeGripItem;
+    SizeGripItem *m_sizeGripItem;
 };
 
 #endif // PIXMAPITEM_H
