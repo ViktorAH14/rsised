@@ -1,9 +1,8 @@
 #include "polyline.h"
 #include "sizegripitem.h"
-#include "polylineresizer.h"
+#include "item_resizer.h"
 
 #include <QGraphicsSceneMouseEvent>
-#include <QApplication>
 #include <QGraphicsScene>
 #include <QMenu>
 
@@ -50,15 +49,6 @@ void Polyline::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
 }
 
-void Polyline::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    if (isSelected()) {
-        QApplication ::setOverrideCursor(Qt::ClosedHandCursor);
-    }
-
-    QGraphicsItem::mousePressEvent(mouseEvent);
-}
-
 void Polyline::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if ((mouseEvent->buttons() == Qt::LeftButton) && (isSelected())) {
@@ -68,15 +58,6 @@ void Polyline::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     } else {
         QGraphicsItem::mouseMoveEvent(mouseEvent);
     }
-}
-
-void Polyline::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    if (isSelected()) {
-        QApplication::restoreOverrideCursor();
-    }
-
-    QGraphicsItem::mouseReleaseEvent(mouseEvent);
 }
 
 void Polyline::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
@@ -89,10 +70,10 @@ void Polyline::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 QVariant Polyline::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == GraphicsItemChange::ItemSelectedChange && value == true) {
-        polylineSizeGripItem = new SizeGripItem(new PolylineResizer, this);
+        m_sizeGripItem = new SizeGripItem(new ItemResizer, this);
     }
     if (change == GraphicsItemChange::ItemSelectedChange && value == false) {
-        delete polylineSizeGripItem;
+        delete m_sizeGripItem;
     }
     return QGraphicsItem::itemChange(change, value);
 }

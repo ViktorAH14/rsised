@@ -16,15 +16,13 @@ public:
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
 
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
-    SizeGripItem *polylineSizeGripItem;
+    SizeGripItem *m_sizeGripItem;
     QMenu *m_contextMenu;
 };
 

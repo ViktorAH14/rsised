@@ -1,9 +1,8 @@
 #include "ellipse.h"
 #include "sizegripitem.h"
-#include "ellipseresizer.h"
+#include "item_resizer.h"
 
 #include <QGraphicsSceneMouseEvent>
-#include <QApplication>
 #include <QGraphicsScene>
 #include <QMenu>
 
@@ -22,29 +21,6 @@ Ellipse::Ellipse(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent)
     setAcceptHoverEvents(true);
 }
 
-void Ellipse::hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEvent)
-{
-    if (isSelected()) {
-        QApplication::setOverrideCursor(Qt::OpenHandCursor);
-    }
-
-    QGraphicsItem::hoverEnterEvent(hoverEvent);
-}
-
-void Ellipse::hoverLeaveEvent(QGraphicsSceneHoverEvent *hoverEvent)
-{
-    QApplication::restoreOverrideCursor();
-    QGraphicsItem::hoverLeaveEvent(hoverEvent);
-}
-
-void Ellipse::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    if (isSelected()) {
-        QApplication::setOverrideCursor(Qt::ClosedHandCursor);
-    }
-    QGraphicsItem::mousePressEvent(mouseEvent);
-}
-
 void Ellipse::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->buttons() == Qt::LeftButton && isSelected()) {
@@ -56,19 +32,10 @@ void Ellipse::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
-void Ellipse::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    if (isSelected()) {
-        QApplication::restoreOverrideCursor();
-    }
-
-    QGraphicsItem::mouseReleaseEvent(mouseEvent);
-}
-
 void Ellipse::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (isSelected()) {
-        ellipseSizeGripItem->setActionType((ellipseSizeGripItem->actionType()
+        m_sizeGripItem->setActionType((m_sizeGripItem->actionType()
                                        == SizeGripItem::Resize) ? SizeGripItem::Rotate
                                                                 :SizeGripItem::Resize);
     } else {
@@ -86,10 +53,10 @@ void Ellipse::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 QVariant Ellipse::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == GraphicsItemChange::ItemSelectedChange && value == true) {
-        ellipseSizeGripItem = new SizeGripItem(new EllipseResizer, this);
+        m_sizeGripItem = new SizeGripItem(new ItemResizer, this);
     }
     if (change == GraphicsItemChange::ItemSelectedChange && value == false) {
-        delete ellipseSizeGripItem;
+        delete m_sizeGripItem;
     }
 
     return QGraphicsItem::itemChange(change, value);

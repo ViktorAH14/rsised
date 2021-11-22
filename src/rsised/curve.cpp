@@ -1,9 +1,8 @@
 #include "curve.h"
 #include "sizegripitem.h"
-#include "curveresizer.h"
+#include "item_resizer.h"
 
 #include <QGraphicsSceneMouseEvent>
-#include <QApplication>
 #include <QGraphicsScene>
 #include <QMenu>
 
@@ -12,15 +11,6 @@ Curve::Curve(QMenu *contextMenu, QGraphicsItem *parent)
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
-}
-
-void Curve::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    if (isSelected()) {
-        QApplication ::setOverrideCursor(Qt::ClosedHandCursor);
-    }
-
-    QGraphicsItem::mousePressEvent(mouseEvent);
 }
 
 void Curve::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -34,15 +24,6 @@ void Curve::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
-void Curve::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    if (isSelected()) {
-        QApplication::restoreOverrideCursor();
-    }
-
-    QGraphicsItem::mouseReleaseEvent(mouseEvent);
-}
-
 void Curve::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     scene()->clearSelection();
@@ -53,10 +34,10 @@ void Curve::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 QVariant Curve::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == GraphicsItemChange::ItemSelectedChange && value == true) {
-        curveSizeGripItem = new SizeGripItem(new CurveResizer, this);
+        m_sizeGripItem = new SizeGripItem(new ItemResizer, this);
     }
     if (change == GraphicsItemChange::ItemSelectedChange && value == false) {
-        delete curveSizeGripItem;
+        delete m_sizeGripItem;
     }
     return QGraphicsItem::itemChange(change, value);
 }
