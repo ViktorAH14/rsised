@@ -200,11 +200,13 @@ TechnicsShape::ShapeType TechnicsShape::shapeType() const
 
 void TechnicsShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    m_sizeGripItem->setActionType((m_sizeGripItem->actionType()
-                                          == SizeGripItem::Resize) ? SizeGripItem::Rotate
-                                                                   :SizeGripItem::Resize);
-
-    QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
+    if (isSelected()) {
+        m_sizeGripItem->setActionType((m_sizeGripItem->actionType()
+                                       == SizeGripItem::Resize) ? SizeGripItem::Rotate
+                                                                :SizeGripItem::Resize);
+    } else {
+        QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
+    }
 }
 
 void TechnicsShape::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)

@@ -6,6 +6,7 @@
 #include "textitem.h"
 #include "pixmapitem.h"
 #include "technics_shape.h"
+#include "device_shape.h"
 
 #include <QXmlStreamWriter>
 #include <QGraphicsItem>
@@ -227,6 +228,27 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
                                           + QString::number(transform.m33()));
             rseWriter.writeAttribute("transform", transfomTechnicsShape);
             rseWriter.writeEndElement(); // technicsShapeItem
+        }
+        if (item->type() == DeviceShape::Type) {
+            DeviceShape *deviceShapeItem = qgraphicsitem_cast<DeviceShape *>(item);
+            rseWriter.writeStartElement("device_shape");
+            rseWriter.writeAttribute("x", QString::number(deviceShapeItem->scenePos().x()));
+            rseWriter.writeAttribute("y", QString::number(deviceShapeItem->scenePos().y()));
+            DeviceShape::ShapeType shapeType = deviceShapeItem->shapeType();
+            rseWriter.writeAttribute("shape_type", QString::number(shapeType));
+            rseWriter.writeAttribute("z", QString::number(deviceShapeItem->zValue()));
+            QTransform transform(deviceShapeItem->transform());
+            QString transfomTechnicsShape(QString::number(transform.m11()) + ","
+                                          + QString::number(transform.m12()) + ","
+                                          + QString::number(transform.m13()) + ","
+                                          + QString::number(transform.m21()) + ","
+                                          + QString::number(transform.m22()) + ","
+                                          + QString::number(transform.m23()) + ","
+                                          + QString::number(transform.m31()) + ","
+                                          + QString::number(transform.m32()) + ","
+                                          + QString::number(transform.m33()));
+            rseWriter.writeAttribute("transform", transfomTechnicsShape);
+            rseWriter.writeEndElement(); // deviceShapeItem
         }
     }
     rseWriter.writeEndElement(); // ItemList

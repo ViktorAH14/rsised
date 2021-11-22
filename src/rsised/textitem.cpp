@@ -11,10 +11,13 @@ TextItem::TextItem(QMenu *contextMenu, QGraphicsItem *parent)
 
 void TextItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (textInteractionFlags() == Qt::NoTextInteraction)
-        setTextInteractionFlags(Qt::TextEditorInteraction);
-
-    QGraphicsTextItem::mouseDoubleClickEvent(mouseEvent);
+    // NOTE переработать
+    if (isSelected()) {
+        if (textInteractionFlags() == Qt::NoTextInteraction)
+            setTextInteractionFlags(Qt::TextEditorInteraction);
+    } else {
+        QGraphicsTextItem::mouseDoubleClickEvent(mouseEvent);
+    }
 }
 
 void TextItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)

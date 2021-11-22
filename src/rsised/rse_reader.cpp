@@ -6,6 +6,7 @@
 #include "textitem.h"
 #include "pixmapitem.h"
 #include "technics_shape.h"
+#include "device_shape.h"
 
 #include <QXmlStreamReader>
 #include <QPen>
@@ -566,6 +567,56 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 technicsShapeItem->setTransform(trans);
 
                 itemList.append(technicsShapeItem);
+            }
+            if (rseItemReader.name() == "device_shape") {
+                qreal x{0.0};
+                qreal y{0.0};
+                DeviceShape::ShapeType shapeType = DeviceShape::Barrel;
+                qreal zValue{0.0};
+                qreal m11{0.0};
+                qreal m12{0.0};
+                qreal m13{0.0};
+                qreal m21{0.0};
+                qreal m22{0.0};
+                qreal m23{0.0};
+                qreal m31{0.0};
+                qreal m32{0.0};
+                qreal m33{0.0};
+                QXmlStreamAttributes attributes = rseItemReader.attributes();
+                for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
+                    if (attr.name() == "x") {
+                        x = attr.value().toFloat();
+                    }
+                    if (attr.name() == "y") {
+                        y = attr.value().toFloat();
+                    }
+                    if (attr.name() == "shape_type") {
+                        shapeType = DeviceShape::ShapeType(attr.value().toInt());
+                    }
+                    if (attr.name() == "z") {
+                        zValue = attr.value().toFloat();
+                    }
+                    if (attr.name() == "transform") {
+                        QList<QStringRef> transList(attr.value().split(",").toList());
+                        m11 = transList.at(0).toFloat();
+                        m12 = transList.at(1).toFloat();
+                        m13 = transList.at(2).toFloat();
+                        m21 = transList.at(3).toFloat();
+                        m22 = transList.at(4).toFloat();
+                        m23 = transList.at(5).toFloat();
+                        m31 = transList.at(6).toFloat();
+                        m32 = transList.at(7).toFloat();
+                        m33 = transList.at(8).toFloat();
+                    }
+                }
+
+                DeviceShape *deviceShapeItem = new DeviceShape(m_itemMenu, shapeType);
+                deviceShapeItem->setPos(QPointF(x, y));
+                deviceShapeItem->setZValue(zValue);
+                QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
+                deviceShapeItem->setTransform(trans);
+
+                itemList.append(deviceShapeItem);
             }
         }
         rseItemReader.readNext();

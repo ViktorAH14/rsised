@@ -1,6 +1,7 @@
 #include "rectangleresizer.h"
 #include "rectangle.h"
 #include "technics_shape.h"
+#include "device_shape.h"
 
 void RectangleResizer::operator()(QGraphicsItem *item, const QVariant &rect)
 {
@@ -17,6 +18,13 @@ void RectangleResizer::operator()(QGraphicsItem *item, const QVariant &rect)
         TechnicsShape *technicsShape = dynamic_cast<TechnicsShape *>(item);
         if (technicsShape) {
             technicsShape->scaleTechnicsShape(rect.toRectF());
+        }
+        break;
+    }
+    case DeviceShape::Type: {
+        DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item);
+        if (deviceShape) {
+            deviceShape->scaleDeviceShape(rect.toRectF());
         }
         break;
     }

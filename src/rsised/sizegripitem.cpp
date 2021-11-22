@@ -5,6 +5,7 @@
 #include "curve.h"
 #include "pixmapitem.h"
 #include "technics_shape.h"
+#include "device_shape.h"
 
 #include <cmath>
 
@@ -273,7 +274,8 @@ SizeGripItem::SizeGripItem(Resizer *resizer, QGraphicsItem *parent)
     , itemResizer(resizer)
 {
     if ((parent->type() == Rectangle::Type) || (parent->type() == Ellipse::Type)
-            || (parent->type() == PixmapItem::Type) || (parent->type() == TechnicsShape::Type)) {
+            || (parent->type() == PixmapItem::Type) || (parent->type() == TechnicsShape::Type)
+            || (parent->type() == DeviceShape::Type)) {
         m_parentItemRect = parentItem()->boundingRect();
         setItemType(Rectangle);
         int handleNum {-1};

@@ -24,11 +24,13 @@ Rectangle::Rectangle(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent)
 
 void Rectangle::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    rectangleSizeGripItem->setActionType((rectangleSizeGripItem->actionType()
-                                          == SizeGripItem::Resize) ? SizeGripItem::Rotate
-                                                                   :SizeGripItem::Resize);
-
-    QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
+    if (isSelected()) {
+        rectangleSizeGripItem->setActionType((rectangleSizeGripItem->actionType()
+                                              == SizeGripItem::Resize) ? SizeGripItem::Rotate
+                                                                       :SizeGripItem::Resize);
+    } else {
+        QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
+}
 }
 
 //NOTE наверное лучше отключить эти функции

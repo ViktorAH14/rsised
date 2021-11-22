@@ -114,6 +114,9 @@ void MainWindow::loadFile(const QString &fileName)
         if (TechnicsShape *technicsShapeItem = dynamic_cast<TechnicsShape *>(item)) {
             scene->addItem(technicsShapeItem);
         }
+        if (DeviceShape *deviceShapeItem = dynamic_cast<DeviceShape *>(item)) {
+            scene->addItem(deviceShapeItem);
+        }
     }
     file.close();
 
@@ -249,6 +252,16 @@ void MainWindow::paste()
             newTechnicsShape->setTransform(shapeTransform);
             scene->addItem(newTechnicsShape);
         }
+        if (DeviceShape *oldDeviceShape = dynamic_cast<DeviceShape *>(item)) {
+            DeviceShape::ShapeType shapeType = oldDeviceShape->shapeType();
+            QTransform shapeTransform = oldDeviceShape->transform();
+            DeviceShape *newDeviceShape = new DeviceShape(ui->menuEdit, shapeType);
+            newDeviceShape->setPos(QPointF(oldDeviceShape->x() + 10
+                                             , oldDeviceShape->y() + 10));
+            newDeviceShape->setZValue(oldDeviceShape->zValue());
+            newDeviceShape->setTransform(shapeTransform);
+            scene->addItem(newDeviceShape);
+        }
     }
     scene->setSelectableItems(true);
 }
@@ -319,6 +332,16 @@ void MainWindow::cut()
             newTechnicsShape->setZValue(oldTechnicsShape->zValue());
             newTechnicsShape->setTransform(shapeTransform);
             cutList.append(newTechnicsShape);
+        }
+        if (DeviceShape *oldDeviceShape = dynamic_cast<DeviceShape *>(item)) {
+            DeviceShape::ShapeType shapeType = oldDeviceShape->shapeType();
+            QTransform shapeTransform = oldDeviceShape->transform();
+            DeviceShape *newDeviceShape = new DeviceShape(ui->menuEdit, shapeType);
+            newDeviceShape->setPos(QPointF(oldDeviceShape->x() + 10
+                                             , oldDeviceShape->y() + 10));
+            newDeviceShape->setZValue(oldDeviceShape->zValue());
+            newDeviceShape->setTransform(shapeTransform);
+            cutList.append(newDeviceShape);
         }
     }
     copyList = cutList;
@@ -463,8 +486,28 @@ void MainWindow::insertTechnicsShape(QAbstractButton *button)
     TechnicsShape::ShapeType type {TechnicsShape::ShapeType(id)};
     TechnicsShape technicsShape(ui->menuEdit, type);
     ui->mainGraphicsView->setCursor(QCursor(technicsShape.image()));
-    scene->setMode(DiagramScene::InsertShape);
+    scene->setMode(DiagramScene::InsertTechnicsShape);
     scene->setTechnicsShapeType(TechnicsShape::ShapeType(id));
+    scene->setSelectableItems(false);
+    if (simpleDrawModeActionGr->checkedAction() != nullptr)
+        simpleDrawModeActionGr->checkedAction()->setChecked(false);
+    ui->actionSelect_All->setDisabled(true);
+    ui->actionDeleteItem->setDisabled(true);
+}
+
+void MainWindow::insertDeviceShape(QAbstractButton *button)
+{
+    const QList<QAbstractButton *> buttons = deviceButtonGroup->buttons();
+    for (QAbstractButton *m_button : buttons) {
+        if (m_button != button)
+            button->setChecked(false);
+    }
+    const int id = deviceButtonGroup->id(button);
+    DeviceShape::ShapeType type {DeviceShape::ShapeType(id)};
+    DeviceShape deviceShape(ui->menuEdit, type);
+    ui->mainGraphicsView->setCursor(QCursor(deviceShape.image()));
+    scene->setMode(DiagramScene::InsertDeviceShape);
+    scene->setDeviceShapeType(DeviceShape::ShapeType(id));
     scene->setSelectableItems(false);
     if (simpleDrawModeActionGr->checkedAction() != nullptr)
         simpleDrawModeActionGr->checkedAction()->setChecked(false);
@@ -511,9 +554,8 @@ void MainWindow::createShapeToolBox()
 {
     technicsButtonGroup = new QButtonGroup(this);
     technicsButtonGroup->setExclusive(false);
-    connect(technicsButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked),
-            this, &MainWindow::insertTechnicsShape);
-
+    connect(technicsButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked)
+            , this, &MainWindow::insertTechnicsShape);
     QGridLayout *technicsLayout = new QGridLayout;
     technicsLayout->addWidget(createTechnicsCellWidget(tr("Car"), TechnicsShape::Base), 0, 0);
     technicsLayout->addWidget(createTechnicsCellWidget(tr("Tanker")
@@ -540,14 +582,31 @@ void MainWindow::createShapeToolBox()
                                                        , TechnicsShape::OtherAdapted), 5, 1);
     technicsLayout->setRowStretch(6, 10);
     technicsLayout->setColumnStretch(2, 10);
-
     QWidget *technicsWidget = new QWidget;
     technicsWidget->setLayout(technicsLayout);
+
+    deviceButtonGroup = new QButtonGroup(this);
+    deviceButtonGroup->setExclusive(false);
+    connect(deviceButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked)
+            , this, &MainWindow::insertDeviceShape);
+    QGridLayout *deviceLayout = new QGridLayout;
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel"), DeviceShape::Barrel), 0, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Branches 3")
+                                                   , DeviceShape::Branches_3), 0, 1);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Branches 4")
+                                                   , DeviceShape::Branches_4), 1, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Collector")
+                                                   , DeviceShape::Collector), 1, 1);
+    deviceLayout->setRowStretch(3, 10);
+    deviceLayout->setColumnStretch(2, 10);
+    QWidget *deviceWidget = new QWidget;
+    deviceWidget->setLayout(deviceLayout);
 
     shapeToolBox = new QToolBox;
     shapeToolBox->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored));
     shapeToolBox->setMinimumWidth(technicsWidget->sizeHint().width());
     shapeToolBox->addItem(technicsWidget, tr("Technics"));
+    shapeToolBox->addItem(deviceWidget, tr("Device"));
 }
 
 void MainWindow::disableAction()
@@ -780,6 +839,27 @@ QWidget *MainWindow::createTechnicsCellWidget(const QString &text, TechnicsShape
     technicsShapeWidget->setLayout(technicsShapeLayout);
 
     return technicsShapeWidget;
+}
+
+QWidget *MainWindow::createDeviceCellWidget(const QString &text, DeviceShape::ShapeType type)
+{
+    DeviceShape deviceItem(ui->menuEdit, type);
+    QIcon icon(deviceItem.image());
+
+    QToolButton *deviceButtton = new QToolButton;
+    deviceButtton->setIcon(icon);
+    deviceButtton->setIconSize(QSize(28, 22));
+    deviceButtton->setCheckable(true);
+    deviceButtonGroup->addButton(deviceButtton, int(type));
+
+    QGridLayout *deviceShapeLayout = new QGridLayout;
+    deviceShapeLayout->addWidget(deviceButtton, 0, 0, Qt::AlignCenter);
+    deviceShapeLayout->addWidget(new QLabel(text), 1, 0, Qt::AlignCenter);
+
+    QWidget *deviceShapeWidget = new QWidget;
+    deviceShapeWidget->setLayout(deviceShapeLayout);
+
+    return deviceShapeWidget;
 }
 
 bool MainWindow::maybeSave()

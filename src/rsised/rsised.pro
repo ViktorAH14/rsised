@@ -13,6 +13,7 @@ CONFIG += c++11
 SOURCES += \
     curve.cpp \
     curveresizer.cpp \
+    device_shape.cpp \
     diagramscene.cpp \
     ellipse.cpp \
     ellipseresizer.cpp \
@@ -34,6 +35,7 @@ SOURCES += \
 HEADERS += \
     curve.h \
     curveresizer.h \
+    device_shape.h \
     diagramscene.h \
     ellipse.h \
     ellipseresizer.h \

@@ -2,6 +2,7 @@
 #define DIAGRAMSCENE_H
 
 #include "technics_shape.h"
+#include "device_shape.h"
 
 #include <QGraphicsScene>
 #include <QObject>
@@ -12,7 +13,6 @@ class Polyline;
 class Curve;
 class TextItem;
 class PixmapItem;
-class TechnicsShape;
 
 QT_BEGIN_NAMESPACE
 class QMenu;
@@ -24,26 +24,28 @@ class DiagramScene : public QGraphicsScene
 
 public:
     enum SceneMode {InsertPolyline
-               , InsertRect
-               , InsertEllipse
-               , InsertCurve
-               , InserText
-               , InsertImage
-               , InsertShape
-               , SelectItem};
+                    , InsertRect
+                    , InsertEllipse
+                    , InsertCurve
+                    , InserText
+                    , InsertImage
+                    , InsertTechnicsShape
+                    , InsertDeviceShape
+                    , SelectItem };
 
     explicit DiagramScene(QMenu *itemMenu, QObject *parent = nullptr);
 
+    bool isChanged();
     void setItemPen(const QColor &color, const qreal width, const Qt::PenStyle &penStyle);
     void setItemBrush(const QColor &color, const Qt::BrushStyle &brushStyle);
     void setItemFont(const QFont &font , const QColor &textColor);
-    bool isChanged();
+    void setSelectableItems(bool selectable);
+    void setTechnicsShapeType(TechnicsShape::ShapeType type);
+    void setDeviceShapeType(DeviceShape::ShapeType type);
 
 public slots:
     void setMode(DiagramScene::SceneMode mode);
-    void setSelectableItems(bool selectable);
     void setSceneChanged(bool changed);
-    void setTechnicsShapeType(TechnicsShape::ShapeType type);
     void insertPixmap(const QString &imageFile);
 
 protected:
@@ -55,6 +57,8 @@ protected:
 private:
     TechnicsShape::ShapeType m_technicsShapeType;
     TechnicsShape *technicsShape;
+    DeviceShape::ShapeType m_deviceShapeType;
+    DeviceShape *deviceShape;
     Rectangle   *rectangle;
     Polyline    *polyline;
     Ellipse     *ellipse;
@@ -62,10 +66,10 @@ private:
     TextItem    *textItem;
     PixmapItem  *pixmapItem;
     QMenu       *m_itemMenu;
-    SceneMode   m_sceneMode; // Initialized in mainwindow.cpp
-    QPen        itemPen; // Initialized in mainwindow.cpp
-    QBrush      itemBrush; // Initialized in mainwindow.cpp
-    QFont       itemFont; // Initialized in mainwindow.cpp
+    SceneMode   m_sceneMode;
+    QPen        itemPen;
+    QBrush      itemBrush;
+    QFont       itemFont;
     QColor      fontColor;
     QList<QPointF>  pathPoint;
     QPointF     startPoint; // NOTE Without this variable, a segmentation fault occurs???

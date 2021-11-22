@@ -67,10 +67,13 @@ void Ellipse::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void Ellipse::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    ellipseSizeGripItem->setActionType((ellipseSizeGripItem->actionType() == SizeGripItem::Resize)
-                                       ? SizeGripItem::Rotate : SizeGripItem::Resize);
-
-    QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
+    if (isSelected()) {
+        ellipseSizeGripItem->setActionType((ellipseSizeGripItem->actionType()
+                                       == SizeGripItem::Resize) ? SizeGripItem::Rotate
+                                                                :SizeGripItem::Resize);
+    } else {
+        QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
+    }
 }
 
 void Ellipse::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)

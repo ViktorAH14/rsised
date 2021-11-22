@@ -56,6 +56,7 @@ private slots:
 
 // Shapes
     void insertTechnicsShape(QAbstractButton *button);
+    void insertDeviceShape(QAbstractButton *button);
 
 // Style toolbar
     void changedItemPen();
@@ -74,6 +75,7 @@ private:
     void createSimpleDrawToolBar();
     void createSceneScaleToolBar();
     QWidget *createTechnicsCellWidget(const QString &text, TechnicsShape::ShapeType type);
+    QWidget *createDeviceCellWidget(const QString &text, DeviceShape::ShapeType type);
 
     void loadFile(const QString &fileName);
     bool maybeSave();
@@ -112,5 +114,6 @@ private:
 
     QToolBox *shapeToolBox;
     QButtonGroup *technicsButtonGroup;
+    QButtonGroup *deviceButtonGroup;
 };
 #endif // MAINWINDOW_H

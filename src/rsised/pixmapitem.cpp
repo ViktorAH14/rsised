@@ -44,9 +44,9 @@ void PixmapItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
         pixmapSizeGripItem->setActionType((pixmapSizeGripItem->actionType()
                                            == SizeGripItem::Resize) ? SizeGripItem::Rotate
                                                                     :SizeGripItem::Resize);
+    } else {
+        QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
     }
-
-    QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
 }
 
 void PixmapItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)

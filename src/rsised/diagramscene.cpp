@@ -126,6 +126,11 @@ void DiagramScene::setTechnicsShapeType(TechnicsShape::ShapeType type)
     m_technicsShapeType = type;
 }
 
+void DiagramScene::setDeviceShapeType(DeviceShape::ShapeType type)
+{
+    m_deviceShapeType = type;
+}
+
 void DiagramScene::insertPixmap(const QString &imageFile)
 {
     pixmapItem = new PixmapItem();
@@ -188,10 +193,15 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             textItem->setZValue(1000.0);
             addItem(textItem);
             break;
-        case InsertShape:
+        case InsertTechnicsShape:
             technicsShape = new TechnicsShape(m_itemMenu, m_technicsShapeType);
             technicsShape->setPos(mouseEvent->scenePos());
             addItem(technicsShape);
+            break;
+        case InsertDeviceShape:
+            deviceShape = new DeviceShape(m_itemMenu, m_deviceShapeType);
+            deviceShape->setPos(mouseEvent->scenePos());
+            addItem(deviceShape);
             break;
         default:
             break;
@@ -261,8 +271,11 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         break;
     case InsertCurve:
         break;
-    case InsertShape:
+    case InsertTechnicsShape:
         technicsShape = nullptr;
+        break;
+    case InsertDeviceShape:
+        deviceShape = nullptr;
         break;
     default:
         break;
