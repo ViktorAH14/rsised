@@ -117,6 +117,7 @@ void DeviceShape::drawShape(QPainter *painter)
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setRenderHint(QPainter::SmoothPixmapTransform);
     painter->setPen(QPen(Qt::black, 3));
+    painter->setBrush(QBrush(Qt::white));
 
     switch (m_shapeType) {
     case Barrel: {

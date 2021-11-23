@@ -52,5 +52,7 @@
         <file>images/icons/underline_48.png</file>
         <file>images/icons/italic_48.png</file>
         <file>images/icons/insertimage_48.png</file>
+        <file>images/icons/bringtofront_48.png</file>
+        <file>images/icons/sendtoback_48.png</file>
     </qresource>
 </RCC>

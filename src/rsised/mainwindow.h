@@ -46,6 +46,8 @@ private slots:
     void sceneZoomInOut();
     void sceneScaleChanged(const QString &scale);
     void selectedItem();
+    void bringToFront();
+    void sendToBack();
 
 // Simple draw
     void drawPolyline();

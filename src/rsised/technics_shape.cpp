@@ -41,6 +41,7 @@ void TechnicsShape::drawShape(QPainter *painter)
     QPolygonF autoBase;
     autoBase << QPointF(0.0, -37.5) << QPointF(15.0, -12.5) << QPointF(15.0, 37.5)
             << QPointF(-15.0, 37.5) << QPointF(-15.0, -12.5) << QPointF(0.0, -37.5);
+    painter->setBrush(QBrush(Qt::white));
     switch (m_shapeType) {
     case Base: {
         painter->setPen(QPen(Qt::red, 1));

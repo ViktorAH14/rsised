@@ -102,6 +102,9 @@
     <addaction name="actionCut"/>
     <addaction name="actionDeleteItem"/>
     <addaction name="separator"/>
+    <addaction name="actionBring_to_front"/>
+    <addaction name="actionSend_to_back"/>
+    <addaction name="separator"/>
     <addaction name="actionSelect_All"/>
    </widget>
    <addaction name="menuFail"/>
@@ -156,6 +159,9 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionSelectedItem"/>
+   <addaction name="separator"/>
+   <addaction name="actionBring_to_front"/>
+   <addaction name="actionSend_to_back"/>
    <addaction name="separator"/>
    <addaction name="actionDrawPolyline"/>
    <addaction name="actionDrawCurve"/>
@@ -438,6 +444,36 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionBring_to_front">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/bringtofront_48.png</normaloff>:/images/icons/bringtofront_48.png</iconset>
+   </property>
+   <property name="text">
+    <string>Bring to front</string>
+   </property>
+   <property name="toolTip">
+    <string>Move the item forward</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionSend_to_back">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/sendtoback_48.png</normaloff>:/images/icons/sendtoback_48.png</iconset>
+   </property>
+   <property name="text">
+    <string>Send to back</string>
+   </property>
+   <property name="toolTip">
+    <string>Move the item back</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
    </property>
   </action>
  </widget>
@@ -749,6 +785,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionBring_to_front</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>bringToFront()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>830</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSend_to_back</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>sendToBack()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>830</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>drawPolyline()</slot>
@@ -770,5 +838,7 @@
   <slot>insertText()</slot>
   <slot>insertImage()</slot>
   <slot>insertFireTankerTruck()</slot>
+  <slot>bringToFront()</slot>
+  <slot>sendToBack()</slot>
  </slots>
 </ui>

@@ -523,6 +523,37 @@ void MainWindow::selectedItem()
     ui->actionSelect_All->setEnabled(true);
 }
 
+void MainWindow::bringToFront()
+{
+    if (scene->selectedItems().isEmpty())
+        return;
+
+    QGraphicsItem *selectedItem = scene->selectedItems().constFirst();
+    const QList<QGraphicsItem *> overlapItems = selectedItem->collidingItems();
+
+    qreal zValue = 0;
+    for (const QGraphicsItem *item : overlapItems) {
+        if (item->zValue() >= zValue)
+            zValue = item->zValue() + 0.1;
+    }
+    selectedItem->setZValue(zValue);
+}
+
+void MainWindow::sendToBack()
+{
+    if (scene->selectedItems().isEmpty())
+        return;
+
+    QGraphicsItem *selectedItem = scene->selectedItems().constFirst();
+    const QList<QGraphicsItem *> overlapItems = selectedItem->collidingItems();
+
+    qreal zValue = 0;
+    for (const QGraphicsItem *item : overlapItems) {
+        if (item->zValue() <= zValue)
+            zValue = item->zValue() - 0.1;
+    }
+    selectedItem->setZValue(zValue);
+}
 void MainWindow::changedItemPen()
 {
     QColor currentPenColor = penColorButton->color();
