@@ -131,6 +131,11 @@ void DiagramScene::setDeviceShapeType(DeviceShape::ShapeType type)
     m_deviceShapeType = type;
 }
 
+void DiagramScene::setBuildingStructShapeType(BuildingStruct::ShapeType type)
+{
+    m_buildingStructType = type;
+}
+
 void DiagramScene::insertPixmap(const QString &imageFile)
 {
     pixmapItem = new PixmapItem();
@@ -184,7 +189,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 addItem(curve);
             }
             break;
-        case InserText:
+        case InserText: // TODO добавить editorLostFocus(TextItem *textItem); утечка памяти???
             textItem = new TextItem(m_itemMenu);
             textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
             textItem->setPos(mouseEvent->scenePos());
@@ -202,6 +207,16 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             deviceShape = new DeviceShape(m_itemMenu, m_deviceShapeType);
             deviceShape->setPos(mouseEvent->scenePos());
             addItem(deviceShape);
+            break;
+        case InsertBuildingStruct:
+            buildingStructItem = new BuildingStruct(m_itemMenu, m_buildingStructType);
+            buildingStructItem->setPos(mouseEvent->scenePos());
+            if (m_buildingStructType == BuildingStruct::Wall) {
+                buildingStructItem->setZValue(900.0);
+            } else {
+                buildingStructItem->setZValue(950.0);
+            }
+            addItem(buildingStructItem);
             break;
         default:
             break;
@@ -276,6 +291,9 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         break;
     case InsertDeviceShape:
         deviceShape = nullptr;
+        break;
+    case InsertBuildingStruct:
+        buildingStructItem = nullptr;
         break;
     default:
         break;

@@ -117,6 +117,9 @@ void MainWindow::loadFile(const QString &fileName)
         if (DeviceShape *deviceShapeItem = dynamic_cast<DeviceShape *>(item)) {
             scene->addItem(deviceShapeItem);
         }
+        if (BuildingStruct *buildingItem = dynamic_cast<BuildingStruct *>(item)) {
+            scene->addItem(buildingItem);
+        }
     }
     file.close();
 
@@ -262,6 +265,17 @@ void MainWindow::paste()
             newDeviceShape->setTransform(shapeTransform);
             scene->addItem(newDeviceShape);
         }
+        if (BuildingStruct *oldBuildingStruct = dynamic_cast<BuildingStruct *>(item)) {
+            BuildingStruct::ShapeType shapeType = oldBuildingStruct->shapeType();
+            QTransform shapeTransform = oldBuildingStruct->transform();
+            BuildingStruct *newBuildingStruct = new BuildingStruct(ui->menuEdit, shapeType);
+            newBuildingStruct->setRect(oldBuildingStruct->getRect());
+            newBuildingStruct->setPos(QPointF(oldBuildingStruct->x() + 10
+                                             , oldBuildingStruct->y() + 10));
+            newBuildingStruct->setZValue(oldBuildingStruct->zValue());
+            newBuildingStruct->setTransform(shapeTransform);
+            scene->addItem(newBuildingStruct);
+        }
     }
     scene->setSelectableItems(true);
 }
@@ -342,6 +356,17 @@ void MainWindow::cut()
             newDeviceShape->setZValue(oldDeviceShape->zValue());
             newDeviceShape->setTransform(shapeTransform);
             cutList.append(newDeviceShape);
+        }
+        if (BuildingStruct *oldBuildingStruct = dynamic_cast<BuildingStruct *>(item)) {
+            BuildingStruct::ShapeType shapeType = oldBuildingStruct->shapeType();
+            QTransform shapeTransform = oldBuildingStruct->transform();
+            BuildingStruct *newBuildingStruct = new BuildingStruct(ui->menuEdit, shapeType);
+            newBuildingStruct->setRect(oldBuildingStruct->getRect());
+            newBuildingStruct->setPos(QPointF(oldBuildingStruct->x() + 10
+                                             , oldBuildingStruct->y() + 10));
+            newBuildingStruct->setZValue(oldBuildingStruct->zValue());
+            newBuildingStruct->setTransform(shapeTransform);
+            cutList.append(newBuildingStruct);
         }
     }
     copyList = cutList;
@@ -515,6 +540,26 @@ void MainWindow::insertDeviceShape(QAbstractButton *button)
     ui->actionDeleteItem->setDisabled(true);
 }
 
+void MainWindow::insertBuildingStructShape(QAbstractButton *button)
+{
+    const QList<QAbstractButton *> buttons = buildingStructButtonGroup->buttons();
+    for (QAbstractButton *m_button : buttons) {
+        if (m_button != button)
+            button->setChecked(false);
+    }
+    const int id = buildingStructButtonGroup->id(button);
+    BuildingStruct::ShapeType type {BuildingStruct::ShapeType(id)};
+    BuildingStruct buildingItem(ui->menuEdit, type);
+    ui->mainGraphicsView->setCursor(QCursor(buildingItem.image()));
+    scene->setMode(DiagramScene::InsertBuildingStruct);
+    scene->setBuildingStructShapeType(BuildingStruct::ShapeType(id));
+    scene->setSelectableItems(false);
+    if (simpleDrawModeActionGr->checkedAction() != nullptr)
+        simpleDrawModeActionGr->checkedAction()->setChecked(false);
+    ui->actionSelect_All->setDisabled(true);
+    ui->actionDeleteItem->setDisabled(true);
+}
+
 void MainWindow::selectedItem()
 {
     ui->mainGraphicsView->setCursor(Qt::ArrowCursor);
@@ -633,9 +678,29 @@ void MainWindow::createShapeToolBox()
     QWidget *deviceWidget = new QWidget;
     deviceWidget->setLayout(deviceLayout);
 
+    buildingStructButtonGroup = new QButtonGroup(this);
+    buildingStructButtonGroup->setExclusive(false);
+    connect(buildingStructButtonGroup
+            , QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked)
+            , this, &MainWindow::insertBuildingStructShape);
+    QGridLayout *buildStructLayout= new QGridLayout;
+    buildStructLayout->addWidget(createBuildingStructCellWidget(tr("Wall")
+                                                                , BuildingStruct::Wall), 0, 0);
+    buildStructLayout->addWidget(createBuildingStructCellWidget(tr("Window")
+                                                                , BuildingStruct::Window), 0, 1);
+    buildStructLayout->addWidget(createBuildingStructCellWidget(tr("Door")
+                                                                , BuildingStruct::Door), 1, 0);
+    buildStructLayout->addWidget(createBuildingStructCellWidget(tr("Open")
+                                                                , BuildingStruct::Open), 1, 1);
+    buildStructLayout->setRowStretch(3, 10);
+    buildStructLayout->setColumnStretch(2, 10);
+    QWidget *buildingWidget = new QWidget;
+    buildingWidget->setLayout(buildStructLayout);
+
     shapeToolBox = new QToolBox;
     shapeToolBox->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored));
     shapeToolBox->setMinimumWidth(technicsWidget->sizeHint().width());
+    shapeToolBox->addItem(buildingWidget, tr("Building structures"));
     shapeToolBox->addItem(technicsWidget, tr("Technics"));
     shapeToolBox->addItem(deviceWidget, tr("Device"));
 }
@@ -891,6 +956,27 @@ QWidget *MainWindow::createDeviceCellWidget(const QString &text, DeviceShape::Sh
     deviceShapeWidget->setLayout(deviceShapeLayout);
 
     return deviceShapeWidget;
+}
+
+QWidget *MainWindow::createBuildingStructCellWidget(const QString &text, BuildingStruct::ShapeType type)
+{
+    BuildingStruct buildingItem(ui->menuEdit, type);
+    QIcon icon(buildingItem.image());
+
+    QToolButton *buildingButtton = new QToolButton;
+    buildingButtton->setIcon(icon);
+    buildingButtton->setIconSize(QSize(33, 35));
+    buildingButtton->setCheckable(true);
+    buildingStructButtonGroup->addButton(buildingButtton, int(type));
+
+    QGridLayout *buildingStructLayout = new QGridLayout;
+    buildingStructLayout->addWidget(buildingButtton, 0, 0, Qt::AlignCenter);
+    buildingStructLayout->addWidget(new QLabel(text), 1, 0, Qt::AlignCenter);
+
+    QWidget *buildingStructWidget = new QWidget;
+    buildingStructWidget->setLayout(buildingStructLayout);
+
+    return buildingStructWidget;
 }
 
 bool MainWindow::maybeSave()

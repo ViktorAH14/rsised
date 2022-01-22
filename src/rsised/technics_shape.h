@@ -8,7 +8,7 @@ class SizeGripItem;
 class TechnicsShape : public QAbstractGraphicsShapeItem
 {
 public:
-    enum { Type = UserType + 20};
+    enum { Type = UserType + 20 };
     enum ShapeType { Base
                     , Tanker
                     , AutoPump
@@ -24,7 +24,6 @@ public:
 
     TechnicsShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QRectF boundingRect() const override; //TODO проверить реализацию для прочей техники
     int type() const override { return Type;}
 
@@ -33,6 +32,7 @@ public:
     ShapeType shapeType() const;
 
 protected:
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;

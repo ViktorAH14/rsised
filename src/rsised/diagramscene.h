@@ -3,6 +3,7 @@
 
 #include "technics_shape.h"
 #include "device_shape.h"
+#include "buildingstruct.h"
 
 #include <QGraphicsScene>
 #include <QObject>
@@ -31,6 +32,7 @@ public:
                     , InsertImage
                     , InsertTechnicsShape
                     , InsertDeviceShape
+                    , InsertBuildingStruct
                     , SelectItem };
 
     explicit DiagramScene(QMenu *itemMenu, QObject *parent = nullptr);
@@ -42,6 +44,7 @@ public:
     void setSelectableItems(bool selectable);
     void setTechnicsShapeType(TechnicsShape::ShapeType type);
     void setDeviceShapeType(DeviceShape::ShapeType type);
+    void setBuildingStructShapeType(BuildingStruct::ShapeType type);
 
 public slots:
     void setMode(DiagramScene::SceneMode mode);
@@ -59,6 +62,8 @@ private:
     TechnicsShape *technicsShape;
     DeviceShape::ShapeType m_deviceShapeType;
     DeviceShape *deviceShape;
+    BuildingStruct::ShapeType m_buildingStructType;
+    BuildingStruct *buildingStructItem;
     Rectangle   *rectangle;
     Polyline    *polyline;
     Ellipse     *ellipse;

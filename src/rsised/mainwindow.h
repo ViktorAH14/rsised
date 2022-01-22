@@ -3,6 +3,7 @@
 
 #include "diagramscene.h"
 #include "technics_shape.h"
+#include "buildingstruct.h"
 
 #include <QMainWindow>
 
@@ -59,6 +60,7 @@ private slots:
 // Shapes
     void insertTechnicsShape(QAbstractButton *button);
     void insertDeviceShape(QAbstractButton *button);
+    void insertBuildingStructShape(QAbstractButton *button);
 
 // Style toolbar
     void changedItemPen();
@@ -78,6 +80,7 @@ private:
     void createSceneScaleToolBar();
     QWidget *createTechnicsCellWidget(const QString &text, TechnicsShape::ShapeType type);
     QWidget *createDeviceCellWidget(const QString &text, DeviceShape::ShapeType type);
+    QWidget *createBuildingStructCellWidget(const QString &text, BuildingStruct::ShapeType type);
 
     void loadFile(const QString &fileName);
     bool maybeSave();
@@ -117,5 +120,6 @@ private:
     QToolBox *shapeToolBox;
     QButtonGroup *technicsButtonGroup;
     QButtonGroup *deviceButtonGroup;
+    QButtonGroup *buildingStructButtonGroup;
 };
 #endif // MAINWINDOW_H

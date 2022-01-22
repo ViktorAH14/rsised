@@ -6,6 +6,7 @@
 #include "pixmapitem.h"
 #include "technics_shape.h"
 #include "device_shape.h"
+#include "buildingstruct.h"
 
 #include <cmath>
 
@@ -81,6 +82,7 @@ void SizeGripItem::HandleItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouse
 
 void SizeGripItem::HandleItem::hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEvent)
 {
+    //TODO  переработать
     if (parentItem->actionType() == Resize) {
         switch (handlePositionFlags) {
         case Top:
@@ -110,21 +112,32 @@ void SizeGripItem::HandleItem::hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEv
         case PathLine:
             QApplication::setOverrideCursor(Qt::SizeAllCursor);
         }
-    } else if (parentItem->actionType() ==Rotate) {
+    } else if(parentItem->actionType() == Rotate) {
         QCursor rotateCursor = QCursor(QPixmap(":images/icons/rotate.png").scaled(22, 22));
-        switch (handlePositionFlags) {
-        case TopLeft:
-            QApplication::setOverrideCursor(rotateCursor);
-            break;
-        case TopRight:
-            QApplication::setOverrideCursor(rotateCursor);
-            break;
-        case BottomLeft:
-            QApplication::setOverrideCursor(rotateCursor);
-            break;
-        case BottomRight:
-            QApplication::setOverrideCursor(rotateCursor);
-            break;
+        if (parentItem->parentItem()->type() == BuildingStruct::Type) {
+            switch (handlePositionFlags) {
+            case Left:
+                QApplication::setOverrideCursor(rotateCursor);
+                break;
+            case Right:
+                QApplication::setOverrideCursor(rotateCursor);
+                break;
+            }
+        } else {
+            switch (handlePositionFlags) {
+            case TopLeft:
+                QApplication::setOverrideCursor(rotateCursor);
+                break;
+            case TopRight:
+                QApplication::setOverrideCursor(rotateCursor);
+                break;
+            case BottomLeft:
+                QApplication::setOverrideCursor(rotateCursor);
+                break;
+            case BottomRight:
+                QApplication::setOverrideCursor(rotateCursor);
+                break;
+            }
         }
     }
 
@@ -288,7 +301,7 @@ SizeGripItem::SizeGripItem(Resizer *resizer, QGraphicsItem *parent)
         handleItemList.append(new HandleItem(Bottom, this));
         handleItemList.append(new HandleItem(BottomLeft, this));
         handleItemList.append(new HandleItem(Left, this));
-        for (HandleItem *item :qAsConst(handleItemList)) {
+        for (HandleItem *item : qAsConst(handleItemList)) {
             item->setPathElementNum(handleNum);
         }
     }
@@ -308,6 +321,19 @@ SizeGripItem::SizeGripItem(Resizer *resizer, QGraphicsItem *parent)
             handleItemList.append(new HandleItem(PathLine, this));
             HandleItem *item {handleItemList.at(i)};
             item->setPathElementNum(i);
+        }
+    }
+
+    if (parent->type() == BuildingStruct::Type) {
+        BuildingStruct *parentBuildingItem = dynamic_cast<BuildingStruct *>(parentItem());
+        m_parentItemRect = parentBuildingItem->getRect();
+        setItemType(Rectangle); // NOTE возможно изменить?
+        int handleNum {-1};
+
+        handleItemList.append(new HandleItem(Right, this));
+        handleItemList.append(new HandleItem(Left, this));
+        for (HandleItem *item : qAsConst(handleItemList)) {
+            item->setPathElementNum(handleNum);
         }
     }
 
@@ -425,19 +451,30 @@ void SizeGripItem::rotateParentItem(const QPointF &currentPos, int positionFlag)
     QPointF parentItemCenter {m_parentItemRect.center()};
     QPointF corner;
 
-    switch (positionFlag) {
-    case TopLeft:
-        corner = m_parentItemRect.topLeft();
-        break;
-    case TopRight:
-        corner = m_parentItemRect.topRight();
-        break;
-    case BottomLeft:
-        corner = m_parentItemRect.bottomLeft();
-        break;
-    case BottomRight:
-        corner = m_parentItemRect.bottomRight();
-        break;
+    if (parentItem()->type() == BuildingStruct::Type) {
+        switch (positionFlag) {
+        case Left:
+            corner = m_parentItemRect.topLeft();
+            break;
+        case Right:
+            corner = m_parentItemRect.topRight();
+            break;
+        }
+    } else {
+        switch (positionFlag) {
+        case TopLeft:
+            corner = m_parentItemRect.topLeft();
+            break;
+        case TopRight:
+            corner = m_parentItemRect.topRight();
+            break;
+        case BottomLeft:
+            corner = m_parentItemRect.bottomLeft();
+            break;
+        case BottomRight:
+            corner = m_parentItemRect.bottomRight();
+            break;
+        }
     }
     QLineF lineToTarget(parentItemCenter, corner);
     QLineF lineToCursor(parentItemCenter, currentPos);
@@ -483,18 +520,18 @@ void SizeGripItem::setParentItemPath(QPainterPath newPath)
 void SizeGripItem::setActionType(SizeGripItem::ActionType actionType)
 {
     m_actionType = actionType;
-    if (actionType == Rotate) {
-        for (HandleItem *item : qAsConst(handleItemList)) {
-            if ((item->positionFlags() == Top) || (item->positionFlags() == Bottom)
-                    || (item->positionFlags() == Left) || (item->positionFlags() == Right)) {
-                item->hide();
+        if ((actionType == Rotate) && (parentItem()->type() != BuildingStruct::Type)) {
+            for (HandleItem *item : qAsConst(handleItemList)) {
+                if ((item->positionFlags() == Top) || (item->positionFlags() == Bottom)
+                        || (item->positionFlags() == Left) || (item->positionFlags() == Right)) {
+                    item->hide();
+                }
+            }
+        } else {
+            for (HandleItem *item : qAsConst(handleItemList)) {
+                item->show();
             }
         }
-    } else {
-        for (HandleItem *item : qAsConst(handleItemList)) {
-            item->show();
-        }
-    }
 }
 
 SizeGripItem::ActionType SizeGripItem::actionType()

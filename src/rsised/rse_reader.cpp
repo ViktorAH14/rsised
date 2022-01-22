@@ -7,6 +7,7 @@
 #include "pixmapitem.h"
 #include "technics_shape.h"
 #include "device_shape.h"
+#include "buildingstruct.h"
 
 #include <QXmlStreamReader>
 #include <QPen>
@@ -25,10 +26,10 @@ QRectF RseReader::getSceneRect(QIODevice *device) const
     while (!rseSceneReader.atEnd()) {
         if (rseSceneReader.isStartElement()) {
             if (rseSceneReader.name() == "Scene") {
-                qreal x{0.0};
-                qreal y{0.0};
-                qreal width{0.0};
-                qreal height{0.0};
+                qreal x {0.0};
+                qreal y {0.0};
+                qreal width {0.0};
+                qreal height {0.0};
                 QXmlStreamAttributes attributes = rseSceneReader.attributes();
                 for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
                     if (attr.name() == "x") {
@@ -68,20 +69,20 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
         if (rseItemReader.isStartElement()) {
             if (rseItemReader.name() == "rect") {
                 Rectangle *rectangle = new Rectangle(m_itemMenu);
-                qreal x{0.0};
-                qreal y{0.0};
-                qreal width{0.0};
-                qreal height{0.0};
-                qreal zValue{0.0};
-                qreal m11{0.0};
-                qreal m12{0.0};
-                qreal m13{0.0};
-                qreal m21{0.0};
-                qreal m22{0.0};
-                qreal m23{0.0};
-                qreal m31{0.0};
-                qreal m32{0.0};
-                qreal m33{0.0};
+                qreal x {0.0};
+                qreal y {0.0};
+                qreal width {0.0};
+                qreal height {0.0};
+                qreal zValue {0.0};
+                qreal m11 {0.0};
+                qreal m12 {0.0};
+                qreal m13 {0.0};
+                qreal m21 {0.0};
+                qreal m22 {0.0};
+                qreal m23 {0.0};
+                qreal m31 {0.0};
+                qreal m32 {0.0};
+                qreal m33 {0.0};
                 QPen itemPen;
                 QBrush itemBrush;
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
@@ -140,20 +141,20 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
             }
             if (rseItemReader.name() == "ellipse") {
                 Ellipse *ellipse = new Ellipse(m_itemMenu);
-                qreal x{0.0};
-                qreal y{0.0};
-                qreal width{0.0};
-                qreal height{0.0};
-                qreal zValue{0.0};
-                qreal m11{0.0};
-                qreal m12{0.0};
-                qreal m13{0.0};
-                qreal m21{0.0};
-                qreal m22{0.0};
-                qreal m23{0.0};
-                qreal m31{0.0};
-                qreal m32{0.0};
-                qreal m33{0.0};
+                qreal x {0.0};
+                qreal y {0.0};
+                qreal width {0.0};
+                qreal height {0.0};
+                qreal zValue {0.0};
+                qreal m11 {0.0};
+                qreal m12 {0.0};
+                qreal m13 {0.0};
+                qreal m21 {0.0};
+                qreal m22 {0.0};
+                qreal m23 {0.0};
+                qreal m31 {0.0};
+                qreal m32 {0.0};
+                qreal m33 {0.0};
                 QPen itemPen;
                 QBrush itemBrush;
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
@@ -213,20 +214,20 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
             if (rseItemReader.name() == "line") {
                 QGraphicsLineItem *line = new QGraphicsLineItem();
                 line->setFlag(QGraphicsItem::ItemIsMovable, true);
-                qreal x1{0.0};
-                qreal y1{0.0};
-                qreal x2{0.0};
-                qreal y2{0.0};
-                qreal zValue{0.0};
-                qreal m11{0.0};
-                qreal m12{0.0};
-                qreal m13{0.0};
-                qreal m21{0.0};
-                qreal m22{0.0};
-                qreal m23{0.0};
-                qreal m31{0.0};
-                qreal m32{0.0};
-                qreal m33{0.0};
+                qreal x1 {0.0};
+                qreal y1 {0.0};
+                qreal x2 {0.0};
+                qreal y2 {0.0};
+                qreal zValue {0.0};
+                qreal m11 {0.0};
+                qreal m12 {0.0};
+                qreal m13 {0.0};
+                qreal m21 {0.0};
+                qreal m22 {0.0};
+                qreal m23 {0.0};
+                qreal m31 {0.0};
+                qreal m32 {0.0};
+                qreal m33 {0.0};
                 QPen itemPen;
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
                 for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
@@ -279,16 +280,16 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 Polyline *polyline = new Polyline(m_itemMenu);
                 QPainterPath path;
                 QPen itemPen;
-                qreal zValue{0.0};
-                qreal m11{0.0};
-                qreal m12{0.0};
-                qreal m13{0.0};
-                qreal m21{0.0};
-                qreal m22{0.0};
-                qreal m23{0.0};
-                qreal m31{0.0};
-                qreal m32{0.0};
-                qreal m33{0.0};
+                qreal zValue {0.0};
+                qreal m11 {0.0};
+                qreal m12 {0.0};
+                qreal m13 {0.0};
+                qreal m21 {0.0};
+                qreal m22 {0.0};
+                qreal m23 {0.0};
+                qreal m31 {0.0};
+                qreal m32 {0.0};
+                qreal m33 {0.0};
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
                 for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
                     if (attr.name() == "m") {
@@ -340,16 +341,16 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 Curve *curve = new Curve(m_itemMenu);
                 QPainterPath path;
                 QPen itemPen;
-                qreal zValue{0.0};
-                qreal m11{0.0};
-                qreal m12{0.0};
-                qreal m13{0.0};
-                qreal m21{0.0};
-                qreal m22{0.0};
-                qreal m23{0.0};
-                qreal m31{0.0};
-                qreal m32{0.0};
-                qreal m33{0.0};
+                qreal zValue {0.0};
+                qreal m11 {0.0};
+                qreal m12 {0.0};
+                qreal m13 {0.0};
+                qreal m21 {0.0};
+                qreal m22 {0.0};
+                qreal m23 {0.0};
+                qreal m31 {0.0};
+                qreal m32 {0.0};
+                qreal m33 {0.0};
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
                 for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
                     if (attr.name() == "m") {
@@ -402,13 +403,13 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 itemList.append(curve);
             }
             if (rseItemReader.name() == "text") {
-                qreal x{0.0};
-                qreal y{0.0};
-                qreal zValue{0.0};
-                int fontSize{0};
-                bool bold{false};
-                bool italic{false};
-                bool underline{false};
+                qreal x {0.0};
+                qreal y {0.0};
+                qreal zValue {0.0};
+                int fontSize {0};
+                bool bold {false};
+                bool italic {false};
+                bool underline {false};
                 QFont font;
                 QColor colorText;
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
@@ -461,20 +462,20 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 itemList.append(textItem);
             }
             if (rseItemReader.name() == "pixmap") {
-                qreal x{0.0};
-                qreal y{0.0};
-                qreal width{0.0};
-                qreal height{0.0};
-                qreal zValue{0.0};
-                qreal m11{0.0};
-                qreal m12{0.0};
-                qreal m13{0.0};
-                qreal m21{0.0};
-                qreal m22{0.0};
-                qreal m23{0.0};
-                qreal m31{0.0};
-                qreal m32{0.0};
-                qreal m33{0.0};
+                qreal x {0.0};
+                qreal y {0.0};
+                qreal width {0.0};
+                qreal height {0.0};
+                qreal zValue {0.0};
+                qreal m11 {0.0};
+                qreal m12 {0.0};
+                qreal m13 {0.0};
+                qreal m21 {0.0};
+                qreal m22 {0.0};
+                qreal m23 {0.0};
+                qreal m31 {0.0};
+                qreal m32 {0.0};
+                qreal m33 {0.0};
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
                 for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
                     if (attr.name() == "x") {
@@ -519,19 +520,19 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 itemList.append(pixmapItem);
             }
             if (rseItemReader.name() == "technics_shape") {
-                qreal x{0.0};
-                qreal y{0.0};
+                qreal x {0.0};
+                qreal y {0.0};
                 TechnicsShape::ShapeType shapeType = TechnicsShape::Base;
-                qreal zValue{0.0};
-                qreal m11{0.0};
-                qreal m12{0.0};
-                qreal m13{0.0};
-                qreal m21{0.0};
-                qreal m22{0.0};
-                qreal m23{0.0};
-                qreal m31{0.0};
-                qreal m32{0.0};
-                qreal m33{0.0};
+                qreal zValue {0.0};
+                qreal m11 {0.0};
+                qreal m12 {0.0};
+                qreal m13 {0.0};
+                qreal m21 {0.0};
+                qreal m22 {0.0};
+                qreal m23 {0.0};
+                qreal m31 {0.0};
+                qreal m32 {0.0};
+                qreal m33 {0.0};
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
                 for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
                     if (attr.name() == "x") {
@@ -569,19 +570,19 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 itemList.append(technicsShapeItem);
             }
             if (rseItemReader.name() == "device_shape") {
-                qreal x{0.0};
-                qreal y{0.0};
+                qreal x {0.0};
+                qreal y {0.0};
                 DeviceShape::ShapeType shapeType = DeviceShape::Barrel;
                 qreal zValue{0.0};
-                qreal m11{0.0};
-                qreal m12{0.0};
-                qreal m13{0.0};
-                qreal m21{0.0};
-                qreal m22{0.0};
-                qreal m23{0.0};
-                qreal m31{0.0};
-                qreal m32{0.0};
-                qreal m33{0.0};
+                qreal m11 {0.0};
+                qreal m12 {0.0};
+                qreal m13 {0.0};
+                qreal m21 {0.0};
+                qreal m22 {0.0};
+                qreal m23 {0.0};
+                qreal m31 {0.0};
+                qreal m32 {0.0};
+                qreal m33 {0.0};
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
                 for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
                     if (attr.name() == "x") {
@@ -612,6 +613,73 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
 
                 DeviceShape *deviceShapeItem = new DeviceShape(m_itemMenu, shapeType);
                 deviceShapeItem->setPos(QPointF(x, y));
+                deviceShapeItem->setZValue(zValue);
+                QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
+                deviceShapeItem->setTransform(trans);
+
+                itemList.append(deviceShapeItem);
+            }
+            if (rseItemReader.name() == "building_item") {
+                qreal x {0.0};
+                qreal y {0.0};
+                qreal itemLeft {0.0};
+                qreal itemTop {0.0};
+                qreal width {0.0};
+                qreal height {0.0};
+                BuildingStruct::ShapeType shapeType = BuildingStruct::Wall;
+                qreal zValue {0.0};
+                qreal m11 {0.0};
+                qreal m12 {0.0};
+                qreal m13 {0.0};
+                qreal m21 {0.0};
+                qreal m22 {0.0};
+                qreal m23 {0.0};
+                qreal m31 {0.0};
+                qreal m32 {0.0};
+                qreal m33 {0.0};
+                QXmlStreamAttributes attributes = rseItemReader.attributes();
+                for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
+                    if (attr.name() == "x") {
+                        x = attr.value().toFloat();
+                    }
+                    if (attr.name() == "y") {
+                        y = attr.value().toFloat();
+                    }
+                    if (attr.name() == "item_left") {
+                        itemLeft = attr.value().toFloat();
+                    }
+                    if (attr.name() == "item_top") {
+                        itemTop = attr.value().toFloat();
+                    }
+                    if (attr.name() == "width") {
+                        width = attr.value().toFloat();
+                    }
+                    if (attr.name() == "height") {
+                        height = attr.value().toFloat();
+                    }
+                    if (attr.name() == "shape_type") {
+                        shapeType = BuildingStruct::ShapeType(attr.value().toInt());
+                    }
+                    if (attr.name() == "z") {
+                        zValue = attr.value().toFloat();
+                    }
+                    if (attr.name() == "transform") {
+                        QList<QStringRef> transList(attr.value().split(",").toList());
+                        m11 = transList.at(0).toFloat();
+                        m12 = transList.at(1).toFloat();
+                        m13 = transList.at(2).toFloat();
+                        m21 = transList.at(3).toFloat();
+                        m22 = transList.at(4).toFloat();
+                        m23 = transList.at(5).toFloat();
+//                        m31 = transList.at(6).toFloat(); происходит смещение относительно начального положения
+//                        m32 = transList.at(7).toFloat();
+                        m33 = transList.at(8).toFloat();
+                    }
+                }
+
+                BuildingStruct *deviceShapeItem = new BuildingStruct(m_itemMenu, shapeType);
+                deviceShapeItem->setPos(QPointF(x, y));
+                deviceShapeItem->setRect(QRectF(itemLeft, itemTop, width, height));
                 deviceShapeItem->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
                 deviceShapeItem->setTransform(trans);

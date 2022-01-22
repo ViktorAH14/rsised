@@ -6,6 +6,7 @@
 #include "pixmapitem.h"
 #include "technics_shape.h"
 #include "device_shape.h"
+#include "buildingstruct.h"
 
 #include <QPainterPath>
 
@@ -66,6 +67,13 @@ void ItemResizer::operator()(QGraphicsItem *item, const QVariant &value)
             deviceShape->scaleDeviceShape(value.toRectF());
         }
         break;
+    }
+    case BuildingStruct::Type: {
+        BuildingStruct *buildingItem = dynamic_cast<BuildingStruct *>(item);
+        if (buildingItem) {
+            QRectF itemRect = value.toRectF();
+            buildingItem->setRect(itemRect);
+        }
     }
     default:
         break;
