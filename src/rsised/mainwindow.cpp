@@ -13,6 +13,8 @@
 #include <QtWidgets>
 #include <QSvgGenerator>
 #include <KColorButton>
+#include <QPrinter>
+#include <QPrintDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), currentFile("")
@@ -438,6 +440,16 @@ bool MainWindow::saveSVG()
     painter.end();
 
     return true;
+}
+
+void MainWindow::print()
+{
+    QPrinter printer;
+    if (QPrintDialog(&printer).exec() == QDialog::Accepted) {
+         QPainter painter(&printer);
+         painter.setRenderHint(QPainter::Antialiasing);
+         scene->render(&painter);
+    }
 }
 
 void MainWindow::insertImage()

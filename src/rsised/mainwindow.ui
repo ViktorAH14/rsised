@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1662</width>
-     <height>30</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFail">
@@ -67,6 +67,8 @@
     <addaction name="separator"/>
     <addaction name="menuSave_As"/>
     <addaction name="menuImport"/>
+    <addaction name="separator"/>
+    <addaction name="actionPrint"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -137,6 +139,9 @@
    <addaction name="actionCopy"/>
    <addaction name="actionPaste"/>
    <addaction name="actionCut"/>
+   <addaction name="separator"/>
+   <addaction name="actionPrint"/>
+   <addaction name="separator"/>
    <addaction name="actionDeleteItem"/>
   </widget>
   <widget class="QToolBar" name="simpleDrawToolBar">
@@ -474,6 +479,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionPrint">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/print_48.png</normaloff>:/images/icons/print_48.png</iconset>
+   </property>
+   <property name="text">
+    <string>Print</string>
+   </property>
+   <property name="toolTip">
+    <string>Printing a document</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
    </property>
   </action>
  </widget>
@@ -817,6 +837,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionPrint</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>print()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>830</x>
+     <y>362</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>830</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>drawPolyline()</slot>
@@ -840,5 +876,6 @@
   <slot>insertFireTankerTruck()</slot>
   <slot>bringToFront()</slot>
   <slot>sendToBack()</slot>
+  <slot>print()</slot>
  </slots>
 </ui>

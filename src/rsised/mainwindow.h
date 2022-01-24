@@ -41,6 +41,7 @@ private slots:
     void enableAction();
     void openSVG();
     bool saveSVG();
+    void print();
     void insertImage();
     void deleteItem();
     void selectAll();
