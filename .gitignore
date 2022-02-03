@@ -209,6 +209,7 @@ bin/
 build/
 lib.*/
 import/
+doc/
 
 # Images
 *.png
