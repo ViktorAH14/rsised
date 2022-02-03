@@ -45,7 +45,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(scene, &QGraphicsScene::selectionChanged, this, &MainWindow::enableAction);
     ui->mainGraphicsView->setScene(scene);
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
-// TODO сделать выделение резиновой нитью   ui->mainGraphicsView->setDragMode(QGraphicsView::RubberBandDrag);
 
     QHBoxLayout *mainHBoxLayout = new QHBoxLayout;
     mainHBoxLayout->addWidget(shapeToolBox);
@@ -460,6 +459,7 @@ void MainWindow::insertImage()
         return;
     }
     ui->mainGraphicsView->setCursor(Qt::ArrowCursor);
+    ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     scene->setMode(DiagramScene::InsertImage);
     scene->setSelectableItems(false);
     scene->insertPixmap(imagePath);
@@ -470,6 +470,7 @@ void MainWindow::insertImage()
 void MainWindow::drawPolyline()
 {
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
+    ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     scene->setMode(DiagramScene::InsertPolyline);
     scene->setSelectableItems(false);
     ui->actionSelect_All->setDisabled(true);
@@ -479,6 +480,7 @@ void MainWindow::drawPolyline()
 void MainWindow::drawRect()
 {
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
+    ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     scene->setMode(DiagramScene::InsertRect);
     scene->setSelectableItems(false);
     ui->actionSelect_All->setDisabled(true);
@@ -488,6 +490,7 @@ void MainWindow::drawRect()
 void MainWindow::drawEllipse()
 {
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
+    ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     scene->setMode(DiagramScene::InsertEllipse);
     scene->setSelectableItems(false);
     ui->actionSelect_All->setDisabled(true);
@@ -497,6 +500,7 @@ void MainWindow::drawEllipse()
 void MainWindow::drawCurve()
 {
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
+    ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     scene->setMode(DiagramScene::InsertCurve);
     scene->setSelectableItems(false);
     ui->actionSelect_All->setDisabled(true);
@@ -506,6 +510,7 @@ void MainWindow::drawCurve()
 void MainWindow::insertText()
 {
     ui->mainGraphicsView->setCursor(Qt::IBeamCursor);
+    ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     scene->setMode(DiagramScene::InserText);
     scene->setSelectableItems(false);
     ui->actionSelect_All->setDisabled(true);
@@ -523,6 +528,7 @@ void MainWindow::insertTechnicsShape(QAbstractButton *button)
     TechnicsShape::ShapeType type {TechnicsShape::ShapeType(id)};
     TechnicsShape technicsShape(ui->menuEdit, type);
     ui->mainGraphicsView->setCursor(QCursor(technicsShape.image()));
+    ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     scene->setMode(DiagramScene::InsertTechnicsShape);
     scene->setTechnicsShapeType(TechnicsShape::ShapeType(id));
     scene->setSelectableItems(false);
@@ -543,6 +549,7 @@ void MainWindow::insertDeviceShape(QAbstractButton *button)
     DeviceShape::ShapeType type {DeviceShape::ShapeType(id)};
     DeviceShape deviceShape(ui->menuEdit, type);
     ui->mainGraphicsView->setCursor(QCursor(deviceShape.image()));
+    ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     scene->setMode(DiagramScene::InsertDeviceShape);
     scene->setDeviceShapeType(DeviceShape::ShapeType(id));
     scene->setSelectableItems(false);
@@ -563,6 +570,7 @@ void MainWindow::insertBuildingStructShape(QAbstractButton *button)
     BuildingStruct::ShapeType type {BuildingStruct::ShapeType(id)};
     BuildingStruct buildingItem(ui->menuEdit, type);
     ui->mainGraphicsView->setCursor(QCursor(buildingItem.image()));
+    ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     scene->setMode(DiagramScene::InsertBuildingStruct);
     scene->setBuildingStructShapeType(BuildingStruct::ShapeType(id));
     scene->setSelectableItems(false);
@@ -575,6 +583,7 @@ void MainWindow::insertBuildingStructShape(QAbstractButton *button)
 void MainWindow::selectedItem()
 {
     ui->mainGraphicsView->setCursor(Qt::ArrowCursor);
+    ui->mainGraphicsView->setDragMode(QGraphicsView::RubberBandDrag);
     scene->setMode(DiagramScene::SelectItem);
     scene->setSelectableItems(true);
     ui->actionSelect_All->setEnabled(true);

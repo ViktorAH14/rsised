@@ -60,6 +60,28 @@ void PixmapItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
+bool PixmapItem::sceneEvent(QEvent *event)
+{
+    QList<QGraphicsItem *>selItems = scene()->selectedItems();
+    if (selItems.count() > 1) {
+        QGraphicsSceneMouseEvent *mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
+        for (QGraphicsItem *item : qAsConst(selItems))
+            item->setSelected(true);
+
+        if ((event->type() == QEvent::GraphicsSceneMouseMove)
+                && (mouseEvent->buttons() == Qt::LeftButton)) {
+            for (QGraphicsItem *item : qAsConst(selItems)) {
+                qreal dx = mouseEvent->scenePos().x() - mouseEvent->lastScenePos().x();
+                qreal dy = mouseEvent->scenePos().y() - mouseEvent->lastScenePos().y();
+                item->moveBy(dx, dy);
+            }
+        }
+        return true;
+    } else {
+       return QGraphicsItem::sceneEvent(event);
+    }
+}
+
 void PixmapItem::wheelEvent(QGraphicsSceneWheelEvent *wheelEvent)
 {
     if (isSelected()) {

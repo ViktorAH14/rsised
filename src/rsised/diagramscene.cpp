@@ -22,7 +22,6 @@ DiagramScene::DiagramScene(QMenu *itemMenu, QObject *parent)
     , m_sceneMode{SelectItem}
     , leftButtonPressed{false}
 {
-
 }
 
 void DiagramScene::setMode(SceneMode mode)
@@ -223,7 +222,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         }
     }
 
-    QGraphicsScene::mousePressEvent(mouseEvent);
+        QGraphicsScene::mousePressEvent(mouseEvent);
 }
 
 void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
