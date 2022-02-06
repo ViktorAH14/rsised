@@ -56,5 +56,6 @@
         <file>images/icons/sendtoback_48.png</file>
         <file>images/icons/print_48.png</file>
         <file>images/icons/select_rubber_48.png</file>
+        <file>images/icons/qt_48.png</file>
     </qresource>
 </RCC>

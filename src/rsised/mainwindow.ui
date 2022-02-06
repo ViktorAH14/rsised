@@ -93,6 +93,7 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionAbout_Qt"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -496,6 +497,15 @@
     <string>Ctrl+P</string>
    </property>
   </action>
+  <action name="actionAbout_Qt">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/qt_48.png</normaloff>:/images/icons/qt_48.png</iconset>
+   </property>
+   <property name="text">
+    <string>About Qt</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resource.qrc"/>
@@ -844,8 +854,24 @@
    <slot>print()</slot>
    <hints>
     <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
      <x>830</x>
-     <y>362</y>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAbout_Qt</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>aboutQt()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>830</x>
@@ -877,5 +903,6 @@
   <slot>bringToFront()</slot>
   <slot>sendToBack()</slot>
   <slot>print()</slot>
+  <slot>aboutQt()</slot>
  </slots>
 </ui>

@@ -70,6 +70,7 @@ private slots:
     void selectedItem();
     void bringToFront();
     void sendToBack();
+    void aboutQt();
 
 // Simple draw
     void drawPolyline();

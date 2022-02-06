@@ -640,6 +640,11 @@ void MainWindow::sendToBack()
     }
     selectedItem->setZValue(zValue);
 }
+
+void MainWindow::aboutQt()
+{
+    QMessageBox::aboutQt(this, tr("About Qt"));
+}
 void MainWindow::changedItemPen()
 {
     QColor currentPenColor = penColorButton->color();
