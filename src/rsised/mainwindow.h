@@ -70,6 +70,7 @@ private slots:
     void selectedItem();
     void bringToFront();
     void sendToBack();
+    void about();
     void aboutQt();
 
 // Simple draw
