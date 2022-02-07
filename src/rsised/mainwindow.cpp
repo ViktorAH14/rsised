@@ -760,7 +760,7 @@ void MainWindow::createShapeToolBox()
                                                                 , BuildingStruct::Window), 0, 1);
     buildStructLayout->addWidget(createBuildingStructCellWidget(tr("Door")
                                                                 , BuildingStruct::Door), 1, 0);
-    buildStructLayout->addWidget(createBuildingStructCellWidget(tr("Open")
+    buildStructLayout->addWidget(createBuildingStructCellWidget(tr("Opening")
                                                                 , BuildingStruct::Open), 1, 1);
     buildStructLayout->setRowStretch(3, 10);
     buildStructLayout->setColumnStretch(2, 10);
@@ -936,7 +936,7 @@ void MainWindow::createFontStyleToolBar()
     QIntValidator *validator = new QIntValidator(2, 64, this);
     fontSizeCombo->setValidator(validator);
     fontSizeCombo->setCurrentIndex(2);
-    fontCombo->setToolTip(tr("Change the font size of the text"));
+    fontSizeCombo->setToolTip(tr("Change the font size of the text"));
     connect(fontSizeCombo, &QComboBox::currentTextChanged, this, &MainWindow::changedFont);
 
     textColorButton = new KColorButton(this);
@@ -976,7 +976,7 @@ void MainWindow::createSceneScaleToolBar()
     sceneScaleCombo->addItems(scales);
     sceneScaleCombo->setCurrentIndex(3);
     sceneScaleCombo->setEditable(true);
-    sceneScaleCombo->setToolTip("Changing the scene scale");
+    sceneScaleCombo->setToolTip(tr("Changing the scene scale"));
     connect(sceneScaleCombo, &QComboBox::currentTextChanged,
             this, &MainWindow::sceneScaleChanged);
 
@@ -1109,9 +1109,9 @@ void MainWindow::setCurrentFile(const QString &fileName)
     currentFile = fileName;
     QString showName = currentFile;
     if (currentFile.isEmpty()) {
-        showName = "untitled.rse";
+        showName = tr("untitled.rse");
     }
-    setWindowTitle(showName + " - RSiSed");
+    setWindowTitle(showName + tr(" - RSiSed"));
     setWindowModified(false); // NOTE для Setting
     scene->setSceneChanged(false);
 }

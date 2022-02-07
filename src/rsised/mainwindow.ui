@@ -141,10 +141,9 @@
    <addaction name="actionCopy"/>
    <addaction name="actionPaste"/>
    <addaction name="actionCut"/>
+   <addaction name="actionDeleteItem"/>
    <addaction name="separator"/>
    <addaction name="actionPrint"/>
-   <addaction name="separator"/>
-   <addaction name="actionDeleteItem"/>
   </widget>
   <widget class="QToolBar" name="simpleDrawToolBar">
    <property name="sizePolicy">
