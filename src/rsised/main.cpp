@@ -21,10 +21,15 @@
 #include "mainwindow.h"
 
 #include <QApplication>
+#include <QTranslator>
 
 int main(int argc, char *argv[])
 {
     QApplication rsised(argc, argv);
+
+    QTranslator rsisedTranslator;
+    if (rsisedTranslator.load(QString(":/i18n/rsised_" + QLocale::system().name())))
+        rsised.installTranslator(&rsisedTranslator);
 
     MainWindow mainwindow;
     mainwindow.show();
