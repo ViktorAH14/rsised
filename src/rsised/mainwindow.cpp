@@ -643,6 +643,7 @@ void MainWindow::sendToBack()
 
 void MainWindow::about()
 {
+    QString header = tr("<p align=\"center\"><b> RSiSed 0.1</b></p>");
     QString app = tr("<p>This application is designed for the alignment of forces "
                      "and means in case of fire. (<b>RSiSed</b>)</p>");
     QString license = "<p>Copyright (c) 2022 by Viktor Ermolov <br>"
@@ -662,7 +663,7 @@ void MainWindow::about()
                          "along with this program. "
                          "If not, see ";
     QString linkGNU = "<a href= \"https://www.gnu.org/licenses/\">https://www.gnu.org/licenses/</a> .</p>";
-    QMessageBox::about(this, tr("About RSiSed"), app + license + linkGNU);
+    QMessageBox::about(this, tr("About RSiSed"), header + app + license + linkGNU);
 }
 
 void MainWindow::aboutQt()
