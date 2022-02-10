@@ -18,20 +18,37 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mainwindow.h"
+#ifndef PIXMAPITEM_H
+#define PIXMAPITEM_H
 
-#include <QApplication>
-#include <QTranslator>
+#include <QGraphicsPixmapItem>
 
-int main(int argc, char *argv[])
+class SizeGripItem;
+
+QT_BEGIN_NAMESPACE
+class QMenu;
+QT_END_NAMESPACE
+
+class PixmapItem : public QGraphicsPixmapItem
 {
-    QApplication rsised(argc, argv);
+public:
+    enum { Type = UserType + 6};
 
-    QTranslator rsisedTranslator;
-    if (rsisedTranslator.load(QString(":/i18n/rsised_" + QLocale::system().name())))
-        rsised.installTranslator(&rsisedTranslator);
+    explicit PixmapItem(QGraphicsItem *parent = nullptr);
 
-    MainWindow mainwindow;
-    mainwindow.show();
-    return rsised.exec();
-}
+    int type() const override {return Type;}
+    void scalePixmap(const QRectF &newBoundingRect);
+
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    bool sceneEvent(QEvent *event) override;
+    void wheelEvent(QGraphicsSceneWheelEvent *wheelEvent) override;
+
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+
+private:
+    SizeGripItem *m_sizeGripItem;
+};
+
+#endif // PIXMAPITEM_H

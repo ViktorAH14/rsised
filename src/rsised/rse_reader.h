@@ -18,20 +18,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mainwindow.h"
+#ifndef RSEREADER_H
+#define RSEREADER_H
 
-#include <QApplication>
-#include <QTranslator>
+#include <QGraphicsItem>
 
-int main(int argc, char *argv[])
+QT_BEGIN_NAMESPACE
+class QMenu;
+QT_END_MOC_NAMESPACE
+
+
+class RseReader
 {
-    QApplication rsised(argc, argv);
+public:
+    RseReader(QMenu *itemMenu);
 
-    QTranslator rsisedTranslator;
-    if (rsisedTranslator.load(QString(":/i18n/rsised_" + QLocale::system().name())))
-        rsised.installTranslator(&rsisedTranslator);
+    QRectF getSceneRect(QIODevice *device) const;
+    QList<QGraphicsItem *> getElement(QIODevice *device) const;
 
-    MainWindow mainwindow;
-    mainwindow.show();
-    return rsised.exec();
-}
+private:
+    QMenu *m_itemMenu;
+};
+
+#endif // RSEREADER_H

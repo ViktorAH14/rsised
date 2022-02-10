@@ -18,20 +18,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mainwindow.h"
+#ifndef SVG_READER_H
+#define SVG_READER_H
 
-#include <QApplication>
-#include <QTranslator>
+#include <QGraphicsItem>
 
-int main(int argc, char *argv[])
+QT_BEGIN_MOC_NAMESPACE
+class QMenu;
+QT_END_NAMESPACE
+
+class SvgReader
 {
-    QApplication rsised(argc, argv);
+public:
+    SvgReader(QMenu *itemMenu);
 
-    QTranslator rsisedTranslator;
-    if (rsisedTranslator.load(QString(":/i18n/rsised_" + QLocale::system().name())))
-        rsised.installTranslator(&rsisedTranslator);
+    QRectF getSize(const QString &fileName) const;
+    QList<QGraphicsItem *> getElements(const QString &fileName);
 
-    MainWindow mainwindow;
-    mainwindow.show();
-    return rsised.exec();
-}
+private:
+    enum class PathType{ Polyline, Curve };
+    QMenu   *m_itemMenu;
+    PathType currentPathType;
+};
+
+#endif // SVG_READER_H

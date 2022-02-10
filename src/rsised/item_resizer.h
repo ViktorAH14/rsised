@@ -18,20 +18,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mainwindow.h"
+#ifndef ITEM_RESIZER_H
+#define ITEM_RESIZER_H
 
-#include <QApplication>
-#include <QTranslator>
+#include "sizegripitem.h"
 
-int main(int argc, char *argv[])
+class ItemResizer : public SizeGripItem::Resizer
 {
-    QApplication rsised(argc, argv);
+public:
+    void operator()(QGraphicsItem *item, const QVariant &value) override;
+};
 
-    QTranslator rsisedTranslator;
-    if (rsisedTranslator.load(QString(":/i18n/rsised_" + QLocale::system().name())))
-        rsised.installTranslator(&rsisedTranslator);
-
-    MainWindow mainwindow;
-    mainwindow.show();
-    return rsised.exec();
-}
+#endif // ITEM_RESIZER_H

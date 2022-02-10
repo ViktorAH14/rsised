@@ -18,20 +18,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mainwindow.h"
+#ifndef CURVE_H
+#define CURVE_H
 
-#include <QApplication>
-#include <QTranslator>
+#include <QGraphicsPathItem>
 
-int main(int argc, char *argv[])
+class SizeGripItem;
+
+class Curve : public QGraphicsPathItem
 {
-    QApplication rsised(argc, argv);
+public:
+    enum {Type = UserType + 4};
 
-    QTranslator rsisedTranslator;
-    if (rsisedTranslator.load(QString(":/i18n/rsised_" + QLocale::system().name())))
-        rsised.installTranslator(&rsisedTranslator);
+    explicit Curve(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
 
-    MainWindow mainwindow;
-    mainwindow.show();
-    return rsised.exec();
-}
+    int type() const override {return Type;}
+
+protected:
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
+    bool sceneEvent(QEvent *event) override;
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+
+private:
+    SizeGripItem *m_sizeGripItem;
+    QMenu *m_contextMenu;
+};
+
+#endif // CURVE_H

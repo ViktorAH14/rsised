@@ -18,20 +18,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mainwindow.h"
+#ifndef POLYLINE_H
+#define POLYLINE_H
 
-#include <QApplication>
-#include <QTranslator>
+#include <QGraphicsPathItem>
 
-int main(int argc, char *argv[])
+class SizeGripItem;
+
+class Polyline : public QGraphicsPathItem
 {
-    QApplication rsised(argc, argv);
+public:
+    enum {Type = UserType + 3};
 
-    QTranslator rsisedTranslator;
-    if (rsisedTranslator.load(QString(":/i18n/rsised_" + QLocale::system().name())))
-        rsised.installTranslator(&rsisedTranslator);
+    explicit Polyline(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
 
-    MainWindow mainwindow;
-    mainwindow.show();
-    return rsised.exec();
-}
+    int type() const override { return Type;}
+
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    bool sceneEvent(QEvent *event) override;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
+
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+
+private:
+    SizeGripItem *m_sizeGripItem;
+    QMenu *m_contextMenu;
+};
+
+#endif // POLYLINE_H

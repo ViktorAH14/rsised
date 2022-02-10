@@ -18,20 +18,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mainwindow.h"
+#ifndef RSEWRITER_H
+#define RSEWRITER_H
 
-#include <QApplication>
-#include <QTranslator>
+#include <QGraphicsItem>
 
-int main(int argc, char *argv[])
+class RseWriter
 {
-    QApplication rsised(argc, argv);
+public:
+    RseWriter();
 
-    QTranslator rsisedTranslator;
-    if (rsisedTranslator.load(QString(":/i18n/rsised_" + QLocale::system().name())))
-        rsised.installTranslator(&rsisedTranslator);
+    void writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QRectF sceneRect);
+};
 
-    MainWindow mainwindow;
-    mainwindow.show();
-    return rsised.exec();
-}
+#endif // RSEWRITER_H
