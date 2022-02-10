@@ -213,7 +213,7 @@ import/
 doc/
 
 # Images
-*.png
+#*.png
 *.svg
 
 # Diagramms
