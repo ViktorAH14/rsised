@@ -737,15 +737,18 @@ void MainWindow::createShapeToolBox()
     connect(deviceButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked)
             , this, &MainWindow::insertDeviceShape);
     QGridLayout *deviceLayout = new QGridLayout;
-    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel"), DeviceShape::Barrel), 0, 0);
-    deviceLayout->addWidget(createDeviceCellWidget(tr("Branches 3")
-                                                   , DeviceShape::Branches_3), 0, 1);
-    deviceLayout->addWidget(createDeviceCellWidget(tr("Branches 4")
-                                                   , DeviceShape::Branches_4), 1, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel_1"), DeviceShape::Barrel_1), 0, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel_2"), DeviceShape::Barrel_2), 0, 1);
     deviceLayout->addWidget(createDeviceCellWidget(tr("Collector")
-                                                   , DeviceShape::Collector), 1, 1);
+                                                   , DeviceShape::Collector), 0, 2);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel_3"), DeviceShape::Barrel_3), 1, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel_4"), DeviceShape::Barrel_4), 1, 1);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Branches 3")
+                                                   , DeviceShape::Branches_3), 2, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Branches 4")
+                                                   , DeviceShape::Branches_4), 2, 1);
     deviceLayout->setRowStretch(3, 10);
-    deviceLayout->setColumnStretch(2, 10);
+//    deviceLayout->setColumnStretch(3, 10);
     QWidget *deviceWidget = new QWidget;
     deviceWidget->setLayout(deviceLayout);
 
@@ -1015,7 +1018,7 @@ QWidget *MainWindow::createDeviceCellWidget(const QString &text, DeviceShape::Sh
 
     QToolButton *deviceButtton = new QToolButton;
     deviceButtton->setIcon(icon);
-    deviceButtton->setIconSize(QSize(28, 22));
+    deviceButtton->setIconSize(QSize(30, 35));
     deviceButtton->setCheckable(true);
     deviceButtonGroup->addButton(deviceButtton, int(type));
 

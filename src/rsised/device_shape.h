@@ -29,7 +29,10 @@ class DeviceShape : public QAbstractGraphicsShapeItem
 {
 public:
     enum {Type = UserType + 30};
-    enum ShapeType { Barrel
+    enum ShapeType { Barrel_1
+                     , Barrel_2
+                     , Barrel_3
+                     , Barrel_4
                      , Branches_3
                      , Branches_4
                      , Collector };

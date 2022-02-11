@@ -50,16 +50,16 @@ QRectF DeviceShape::boundingRect() const
 {
     qreal penWidth {2.0};
 
-    return QRectF(-28.0 - penWidth / 2.0, -16.0 - penWidth / 2.0
-                  , 56.0 + penWidth, 32.0 + penWidth);
+    return QRectF(-28.0 - penWidth / 2.0, -31.0 - penWidth / 2.0
+                  , 56.0 + penWidth, 55.0 + penWidth);
 }
 
 QPixmap DeviceShape::image()
 {
-    QPixmap pixmap(60, 40);
+    QPixmap pixmap(60, 70);
     pixmap.fill(Qt::transparent);
     QPainter *painter = new QPainter(&pixmap);
-    painter->translate(30, 20);
+    painter->translate(30, 35);
     drawShape(painter);
 
     return pixmap;
@@ -165,11 +165,52 @@ void DeviceShape::drawShape(QPainter *painter)
     painter->setBrush(QBrush(Qt::white));
 
     switch (m_shapeType) {
-    case Barrel: {
-        painter->drawLine(QLineF(-4.0, 16.0, 4.0, 16.0));
-        painter->drawLine(QLineF(0.0, 14.0, 0.0, -14.0));
-        painter->drawLine(QLineF(-6.0, -10.0, 0.0, -16.0));
-        painter->drawLine(QLineF(0.0, -16.0, 6.0, -10.0));
+    case Barrel_1: {
+        painter->setPen(QPen(Qt::black, 2));
+        painter->drawLine(QLineF(-4.0, 21.0, 4.0, 21.0));
+        painter->drawLine(QLineF(0.0, 19.0, 0.0, -9.0));
+        painter->drawLine(QLineF(-6.0, -5.0, 0.0, -11.0));
+        painter->drawLine(QLineF(0.0, -11.0, 6.0, -5.0));
+        painter->setBrush(QBrush(Qt::black));
+        painter->drawEllipse(QPointF(0.0, -18.0), 3.0, 3.0);
+        break;
+    }
+    case Barrel_2: {
+        painter->setPen(QPen(Qt::black, 2));
+        painter->drawLine(QLineF(-4.0, 24.5, 4.0, 24.5));
+        painter->drawLine(QLineF(0.0, 22.5, 0.0, -5.5));
+        painter->drawLine(QLineF(-6.0, -1.5, 0.0, -7.5));
+        painter->drawLine(QLineF(0.0, -7.5, 6.0, -1.5));
+        painter->setBrush(QBrush(Qt::black));
+        painter->drawEllipse(QPointF(0.0, -13.5), 3.0, 3.0);
+        painter->drawEllipse(QPointF(0.0, -21.5), 3.0, 3.0 );
+        break;
+    }
+    case Barrel_3: {
+        painter->setPen(QPen(Qt::black, 2));
+        painter->drawLine(QLineF(-4.0, 24.5, 4.0, 24.5));
+        painter->drawLine(QLineF(0.0, 22.5, 0.0, -5.5));
+        painter->drawLine(QLineF(-6.0, -1.5, 0.0, -7.5));
+        painter->drawLine(QLineF(0.0, -7.5, 6.0, -1.5));
+        painter->setPen(QPen(Qt::black, 1));
+        painter->drawEllipse(QPointF(0.0, -14.5), 5.0, 5.0);
+        painter->drawLine(QLineF(-3.5, -11.0, 3.5, -18.0));
+        painter->drawLine(QLineF(-3.5, -18.0, 3.5, -11.0));
+        break;
+    }
+    case Barrel_4: {
+        painter->setPen(QPen(Qt::black, 2));
+        painter->drawLine(QLineF(-4.0, 24.5, 4.0, 24.5));
+        painter->drawLine(QLineF(0.0, 22.5, 0.0, -5.5));
+        painter->drawLine(QLineF(-6.0, -1.5, 0.0, -7.5));
+        painter->drawLine(QLineF(0.0, -7.5, 6.0, -1.5));
+        painter->setPen(QPen(Qt::black, 1));
+        painter->drawEllipse(QPointF(0.0, -14.5), 5.0, 5.0);
+        painter->drawEllipse(QPointF(0.0, -25.5), 5.0, 5.0);
+        painter->drawLine(QLineF(-3.5, -11.0, 3.5, -18.0));
+        painter->drawLine(QLineF(-3.5, -18.0, 3.5, -11.0));
+        painter->drawLine(QLineF(-3.5, -22.0, 3.5, -29.0));
+        painter->drawLine(QLineF(-3.5, -29.0, 3.5, -22.0));
         break;
     }
     case Branches_3: {
