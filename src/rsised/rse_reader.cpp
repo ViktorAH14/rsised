@@ -592,7 +592,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
             if (rseItemReader.name() == "device_shape") {
                 qreal x {0.0};
                 qreal y {0.0};
-                DeviceShape::ShapeType shapeType = DeviceShape::Barrel;
+                DeviceShape::ShapeType shapeType = DeviceShape::Barrel_1;
                 qreal zValue{0.0};
                 qreal m11 {0.0};
                 qreal m12 {0.0};

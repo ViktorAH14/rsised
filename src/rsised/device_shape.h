@@ -29,10 +29,36 @@ class DeviceShape : public QAbstractGraphicsShapeItem
 {
 public:
     enum {Type = UserType + 30};
-    enum ShapeType { Barrel
+    enum ShapeType { Barrel_0
+                     , Barrel_1
+                     , Barrel_2
+                     , Barrel_3
+                     , Barrel_4
+                     , Barrel_5
+                     , Barrel_6
+                     , Carriage_1
+                     , Carriage_2
+                     , Carriage_3
+                     , Carriage_4
+                     , Carriage_5
+                     , Branches_2
                      , Branches_3
                      , Branches_4
-                     , Collector };
+                     , Ladder_1
+                     , Ladder_2
+                     , Ladder_3
+                     , Collector
+                     , Bridge
+                     , Reel
+                     , Reel_mobile
+                     , HydrElevator
+                     , Foam_mix
+                     , Column
+                     , SmokePump_1
+                     , SmokePump_2
+                     , Hose
+                     , FoamLift_1
+                     , FoamLift_2 };
 
     DeviceShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
