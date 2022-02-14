@@ -517,152 +517,174 @@
     <message>
         <location filename="../mainwindow.cpp" line="755"/>
         <source>Branch 2</source>
-        <translation type="unfinished"></translation>
+        <translation>РД</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="757"/>
         <source>Branch 3</source>
-        <translation type="unfinished"></translation>
+        <translation>РТ</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="759"/>
         <source>Branch 4</source>
-        <translation type="unfinished"></translation>
+        <translation>РЧ</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="765"/>
         <source>Reel_mob</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Рукавная катушка передвижная</translatorcomment>
+        <translation>РКП</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="768"/>
         <source>HydElev</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Гидроэлеватор</translatorcomment>
+        <translation>Г-600</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="770"/>
         <source>FoamMix</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Пеносмеситель</translatorcomment>
+        <translation>ПС</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="772"/>
         <source>Collect</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Водосборник</translatorcomment>
+        <translation>ВС</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="774"/>
         <source>Bridge</source>
-        <translation type="unfinished"></translation>
+        <translation>Мостик</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="738"/>
         <source>Barrel 0</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Ручной ствол базовое обозначение</translatorcomment>
+        <translation>РС</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="739"/>
         <source>Barrel 1</source>
-        <translation type="unfinished"></translation>
+        <translation>РС-50</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="740"/>
         <source>Barrel 2</source>
-        <translation type="unfinished"></translation>
+        <translation>РС-70</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="742"/>
         <source>Barrel 4</source>
-        <translation type="unfinished"></translation>
+        <translation>СВП</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="743"/>
         <source>Barrel 5</source>
-        <translation type="unfinished"></translation>
+        <translation>ГПС</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="741"/>
         <source>Barrel 3</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Ствол высокого давления</translatorcomment>
+        <translation>СРВД</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="764"/>
         <source>Reel</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Рукавная катушка</translatorcomment>
+        <translation>РК</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="767"/>
         <source>Column</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Колонка пожарная</translatorcomment>
+        <translation>КПА</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="744"/>
         <source>Barrel 6</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Водяная струя с добавками</translatorcomment>
+        <translation>РС_д</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="745"/>
         <source>Carriage 1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Переносной лафетный ствол</translatorcomment>
+        <translation>ПЛС</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="747"/>
         <source>Carriage 2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Лафетный ствол стационарный водяной</translatorcomment>
+        <translation>ЛС-С</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="749"/>
         <source>Carriage 3</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Ствол лафетный стационарный порошковый</translatorcomment>
+        <translation>ЛС-СП</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="751"/>
         <source>Carriage 4</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Лафетный ствол пенный стационарный</translatorcomment>
+        <translation>ЛСП-С</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="753"/>
         <source>Carriage 5</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Лафетный ствол возимый</translatorcomment>
+        <translation>ЛС-В</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="761"/>
         <source>Ladder 1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Лестница палка</translatorcomment>
+        <translation>ЛП</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="762"/>
         <source>Ladder 2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Лестница штурмовка</translatorcomment>
+        <translation>ЛШ</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="763"/>
         <source>Ladder 3</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Трёхколенная лестница</translatorcomment>
+        <translation>ВПЛ</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="775"/>
         <source>Smok 1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Дымосос переносной</translatorcomment>
+        <translation>ДП</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="776"/>
         <source>Smok 2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Дымосос прицепной</translatorcomment>
+        <translation>ПД</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="777"/>
         <source>Hose</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Рукав всасывающий</translatorcomment>
+        <translation>ВР</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="778"/>
         <source>FLift 1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Подёмник пенный пенослив</translatorcomment>
+        <translation>ПО</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="779"/>
         <source>FLift 2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Пеноподъёмник с гребёнкой ГПС</translatorcomment>
+        <translation>ПП</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="791"/>
