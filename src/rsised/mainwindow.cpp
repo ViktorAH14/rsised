@@ -66,12 +66,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->mainGraphicsView->setScene(scene);
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
 
-    QHBoxLayout *mainHBoxLayout = new QHBoxLayout;
-    mainHBoxLayout->addWidget(shapeToolBox);
-    mainHBoxLayout->addWidget(ui->mainGraphicsView);
-    QWidget *mainWidget = new QWidget;
-    mainWidget->setLayout(mainHBoxLayout);
-    setCentralWidget(mainWidget);
+    QSplitter *mainSplitter = new QSplitter;
+    mainSplitter->addWidget(shapeToolBox);
+    mainSplitter->addWidget(ui->mainGraphicsView);
+    setCentralWidget(mainSplitter);
 
     copyList = scene->selectedItems();
 
@@ -737,18 +735,50 @@ void MainWindow::createShapeToolBox()
     connect(deviceButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked)
             , this, &MainWindow::insertDeviceShape);
     QGridLayout *deviceLayout = new QGridLayout;
-    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel_1"), DeviceShape::Barrel_1), 0, 0);
-    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel_2"), DeviceShape::Barrel_2), 0, 1);
-    deviceLayout->addWidget(createDeviceCellWidget(tr("Collector")
-                                                   , DeviceShape::Collector), 0, 2);
-    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel_3"), DeviceShape::Barrel_3), 1, 0);
-    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel_4"), DeviceShape::Barrel_4), 1, 1);
-    deviceLayout->addWidget(createDeviceCellWidget(tr("Branches 3")
-                                                   , DeviceShape::Branches_3), 2, 0);
-    deviceLayout->addWidget(createDeviceCellWidget(tr("Branches 4")
-                                                   , DeviceShape::Branches_4), 2, 1);
-    deviceLayout->setRowStretch(3, 10);
-//    deviceLayout->setColumnStretch(3, 10);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 0"), DeviceShape::Barrel_0), 0, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 1"), DeviceShape::Barrel_1), 0, 1);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 2"), DeviceShape::Barrel_2), 0, 2);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 3"), DeviceShape::Barrel_3), 1, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 4"), DeviceShape::Barrel_4), 1, 1);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 5"), DeviceShape::Barrel_5), 1, 2);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 6"), DeviceShape::Barrel_6), 2, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 1")
+                                                   , DeviceShape::Carriage_1), 2, 1);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 2")
+                                                   , DeviceShape::Carriage_2), 2, 2);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 3")
+                                                   , DeviceShape::Carriage_3), 3, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 4")
+                                                   , DeviceShape::Carriage_4), 3, 1);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 5")
+                                                   , DeviceShape::Carriage_5), 3, 2);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Branch 2")
+                                                   , DeviceShape::Branches_2), 4, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Branch 3")
+                                                   , DeviceShape::Branches_3), 4, 1);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Branch 4")
+                                                   , DeviceShape::Branches_4), 4, 2);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 1"), DeviceShape::Ladder_1), 5, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 2"), DeviceShape::Ladder_2), 5, 1);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 3"), DeviceShape::Ladder_3), 5, 2);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Reel"), DeviceShape::Reel), 6, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Reel_mob")
+                                                   , DeviceShape::Reel_mobile), 6, 1);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Column"), DeviceShape::Column), 6, 2);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("HydElev")
+                                                   , DeviceShape::HydrElevator), 7, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("FoamMix")
+                                                   , DeviceShape::Foam_mix), 7, 1);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Collect")
+                                                   , DeviceShape::Collector), 7, 2);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Bridge"), DeviceShape::Bridge), 8, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Smok 1"), DeviceShape::SmokePump_1), 8, 1);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Smok 2"), DeviceShape::SmokePump_2), 8, 2);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("Hose"), DeviceShape::Hose), 9, 0);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("FLift 1"), DeviceShape::FoamLift_1), 9, 1);
+    deviceLayout->addWidget(createDeviceCellWidget(tr("FLift 2"), DeviceShape::FoamLift_2), 9, 2);
+    deviceLayout->setRowStretch(10, 10);
+    deviceLayout->setColumnStretch(3, 10);
     QWidget *deviceWidget = new QWidget;
     deviceWidget->setLayout(deviceLayout);
 
@@ -772,11 +802,11 @@ void MainWindow::createShapeToolBox()
     buildingWidget->setLayout(buildStructLayout);
 
     shapeToolBox = new QToolBox;
-    shapeToolBox->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored));
-    shapeToolBox->setMinimumWidth(technicsWidget->sizeHint().width());
     shapeToolBox->addItem(buildingWidget, tr("Building structures"));
     shapeToolBox->addItem(technicsWidget, tr("Technics"));
     shapeToolBox->addItem(deviceWidget, tr("Device"));
+    shapeToolBox->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored));
+    shapeToolBox->setMinimumWidth(deviceWidget->sizeHint().width());
 }
 
 void MainWindow::disableAction()
@@ -1018,7 +1048,7 @@ QWidget *MainWindow::createDeviceCellWidget(const QString &text, DeviceShape::Sh
 
     QToolButton *deviceButtton = new QToolButton;
     deviceButtton->setIcon(icon);
-    deviceButtton->setIconSize(QSize(30, 35));
+    deviceButtton->setIconSize(QSize(32, 45));
     deviceButtton->setCheckable(true);
     deviceButtonGroup->addButton(deviceButtton, int(type));
 
