@@ -30,17 +30,47 @@ class TechnicsShape : public QAbstractGraphicsShapeItem
 public:
     enum { Type = UserType + 20 };
     enum ShapeType { Base
-                    , Tanker
-                    , AutoPump
-                    , AutoLadder
-                    , CrankLift
-                    , TelescopicLift
-                    , Tracked
-                    , Adapted
-                    , Ambulance
-                    , Police
-                    , Train
-                    , OtherAdapted };
+                     , Tanker
+                     , AutoPump
+                     , FirstAid
+                     , Emergency
+                     , AutoLadder
+                     , CrankLift
+                     , TelescopicLift
+                     , Hose
+                     , Comm
+                     , Tech_serv
+                     , Smok_rem
+                     , AutoPumpS
+                     , CarriageCar_1
+                     , CarriageCar_2
+                     , Aerodrome
+                     , Foam
+                     , Combo
+                     , Aerosol
+                     , Powder
+                     , Carbon
+                     , GazWater
+                     , Tracked
+                     , Tank
+                     , GDZS
+                     , Waterproof
+                     , Laboratory
+                     , StaffCar
+                     , Trailer
+                     , Vessel
+                     , Boat
+                     , Train
+                     , Plane
+                     , Seaplane
+                     , Helicopter
+                     , MotoPump_1
+                     , MotoPump_2
+                     , TrailerPowder
+                     , Adapted
+                     , OtherAdapted
+                     , Ambulance
+                     , Police };
 
     TechnicsShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
