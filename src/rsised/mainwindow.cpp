@@ -668,6 +668,7 @@ void MainWindow::aboutQt()
 {
     QMessageBox::aboutQt(this, tr("About Qt"));
 }
+
 void MainWindow::changedItemPen()
 {
     QColor currentPenColor = penColorButton->color();
@@ -706,27 +707,85 @@ void MainWindow::createShapeToolBox()
     technicsLayout->addWidget(createTechnicsCellWidget(tr("Tanker")
                                                        , TechnicsShape::Tanker), 0, 1);
     technicsLayout->addWidget(createTechnicsCellWidget(tr("Auto pump")
-                                                       , TechnicsShape::AutoPump), 1, 0);
+                                                       , TechnicsShape::AutoPump), 0, 2);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("First aid")
+                                                       , TechnicsShape::FirstAid), 1, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Emergency")
+                                                       , TechnicsShape::Emergency), 1, 1);
     technicsLayout->addWidget(createTechnicsCellWidget(tr("Auto ladder")
-                                                       , TechnicsShape::AutoLadder), 1, 1);
+                                                       , TechnicsShape::AutoLadder), 1, 2);
     technicsLayout->addWidget(createTechnicsCellWidget(tr("Crank lift")
                                                        , TechnicsShape::CrankLift), 2, 0);
     technicsLayout->addWidget(createTechnicsCellWidget(tr("Telescopic lift")
                                                        , TechnicsShape::TelescopicLift), 2, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Hose_car"), TechnicsShape::Hose), 2, 2);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Comm"), TechnicsShape::Comm), 3, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Tech_serv")
+                                                       , TechnicsShape::Tech_serv), 3, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Smok_rem")
+                                                       , TechnicsShape::Smok_rem), 3, 2);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("AutoPumpS")
+                                                       , TechnicsShape::AutoPumpS), 4, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("CarriageCar_1")
+                                                       , TechnicsShape::CarriageCar_1), 4, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("CarriageCar_2")
+                                                       , TechnicsShape::CarriageCar_2), 4, 2);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Aerodrom")
+                                                       , TechnicsShape::Aerodrome), 5, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Foam")
+                                                       , TechnicsShape::Foam), 5, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Combo")
+                                                       , TechnicsShape::Combo), 5, 2);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Aerosol")
+                                                       , TechnicsShape::Aerosol), 6, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Powder")
+                                                       , TechnicsShape::Powder), 6, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Carbon")
+                                                       , TechnicsShape::Carbon), 6, 2);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("GazWater")
+                                                       , TechnicsShape::GazWater), 7, 0);
     technicsLayout->addWidget(createTechnicsCellWidget(tr("Tracked")
-                                                       , TechnicsShape::Tracked), 3, 0);
-    technicsLayout->addWidget(createTechnicsCellWidget(tr("Adapted")
-                                                       , TechnicsShape::Adapted), 3, 1);
-    technicsLayout->addWidget(createTechnicsCellWidget(tr("Ambulance")
-                                                       , TechnicsShape::Ambulance), 4, 0);
-    technicsLayout->addWidget(createTechnicsCellWidget(tr("Police")
-                                                       , TechnicsShape::Police), 4, 1);
+                                                       , TechnicsShape::Tracked), 7, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Tank")
+                                                       , TechnicsShape::Tank), 7, 2);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("GDZS")
+                                                       , TechnicsShape::GDZS), 8, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Waterproof")
+                                                       , TechnicsShape::Waterproof), 8, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Laboratory")
+                                                       , TechnicsShape::Laboratory), 8, 2);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("StaffCar")
+                                                       , TechnicsShape::StaffCar), 9, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Trailer")
+                                                       , TechnicsShape::Trailer), 9, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Vessel")
+                                                       , TechnicsShape::Vessel), 9, 2);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Boat")
+                                                       , TechnicsShape::Boat), 10, 0);
     technicsLayout->addWidget(createTechnicsCellWidget(tr("Train")
-                                                       , TechnicsShape::Train), 5, 0);
+                                                       , TechnicsShape::Train), 10, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Plane")
+                                                           , TechnicsShape::Plane), 10, 2);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Seaplane")
+                                                           , TechnicsShape::Seaplane), 11, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Helicopter")
+                                                           , TechnicsShape::Helicopter), 11, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("MotoPump 1")
+                                                           , TechnicsShape::MotoPump_1), 11, 2);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("MotoPump 2")
+                                                           , TechnicsShape::MotoPump_2), 12, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("TrailerPowder")
+                                                           , TechnicsShape::TrailerPowder), 12, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Adapted")
+                                                       , TechnicsShape::Adapted), 12, 2);
     technicsLayout->addWidget(createTechnicsCellWidget(tr("Other adapted")
-                                                       , TechnicsShape::OtherAdapted), 5, 1);
-    technicsLayout->setRowStretch(6, 10);
-    technicsLayout->setColumnStretch(2, 10);
+                                                       , TechnicsShape::OtherAdapted), 13, 0);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Ambulance")
+                                                       , TechnicsShape::Ambulance), 13, 1);
+    technicsLayout->addWidget(createTechnicsCellWidget(tr("Police")
+                                                       , TechnicsShape::Police), 13, 2);
+    technicsLayout->setRowStretch(14, 10);
+    technicsLayout->setColumnStretch(3, 10);
     QWidget *technicsWidget = new QWidget;
     technicsWidget->setLayout(technicsLayout);
 
@@ -1027,7 +1086,7 @@ QWidget *MainWindow::createTechnicsCellWidget(const QString &text, TechnicsShape
 
     QToolButton *technicsButton = new QToolButton;
     technicsButton->setIcon(icon);
-    technicsButton->setIconSize(QSize(18, 38));
+    technicsButton->setIconSize(QSize(33, 38));
     technicsButton->setCheckable(true);
     technicsButtonGroup->addButton(technicsButton, int(type));
 
