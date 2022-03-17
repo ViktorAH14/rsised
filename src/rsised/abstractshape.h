@@ -18,40 +18,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BUILDINGSTRUCT_H
-#define BUILDINGSTRUCT_H
+#ifndef ABSTRACTSHAPE_H
+#define ABSTRACTSHAPE_H
 
-#include "abstractshape.h"
-#include <QBrush>
+#include <QAbstractGraphicsShapeItem>
 
-class BuildingStruct : public AbstractShape
+class SizeGripItem;
+
+class AbstractShape : public QAbstractGraphicsShapeItem
 {
 public:
-    enum { Type = UserType + 40 };
-    enum ShapeType { Wall, Window, Door, Open };
+    AbstractShape(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
+    virtual ~AbstractShape();
 
-    BuildingStruct(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent = nullptr);
-
-    QRectF boundingRect() const override;
-    QPainterPath shape() const override;
-    int type() const override {return Type;}
-
-    QPixmap image();
-    ShapeType shapeType() const;
-    void setRect(QRectF rect);
-    QRectF getRect();
+    void scaleShape(const QRectF &newRect);
 
 protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    bool sceneEvent(QEvent *event) override;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *menuEvent) override;
+    void wheelEvent(QGraphicsSceneWheelEvent *wheelEvent) override;
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
-    void drawShape(QPainter *painter);
-
-    QRectF shapeRect;
-    QBrush wallBrush;
-    qreal frameWidth;
-
-    ShapeType m_shapeType;
+    SizeGripItem *m_sizeGripItem;
+    QMenu *m_contextMenu;
 };
 
-#endif // BUILDINGSTRUCT_H
+#endif // ABSTRACTSHAPE_H

@@ -19,20 +19,12 @@
  */
 
 #include "technics_shape.h"
-#include "sizegripitem.h"
-#include "item_resizer.h"
 
-#include <cmath>
-
-#include <QGraphicsScene>
-#include <QGraphicsSceneMouseEvent>
 #include <QPainter>
-#include <QMenu>
 
 TechnicsShape::TechnicsShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent)
-    : QAbstractGraphicsShapeItem(parent)
+    : AbstractShape(contextMenu, parent)
     , m_shapeType{shapeType}
-    , m_contextMenu{contextMenu}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
@@ -458,105 +450,18 @@ void TechnicsShape::drawShape(QPainter *painter)
     }
 }
 
-QVariant TechnicsShape::itemChange(GraphicsItemChange change, const QVariant &value)
-{
-    if (change == GraphicsItemChange::ItemSelectedChange && value == true) {
-        m_sizeGripItem = new SizeGripItem(new ItemResizer, this);
-    }
-    if (change == GraphicsItemChange::ItemSelectedChange && value == false) {
-        delete  m_sizeGripItem;
-    }
-
-    return QGraphicsItem::itemChange(change, value);
-}
-
 QPixmap TechnicsShape::image()
 {
-    QPixmap pixmap(66, 76);
+    QPixmap pixmap(boundingRect().width(), boundingRect().height());
     pixmap.fill(Qt::transparent);
     QPainter *painter = new QPainter(&pixmap);
-    painter->translate(33, 38);
+    painter->translate(boundingRect().width() / 2.0, boundingRect().height() / 2.0);
     drawShape(painter);
 
     return pixmap;
 }
 
-void TechnicsShape::scaleTechnicsShape(const QRectF &newRect)
-{
-    prepareGeometryChange();
-    QRectF oldRect {boundingRect()};
-    qreal oldSize = sqrt(oldRect.width() * oldRect.width() + oldRect.height() * oldRect.height());
-    qreal newSize = sqrt(newRect.width() * newRect.width() + newRect.height() * newRect.height());
-    qreal scaleFactor = newSize / oldSize;
-    setTransform(QTransform::fromScale(scaleFactor, scaleFactor), true);
-    update();
-}
-
 TechnicsShape::ShapeType TechnicsShape::shapeType() const
 {
     return m_shapeType;
-}
-
-void TechnicsShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    if (isSelected()) {
-        m_sizeGripItem->setActionType((m_sizeGripItem->actionType()
-                                       == SizeGripItem::Resize) ? SizeGripItem::Rotate
-                                                                :SizeGripItem::Resize);
-    } else {
-        QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
-    }
-}
-
-void TechnicsShape::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    if ((mouseEvent->buttons() == Qt::LeftButton) && isSelected()) {
-        qreal dx = mouseEvent->scenePos().x() - mouseEvent->lastScenePos().x();
-        qreal dy = mouseEvent->scenePos().y() - mouseEvent->lastScenePos().y();
-        moveBy(dx, dy);
-    } else {
-        QGraphicsItem::mouseMoveEvent( mouseEvent );
-    }
-}
-
-bool TechnicsShape::sceneEvent(QEvent *event)
-{
-    QList<QGraphicsItem *>selItems = scene()->selectedItems();
-    if (selItems.count() > 1) {
-        QGraphicsSceneMouseEvent *mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
-        for (QGraphicsItem *item : qAsConst(selItems))
-            item->setSelected(true);
-
-        if ((event->type() == QEvent::GraphicsSceneMousePress)
-                && (mouseEvent->buttons() == Qt::RightButton))
-                m_contextMenu->exec(mouseEvent->screenPos());
-        if ((event->type() == QEvent::GraphicsSceneMouseMove)
-                && (mouseEvent->buttons() == Qt::LeftButton)) {
-            for (QGraphicsItem *item : qAsConst(selItems)) {
-                qreal dx = mouseEvent->scenePos().x() - mouseEvent->lastScenePos().x();
-                qreal dy = mouseEvent->scenePos().y() - mouseEvent->lastScenePos().y();
-                item->moveBy(dx, dy);
-            }
-        }
-        return true;
-    } else {
-       return QGraphicsItem::sceneEvent(event);
-    }
-}
-
-void TechnicsShape::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
-{
-    scene()->clearSelection();
-    setSelected(true);
-    m_contextMenu->exec(event->screenPos());
-}
-
-void TechnicsShape::wheelEvent(QGraphicsSceneWheelEvent *wheelEvent)
-{
-    if (isSelected()) {
-        qreal s_xy {(wheelEvent->delta() > 0) ? 1.03 : 0.97};
-        setTransform(QTransform::fromScale(s_xy, s_xy), true);
-    } else {
-        QGraphicsItem::wheelEvent(wheelEvent);
-    }
 }

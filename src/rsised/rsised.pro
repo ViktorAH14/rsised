@@ -11,6 +11,7 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    abstractshape.cpp \
     buildingstruct.cpp \
     curve.cpp \
     device_shape.cpp \
@@ -30,6 +31,7 @@ SOURCES += \
     textitem.cpp
 
 HEADERS += \
+    abstractshape.h \
     buildingstruct.h \
     curve.h \
     device_shape.h \
@@ -70,4 +72,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     resource.qrc
 
-DISTFILES +=
+DISTFILES += \
+    ../../doc/dev/shape_model.qmodel

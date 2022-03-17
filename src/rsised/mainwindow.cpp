@@ -852,9 +852,9 @@ void MainWindow::createShapeToolBox()
     buildStructLayout->addWidget(createBuildingStructCellWidget(tr("Window")
                                                                 , BuildingStruct::Window), 0, 1);
     buildStructLayout->addWidget(createBuildingStructCellWidget(tr("Door")
-                                                                , BuildingStruct::Door), 1, 0);
+                                                                , BuildingStruct::Door), 0, 2);
     buildStructLayout->addWidget(createBuildingStructCellWidget(tr("Opening")
-                                                                , BuildingStruct::Open), 1, 1);
+                                                                , BuildingStruct::Open), 1, 0);
     buildStructLayout->setRowStretch(3, 10);
     buildStructLayout->setColumnStretch(2, 10);
     QWidget *buildingWidget = new QWidget;
@@ -864,8 +864,8 @@ void MainWindow::createShapeToolBox()
     shapeToolBox->addItem(buildingWidget, tr("Building structures"));
     shapeToolBox->addItem(technicsWidget, tr("Technics"));
     shapeToolBox->addItem(deviceWidget, tr("Device"));
-    shapeToolBox->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored));
-    shapeToolBox->setMinimumWidth(deviceWidget->sizeHint().width());
+    shapeToolBox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored);
+    shapeToolBox->setMinimumWidth(technicsWidget->sizeHint().width());
 }
 
 void MainWindow::disableAction()
@@ -1081,12 +1081,14 @@ void MainWindow::createSceneScaleToolBar()
 
 QWidget *MainWindow::createTechnicsCellWidget(const QString &text, TechnicsShape::ShapeType type)
 {
-    TechnicsShape shapeItem(ui->menuEdit, type);
-    QIcon icon(shapeItem.image());
+    TechnicsShape technicsItem(ui->menuEdit, type);
+    QIcon icon(technicsItem.image());
+    qreal iconWidth{technicsItem.boundingRect().width() / 2.0};
+    qreal iconHeight{technicsItem.boundingRect().height() / 2.0};
 
     QToolButton *technicsButton = new QToolButton;
     technicsButton->setIcon(icon);
-    technicsButton->setIconSize(QSize(33, 38));
+    technicsButton->setIconSize(QSize(iconWidth, iconHeight));
     technicsButton->setCheckable(true);
     technicsButtonGroup->addButton(technicsButton, int(type));
 
@@ -1104,10 +1106,12 @@ QWidget *MainWindow::createDeviceCellWidget(const QString &text, DeviceShape::Sh
 {
     DeviceShape deviceItem(ui->menuEdit, type);
     QIcon icon(deviceItem.image());
+    qreal iconWidth{deviceItem.boundingRect().width() / 2.0};
+    qreal iconHeight{deviceItem.boundingRect().height() / 2.0};
 
     QToolButton *deviceButtton = new QToolButton;
     deviceButtton->setIcon(icon);
-    deviceButtton->setIconSize(QSize(32, 45));
+    deviceButtton->setIconSize(QSize(iconWidth, iconHeight));
     deviceButtton->setCheckable(true);
     deviceButtonGroup->addButton(deviceButtton, int(type));
 
@@ -1125,10 +1129,12 @@ QWidget *MainWindow::createBuildingStructCellWidget(const QString &text, Buildin
 {
     BuildingStruct buildingItem(ui->menuEdit, type);
     QIcon icon(buildingItem.image());
+    qreal iconWidth{buildingItem.boundingRect().width() / 2.0};
+    qreal iconHeight{36.0};
 
     QToolButton *buildingButtton = new QToolButton;
     buildingButtton->setIcon(icon);
-    buildingButtton->setIconSize(QSize(33, 35));
+    buildingButtton->setIconSize(QSize(iconWidth, iconHeight));
     buildingButtton->setCheckable(true);
     buildingStructButtonGroup->addButton(buildingButtton, int(type));
 
