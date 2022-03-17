@@ -77,14 +77,14 @@ void ItemResizer::operator()(QGraphicsItem *item, const QVariant &value)
     case TechnicsShape::Type: {
         TechnicsShape *technicsShape = dynamic_cast<TechnicsShape *>(item);
         if (technicsShape) {
-            technicsShape->scaleTechnicsShape(value.toRectF());
+            technicsShape->scaleShape(value.toRectF());
         }
         break;
     }
     case DeviceShape::Type: {
         DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item);
         if (deviceShape) {
-            deviceShape->scaleDeviceShape(value.toRectF());
+            deviceShape->scaleShape(value.toRectF());
         }
         break;
     }

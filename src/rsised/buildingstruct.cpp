@@ -19,22 +19,15 @@
  */
 
 #include "buildingstruct.h"
-#include "sizegripitem.h"
-#include "item_resizer.h"
 
-#include <cmath>
-
-#include <QGraphicsScene>
-#include <QGraphicsSceneMouseEvent>
 #include <QPainter>
-#include <QMenu>
 
 BuildingStruct::BuildingStruct(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent)
-    :QAbstractGraphicsShapeItem(parent)
+    : AbstractShape(contextMenu, parent)
     , shapeRect{QRectF(-30.0, -5.0, 60.0, 10.0)}
     , wallBrush(Qt::lightGray)
+    , frameWidth{8.0}
     , m_shapeType{shapeType}
-    , m_contextMenu{contextMenu}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
@@ -53,12 +46,12 @@ QRectF BuildingStruct::boundingRect() const
     qreal penWidth = 1;
     QRectF rect;
     if (m_shapeType == Door) {
-        rect = QRectF((shapeRect.left() - penWidth / 2)
-                      , (shapeRect.top() - sqrt(shapeRect.width() * shapeRect.width()) / 2 - penWidth / 2)
+        rect = QRectF((shapeRect.left() - penWidth / 2.0)
+                      , (shapeRect.top() - shapeRect.width() - penWidth / 2.0)
                       , shapeRect.width() + penWidth
-                      , shapeRect.height() + sqrt(shapeRect.width() * shapeRect.width()) / 2 + penWidth);
+                      , shapeRect.height() + shapeRect.width() + penWidth);
     } else {
-        rect = QRectF(shapeRect.left() - penWidth / 2, shapeRect.top() - penWidth / 2
+        rect = QRectF(shapeRect.left() - penWidth / 2.0, shapeRect.top() - penWidth / 2.0
                 , shapeRect.width() + penWidth, shapeRect.height() + penWidth);
     }
 
@@ -70,12 +63,12 @@ QPainterPath BuildingStruct::shape() const
     QPainterPath path;
     path.moveTo(shapeRect.topLeft());
     if (m_shapeType == Door) {
-        path.lineTo(shapeRect.left() + 8.0, shapeRect.top());
-        path.quadTo(shapeRect.left() + 8.0
-                    , shapeRect.top() - sqrt(shapeRect.width() * shapeRect.width()) / 4
-                    , shapeRect.right() -8.0 - sqrt(shapeRect.width() * shapeRect.width()) / 2
-                    , shapeRect.top() - sqrt(shapeRect.width() * shapeRect.width()) / 2);
-        path.lineTo(shapeRect.right() - 8.0, shapeRect.top());
+        path.lineTo(shapeRect.left() + frameWidth, shapeRect.top());
+        path.quadTo(shapeRect.left() + frameWidth
+                    , shapeRect.top() - shapeRect.width() / 4.0
+                    , shapeRect.right() - frameWidth - shapeRect.width() / 2.0
+                    , shapeRect.top() - shapeRect.width() / 2.0);
+        path.lineTo(shapeRect.right() - frameWidth, shapeRect.top());
         path.lineTo(shapeRect.topRight());
         path.lineTo(shapeRect.bottomRight());
         path.lineTo(shapeRect.bottomLeft());
@@ -91,10 +84,12 @@ QPainterPath BuildingStruct::shape() const
 
 QPixmap BuildingStruct::image()
 {
-    QPixmap pixmap(66, 70);
+    qreal pixmapWidth = boundingRect().width();
+    qreal pixmapHeight = boundingRect().height();
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
     pixmap.fill(Qt::transparent);
     QPainter *painter = new QPainter(&pixmap);
-    painter->translate(33, 35);
+    painter->translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
     drawShape(painter);
 
     return pixmap;
@@ -117,70 +112,6 @@ QRectF BuildingStruct::getRect()
     return shapeRect;
 }
 
-void BuildingStruct::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    if (isSelected()) {
-        m_sizeGripItem->setActionType((m_sizeGripItem->actionType()
-                                       == SizeGripItem::Resize) ? SizeGripItem::Rotate
-                                                                :SizeGripItem::Resize);
-    } else {
-        QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
-    }
-}
-
-void BuildingStruct::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    if ((mouseEvent->buttons() == Qt::LeftButton) && isSelected()) {
-        qreal dx = mouseEvent->scenePos().x() - mouseEvent->lastScenePos().x();
-        qreal dy = mouseEvent->scenePos().y() - mouseEvent->lastScenePos().y();
-        moveBy(dx, dy);
-    } else {
-        QGraphicsItem::mouseMoveEvent( mouseEvent );
-    }
-}
-
-void BuildingStruct::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
-{
-    scene()->clearSelection();
-    setSelected(true);
-    m_contextMenu->exec(event->screenPos());
-}
-
-bool BuildingStruct::sceneEvent(QEvent *event)
-{
-    QList<QGraphicsItem *>selItems = scene()->selectedItems();
-    if (selItems.count() > 1) {
-        QGraphicsSceneMouseEvent *mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
-        for (QGraphicsItem *item : qAsConst(selItems))
-            item->setSelected(true);
-
-        if ((event->type() == QEvent::GraphicsSceneMousePress)
-                && (mouseEvent->buttons() == Qt::RightButton))
-                m_contextMenu->exec(mouseEvent->screenPos());
-        if ((event->type() == QEvent::GraphicsSceneMouseMove)
-                && (mouseEvent->buttons() == Qt::LeftButton)) {
-            for (QGraphicsItem *item : qAsConst(selItems)) {
-                qreal dx = mouseEvent->scenePos().x() - mouseEvent->lastScenePos().x();
-                qreal dy = mouseEvent->scenePos().y() - mouseEvent->lastScenePos().y();
-                item->moveBy(dx, dy);
-            }
-        }
-        return true;
-    } else {
-       return QGraphicsItem::sceneEvent(event);
-    }
-}
-
-QVariant BuildingStruct::itemChange(GraphicsItemChange change, const QVariant &value)
-{
-    if (change == GraphicsItemChange::ItemSelectedChange && value == true)
-        m_sizeGripItem = new SizeGripItem(new ItemResizer, this);
-    if (change == GraphicsItemChange::ItemSelectedChange && value == false)
-        delete  m_sizeGripItem;
-
-    return QGraphicsItem::itemChange(change, value);
-}
-
 void BuildingStruct::drawShape(QPainter *painter)
 {
     painter->setRenderHint(QPainter::Antialiasing);
@@ -197,7 +128,7 @@ void BuildingStruct::drawShape(QPainter *painter)
     case Window: {
         painter->setBrush(QBrush(Qt::white));
         painter->drawRect(shapeRect);
-        painter->drawLine(shapeRect.left(), 0.0, shapeRect.right(), 0.0);
+        painter->drawLine(shapeRect.left(), 0.0, shapeRect.right(), 0.0);   //Center line
         break;
     }
     case Door: {
@@ -205,17 +136,18 @@ void BuildingStruct::drawShape(QPainter *painter)
         painter->setPen(QPen(Qt::white, 1));
         painter->drawRect(shapeRect);
         painter->setPen(QPen(Qt::black, 1));
-        painter->drawRect(QRectF(shapeRect.topLeft(), QSizeF(8.0, shapeRect.height())));
-        painter->drawRect(QRectF(shapeRect.right() - 8.0, shapeRect.top(), 8.0, shapeRect.height()));
-        painter->drawLine(shapeRect.right() - 8.0, shapeRect.top()
-                          , shapeRect.right() - 8.0 - sqrt(shapeRect.width() * shapeRect.width()) / 2
-                          , shapeRect.top() - sqrt(shapeRect.width() * shapeRect.width()) / 2);
+        painter->drawRect(QRectF(shapeRect.topLeft(), QSizeF(frameWidth, shapeRect.height())));
+        painter->drawRect(QRectF(shapeRect.right() - frameWidth
+                                 , shapeRect.top(), frameWidth, shapeRect.height()));
+        painter->drawLine(shapeRect.right() - frameWidth, shapeRect.top()
+                          , shapeRect.right() - frameWidth - shapeRect.width() / 2.0
+                          , shapeRect.top() - shapeRect.width() / 2.0);
         QPainterPath arcPath;
-        arcPath.moveTo(shapeRect.left() + 8.0, shapeRect.top());
-        arcPath.quadTo(shapeRect.left() + 8.0
-                       , shapeRect.top() - sqrt(shapeRect.width() * shapeRect.width()) / 4
-                       , shapeRect.right() -8.0 - sqrt(shapeRect.width() * shapeRect.width()) / 2
-                       , shapeRect.top() - sqrt(shapeRect.width() * shapeRect.width()) / 2);
+        arcPath.moveTo(shapeRect.left() + frameWidth, shapeRect.top());
+        arcPath.quadTo(shapeRect.left() + frameWidth
+                       , shapeRect.top() - shapeRect.width() / 4.0
+                       , shapeRect.right() - frameWidth - shapeRect.width() / 2.0
+                       , shapeRect.top() - shapeRect.width() / 2.0);
         painter->drawPath(arcPath);
         break;
     }
@@ -224,8 +156,9 @@ void BuildingStruct::drawShape(QPainter *painter)
         painter->setPen(QPen(Qt::white, 1));
         painter->drawRect(shapeRect);
         painter->setPen(QPen(Qt::black, 1));
-        painter->drawRect(QRectF(shapeRect.topLeft(), QSizeF(8.0, shapeRect.height())));
-        painter->drawRect(QRectF(shapeRect.right() - 8.0, shapeRect.top(), 8.0, shapeRect.height()));
+        painter->drawRect(QRectF(shapeRect.topLeft(), QSizeF(frameWidth, shapeRect.height())));
+        painter->drawRect(QRectF(shapeRect.right() - frameWidth
+                                 , shapeRect.top(), frameWidth, shapeRect.height()));
         break;
     }
     default:

@@ -7,8 +7,8 @@
         <location filename="../mainwindow.ui" line="14"/>
         <location filename="../mainwindow.cpp" line="89"/>
         <location filename="../mainwindow.cpp" line="105"/>
-        <location filename="../mainwindow.cpp" line="1151"/>
-        <location filename="../mainwindow.cpp" line="1190"/>
+        <location filename="../mainwindow.cpp" line="1157"/>
+        <location filename="../mainwindow.cpp" line="1196"/>
         <source>RSiSed</source>
         <translatorcomment>Абревиатура расстановка сил и средств (РСиС)</translatorcomment>
         <translation>РСиС</translation>
@@ -1158,45 +1158,45 @@
         <translation>Масштаб</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1152"/>
+        <location filename="../mainwindow.cpp" line="1158"/>
         <source>The document has been modified.
 Do you want to save your changes?</source>
         <translation>Документ был изменен.
 Вы хотите сохранить свои изменения?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1180"/>
+        <location filename="../mainwindow.cpp" line="1186"/>
         <source>Cannot write file %1:
 %2.</source>
         <translation>Не удается записать файл %1:
 %2.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1184"/>
+        <location filename="../mainwindow.cpp" line="1190"/>
         <source>Cannot open file %1 for writing:
 %2.</source>
         <translation>Не удается открыть файл %1 для записи:
 %2.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1194"/>
+        <location filename="../mainwindow.cpp" line="1200"/>
         <source>File saved</source>
         <translation>Файл сохранён</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1205"/>
+        <location filename="../mainwindow.cpp" line="1211"/>
         <source>untitled.rse</source>
         <translation>Без имени.rse</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1207"/>
+        <location filename="../mainwindow.cpp" line="1213"/>
         <source> - RSiSed</source>
         <translation> - РСиС</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1232"/>
         <location filename="../mainwindow.cpp" line="1238"/>
-        <location filename="../mainwindow.cpp" line="1245"/>
+        <location filename="../mainwindow.cpp" line="1244"/>
+        <location filename="../mainwindow.cpp" line="1251"/>
         <source>%</source>
         <translation>%</translation>
     </message>
