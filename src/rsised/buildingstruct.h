@@ -23,6 +23,7 @@
 
 #include "abstractshape.h"
 #include <QBrush>
+#include <QSet>
 
 class BuildingStruct : public AbstractShape
 {
@@ -41,17 +42,21 @@ public:
     void setRect(QRectF rect);
     QRectF getRect();
 
+    bool collidingWallsIsEmpty();
+    QSet<BuildingStruct *> getCollidingWalls();
+
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 private:
     void drawShape(QPainter *painter);
+    void setCollidingWals();
 
-    QRectF shapeRect;
-    QBrush wallBrush;
-    qreal frameWidth;
-
-    ShapeType m_shapeType;
+    QSet<BuildingStruct *>  collidingWalls;
+    QRectF  shapeRect;
+    QBrush  wallBrush;
+    qreal   frameWidth;
+    ShapeType   m_shapeType;
 };
 
 #endif // BUILDINGSTRUCT_H

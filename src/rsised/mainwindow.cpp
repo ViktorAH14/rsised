@@ -66,7 +66,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->mainGraphicsView->setScene(scene);
     ui->mainGraphicsView->setRenderHints(QPainter::Antialiasing);
 
-    QSplitter *mainSplitter = new QSplitter;
+    QSplitter *mainSplitter = new QSplitter(this);
     mainSplitter->addWidget(shapeToolBox);
     mainSplitter->addWidget(ui->mainGraphicsView);
     setCentralWidget(mainSplitter);
@@ -856,7 +856,7 @@ void MainWindow::createShapeToolBox()
     buildStructLayout->addWidget(createBuildingStructCellWidget(tr("Opening")
                                                                 , BuildingStruct::Open), 1, 0);
     buildStructLayout->setRowStretch(3, 10);
-    buildStructLayout->setColumnStretch(2, 10);
+    buildStructLayout->setColumnStretch(3, 10);
     QWidget *buildingWidget = new QWidget;
     buildingWidget->setLayout(buildStructLayout);
 
@@ -1017,7 +1017,7 @@ void MainWindow::createStyleToolBar()
 
 void MainWindow::createFontStyleToolBar()
 {
-    fontCombo = new QFontComboBox();
+    fontCombo = new QFontComboBox;
     fontCombo->setWritingSystem(QFontDatabase::Cyrillic);
     fontCombo->setToolTip(tr("Change the font of the text"));
     connect(fontCombo, &QFontComboBox::currentFontChanged, this, &MainWindow::changedFont);
