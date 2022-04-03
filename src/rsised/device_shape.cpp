@@ -50,9 +50,9 @@ QPixmap DeviceShape::image()
 {
     QPixmap pixmap(boundingRect().width(), boundingRect().height());
     pixmap.fill(Qt::transparent);
-    QPainter *painter = new QPainter(&pixmap);
-    painter->translate(boundingRect().width() / 2.0, boundingRect().height() / 2.0);
-    drawShape(painter);
+    QPainter painter(&pixmap);
+    painter.translate(boundingRect().width() / 2.0, boundingRect().height() / 2.0);
+    drawShape(&painter);
 
     return pixmap;
 }

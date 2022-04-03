@@ -88,9 +88,9 @@ QPixmap BuildingStruct::image()
     qreal pixmapHeight = boundingRect().height();
     QPixmap pixmap(pixmapWidth, pixmapHeight);
     pixmap.fill(Qt::transparent);
-    QPainter *painter = new QPainter(&pixmap);
-    painter->translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
-    drawShape(painter);
+    QPainter painter(&pixmap);
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawShape(&painter);
 
     return pixmap;
 }
@@ -112,6 +112,35 @@ QRectF BuildingStruct::getRect()
     return shapeRect;
 }
 
+bool BuildingStruct::collidingWallsIsEmpty()
+{
+    if (collidingWalls.isEmpty()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+QSet<BuildingStruct *> BuildingStruct::getCollidingWalls()
+{
+    return collidingWalls;
+}
+
+void BuildingStruct::setCollidingWals()
+{
+    QList<QGraphicsItem *> collidingItem = collidingItems();
+    BuildingStruct *wallItem;
+    for (QGraphicsItem *item : qAsConst(collidingItem)) {
+        if ((wallItem = dynamic_cast<BuildingStruct *>(item))
+                && (wallItem->shapeType() == Wall) && (wallItem != this)) {
+                collidingWalls.insert(wallItem);
+                if (!wallItem->collidingWallsIsEmpty()) {
+                    collidingWalls += wallItem->getCollidingWalls();
+                }
+        }
+    }
+}
+
 void BuildingStruct::drawShape(QPainter *painter)
 {
     painter->setRenderHint(QPainter::Antialiasing);
@@ -121,8 +150,20 @@ void BuildingStruct::drawShape(QPainter *painter)
     prepareGeometryChange();
     switch (m_shapeType) {
     case Wall: {
-        painter->setBrush(wallBrush);
-        painter->drawRect(shapeRect);
+        QPainterPath wallPath;
+        wallPath.setFillRule(Qt::WindingFill);
+        wallPath.addRect(boundingRect());
+
+        setCollidingWals();
+
+        for (BuildingStruct *item : qAsConst(collidingWalls)) {
+            wallPath.addPolygon(mapFromItem(item, item->boundingRect()));
+        }
+
+        QPainterPath fillPath = wallPath;
+        painter->fillPath(fillPath, wallBrush);
+        painter->strokePath(wallPath.simplified(), QPen(Qt::black, 1));
+
         break;
     }
     case Window: {

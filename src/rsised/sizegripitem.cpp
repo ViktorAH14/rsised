@@ -174,7 +174,8 @@ QVariant SizeGripItem::HandleItem::itemChange(GraphicsItemChange change,
                                               const QVariant &value)
 {
     QVariant retVal {value};
-    if (parentItem->actionType() == SizeGripItem::Resize) {
+    ActionType currentActionType = parentItem->actionType();
+    if (currentActionType == SizeGripItem::Resize) { //TODO Conditional jump or more depends on uninitialised value(s)
         if (change == ItemPositionChange)
         {
             retVal = restrictPosition(value.toPointF());
@@ -305,6 +306,7 @@ QPointF SizeGripItem::HandleItem::restrictPosition(const QPointF &newPos)
 SizeGripItem::SizeGripItem(Resizer *resizer, QGraphicsItem *parent)
     : QGraphicsItem(parent)
     , itemResizer(resizer)
+    , m_actionType{Resize}
 {
     if ((parent->type() == Rectangle::Type) || (parent->type() == Ellipse::Type)
             || (parent->type() == PixmapItem::Type) || (parent->type() == TechnicsShape::Type)
@@ -357,7 +359,6 @@ SizeGripItem::SizeGripItem(Resizer *resizer, QGraphicsItem *parent)
         }
     }
 
-    setActionType(Resize);
     updateHandleItemPositions();
 }
 
