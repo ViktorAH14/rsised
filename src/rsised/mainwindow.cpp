@@ -35,6 +35,7 @@
 #include <KColorButton>
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QScopedPointer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), currentFile("")
@@ -56,7 +57,6 @@ MainWindow::MainWindow(QWidget *parent)
 // Create scene and view
     scene = new DiagramScene(ui->menuEdit, this);
     scene->setSceneRect(0, 0, 1240, 877); //A3
-//    scene->setMode(DiagramScene::SelectItem); // TODO delete?
     scene->setItemPen(penColorButton->color(),
                       qvariant_cast<qreal>(penSizeCombo->currentText()),
                       qvariant_cast<Qt::PenStyle>(penStyleCombo->currentData()));
@@ -96,7 +96,7 @@ void MainWindow::loadFile(const QString &fileName)
 
     scene->clear();
 
-    RseReader *rseReader = new RseReader(ui->menuEdit);
+    QScopedPointer<RseReader> rseReader(new RseReader(ui->menuEdit));
     QRectF sceneRect = rseReader->getSceneRect(&file);
     scene->setSceneRect(sceneRect);
     file.close();
@@ -202,16 +202,17 @@ bool MainWindow::saveAs()
 
 void MainWindow::copy()
 {
-    copyList.clear();
-    copyList = scene->selectedItems();
     if (!copyList.isEmpty()) {
-        ui->actionPaste->setEnabled(true);
+        QList<QGraphicsItem *> sceneList = scene->items();
+        for (QGraphicsItem *item : qAsConst(copyList)) {
+            if (!sceneList.contains(item))
+                delete item;
+        }
+        copyList.clear();
     }
-}
 
-void MainWindow::paste()
-{
-    for (QGraphicsItem *item : qAsConst(copyList)) {
+    QList<QGraphicsItem *> selectedItems = scene->selectedItems();
+    for (QGraphicsItem *item : qAsConst(selectedItems)) {
         if (Rectangle *oldRect = dynamic_cast<Rectangle *>(item)) {
             Rectangle *newRect = new Rectangle(ui->menuEdit);
             newRect->setRect(oldRect->rect());
@@ -219,7 +220,7 @@ void MainWindow::paste()
             newRect->setY(oldRect->y() + 10.0);
             newRect->setPen(oldRect->pen());
             newRect->setBrush(oldRect->brush());
-            scene->addItem(newRect);
+            copyList.append(newRect);
         }
         if (Ellipse *oldEllipse = dynamic_cast<Ellipse *>(item)) {
             Ellipse *newEllipse = new Ellipse(ui->menuEdit);
@@ -228,7 +229,7 @@ void MainWindow::paste()
             newEllipse->setY(oldEllipse->y() + 10.0);
             newEllipse->setPen(oldEllipse->pen());
             newEllipse->setBrush(oldEllipse->brush());
-            scene->addItem(newEllipse);
+            copyList.append(newEllipse);
         }
         if (Polyline *oldPolyline = dynamic_cast<Polyline *>(item)) {
             Polyline *newPolyline = new Polyline(ui->menuEdit);
@@ -236,7 +237,7 @@ void MainWindow::paste()
             newPolyline->setX(oldPolyline->x() + 10.0);
             newPolyline->setY(oldPolyline->y() + 10.0);
             newPolyline->setPen(oldPolyline->pen());
-            scene->addItem(newPolyline);
+            copyList.append(newPolyline);
         }
         if (Curve *oldCurve = dynamic_cast<Curve *>(item)) {
             Curve *newCurve = new Curve(ui->menuEdit);
@@ -244,7 +245,7 @@ void MainWindow::paste()
             newCurve->setX(oldCurve->x() + 10.0);
             newCurve->setY(oldCurve->y() + 10.0);
             newCurve->setPen(oldCurve->pen());
-            scene->addItem(newCurve);
+            copyList.append(newCurve);
         }
         if (QGraphicsLineItem *oldLine = dynamic_cast<QGraphicsLineItem *>(item)) {
             QGraphicsLineItem *newLine = new QGraphicsLineItem();
@@ -253,7 +254,7 @@ void MainWindow::paste()
             newLine->setX(oldLine->x() + 10.0);
             newLine->setY(oldLine->y() + 10.0);
             newLine->setPen(oldLine->pen());
-            scene->addItem(newLine);
+            copyList.append(newLine);
         }
         if (TextItem *oldText = dynamic_cast<TextItem *>(item)) {
             TextItem *newText = new TextItem(ui->menuEdit);
@@ -262,7 +263,7 @@ void MainWindow::paste()
             newText->setFont(oldText->font());
             newText->setDefaultTextColor(oldText->defaultTextColor());
             newText->setZValue(oldText->zValue());
-            scene->addItem(newText);
+            copyList.append(newText);
         }
         if (TechnicsShape *oldTechnicsShape = dynamic_cast<TechnicsShape *>(item)) {
             TechnicsShape::ShapeType shapeType = oldTechnicsShape->shapeType();
@@ -272,7 +273,7 @@ void MainWindow::paste()
                                              , oldTechnicsShape->y() + 10));
             newTechnicsShape->setZValue(oldTechnicsShape->zValue());
             newTechnicsShape->setTransform(shapeTransform);
-            scene->addItem(newTechnicsShape);
+            copyList.append(newTechnicsShape);
         }
         if (DeviceShape *oldDeviceShape = dynamic_cast<DeviceShape *>(item)) {
             DeviceShape::ShapeType shapeType = oldDeviceShape->shapeType();
@@ -282,7 +283,7 @@ void MainWindow::paste()
                                              , oldDeviceShape->y() + 10));
             newDeviceShape->setZValue(oldDeviceShape->zValue());
             newDeviceShape->setTransform(shapeTransform);
-            scene->addItem(newDeviceShape);
+            copyList.append(newDeviceShape);
         }
         if (BuildingStruct *oldBuildingStruct = dynamic_cast<BuildingStruct *>(item)) {
             BuildingStruct::ShapeType shapeType = oldBuildingStruct->shapeType();
@@ -293,103 +294,25 @@ void MainWindow::paste()
                                              , oldBuildingStruct->y() + 10));
             newBuildingStruct->setZValue(oldBuildingStruct->zValue());
             newBuildingStruct->setTransform(shapeTransform);
-            scene->addItem(newBuildingStruct);
+            copyList.append(newBuildingStruct);
         }
     }
+
+    ui->actionPaste->setEnabled(true);
+}
+
+void MainWindow::paste()
+{
+    for (QGraphicsItem *item : qAsConst(copyList))
+        scene->addItem(item);
+    copyList.clear();
+    ui->actionPaste->setEnabled(false);
     scene->setSelectableItems(true);
 }
 
 void MainWindow::cut()
 {
-    QList<QGraphicsItem *> cutList;
     copy();
-    for (QGraphicsItem *item : qAsConst(copyList)) {
-        if (Rectangle *oldRect = dynamic_cast<Rectangle *>(item)) {
-            Rectangle *newRect = new Rectangle(ui->menuEdit);
-            newRect->setRect(oldRect->rect());
-            newRect->setX(oldRect->x() + 10.0);
-            newRect->setY(oldRect->y() + 10.0);
-            newRect->setPen(oldRect->pen());
-            newRect->setBrush(oldRect->brush());
-            cutList.append(newRect);
-        }
-        if (Ellipse *oldEllipse = dynamic_cast<Ellipse *>(item)) {
-            Ellipse *newEllipse = new Ellipse(ui->menuEdit);
-            newEllipse->setRect(oldEllipse->rect());
-            newEllipse->setX(oldEllipse->x() + 10.0);
-            newEllipse->setY(oldEllipse->y() + 10.0);
-            newEllipse->setPen(oldEllipse->pen());
-            newEllipse->setBrush(oldEllipse->brush());
-            cutList.append(newEllipse);
-        }
-        if (Polyline *oldPolyline = dynamic_cast<Polyline *>(item)) {
-            Polyline *newPolyline = new Polyline(ui->menuEdit);
-            newPolyline->setPath(oldPolyline->path());
-            newPolyline->setX(oldPolyline->x() + 10.0);
-            newPolyline->setY(oldPolyline->y() + 10.0);
-            newPolyline->setPen(oldPolyline->pen());
-            cutList.append(newPolyline);
-        }
-        if (Curve *oldCurve = dynamic_cast<Curve *>(item)) {
-            Curve *newCurve = new Curve(ui->menuEdit);
-            newCurve->setPath(oldCurve->path());
-            newCurve->setX(oldCurve->x() + 10.0);
-            newCurve->setY(oldCurve->y() + 10.0);
-            newCurve->setPen(oldCurve->pen());
-            cutList.append(newCurve);
-        }
-        if (QGraphicsLineItem *oldLine = dynamic_cast<QGraphicsLineItem *>(item)) {
-            QGraphicsLineItem *newLine = new QGraphicsLineItem();
-            newLine->setFlag(QGraphicsItem::ItemIsMovable, true);
-            newLine->setLine(oldLine->line());
-            newLine->setX(oldLine->x() + 10.0);
-            newLine->setY(oldLine->y() + 10.0);
-            newLine->setPen(oldLine->pen());
-            cutList.append(newLine);
-        }
-        if (TextItem *oldText = dynamic_cast<TextItem *>(item)) {
-            TextItem *newText = new TextItem(ui->menuEdit);
-            newText->setPlainText(oldText->document()->toPlainText());
-            newText->setPos(QPointF(oldText->x() + 10, oldText->y() + 10));
-            newText->setFont(oldText->font());
-            newText->setDefaultTextColor(oldText->defaultTextColor());
-            newText->setZValue(oldText->zValue());
-            cutList.append(newText);
-        }
-        if (TechnicsShape *oldTechnicsShape = dynamic_cast<TechnicsShape *>(item)) {
-            TechnicsShape::ShapeType shapeType = oldTechnicsShape->shapeType();
-            QTransform shapeTransform = oldTechnicsShape->transform();
-            TechnicsShape *newTechnicsShape = new TechnicsShape(ui->menuEdit, shapeType);
-            newTechnicsShape->setPos(QPointF(oldTechnicsShape->x() + 10
-                                             , oldTechnicsShape->y() + 10));
-            newTechnicsShape->setZValue(oldTechnicsShape->zValue());
-            newTechnicsShape->setTransform(shapeTransform);
-            cutList.append(newTechnicsShape);
-        }
-        if (DeviceShape *oldDeviceShape = dynamic_cast<DeviceShape *>(item)) {
-            DeviceShape::ShapeType shapeType = oldDeviceShape->shapeType();
-            QTransform shapeTransform = oldDeviceShape->transform();
-            DeviceShape *newDeviceShape = new DeviceShape(ui->menuEdit, shapeType);
-            newDeviceShape->setPos(QPointF(oldDeviceShape->x() + 10
-                                             , oldDeviceShape->y() + 10));
-            newDeviceShape->setZValue(oldDeviceShape->zValue());
-            newDeviceShape->setTransform(shapeTransform);
-            cutList.append(newDeviceShape);
-        }
-        if (BuildingStruct *oldBuildingStruct = dynamic_cast<BuildingStruct *>(item)) {
-            BuildingStruct::ShapeType shapeType = oldBuildingStruct->shapeType();
-            QTransform shapeTransform = oldBuildingStruct->transform();
-            BuildingStruct *newBuildingStruct = new BuildingStruct(ui->menuEdit, shapeType);
-            newBuildingStruct->setRect(oldBuildingStruct->getRect());
-            newBuildingStruct->setPos(QPointF(oldBuildingStruct->x() + 10
-                                             , oldBuildingStruct->y() + 10));
-            newBuildingStruct->setZValue(oldBuildingStruct->zValue());
-            newBuildingStruct->setTransform(shapeTransform);
-            cutList.append(newBuildingStruct);
-        }
-    }
-    copyList = cutList;
-    cutList.clear();
     deleteItem();
 }
 
@@ -702,7 +625,7 @@ void MainWindow::createShapeToolBox()
     technicsButtonGroup->setExclusive(false);
     connect(technicsButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked)
             , this, &MainWindow::insertTechnicsShape);
-    QGridLayout *technicsLayout = new QGridLayout;
+    QGridLayout *technicsLayout = new QGridLayout(this);
     technicsLayout->addWidget(createTechnicsCellWidget(tr("Car"), TechnicsShape::Base), 0, 0);
     technicsLayout->addWidget(createTechnicsCellWidget(tr("Tanker")
                                                        , TechnicsShape::Tanker), 0, 1);
@@ -786,14 +709,14 @@ void MainWindow::createShapeToolBox()
                                                        , TechnicsShape::Police), 13, 2);
     technicsLayout->setRowStretch(14, 10);
     technicsLayout->setColumnStretch(3, 10);
-    QWidget *technicsWidget = new QWidget;
+    QWidget *technicsWidget = new QWidget(this);
     technicsWidget->setLayout(technicsLayout);
 
     deviceButtonGroup = new QButtonGroup(this);
     deviceButtonGroup->setExclusive(false);
     connect(deviceButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked)
             , this, &MainWindow::insertDeviceShape);
-    QGridLayout *deviceLayout = new QGridLayout;
+    QGridLayout *deviceLayout = new QGridLayout(this);
     deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 0"), DeviceShape::Barrel_0), 0, 0);
     deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 1"), DeviceShape::Barrel_1), 0, 1);
     deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 2"), DeviceShape::Barrel_2), 0, 2);
@@ -838,7 +761,7 @@ void MainWindow::createShapeToolBox()
     deviceLayout->addWidget(createDeviceCellWidget(tr("FLift 2"), DeviceShape::FoamLift_2), 9, 2);
     deviceLayout->setRowStretch(10, 10);
     deviceLayout->setColumnStretch(3, 10);
-    QWidget *deviceWidget = new QWidget;
+    QWidget *deviceWidget = new QWidget(this);
     deviceWidget->setLayout(deviceLayout);
 
     buildingStructButtonGroup = new QButtonGroup(this);
@@ -846,7 +769,7 @@ void MainWindow::createShapeToolBox()
     connect(buildingStructButtonGroup
             , QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked)
             , this, &MainWindow::insertBuildingStructShape);
-    QGridLayout *buildStructLayout= new QGridLayout;
+    QGridLayout *buildStructLayout= new QGridLayout(this);
     buildStructLayout->addWidget(createBuildingStructCellWidget(tr("Wall")
                                                                 , BuildingStruct::Wall), 0, 0);
     buildStructLayout->addWidget(createBuildingStructCellWidget(tr("Window")
@@ -857,10 +780,10 @@ void MainWindow::createShapeToolBox()
                                                                 , BuildingStruct::Open), 1, 0);
     buildStructLayout->setRowStretch(3, 10);
     buildStructLayout->setColumnStretch(3, 10);
-    QWidget *buildingWidget = new QWidget;
+    QWidget *buildingWidget = new QWidget(this);
     buildingWidget->setLayout(buildStructLayout);
 
-    shapeToolBox = new QToolBox;
+    shapeToolBox = new QToolBox(this);
     shapeToolBox->addItem(buildingWidget, tr("Building structures"));
     shapeToolBox->addItem(technicsWidget, tr("Technics"));
     shapeToolBox->addItem(deviceWidget, tr("Device"));
@@ -953,7 +876,7 @@ void MainWindow::createStyleToolBar()
 
     // Pen color
     QFrame *penColorFrame = new QFrame(this);
-    QHBoxLayout *penColorHBoxLayout = new QHBoxLayout;
+    QHBoxLayout *penColorHBoxLayout = new QHBoxLayout(this);
     penColorFrame->setLayout(penColorHBoxLayout);
     penColorButton = new KColorButton(this);
     penColorButton->setColor(Qt::black);
@@ -1017,12 +940,12 @@ void MainWindow::createStyleToolBar()
 
 void MainWindow::createFontStyleToolBar()
 {
-    fontCombo = new QFontComboBox;
+    fontCombo = new QFontComboBox(this);
     fontCombo->setWritingSystem(QFontDatabase::Cyrillic);
     fontCombo->setToolTip(tr("Change the font of the text"));
     connect(fontCombo, &QFontComboBox::currentFontChanged, this, &MainWindow::changedFont);
 
-    fontSizeCombo = new QComboBox;
+    fontSizeCombo = new QComboBox(this);
     fontSizeCombo->setEditable(true);
     for (int i = 8; i < 30; i = i + 2)
         fontSizeCombo->addItem(QString().setNum(i));
@@ -1086,17 +1009,17 @@ QWidget *MainWindow::createTechnicsCellWidget(const QString &text, TechnicsShape
     qreal iconWidth{technicsItem.boundingRect().width() / 2.0};
     qreal iconHeight{technicsItem.boundingRect().height() / 2.0};
 
-    QToolButton *technicsButton = new QToolButton;
+    QToolButton *technicsButton = new QToolButton(this);
     technicsButton->setIcon(icon);
     technicsButton->setIconSize(QSize(iconWidth, iconHeight));
     technicsButton->setCheckable(true);
     technicsButtonGroup->addButton(technicsButton, int(type));
 
-    QGridLayout *technicsShapeLayout = new QGridLayout;
+    QGridLayout *technicsShapeLayout = new QGridLayout(this);
     technicsShapeLayout->addWidget(technicsButton, 0, 0, Qt::AlignHCenter);
-    technicsShapeLayout->addWidget(new QLabel(text), 1, 0, Qt::AlignCenter);
+    technicsShapeLayout->addWidget(new QLabel(text, this), 1, 0, Qt::AlignCenter);
 
-    QWidget *technicsShapeWidget = new QWidget;
+    QWidget *technicsShapeWidget = new QWidget(this);
     technicsShapeWidget->setLayout(technicsShapeLayout);
 
     return technicsShapeWidget;
@@ -1109,17 +1032,17 @@ QWidget *MainWindow::createDeviceCellWidget(const QString &text, DeviceShape::Sh
     qreal iconWidth{deviceItem.boundingRect().width() / 2.0};
     qreal iconHeight{deviceItem.boundingRect().height() / 2.0};
 
-    QToolButton *deviceButtton = new QToolButton;
+    QToolButton *deviceButtton = new QToolButton(this);
     deviceButtton->setIcon(icon);
     deviceButtton->setIconSize(QSize(iconWidth, iconHeight));
     deviceButtton->setCheckable(true);
     deviceButtonGroup->addButton(deviceButtton, int(type));
 
-    QGridLayout *deviceShapeLayout = new QGridLayout;
+    QGridLayout *deviceShapeLayout = new QGridLayout(this);
     deviceShapeLayout->addWidget(deviceButtton, 0, 0, Qt::AlignCenter);
-    deviceShapeLayout->addWidget(new QLabel(text), 1, 0, Qt::AlignCenter);
+    deviceShapeLayout->addWidget(new QLabel(text, this), 1, 0, Qt::AlignCenter);
 
-    QWidget *deviceShapeWidget = new QWidget;
+    QWidget *deviceShapeWidget = new QWidget(this);
     deviceShapeWidget->setLayout(deviceShapeLayout);
 
     return deviceShapeWidget;
@@ -1132,17 +1055,17 @@ QWidget *MainWindow::createBuildingStructCellWidget(const QString &text, Buildin
     qreal iconWidth{buildingItem.boundingRect().width() / 2.0};
     qreal iconHeight{36.0};
 
-    QToolButton *buildingButtton = new QToolButton;
+    QToolButton *buildingButtton = new QToolButton(this);
     buildingButtton->setIcon(icon);
     buildingButtton->setIconSize(QSize(iconWidth, iconHeight));
     buildingButtton->setCheckable(true);
     buildingStructButtonGroup->addButton(buildingButtton, int(type));
 
-    QGridLayout *buildingStructLayout = new QGridLayout;
+    QGridLayout *buildingStructLayout = new QGridLayout(this);
     buildingStructLayout->addWidget(buildingButtton, 0, 0, Qt::AlignCenter);
-    buildingStructLayout->addWidget(new QLabel(text), 1, 0, Qt::AlignCenter);
+    buildingStructLayout->addWidget(new QLabel(text, this), 1, 0, Qt::AlignCenter);
 
-    QWidget *buildingStructWidget = new QWidget;
+    QWidget *buildingStructWidget = new QWidget(this);
     buildingStructWidget->setLayout(buildingStructLayout);
 
     return buildingStructWidget;
@@ -1180,7 +1103,7 @@ bool MainWindow::saveFile(const QString &fileName)
     if (file.open(QFile::WriteOnly) && suffix == "rse") {
         QList<QGraphicsItem *> itemsList = scene->items();
         QRectF sceneRect = scene->sceneRect();
-        RseWriter *writer = new RseWriter();
+        QScopedPointer <RseWriter> writer(new RseWriter());
         writer->writeRse(&file, itemsList, sceneRect);
         if (!file.commit()) {
             errorMessage = tr("Cannot write file %1:\n%2.")
@@ -1220,7 +1143,8 @@ void MainWindow::deleteItem()
     QList<QGraphicsItem *> selectedItems = scene->selectedItems();
     for (QGraphicsItem *item : qAsConst(selectedItems)) {
         scene->removeItem(item);
-        delete item;
+        if (!copyList.contains(item))
+            delete item;
     }
 }
 
