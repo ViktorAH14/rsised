@@ -37,9 +37,7 @@ public:
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-    bool sceneEvent(QEvent *event) override;
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
-
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
