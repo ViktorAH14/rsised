@@ -211,6 +211,7 @@ build/
 lib.*/
 import/
 doc/
+.qtc_clangd/
 
 # Images
 #*.png
