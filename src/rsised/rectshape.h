@@ -48,8 +48,6 @@ public:
     bool isObscuredBy(const QGraphicsItem *item) const override;
     QPainterPath opaqueArea() const override;
 
-protected:
-
 private:
     RectShape(const RectShape &) = delete;
     RectShape &operator=(const RectShape &) = delete;
