@@ -22,7 +22,7 @@ SOURCES += \
     mainwindow.cpp \
     pixmapitem.cpp \
     polyline.cpp \
-    rectangle.cpp \
+    rectshape.cpp \
     rse_reader.cpp \
     rse_writer.cpp \
     sizegripitem.cpp \
@@ -41,7 +41,7 @@ HEADERS += \
     mainwindow.h \
     pixmapitem.h \
     polyline.h \
-    rectangle.h \
+    rectshape.h \
     rse_reader.h \
     rse_writer.h \
     sizegripitem.h \

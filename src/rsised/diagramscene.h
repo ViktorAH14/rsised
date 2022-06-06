@@ -28,7 +28,7 @@
 #include <QGraphicsScene>
 #include <QObject>
 
-class Rectangle;
+class RectShape;
 class Ellipse;
 class Polyline;
 class Curve;
@@ -45,7 +45,7 @@ class DiagramScene : public QGraphicsScene
 
 public:
     enum SceneMode {InsertPolyline
-                    , InsertRect
+                    , InsertRectShape
                     , InsertEllipse
                     , InsertCurve
                     , InserText
@@ -84,7 +84,7 @@ private:
     DeviceShape *deviceShape;
     BuildingStruct::ShapeType m_buildingStructType;
     BuildingStruct *buildingStructItem;
-    Rectangle   *rectangle;
+    RectShape   *m_rectShape;
     Polyline    *polyline;
     Ellipse     *ellipse;
     Curve       *curve;

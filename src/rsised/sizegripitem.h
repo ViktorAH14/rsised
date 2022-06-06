@@ -66,7 +66,7 @@ private:
         BottomRight = Bottom | Right
     };
 
-    enum ItemType { Rectangle, Path };
+    enum ItemType { RectShape, Path };
 
     class HandleItem : public QGraphicsRectItem
     {

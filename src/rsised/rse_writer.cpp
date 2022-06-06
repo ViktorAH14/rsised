@@ -19,7 +19,7 @@
  */
 
 #include "rse_writer.h"
-#include "rectangle.h"
+#include "rectshape.h"
 #include "ellipse.h"
 #include "polyline.h"
 #include "curve.h"
@@ -61,10 +61,10 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
     }
     rseWriter.writeStartElement("ItemsList");
     for (QGraphicsItem *item : qAsConst(items)) {
-        if (item->type() == Rectangle::Type) {
-            Rectangle *rectangle = qgraphicsitem_cast<Rectangle *>(item);
-            QRectF rect(rectangle->rect());
-            QTransform trans(rectangle->sceneTransform());
+        if (item->type() == RectShape::Type) {
+            RectShape *rectShape = qgraphicsitem_cast<RectShape *>(item);
+            QRectF rect(rectShape->rect());
+            QTransform trans(rectShape->sceneTransform());
             QString transStr(QString::number(trans.m11()) + "," + QString::number(trans.m12())
                              + "," + QString::number(trans.m13()) + ","
                              + QString::number(trans.m21()) + "," + QString::number(trans.m22())
@@ -74,14 +74,14 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
             rseWriter.writeStartElement("rect");
             rseWriter.writeAttribute("x", QString::number(rect.x()));
             rseWriter.writeAttribute("y", QString::number(rect.y()));
-            rseWriter.writeAttribute("width", QString::number(rectangle->rect().width()));
-            rseWriter.writeAttribute("height", QString::number(rectangle->rect().height()));
-            rseWriter.writeAttribute("pen-color", rectangle->pen().color().name());
-            rseWriter.writeAttribute("pen-width", QString::number(rectangle->pen().width()));
-            rseWriter.writeAttribute("pen-style", QString::number(rectangle->pen().style()));
-            rseWriter.writeAttribute("brush-color", rectangle->brush().color().name());
-            rseWriter.writeAttribute("brush-style", QString::number(rectangle->brush().style()));
-            rseWriter.writeAttribute("z", QString::number(rectangle->zValue()));
+            rseWriter.writeAttribute("width", QString::number(rectShape->rect().width()));
+            rseWriter.writeAttribute("height", QString::number(rectShape->rect().height()));
+            rseWriter.writeAttribute("pen-color", rectShape->pen().color().name());
+            rseWriter.writeAttribute("pen-width", QString::number(rectShape->pen().width()));
+            rseWriter.writeAttribute("pen-style", QString::number(rectShape->pen().style()));
+            rseWriter.writeAttribute("brush-color", rectShape->brush().color().name());
+            rseWriter.writeAttribute("brush-style", QString::number(rectShape->brush().style()));
+            rseWriter.writeAttribute("z", QString::number(rectShape->zValue()));
             rseWriter.writeAttribute("transform", transStr);
             rseWriter.writeEndElement(); // rect
         }

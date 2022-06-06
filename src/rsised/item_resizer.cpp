@@ -19,7 +19,7 @@
  */
 
 #include "item_resizer.h"
-#include "rectangle.h"
+#include "rectshape.h"
 #include "ellipse.h"
 #include "curve.h"
 #include "polyline.h"
@@ -35,11 +35,11 @@ Q_DECLARE_METATYPE(QPainterPath)
 void ItemResizer::operator()(QGraphicsItem *item, const QVariant &value)
 {
     switch (item->type()) {
-    case Rectangle::Type: {
-        Rectangle *rectItem = dynamic_cast<Rectangle *>(item);
-        if (rectItem) {
-            QRectF itemRect = value.toRectF();
-            rectItem->setRect(itemRect);
+    case RectShape::Type: {
+        RectShape *rectShape = dynamic_cast<RectShape *>(item);
+        if (rectShape) {
+            QRectF shapeRect = value.toRectF();
+            rectShape->setRect(shapeRect);
         }
         break;
     }

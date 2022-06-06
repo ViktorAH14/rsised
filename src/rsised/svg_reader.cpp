@@ -19,7 +19,7 @@
  */
 
 #include "svg_reader.h"
-#include "rectangle.h"
+#include "rectshape.h"
 #include "ellipse.h"
 #include "polyline.h"
 #include "curve.h"
@@ -72,9 +72,9 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
 
         QDomElement elementRect = gNode.firstChildElement("rect");
         if (!elementRect.isNull()){
-            Rectangle *rectangle = new Rectangle(m_itemMenu);
+            RectShape *rectShape = new RectShape(m_itemMenu);
 // Position and size
-            rectangle->setRect(elementRect.attribute("x").toInt(),
+            rectShape->setRect(elementRect.attribute("x").toInt(),
                                elementRect.attribute("y").toInt(),
                                elementRect.attribute("width").toInt(),
                                elementRect.attribute("height").toInt());
@@ -127,11 +127,11 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
                 if (QString::compare(patternList.at(0), "fillpattern14") == 0) {
                     brushStyle = Qt::DiagCrossPattern;
                 }
-                rectangle->setBrush(QBrush(fillColor, brushStyle));
+                rectShape->setBrush(QBrush(fillColor, brushStyle));
             } else {
                 QColor fillColor(gElement.attribute("fill", "#ffffff"));
                 fillColor.setAlphaF(gElement.attribute("fill-opacity","0").toFloat());
-                rectangle->setBrush(QBrush(fillColor, Qt::SolidPattern));
+                rectShape->setBrush(QBrush(fillColor, Qt::SolidPattern));
             }
 // Pen
             QColor strokeColor(gElement.attribute("stroke", "#000000"));
@@ -156,7 +156,7 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             default:
                 break;
             }
-            rectangle->setPen(QPen(strokeColor, strokeWidth, penStyle));
+            rectShape->setPen(QPen(strokeColor, strokeWidth, penStyle));
 // Tronsfomation
             QString transStr = gElement.attribute("transform");
             transStr.replace(QString("matrix("), QString(""));
@@ -169,9 +169,9 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             qreal m31{transList.at(4).toFloat()};   // Horizontal position (dx)
             qreal m32{transList.at(5).toFloat()};   // Vertical position (dy)
             QTransform transformation(m11, m12, m21, m22, m31, m32);
-            rectangle->setTransform(transformation);
+            rectShape->setTransform(transformation);
 
-            itemList.append(rectangle);
+            itemList.append(rectShape);
             continue;
         }
 

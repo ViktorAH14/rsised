@@ -19,7 +19,7 @@
  */
 
 #include "rse_reader.h"
-#include "rectangle.h"
+#include "rectshape.h"
 #include "ellipse.h"
 #include "polyline.h"
 #include "curve.h"
@@ -88,7 +88,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
     while (!rseItemReader.atEnd()) {
         if (rseItemReader.isStartElement()) {
             if (rseItemReader.name() == "rect") {
-                Rectangle *rectangle = new Rectangle(m_itemMenu);
+                RectShape *rectShape = new RectShape(m_itemMenu);
                 qreal x {0.0};
                 qreal y {0.0};
                 qreal width {0.0};
@@ -150,14 +150,14 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         m33 = transList.at(8).toFloat();
                     }
                 }
-                rectangle->setRect(x, y, width, height);
-                rectangle->setPen(itemPen);
-                rectangle->setBrush(itemBrush);
-                rectangle->setZValue(zValue);
+                rectShape->setRect(x, y, width, height);
+                rectShape->setPen(itemPen);
+                rectShape->setBrush(itemBrush);
+                rectShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
-                rectangle->setTransform(trans);
+                rectShape->setTransform(trans);
 
-                itemList.append(rectangle);
+                itemList.append(rectShape);
             }
             if (rseItemReader.name() == "ellipse") {
                 Ellipse *ellipse = new Ellipse(m_itemMenu);

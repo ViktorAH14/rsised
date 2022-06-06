@@ -19,7 +19,7 @@
  */
 
 #include "diagramscene.h"
-#include "rectangle.h"
+#include "rectshape.h"
 #include "ellipse.h"
 #include "polyline.h"
 #include "curve.h"
@@ -32,7 +32,7 @@
 
 DiagramScene::DiagramScene(QMenu *itemMenu, QObject *parent)
     : QGraphicsScene(parent)
-    , rectangle{nullptr}
+    , m_rectShape{nullptr}
     , polyline{nullptr}
     , ellipse{nullptr}
     , curve{nullptr}
@@ -75,7 +75,7 @@ void DiagramScene::setItemPen(const QColor &color, const qreal width, const Qt::
             if (QGraphicsLineItem *lineItem = qgraphicsitem_cast<QGraphicsLineItem *>(item)) {
                 lineItem->setPen(itemPen);
             }
-            if (Rectangle *rectItem = qgraphicsitem_cast<Rectangle *>(item)) {
+            if (RectShape *rectItem = qgraphicsitem_cast<RectShape *>(item)) {
                 rectItem->setPen(itemPen);
             }
             if (Ellipse *ellipseItem = qgraphicsitem_cast<Ellipse *>(item)) {
@@ -99,7 +99,7 @@ void DiagramScene::setItemBrush(const QColor &color, const Qt::BrushStyle &brush
     if (!selectedItems().isEmpty()) {
         QList<QGraphicsItem *> selectedItems = this->selectedItems();
         for (QGraphicsItem *item : qAsConst(selectedItems)) {
-            if (Rectangle *rectItem = qgraphicsitem_cast<Rectangle *>(item)) {
+            if (RectShape *rectItem = qgraphicsitem_cast<RectShape *>(item)) {
                 rectItem->setBrush(itemBrush);
             }
             if (Ellipse *ellipseItem = qgraphicsitem_cast<Ellipse *>(item)) {
@@ -191,10 +191,10 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 addItem(polyline);
             }
             break;
-        case InsertRect:
-            rectangle = new Rectangle(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos())
+        case InsertRectShape:
+            m_rectShape = new RectShape(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos())
                                       , m_itemMenu);
-            addItem(rectangle);
+            addItem(m_rectShape);
             break;
         case InsertEllipse:
             ellipse = new Ellipse(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos())
@@ -248,14 +248,14 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (leftButtonPressed) {
-        if ((m_sceneMode == InsertRect) && (rectangle != nullptr)) {
-            qreal dx = mouseEvent->scenePos().x() - rectangle->rect().left();
-            qreal dy = mouseEvent->scenePos().y() - rectangle->rect().top();
-            rectangle->setRect( ( dx > 0 ) ? rectangle->rect().left() : mouseEvent->scenePos().x(),
-                           ( dy > 0 ) ? rectangle->rect().top() : mouseEvent->scenePos().y(),
-                           qAbs( dx ), qAbs( dy ) );
-            rectangle->setPen(itemPen);
-            rectangle->setBrush(itemBrush);
+        if ((m_sceneMode == InsertRectShape) && (m_rectShape != nullptr)) {
+            qreal dx = mouseEvent->scenePos().x() - m_rectShape->rect().left();
+            qreal dy = mouseEvent->scenePos().y() - m_rectShape->rect().top();
+            m_rectShape->setRect(( dx > 0 ) ? m_rectShape->rect().left() : mouseEvent->scenePos().x(),
+                           ( dy > 0 ) ? m_rectShape->rect().top() : mouseEvent->scenePos().y(),
+                           qAbs( dx ), qAbs( dy ));
+            m_rectShape->setPen(itemPen);
+            m_rectShape->setBrush(itemBrush);
         }
         if ((m_sceneMode == InsertEllipse) && (ellipse != nullptr)) {
             qreal dx = mouseEvent->scenePos().x() - ellipse->rect().left();
@@ -297,8 +297,8 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     switch (m_sceneMode) {
     case InsertPolyline:
         break;
-    case InsertRect:
-        rectangle = nullptr;
+    case InsertRectShape:
+        m_rectShape = nullptr;
         break;
     case InsertEllipse:
         ellipse = nullptr;
