@@ -20,7 +20,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "rectangle.h"
+#include "rectshape.h"
 #include "ellipse.h"
 #include "polyline.h"
 #include "curve.h"
@@ -109,8 +109,8 @@ void MainWindow::loadFile(const QString &fileName)
 
     QList<QGraphicsItem *> itemList = rseReader->getElement(&file);
     for (QGraphicsItem *item : qAsConst(itemList)) {
-        if (Rectangle *rectangleItem = dynamic_cast<Rectangle *>(item)) {
-            scene->addItem(rectangleItem);
+        if (RectShape *rectangleShape = dynamic_cast<RectShape *>(item)) {
+            scene->addItem(rectangleShape);
         }
         if (Ellipse *ellipseItem = dynamic_cast<Ellipse *>(item)) {
             scene->addItem(ellipseItem);
@@ -213,14 +213,14 @@ void MainWindow::copy()
 
     QList<QGraphicsItem *> selectedItems = scene->selectedItems();
     for (QGraphicsItem *item : qAsConst(selectedItems)) {
-        if (Rectangle *oldRect = dynamic_cast<Rectangle *>(item)) {
-            Rectangle *newRect = new Rectangle(ui->menuEdit);
-            newRect->setRect(oldRect->rect());
-            newRect->setX(oldRect->x() + 10.0);
-            newRect->setY(oldRect->y() + 10.0);
-            newRect->setPen(oldRect->pen());
-            newRect->setBrush(oldRect->brush());
-            copyList.append(newRect);
+        if (RectShape *oldRectangleShape = dynamic_cast<RectShape *>(item)) {
+            RectShape *newRectangleShape = new RectShape(ui->menuEdit);
+            newRectangleShape->setRect(oldRectangleShape->rect());
+            newRectangleShape->setX(oldRectangleShape->x() + 10.0);
+            newRectangleShape->setY(oldRectangleShape->y() + 10.0);
+            newRectangleShape->setPen(oldRectangleShape->pen());
+            newRectangleShape->setBrush(oldRectangleShape->brush());
+            copyList.append(newRectangleShape);
         }
         if (Ellipse *oldEllipse = dynamic_cast<Ellipse *>(item)) {
             Ellipse *newEllipse = new Ellipse(ui->menuEdit);
@@ -331,8 +331,8 @@ void MainWindow::openSVG()
 
         QList<QGraphicsItem *> itemList = svgReader->getElements(fileName);
         for (QGraphicsItem *item : qAsConst(itemList)) {
-            if (Rectangle *rectangleItem = dynamic_cast<Rectangle *>(item)) {
-                scene->addItem(rectangleItem);
+            if (RectShape *rectangleShape = dynamic_cast<RectShape *>(item)) {
+                scene->addItem(rectangleShape);
             }
             if (Ellipse *ellipseItem = dynamic_cast<Ellipse *>(item)) {
                 scene->addItem(ellipseItem);
@@ -422,7 +422,7 @@ void MainWindow::drawRect()
 {
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
     ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
-    scene->setMode(DiagramScene::InsertRect);
+    scene->setMode(DiagramScene::InsertRectShape);
     scene->setSelectableItems(false);
     ui->actionSelect_All->setDisabled(true);
     ui->actionDeleteItem->setDisabled(true);

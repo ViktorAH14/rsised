@@ -19,7 +19,7 @@
  */
 
 #include "sizegripitem.h"
-#include "rectangle.h"
+#include "rectshape.h"
 #include "ellipse.h"
 #include "polyline.h"
 #include "curve.h"
@@ -308,11 +308,11 @@ SizeGripItem::SizeGripItem(Resizer *resizer, QGraphicsItem *parent)
     , itemResizer(resizer)
     , m_actionType{Resize}
 {
-    if ((parent->type() == Rectangle::Type) || (parent->type() == Ellipse::Type)
+    if ((parent->type() == RectShape::Type) || (parent->type() == Ellipse::Type)
             || (parent->type() == PixmapItem::Type) || (parent->type() == TechnicsShape::Type)
             || (parent->type() == DeviceShape::Type)) {
         m_parentItemRect = parentItem()->boundingRect();
-        setItemType(Rectangle);
+        setItemType(RectShape);
         int handleNum {-1};
 
         handleItemList.append(new HandleItem(TopLeft, this));
@@ -349,7 +349,7 @@ SizeGripItem::SizeGripItem(Resizer *resizer, QGraphicsItem *parent)
     if (parent->type() == BuildingStruct::Type) {
         BuildingStruct *parentBuildingItem = dynamic_cast<BuildingStruct *>(parentItem());
         m_parentItemRect = parentBuildingItem->getRect();
-        setItemType(Rectangle); // NOTE возможно изменить?
+        setItemType(RectShape); // NOTE возможно изменить?
         int handleNum {-1};
 
         handleItemList.append(new HandleItem(Right, this));
@@ -402,7 +402,7 @@ void SizeGripItem::doResize()
 {
     if (itemResizer)
     {
-        if (m_itemType == Rectangle) {
+        if (m_itemType == RectShape) {
             (*itemResizer)(parentItem(), m_parentItemRect);
             if (parentItem()->type() == PixmapItem::Type ||
                     parentItem()->type() == TechnicsShape::Type) {
