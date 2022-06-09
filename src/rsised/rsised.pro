@@ -74,3 +74,5 @@ RESOURCES += \
 
 DISTFILES += \
     ../../doc/dev/shape_model.qmodel
+
+LIBS += -lshapes$${LIB_SUFFIX}
