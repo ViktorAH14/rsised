@@ -18,29 +18,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "textitem.h"
+#include "../include/curve.h"
+#include "../include/sizegripshape.h"
+#include "../include/shaperesizer.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsScene>
 #include <QMenu>
 
-TextItem::TextItem(QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsTextItem(parent), m_contextMenu{contextMenu}
+Curve::Curve(QMenu *contextMenu, QGraphicsItem *parent)
+    : QGraphicsPathItem(parent), m_contextMenu{contextMenu}
 {
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
 }
 
-void TextItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    // NOTE переработать
-    if (isSelected()) {
-        if (textInteractionFlags() == Qt::NoTextInteraction)
-            setTextInteractionFlags(Qt::TextEditorInteraction);
-    } else {
-        QGraphicsTextItem::mouseDoubleClickEvent(mouseEvent);
-    }
-}
-
-void TextItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void Curve::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if ((mouseEvent->buttons() == Qt::LeftButton) && isSelected()) {
         QList<QGraphicsItem *> selItems = scene()->selectedItems();
@@ -50,11 +43,11 @@ void TextItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
             item->moveBy(dx, dy);
         }
     } else {
-        QGraphicsTextItem::mouseMoveEvent( mouseEvent );
+        QGraphicsItem::mouseMoveEvent( mouseEvent );
     }
 }
 
-void TextItem::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void Curve::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if ((mouseEvent->buttons() == Qt::RightButton) && isSelected()) {
         QList<QGraphicsItem *> selItems = scene()->selectedItems();
@@ -62,13 +55,17 @@ void TextItem::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             item->setSelected(true);
         m_contextMenu->exec(mouseEvent->screenPos());
     } else {
-        QGraphicsTextItem::mousePressEvent( mouseEvent );
+        QGraphicsItem::mousePressEvent(mouseEvent);
     }
 }
 
-void TextItem::focusOutEvent(QFocusEvent *focusEvent)
+QVariant Curve::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    setTextInteractionFlags(Qt::NoTextInteraction);
-
-    QGraphicsTextItem::focusOutEvent(focusEvent);
+    if (change == GraphicsItemChange::ItemSelectedChange && value == true) {
+        m_sizeGripItem = new SizeGripShape(new ShapeResizer, this);
+    }
+    if (change == GraphicsItemChange::ItemSelectedChange && value == false) {
+        delete m_sizeGripItem;
+    }
+    return QGraphicsItem::itemChange(change, value);
 }

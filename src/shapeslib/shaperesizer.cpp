@@ -18,21 +18,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "item_resizer.h"
-#include "rectshape.h"
-#include "ellipse.h"
-#include "curve.h"
-#include "polyline.h"
-#include "pixmapitem.h"
-#include "technics_shape.h"
-#include "device_shape.h"
-#include "buildingstruct.h"
+#include "../include/shaperesizer.h"
+#include "../include/rectshape.h"
+#include "../include/ellipseshape.h"
+#include "../include/curve.h"
+#include "../include/polylineshape.h"
+#include "../include/pixmapshape.h"
+#include "../include/technicsshape.h"
+#include "../include/deviceshape.h"
+#include "../include/buildingstruct.h"
 
 #include <QPainterPath>
 
 Q_DECLARE_METATYPE(QPainterPath)
 
-void ItemResizer::operator()(QGraphicsItem *item, const QVariant &value)
+void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
 {
     switch (item->type()) {
     case RectShape::Type: {
@@ -43,34 +43,34 @@ void ItemResizer::operator()(QGraphicsItem *item, const QVariant &value)
         }
         break;
     }
-    case Ellipse::Type: {
-        Ellipse *ellipseItem = dynamic_cast<Ellipse *>(item);
-        if (ellipseItem) {
+    case EllipseShape::Type: {
+        EllipseShape *ellipseShape = dynamic_cast<EllipseShape *>(item);
+        if (ellipseShape) {
             QRectF itemRect = value.toRectF();
-            ellipseItem->setRect(itemRect);
+            ellipseShape->setRect(itemRect);
         }
         break;
     }
     case Curve::Type: {
-        Curve *curveItem = dynamic_cast<Curve *>(item);
-        if (curveItem) {
+        Curve *curveShape = dynamic_cast<Curve *>(item);
+        if (curveShape) {
             QPainterPath itemPath = value.value<QPainterPath>();
-            curveItem->setPath(itemPath);
+            curveShape->setPath(itemPath);
         }
         break;
     }
-    case Polyline::Type: {
-        Polyline *polylineItem = dynamic_cast<Polyline *>(item);
-        if (polylineItem) {
+    case PolylineShape::Type: {
+        PolylineShape *polylineShape = dynamic_cast<PolylineShape *>(item);
+        if (polylineShape) {
             QPainterPath itemPath = value.value<QPainterPath>();
-            polylineItem->setPath(itemPath);
+            polylineShape->setPath(itemPath);
         }
         break;
     }
-    case PixmapItem::Type: {
-        PixmapItem *pixmapItem = dynamic_cast<PixmapItem *>(item);
-        if (pixmapItem) {
-            pixmapItem->scalePixmap(value.toRectF());
+    case PixmapShape::Type: {
+        PixmapShape *pixmapShape = dynamic_cast<PixmapShape *>(item);
+        if (pixmapShape) {
+            pixmapShape->scalePixmap(value.toRectF());
         }
         break;
     }

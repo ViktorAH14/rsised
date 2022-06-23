@@ -18,41 +18,46 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef RECTSHAPE_H
-#define RECTSHAPE_H
+#ifndef BUILDINGSTRUCT_H
+#define BUILDINGSTRUCT_H
 
-#include "abstractshape.h"
+#include "../include/abstractshape.h"
 
 #include <QBrush>
+#include <QSet>
 
-class RectShape : public AbstractShape
+class BuildingStruct : public AbstractShape
 {
 public:
-    enum { Type = UserType + 1 };
+    enum { Type = UserType + 40 };
+    enum ShapeType { Wall, Window, Door, Open };
 
-    explicit RectShape(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
-    explicit RectShape(const QRectF &rect, QMenu *contextMenu, QGraphicsItem *parent = nullptr);
-    explicit RectShape(qreal x, qreal y, qreal w, qreal h, QMenu *contextMenu,
-                       QGraphicsItem *parent = nullptr);
-     ~RectShape();
+    BuildingStruct(ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
     QRectF boundingRect() const override;
-    int type() const override { return Type;}
-
-    void setRect(const QRectF &rect);
-    void setRect(qreal x, qreal y, qreal w, qreal h);
-    QRectF rect();
     QPainterPath shape() const override;
-    bool contains(const QPointF &point) const override;
+    int type() const override {return Type;}
+
+    QPixmap image();
+    ShapeType shapeType() const;
+    void setRect(QRectF rect);
+    QRectF getRect();
+
+    bool collidingWallsIsEmpty();
+    QSet<BuildingStruct *> getCollidingWalls();
+
+protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    bool isObscuredBy(const QGraphicsItem *item) const override;
-    QPainterPath opaqueArea() const override;
 
 private:
-    RectShape(const RectShape &) = delete;
-    RectShape &operator=(const RectShape &) = delete;
+    void drawShape(QPainter *painter);
+    void setCollidingWals();
 
-    QRectF m_shapeRect;
+    QSet<BuildingStruct *>  collidingWalls;
+    QRectF  shapeRect;
+    QBrush  wallBrush;
+    qreal   frameWidth;
+    ShapeType   m_shapeType;
 };
 
-#endif // RECTSHAPE_H
+#endif // BUILDINGSTRUCT_H

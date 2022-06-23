@@ -18,45 +18,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BUILDINGSTRUCT_H
-#define BUILDINGSTRUCT_H
+#ifndef RECTSHAPE_H
+#define RECTSHAPE_H
 
 #include "abstractshape.h"
-#include <QBrush>
-#include <QSet>
 
-class BuildingStruct : public AbstractShape
+#include <QBrush>
+
+class RectShape : public AbstractShape
 {
 public:
-    enum { Type = UserType + 40 };
-    enum ShapeType { Wall, Window, Door, Open };
+    enum { Type = UserType + 1 };
 
-    BuildingStruct(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent = nullptr);
+    explicit RectShape(QGraphicsItem *parent = nullptr);
+    explicit RectShape(const QRectF &rect, QGraphicsItem *parent = nullptr);
+    explicit RectShape(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent = nullptr);
+     ~RectShape();
 
     QRectF boundingRect() const override;
+    int type() const override { return Type;}
+
+    void setRect(const QRectF &rect);
+    void setRect(qreal x, qreal y, qreal w, qreal h);
+    QRectF rect() const;
     QPainterPath shape() const override;
-    int type() const override {return Type;}
-
-    QPixmap image();
-    ShapeType shapeType() const;
-    void setRect(QRectF rect);
-    QRectF getRect();
-
-    bool collidingWallsIsEmpty();
-    QSet<BuildingStruct *> getCollidingWalls();
-
-protected:
+    bool contains(const QPointF &point) const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    bool isObscuredBy(const QGraphicsItem *item) const override;
+    QPainterPath opaqueArea() const override;
 
 private:
-    void drawShape(QPainter *painter);
-    void setCollidingWals();
+    Q_DISABLE_COPY(RectShape);
 
-    QSet<BuildingStruct *>  collidingWalls;
-    QRectF  shapeRect;
-    QBrush  wallBrush;
-    qreal   frameWidth;
-    ShapeType   m_shapeType;
+    QRectF m_shapeRect;
 };
 
-#endif // BUILDINGSTRUCT_H
+#endif // RECTSHAPE_H

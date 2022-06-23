@@ -18,30 +18,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CURVE_H
-#define CURVE_H
+#ifndef SHAPERESIZER_H
+#define SHAPERESIZER_H
 
-#include <QGraphicsPathItem>
+#include "sizegripshape.h"
 
-class SizeGripItem;
-
-class Curve : public QGraphicsPathItem
+class ShapeResizer : public SizeGripShape::Resizer
 {
 public:
-    enum {Type = UserType + 4};
-
-    explicit Curve(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
-
-    int type() const override {return Type;}
-
-protected:
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
-
-private:
-    SizeGripItem *m_sizeGripItem;
-    QMenu *m_contextMenu;
+    void operator()(QGraphicsItem *item, const QVariant &value) override;
 };
 
-#endif // CURVE_H
+#endif // SHAPERESIZER_H

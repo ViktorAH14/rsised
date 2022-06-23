@@ -18,17 +18,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef TEXTITEM_H
-#define TEXTITEM_H
+#ifndef TEXTSHAPE_H
+#define TEXTSHAPE_H
 
 #include <QGraphicsTextItem>
 
-class TextItem : public QGraphicsTextItem
+class TextShape : public QGraphicsTextItem
 {
 public:
     enum { Type = UserType + 5};
 
-    explicit TextItem(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
+    explicit TextShape(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
 
     int type() const override { return Type; }
 
@@ -42,4 +42,4 @@ private:
     QMenu *m_contextMenu;
 };
 
-#endif // TEXTITEM_H
+#endif // TEXTSHAPE_H

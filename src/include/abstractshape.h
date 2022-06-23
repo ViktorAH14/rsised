@@ -18,31 +18,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef POLYLINE_H
-#define POLYLINE_H
+#ifndef ABSTRACTSHAPE_H
+#define ABSTRACTSHAPE_H
 
-#include <QGraphicsPathItem>
+#include <QAbstractGraphicsShapeItem>
 
-class SizeGripItem;
+class SizeGripShape;
 
-class Polyline : public QGraphicsPathItem
+class AbstractShape : public QAbstractGraphicsShapeItem
 {
 public:
-    enum {Type = UserType + 3};
+    AbstractShape(QGraphicsItem *parent = nullptr);
+    virtual ~AbstractShape();
 
-    explicit Polyline(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
-
-    int type() const override { return Type;}
+    void scaleShape(const QRectF &newRect);
+    void setMenu(QMenu *contextMenu);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void wheelEvent(QGraphicsSceneWheelEvent *wheelEvent) override;
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
-    SizeGripItem *m_sizeGripItem;
+    SizeGripShape *m_sizeGripItem;
     QMenu *m_contextMenu;
 };
 
-#endif // POLYLINE_H
+#endif // ABSTRACTSHAPE_H

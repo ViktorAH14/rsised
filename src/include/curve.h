@@ -18,36 +18,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ELLIPSE_H
-#define ELLIPSE_H
+#ifndef CURVE_H
+#define CURVE_H
 
-#include <QGraphicsEllipseItem>
+#include <QGraphicsPathItem>
 
-class SizeGripItem;
+class SizeGripShape;
 
-QT_BEGIN_NAMESPACE
-class QMenu;
-QT_END_MOC_NAMESPACE
-
-class Ellipse : public QGraphicsEllipseItem
+class Curve : public QGraphicsPathItem
 {
 public:
-    enum { Type = UserType + 2 };
+    enum {Type = UserType + 4};
 
-    explicit Ellipse(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
-    explicit Ellipse(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent = nullptr);
+    explicit Curve(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
 
-    int type() const override { return Type;}
+    int type() const override {return Type;}
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
-    SizeGripItem *m_sizeGripItem;
+    SizeGripShape *m_sizeGripItem;
     QMenu *m_contextMenu;
 };
 
-#endif // ELLIPSE_H
+#endif // CURVE_H

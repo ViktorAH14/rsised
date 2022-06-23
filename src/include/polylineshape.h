@@ -18,36 +18,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PIXMAPITEM_H
-#define PIXMAPITEM_H
 
-#include <QGraphicsPixmapItem>
+#ifndef POLYLINESHAPE_H
+#define POLYLINESHAPE_H
 
-class SizeGripItem;
+#include <QGraphicsPathItem>
 
-QT_BEGIN_NAMESPACE
-class QMenu;
-QT_END_NAMESPACE
+class SizeGripShape;
 
-class PixmapItem : public QGraphicsPixmapItem
+class PolylineShape : public QGraphicsPathItem
 {
 public:
-    enum { Type = UserType + 6};
+    enum {Type = UserType + 3};
 
-    explicit PixmapItem(QGraphicsItem *parent = nullptr);
+    explicit PolylineShape(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
 
-    int type() const override {return Type;}
-    void scalePixmap(const QRectF &newBoundingRect);
+    int type() const override { return Type;}
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-    void wheelEvent(QGraphicsSceneWheelEvent *wheelEvent) override;
-
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
-    SizeGripItem *m_sizeGripItem;
+    SizeGripShape *m_sizeGripShape;
+    QMenu *m_contextMenu;
 };
 
-#endif // PIXMAPITEM_H
+#endif // POLYLINESHAPE_H

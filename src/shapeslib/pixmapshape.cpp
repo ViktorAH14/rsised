@@ -18,15 +18,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "pixmapitem.h"
-#include "sizegripitem.h"
-#include "item_resizer.h"
+#include "../include/pixmapshape.h"
+#include "../include/sizegripshape.h"
+#include "../include/shaperesizer.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
 
-PixmapItem::PixmapItem(QGraphicsItem *parent)
+PixmapShape::PixmapShape(QGraphicsItem *parent)
     : QGraphicsPixmapItem(parent)
 {
     setFlag(ItemSendsGeometryChanges, true);
@@ -35,7 +35,7 @@ PixmapItem::PixmapItem(QGraphicsItem *parent)
 
 // TODO не совсем адекватное поведение при изменении размеров,
 // вариант с масштабирование QPixmap даёт худшие результаты
-void PixmapItem::scalePixmap(const QRectF &newBoundingRect)
+void PixmapShape::scalePixmap(const QRectF &newBoundingRect)
 {
     prepareGeometryChange();
     QRectF oldRect {boundingRect()};
@@ -58,18 +58,18 @@ void PixmapItem::scalePixmap(const QRectF &newBoundingRect)
     update();
 }
 
-void PixmapItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void PixmapShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (isSelected()) {
-        m_sizeGripItem->setActionType((m_sizeGripItem->actionType()
-                                           == SizeGripItem::Resize) ? SizeGripItem::Rotate
-                                                                    :SizeGripItem::Resize);
+        m_sizeGripShape->setActionType((m_sizeGripShape->actionType()
+                                           == SizeGripShape::Resize) ? SizeGripShape::Rotate
+                                                                    :SizeGripShape::Resize);
     } else {
         QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
     }
 }
 
-void PixmapItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void PixmapShape::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if ((mouseEvent->buttons() == Qt::LeftButton) && isSelected()) {
         qreal dx {mouseEvent->scenePos().x() - mouseEvent->lastScenePos().x()};
@@ -80,7 +80,7 @@ void PixmapItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
-void PixmapItem::wheelEvent(QGraphicsSceneWheelEvent *wheelEvent)
+void PixmapShape::wheelEvent(QGraphicsSceneWheelEvent *wheelEvent)
 {
     if (isSelected()) {
         qreal s_xy {(wheelEvent->delta() > 0) ? 1.02 : 0.98};
@@ -90,13 +90,13 @@ void PixmapItem::wheelEvent(QGraphicsSceneWheelEvent *wheelEvent)
     }
 }
 
-QVariant PixmapItem::itemChange(GraphicsItemChange change, const QVariant &value)
+QVariant PixmapShape::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == GraphicsItemChange::ItemSelectedChange && value == true) {
-        m_sizeGripItem = new SizeGripItem(new ItemResizer, this);
+        m_sizeGripShape = new SizeGripShape(new ShapeResizer, this);
     }
     if (change == GraphicsItemChange::ItemSelectedChange && value == false) {
-        delete  m_sizeGripItem;
+        delete  m_sizeGripShape;
     }
 
     return QGraphicsItem::itemChange(change, value);

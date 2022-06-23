@@ -18,12 +18,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "technics_shape.h"
+#include "../include/technicsshape.h"
 
 #include <QPainter>
 
-TechnicsShape::TechnicsShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent)
-    : AbstractShape(contextMenu, parent)
+TechnicsShape::TechnicsShape(ShapeType shapeType, QGraphicsItem *parent)
+    : AbstractShape(parent)
     , m_shapeType{shapeType}
 {
     setFlag(ItemSendsGeometryChanges, true);

@@ -20,12 +20,12 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "rectshape.h"
-#include "ellipse.h"
-#include "polyline.h"
-#include "curve.h"
-#include "textitem.h"
-#include "pixmapitem.h"
+#include "../include/rectshape.h"
+#include "../include/ellipseshape.h"
+#include "../include/polylineshape.h"
+#include "../include/curve.h"
+#include "../include/textshape.h"
+#include "../include/pixmapshape.h"
 #include "rse_writer.h"
 #include "rse_reader.h"
 #include "svg_reader.h"
@@ -112,32 +112,32 @@ void MainWindow::loadFile(const QString &fileName)
         if (RectShape *rectangleShape = dynamic_cast<RectShape *>(item)) {
             scene->addItem(rectangleShape);
         }
-        if (Ellipse *ellipseItem = dynamic_cast<Ellipse *>(item)) {
-            scene->addItem(ellipseItem);
+        if (EllipseShape *ellipseShape = dynamic_cast<EllipseShape *>(item)) {
+            scene->addItem(ellipseShape);
         }
-        if (Polyline *polylineItem = dynamic_cast<Polyline *>(item)) {
-            scene->addItem(polylineItem);
+        if (PolylineShape *polylineShape = dynamic_cast<PolylineShape *>(item)) {
+            scene->addItem(polylineShape);
         }
-        if (Curve *curveItem = dynamic_cast<Curve *>(item)) {
-            scene->addItem(curveItem);
+        if (Curve *curveShape = dynamic_cast<Curve *>(item)) {
+            scene->addItem(curveShape);
         }
-        if (QGraphicsLineItem *lineItem = dynamic_cast<QGraphicsLineItem *>(item)) {
-            scene->addItem(lineItem);
+        if (QGraphicsLineItem *lineShape = dynamic_cast<QGraphicsLineItem *>(item)) {
+            scene->addItem(lineShape);
         }
-        if (TextItem *textItem = dynamic_cast<TextItem *>(item)) {
-            scene->addItem(textItem);
+        if (TextShape *textShape = dynamic_cast<TextShape *>(item)) {
+            scene->addItem(textShape);
         }
-        if (PixmapItem *pixmapItem = dynamic_cast<PixmapItem *>(item)) {
-            scene->addItem(pixmapItem);
+        if (PixmapShape *pixmapShape = dynamic_cast<PixmapShape *>(item)) {
+            scene->addItem(pixmapShape);
         }
-        if (TechnicsShape *technicsShapeItem = dynamic_cast<TechnicsShape *>(item)) {
-            scene->addItem(technicsShapeItem);
+        if (TechnicsShape *technicsShape = dynamic_cast<TechnicsShape *>(item)) {
+            scene->addItem(technicsShape);
         }
-        if (DeviceShape *deviceShapeItem = dynamic_cast<DeviceShape *>(item)) {
-            scene->addItem(deviceShapeItem);
+        if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item)) {
+            scene->addItem(deviceShape);
         }
-        if (BuildingStruct *buildingItem = dynamic_cast<BuildingStruct *>(item)) {
-            scene->addItem(buildingItem);
+        if (BuildingStruct *buildingShape = dynamic_cast<BuildingStruct *>(item)) {
+            scene->addItem(buildingShape);
         }
     }
     file.close();
@@ -214,7 +214,7 @@ void MainWindow::copy()
     QList<QGraphicsItem *> selectedItems = scene->selectedItems();
     for (QGraphicsItem *item : qAsConst(selectedItems)) {
         if (RectShape *oldRectangleShape = dynamic_cast<RectShape *>(item)) {
-            RectShape *newRectangleShape = new RectShape(ui->menuEdit);
+            RectShape *newRectangleShape = new RectShape();
             newRectangleShape->setRect(oldRectangleShape->rect());
             newRectangleShape->setX(oldRectangleShape->x() + 10.0);
             newRectangleShape->setY(oldRectangleShape->y() + 10.0);
@@ -222,8 +222,8 @@ void MainWindow::copy()
             newRectangleShape->setBrush(oldRectangleShape->brush());
             copyList.append(newRectangleShape);
         }
-        if (Ellipse *oldEllipse = dynamic_cast<Ellipse *>(item)) {
-            Ellipse *newEllipse = new Ellipse(ui->menuEdit);
+        if (EllipseShape *oldEllipse = dynamic_cast<EllipseShape *>(item)) {
+            EllipseShape *newEllipse = new EllipseShape(ui->menuEdit);
             newEllipse->setRect(oldEllipse->rect());
             newEllipse->setX(oldEllipse->x() + 10.0);
             newEllipse->setY(oldEllipse->y() + 10.0);
@@ -231,8 +231,8 @@ void MainWindow::copy()
             newEllipse->setBrush(oldEllipse->brush());
             copyList.append(newEllipse);
         }
-        if (Polyline *oldPolyline = dynamic_cast<Polyline *>(item)) {
-            Polyline *newPolyline = new Polyline(ui->menuEdit);
+        if (PolylineShape *oldPolyline = dynamic_cast<PolylineShape *>(item)) {
+            PolylineShape *newPolyline = new PolylineShape(ui->menuEdit);
             newPolyline->setPath(oldPolyline->path());
             newPolyline->setX(oldPolyline->x() + 10.0);
             newPolyline->setY(oldPolyline->y() + 10.0);
@@ -256,8 +256,8 @@ void MainWindow::copy()
             newLine->setPen(oldLine->pen());
             copyList.append(newLine);
         }
-        if (TextItem *oldText = dynamic_cast<TextItem *>(item)) {
-            TextItem *newText = new TextItem(ui->menuEdit);
+        if (TextShape *oldText = dynamic_cast<TextShape *>(item)) {
+            TextShape *newText = new TextShape(ui->menuEdit);
             newText->setPlainText(oldText->document()->toPlainText());
             newText->setPos(QPointF(oldText->x() + 10, oldText->y() + 10));
             newText->setFont(oldText->font());
@@ -268,7 +268,7 @@ void MainWindow::copy()
         if (TechnicsShape *oldTechnicsShape = dynamic_cast<TechnicsShape *>(item)) {
             TechnicsShape::ShapeType shapeType = oldTechnicsShape->shapeType();
             QTransform shapeTransform = oldTechnicsShape->transform();
-            TechnicsShape *newTechnicsShape = new TechnicsShape(ui->menuEdit, shapeType);
+            TechnicsShape *newTechnicsShape = new TechnicsShape(shapeType);
             newTechnicsShape->setPos(QPointF(oldTechnicsShape->x() + 10
                                              , oldTechnicsShape->y() + 10));
             newTechnicsShape->setZValue(oldTechnicsShape->zValue());
@@ -278,7 +278,7 @@ void MainWindow::copy()
         if (DeviceShape *oldDeviceShape = dynamic_cast<DeviceShape *>(item)) {
             DeviceShape::ShapeType shapeType = oldDeviceShape->shapeType();
             QTransform shapeTransform = oldDeviceShape->transform();
-            DeviceShape *newDeviceShape = new DeviceShape(ui->menuEdit, shapeType);
+            DeviceShape *newDeviceShape = new DeviceShape(shapeType);
             newDeviceShape->setPos(QPointF(oldDeviceShape->x() + 10
                                              , oldDeviceShape->y() + 10));
             newDeviceShape->setZValue(oldDeviceShape->zValue());
@@ -288,7 +288,7 @@ void MainWindow::copy()
         if (BuildingStruct *oldBuildingStruct = dynamic_cast<BuildingStruct *>(item)) {
             BuildingStruct::ShapeType shapeType = oldBuildingStruct->shapeType();
             QTransform shapeTransform = oldBuildingStruct->transform();
-            BuildingStruct *newBuildingStruct = new BuildingStruct(ui->menuEdit, shapeType);
+            BuildingStruct *newBuildingStruct = new BuildingStruct(shapeType);
             newBuildingStruct->setRect(oldBuildingStruct->getRect());
             newBuildingStruct->setPos(QPointF(oldBuildingStruct->x() + 10
                                              , oldBuildingStruct->y() + 10));
@@ -334,23 +334,23 @@ void MainWindow::openSVG()
             if (RectShape *rectangleShape = dynamic_cast<RectShape *>(item)) {
                 scene->addItem(rectangleShape);
             }
-            if (Ellipse *ellipseItem = dynamic_cast<Ellipse *>(item)) {
-                scene->addItem(ellipseItem);
+            if (EllipseShape *ellipseShape = dynamic_cast<EllipseShape *>(item)) {
+                scene->addItem(ellipseShape);
             }
-            if (Polyline *polylineItem = dynamic_cast<Polyline *>(item)) {
-                scene->addItem(polylineItem);
+            if (PolylineShape *polylineShape = dynamic_cast<PolylineShape *>(item)) {
+                scene->addItem(polylineShape);
             }
-            if (Curve *curveItem = dynamic_cast<Curve *>(item)) {
-                scene->addItem(curveItem);
+            if (Curve *curveShape = dynamic_cast<Curve *>(item)) {
+                scene->addItem(curveShape);
             }
             if (QGraphicsLineItem *lineItem = dynamic_cast<QGraphicsLineItem *>(item)) {
                 scene->addItem(lineItem);
             }
-            if (TextItem *textItem = dynamic_cast<TextItem *>(item)) {
-                scene->addItem(textItem);
+            if (TextShape *textShape = dynamic_cast<TextShape *>(item)) {
+                scene->addItem(textShape);
             }
-            if (PixmapItem *pixmapItem = dynamic_cast<PixmapItem *>(item)) {
-                scene->addItem(pixmapItem);
+            if (PixmapShape *pixmapShape = dynamic_cast<PixmapShape *>(item)) {
+                scene->addItem(pixmapShape);
             }
         }
         scene->setSelectableItems(true);
@@ -467,7 +467,7 @@ void MainWindow::insertTechnicsShape(QAbstractButton *button)
     }
     const int id = technicsButtonGroup->id(button);
     TechnicsShape::ShapeType type {TechnicsShape::ShapeType(id)};
-    TechnicsShape technicsShape(ui->menuEdit, type);
+    TechnicsShape technicsShape(type);
     ui->mainGraphicsView->setCursor(QCursor(technicsShape.image()));
     ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     scene->setMode(DiagramScene::InsertTechnicsShape);
@@ -488,7 +488,7 @@ void MainWindow::insertDeviceShape(QAbstractButton *button)
     }
     const int id = deviceButtonGroup->id(button);
     DeviceShape::ShapeType type {DeviceShape::ShapeType(id)};
-    DeviceShape deviceShape(ui->menuEdit, type);
+    DeviceShape deviceShape(type);
     ui->mainGraphicsView->setCursor(QCursor(deviceShape.image()));
     ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     scene->setMode(DiagramScene::InsertDeviceShape);
@@ -509,7 +509,7 @@ void MainWindow::insertBuildingStructShape(QAbstractButton *button)
     }
     const int id = buildingStructButtonGroup->id(button);
     BuildingStruct::ShapeType type {BuildingStruct::ShapeType(id)};
-    BuildingStruct buildingItem(ui->menuEdit, type);
+    BuildingStruct buildingItem(type);
     ui->mainGraphicsView->setCursor(QCursor(buildingItem.image()));
     ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     scene->setMode(DiagramScene::InsertBuildingStruct);
@@ -1004,7 +1004,7 @@ void MainWindow::createSceneScaleToolBar()
 
 QWidget *MainWindow::createTechnicsCellWidget(const QString &text, TechnicsShape::ShapeType type)
 {
-    TechnicsShape technicsItem(ui->menuEdit, type);
+    TechnicsShape technicsItem(type);
     QIcon icon(technicsItem.image());
     qreal iconWidth{technicsItem.boundingRect().width() / 2.0};
     qreal iconHeight{technicsItem.boundingRect().height() / 2.0};
@@ -1027,7 +1027,7 @@ QWidget *MainWindow::createTechnicsCellWidget(const QString &text, TechnicsShape
 
 QWidget *MainWindow::createDeviceCellWidget(const QString &text, DeviceShape::ShapeType type)
 {
-    DeviceShape deviceItem(ui->menuEdit, type);
+    DeviceShape deviceItem(type);
     QIcon icon(deviceItem.image());
     qreal iconWidth{deviceItem.boundingRect().width() / 2.0};
     qreal iconHeight{deviceItem.boundingRect().height() / 2.0};
@@ -1050,7 +1050,7 @@ QWidget *MainWindow::createDeviceCellWidget(const QString &text, DeviceShape::Sh
 
 QWidget *MainWindow::createBuildingStructCellWidget(const QString &text, BuildingStruct::ShapeType type)
 {
-    BuildingStruct buildingItem(ui->menuEdit, type);
+    BuildingStruct buildingItem(type);
     QIcon icon(buildingItem.image());
     qreal iconWidth{buildingItem.boundingRect().width() / 2.0};
     qreal iconHeight{36.0};

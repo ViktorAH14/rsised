@@ -18,13 +18,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SIZEGRIPITEM_H
-#define SIZEGRIPITEM_H
+#ifndef SIZEGRIPSHAPE_H
+#define SIZEGRIPSHAPE_H
 
-#include <QGraphicsRectItem>
+#include <QGraphicsItem>
 
-class SizeGripItem : public QGraphicsItem
+class SizeGripShape : public QGraphicsItem
 {
+public:
 public:
     enum ActionType { Resize, Rotate};
     class Resizer
@@ -33,9 +34,8 @@ public:
         virtual ~Resizer() = 0;
         virtual void operator()(QGraphicsItem *item, const QVariant &value) = 0;
     };
-
-    SizeGripItem(Resizer *resizer = nullptr, QGraphicsItem *parent = nullptr);
-    virtual ~SizeGripItem();
+    SizeGripShape(Resizer *resizer = nullptr, QGraphicsItem *parent = nullptr);
+    virtual ~SizeGripShape();
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget = 0) override;
@@ -71,7 +71,7 @@ private:
     class HandleItem : public QGraphicsRectItem
     {
     public:
-        HandleItem(int positionFlags, SizeGripItem *parent);
+        HandleItem(int positionFlags, SizeGripShape *parent);
         int positionFlags() const;
         void setPathElementNum(int num);
 
@@ -87,7 +87,7 @@ private:
         QPointF restrictPosition(const QPointF &newPos);
 
         int handlePositionFlags;
-        SizeGripItem *parentItem;
+        SizeGripShape *parentItem;
         bool leftButtonPressed;
         int pathElementNum;
     };
@@ -105,4 +105,4 @@ private:
     ItemType m_itemType;
 };
 
-#endif // SIZEGRIPITEM_H
+#endif // SIZEGRIPSHAPE_H

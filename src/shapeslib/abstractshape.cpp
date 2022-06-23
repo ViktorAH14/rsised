@@ -18,9 +18,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "abstractshape.h"
-#include "sizegripitem.h"
-#include "item_resizer.h"
+#include "../include/abstractshape.h"
+#include "../include/sizegripshape.h"
+#include "../include/shaperesizer.h"
 
 #include <cmath>
 
@@ -28,10 +28,9 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
 
-
-AbstractShape::AbstractShape(QMenu *contextMenu, QGraphicsItem *parent)
+AbstractShape::AbstractShape(QGraphicsItem *parent)
     : QAbstractGraphicsShapeItem(parent)
-    , m_contextMenu{contextMenu}
+    , m_contextMenu{nullptr}
 {
 
 }
@@ -52,12 +51,17 @@ void AbstractShape::scaleShape(const QRectF &newRect)
     update();
 }
 
+void AbstractShape::setMenu(QMenu *contextMenu)
+{
+    m_contextMenu = contextMenu;
+}
+
 void AbstractShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (isSelected()) {
         m_sizeGripItem->setActionType((m_sizeGripItem->actionType()
-                                       == SizeGripItem::Resize) ? SizeGripItem::Rotate
-                                                                :SizeGripItem::Resize);
+                                       == SizeGripShape::Resize) ? SizeGripShape::Rotate
+                                                                :SizeGripShape::Resize);
     } else {
         QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
     }
@@ -79,7 +83,7 @@ void AbstractShape::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void AbstractShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if ((mouseEvent->buttons() == Qt::RightButton) && isSelected()) {
+    if ((mouseEvent->buttons() == Qt::RightButton) && isSelected() && m_contextMenu != nullptr) {
         QList<QGraphicsItem *> selItems = scene()->selectedItems();
         for (QGraphicsItem *item : qAsConst(selItems))
             item->setSelected(true);
@@ -102,7 +106,7 @@ void AbstractShape::wheelEvent(QGraphicsSceneWheelEvent *wheelEvent)
 QVariant AbstractShape::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == GraphicsItemChange::ItemSelectedChange && value == true) {
-        m_sizeGripItem = new SizeGripItem(new ItemResizer, this);
+        m_sizeGripItem = new SizeGripShape(new ShapeResizer, this);
     }
     if (change == GraphicsItemChange::ItemSelectedChange && value == false) {
         delete  m_sizeGripItem;

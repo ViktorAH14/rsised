@@ -19,12 +19,12 @@
  */
 
 #include "svg_reader.h"
-#include "rectshape.h"
-#include "ellipse.h"
-#include "polyline.h"
-#include "curve.h"
-#include "textitem.h"
-#include "pixmapitem.h"
+#include "../include/rectshape.h"
+#include "../include/ellipseshape.h"
+#include "../include/polylineshape.h"
+#include "../include/curve.h"
+#include "../include/textshape.h"
+#include "../include/pixmapshape.h"
 
 #include <QDomDocument>
 #include <QFile>
@@ -72,7 +72,8 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
 
         QDomElement elementRect = gNode.firstChildElement("rect");
         if (!elementRect.isNull()){
-            RectShape *rectShape = new RectShape(m_itemMenu);
+            RectShape *rectShape = new RectShape();
+            rectShape->setMenu(m_itemMenu);
 // Position and size
             rectShape->setRect(elementRect.attribute("x").toInt(),
                                elementRect.attribute("y").toInt(),
@@ -177,7 +178,7 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
 
         QDomElement elementEllipse = gNode.firstChildElement("ellipse");
         if (!elementEllipse.isNull()) {
-            Ellipse *ellipse = new Ellipse(m_itemMenu);
+            EllipseShape *ellipseShape = new EllipseShape(m_itemMenu);
 // Position and size
             qreal cx = elementEllipse.attribute("cx").toFloat();
             qreal cy = elementEllipse.attribute("cy").toFloat();
@@ -187,7 +188,7 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             qreal y = cy - ry;
             qreal width = rx * 2;
             qreal height = ry * 2;
-            ellipse->setRect(x, y, width, height);
+            ellipseShape->setRect(x, y, width, height);
 
             QDomElement gElement = gNode.toElement();
 // Brush
@@ -237,11 +238,11 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
                 if (QString::compare(patternList.at(0), "fillpattern14") == 0) {
                     brushStyle = Qt::DiagCrossPattern;
                 }
-                ellipse->setBrush(QBrush(fillColor, brushStyle));
+                ellipseShape->setBrush(QBrush(fillColor, brushStyle));
             } else {
                 QColor fillColor(gElement.attribute("fill", "#ffffff"));
                 fillColor.setAlphaF(gElement.attribute("fill-opacity","0").toFloat());
-                ellipse->setBrush(QBrush(fillColor, Qt::SolidPattern));
+                ellipseShape->setBrush(QBrush(fillColor, Qt::SolidPattern));
             }
 // Pen
             QColor strokeColor(gElement.attribute("stroke", "#000000"));
@@ -266,7 +267,7 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             default:
                 break;
             }
-            ellipse->setPen(QPen(strokeColor, strokeWidth, penStyle));
+            ellipseShape->setPen(QPen(strokeColor, strokeWidth, penStyle));
 // Tronsfomation
             QString transStr = gElement.attribute("transform");
             transStr.replace(QString("matrix("), QString(""));
@@ -279,9 +280,9 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             qreal m31{transList.at(4).toFloat()};   // Horizontal position (dx)
             qreal m32{transList.at(5).toFloat()};   // Vertical position (dy)
             QTransform transformation(m11, m12, m21, m22, m31, m32);
-            ellipse->setTransform(transformation);
+            ellipseShape->setTransform(transformation);
 
-            itemList.append(ellipse);
+            itemList.append(ellipseShape);
             continue;
         }
 
@@ -406,29 +407,29 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             QTransform transformation(m11, m12, m21, m22, m31, m32);
 
             if (currentPathType == PathType::Polyline) {
-                Polyline *polylineItem = new Polyline(m_itemMenu);
-                polylineItem->setPath(path);
-                polylineItem->setPen(QPen(strokeColor, strokeWidth, penStyle));
-                polylineItem->setTransform(transformation);
-                itemList.append(polylineItem);
+                PolylineShape *polylineShape = new PolylineShape(m_itemMenu);
+                polylineShape->setPath(path);
+                polylineShape->setPen(QPen(strokeColor, strokeWidth, penStyle));
+                polylineShape->setTransform(transformation);
+                itemList.append(polylineShape);
             }
             if (currentPathType == PathType::Curve) {
-                Curve *curveItem = new Curve(m_itemMenu);
-                curveItem->setPath(path);
-                curveItem->setPen(QPen(strokeColor, strokeWidth, penStyle));
-                curveItem->setTransform(transformation);
-                itemList.append(curveItem);
+                Curve *curveShape = new Curve(m_itemMenu);
+                curveShape->setPath(path);
+                curveShape->setPen(QPen(strokeColor, strokeWidth, penStyle));
+                curveShape->setTransform(transformation);
+                itemList.append(curveShape);
             }
             continue;
         }
         QDomElement elementText = gNode.firstChildElement("text");
         if (!elementText.isNull()) {
-            TextItem *textItem = new TextItem(m_itemMenu);
+            TextShape *textShape = new TextShape(m_itemMenu);
             QString text = elementText.text();
-            textItem->setPlainText(text);
+            textShape->setPlainText(text);
             qreal x = elementText.attribute("x").toFloat();
             qreal y = elementText.attribute("y").toFloat();
-            textItem->setPos(x, y);
+            textShape->setPos(x, y);
             QFont textFont(elementText.attribute("font-family"));
             int fontSize{elementText.attribute("font-size").toInt()};
             textFont.setPointSize(fontSize);
@@ -440,9 +441,9 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             }
             textFont.setItalic(italic);
             //  The underlining of the text is not saved, so there is no definition of it.
-            textItem->setFont(textFont);
+            textShape->setFont(textFont);
             QColor textColor(elementText.attribute("fill"));
-            textItem->setDefaultTextColor(textColor);
+            textShape->setDefaultTextColor(textColor);
             QDomElement gElement = gNode.toElement();
 // Tronsfomation
             QString transStr = gElement.attribute("transform");
@@ -456,18 +457,18 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             qreal m31{transList.at(4).toFloat()};   // Horizontal position (dx)
             qreal m32{transList.at(5).toFloat()};   // Vertical position (dy)
             QTransform transformation(m11, m12, m21, m22, m31, m32);
-            textItem->setTransform(transformation);
+            textShape->setTransform(transformation);
 
-            itemList.append(textItem);
+            itemList.append(textShape);
             continue;
         }
         QDomElement elementImage = gNode.firstChildElement("image");
         if (!elementImage.isNull()) {
-            PixmapItem *pixmapItem = new PixmapItem();
+            PixmapShape *pixmapShape = new PixmapShape();
 
             qreal x = elementImage.attribute("x").toFloat();
             qreal y = elementImage.attribute("y").toFloat();
-            pixmapItem->setPos(x, y);
+            pixmapShape->setPos(x, y);
 
             qreal width = elementImage.attribute("width").toFloat();
             qreal height = elementImage.attribute("height").toFloat();
@@ -476,7 +477,7 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             imageData.replace(QString("data:image/png;base64,"), QString(""));
             const QByteArray &pixmapArray = QByteArray::fromBase64(imageData.toLatin1());
             pixmap.loadFromData(pixmapArray);
-            pixmapItem->setPixmap(pixmap);
+            pixmapShape->setPixmap(pixmap);
 
             QDomElement gElement = gNode.toElement();
 // Tronsfomation
@@ -491,9 +492,9 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             qreal m31{transList.at(4).toFloat()};   // Horizontal position (dx)
             qreal m32{transList.at(5).toFloat()};   // Vertical position (dy)
             QTransform transformation(m11, m12, m21, m22, m31, m32);
-            pixmapItem->setTransform(transformation);
+            pixmapShape->setTransform(transformation);
 
-            itemList.append(pixmapItem);
+            itemList.append(pixmapShape);
             continue;
         }
     }

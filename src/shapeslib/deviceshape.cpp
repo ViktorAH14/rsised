@@ -18,12 +18,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "device_shape.h"
+#include "../include/deviceshape.h"
 
 #include <QPainter>
 
-DeviceShape::DeviceShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent)
-    : AbstractShape(contextMenu, parent)
+DeviceShape::DeviceShape(ShapeType shapeType, QGraphicsItem *parent)
+    : AbstractShape(parent)
     , m_shapeType{shapeType}
 {
     setFlag(ItemSendsGeometryChanges, true);

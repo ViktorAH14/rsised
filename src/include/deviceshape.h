@@ -18,8 +18,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DEVICE_SHAPE_H
-#define DEVICE_SHAPE_H
+#ifndef DEVICESHAPE_H
+#define DEVICESHAPE_H
 
 #include "abstractshape.h"
 
@@ -58,7 +58,7 @@ public:
                      , FoamLift_1
                      , FoamLift_2 };
 
-    DeviceShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent = nullptr);
+    DeviceShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
     QRectF boundingRect() const override;
     int type() const override {return Type;}
@@ -75,4 +75,4 @@ private:
     ShapeType m_shapeType;
 };
 
-#endif // DEVICE_SHAPE_H
+#endif // DEVICESHAPE_H

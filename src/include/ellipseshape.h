@@ -18,31 +18,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ABSTRACTSHAPE_H
-#define ABSTRACTSHAPE_H
 
-#include <QAbstractGraphicsShapeItem>
+#ifndef ELLIPSESHAPE_H
+#define ELLIPSESHAPE_H
 
-class SizeGripItem;
+#include <QGraphicsEllipseItem>
 
-class AbstractShape : public QAbstractGraphicsShapeItem
+class SizeGripShape;
+
+class EllipseShape : public QGraphicsEllipseItem
 {
 public:
-    AbstractShape(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
-    virtual ~AbstractShape();
+    enum { Type = UserType + 2 };
 
-    void scaleShape(const QRectF &newRect);
+    explicit EllipseShape(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
+    explicit EllipseShape(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent = nullptr);
+
+    int type() const override { return Type;}
 
 protected:
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-    void wheelEvent(QGraphicsSceneWheelEvent *wheelEvent) override;
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
-    SizeGripItem *m_sizeGripItem;
+    SizeGripShape *m_sizeGripShape;
     QMenu *m_contextMenu;
 };
 
-#endif // ABSTRACTSHAPE_H
+#endif // ELLIPSESHAPE_H

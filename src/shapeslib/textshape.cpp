@@ -18,30 +18,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "ellipse.h"
-#include "sizegripitem.h"
-#include "item_resizer.h"
+#include "../include/textshape.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsScene>
 #include <QMenu>
 
-Ellipse::Ellipse(QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsEllipseItem(parent), m_contextMenu{contextMenu}
+TextShape::TextShape(QMenu *contextMenu, QGraphicsItem *parent)
+    : QGraphicsTextItem(parent), m_contextMenu{contextMenu}
 {
-    setAcceptHoverEvents(true);
-    setFlag(ItemSendsGeometryChanges, true);
 }
 
-Ellipse::Ellipse(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsEllipseItem(parent), m_contextMenu{contextMenu}
+void TextShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    QGraphicsEllipseItem::setRect(rect);
-    setFlag(ItemSendsGeometryChanges, true);
-    setAcceptHoverEvents(true);
+    // NOTE переработать
+    if (isSelected()) {
+        if (textInteractionFlags() == Qt::NoTextInteraction)
+            setTextInteractionFlags(Qt::TextEditorInteraction);
+    } else {
+        QGraphicsTextItem::mouseDoubleClickEvent(mouseEvent);
+    }
 }
 
-void Ellipse::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void TextShape::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if ((mouseEvent->buttons() == Qt::LeftButton) && isSelected()) {
         QList<QGraphicsItem *> selItems = scene()->selectedItems();
@@ -51,22 +50,11 @@ void Ellipse::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
             item->moveBy(dx, dy);
         }
     } else {
-        QGraphicsItem::mouseMoveEvent( mouseEvent );
+        QGraphicsTextItem::mouseMoveEvent( mouseEvent );
     }
 }
 
-void Ellipse::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    if (isSelected()) {
-        m_sizeGripItem->setActionType((m_sizeGripItem->actionType()
-                                       == SizeGripItem::Resize) ? SizeGripItem::Rotate
-                                                                :SizeGripItem::Resize);
-    } else {
-        QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
-    }
-}
-
-void Ellipse::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void TextShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if ((mouseEvent->buttons() == Qt::RightButton) && isSelected()) {
         QList<QGraphicsItem *> selItems = scene()->selectedItems();
@@ -74,18 +62,13 @@ void Ellipse::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             item->setSelected(true);
         m_contextMenu->exec(mouseEvent->screenPos());
     } else {
-        QGraphicsItem::mousePressEvent(mouseEvent);
+        QGraphicsTextItem::mousePressEvent( mouseEvent );
     }
 }
 
-QVariant Ellipse::itemChange(GraphicsItemChange change, const QVariant &value)
+void TextShape::focusOutEvent(QFocusEvent *focusEvent)
 {
-    if (change == GraphicsItemChange::ItemSelectedChange && value == true) {
-        m_sizeGripItem = new SizeGripItem(new ItemResizer, this);
-    }
-    if (change == GraphicsItemChange::ItemSelectedChange && value == false) {
-        delete m_sizeGripItem;
-    }
+    setTextInteractionFlags(Qt::NoTextInteraction);
 
-    return QGraphicsItem::itemChange(change, value);
+    QGraphicsTextItem::focusOutEvent(focusEvent);
 }

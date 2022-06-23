@@ -18,15 +18,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ITEM_RESIZER_H
-#define ITEM_RESIZER_H
 
-#include "sizegripitem.h"
+#ifndef PIXMAPSHAPE_H
+#define PIXMAPSHAPE_H
 
-class ItemResizer : public SizeGripItem::Resizer
+#include <QGraphicsPixmapItem>
+
+class SizeGripShape;
+
+class PixmapShape : public QGraphicsPixmapItem
 {
 public:
-    void operator()(QGraphicsItem *item, const QVariant &value) override;
+    enum { Type = UserType + 6};
+
+    explicit PixmapShape(QGraphicsItem *parent = nullptr);
+
+    int type() const override {return Type;}
+    void scalePixmap(const QRectF &newBoundingRect);
+
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void wheelEvent(QGraphicsSceneWheelEvent *wheelEvent) override;
+
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+
+private:
+    SizeGripShape *m_sizeGripShape;
 };
 
-#endif // ITEM_RESIZER_H
+#endif // PIXMAPSHAPE_H

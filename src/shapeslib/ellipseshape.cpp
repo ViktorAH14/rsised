@@ -18,58 +18,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "polyline.h"
-#include "sizegripitem.h"
-#include "item_resizer.h"
+#include "../include/ellipseshape.h"
+#include "../include/sizegripshape.h"
+#include "../include/shaperesizer.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsScene>
 #include <QMenu>
 
-Polyline::Polyline(QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsPathItem(parent), m_contextMenu{contextMenu}
+EllipseShape::EllipseShape(QMenu *contextMenu, QGraphicsItem *parent)
+    : QGraphicsEllipseItem(parent), m_contextMenu{contextMenu}
 {
+    setAcceptHoverEvents(true);
+    setFlag(ItemSendsGeometryChanges, true);
+}
+
+EllipseShape::EllipseShape(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent)
+    : QGraphicsEllipseItem(parent), m_contextMenu{contextMenu}
+{
+    QGraphicsEllipseItem::setRect(rect);
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
 }
 
-void Polyline::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    QPointF clickPos = mouseEvent->pos();
-    setSelected(false);
-    QLineF checkLineFirst(clickPos.x() - 5, clickPos.y() - 5, clickPos.x() + 5, clickPos.y() + 5);
-    QLineF checkLineSecond(clickPos.x() + 5, clickPos.y() - 5, clickPos.x() - 5, clickPos.y() + 5);
-    QPainterPath oldPath = path();
-    QPainterPath newPath;
-    for(int i = 0; i < oldPath.elementCount(); i++){
-        QLineF checkableLine(oldPath.elementAt(i), oldPath.elementAt(i+1));
-        if(checkableLine.intersects(checkLineFirst,0) == 1 || checkableLine.intersects(checkLineSecond,0) == 1){
-            if(i == 0){
-                newPath.moveTo(oldPath.elementAt(i));
-                newPath.lineTo(clickPos);
-            } else {
-                newPath.lineTo(oldPath.elementAt(i));
-                newPath.lineTo(clickPos);
-            }
-        } else {
-            if(i == 0){
-                newPath.moveTo(oldPath.elementAt(i));
-            } else {
-                newPath.lineTo(oldPath.elementAt(i));
-            }
-        }
-        if(i == (oldPath.elementCount() - 2)) {
-            newPath.lineTo(oldPath.elementAt(i + 1));
-            i++;
-        }
-    }
-    setPath(newPath);
-    setSelected(true);
-
-    QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
-}
-
-void Polyline::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void EllipseShape::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if ((mouseEvent->buttons() == Qt::LeftButton) && isSelected()) {
         QList<QGraphicsItem *> selItems = scene()->selectedItems();
@@ -83,7 +55,18 @@ void Polyline::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
-void Polyline::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void EllipseShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (isSelected()) {
+        m_sizeGripShape->setActionType((m_sizeGripShape->actionType()
+                                       == SizeGripShape::Resize) ? SizeGripShape::Rotate
+                                                                :SizeGripShape::Resize);
+    } else {
+        QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
+    }
+}
+
+void EllipseShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if ((mouseEvent->buttons() == Qt::RightButton) && isSelected()) {
         QList<QGraphicsItem *> selItems = scene()->selectedItems();
@@ -95,13 +78,14 @@ void Polyline::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
-QVariant Polyline::itemChange(GraphicsItemChange change, const QVariant &value)
+QVariant EllipseShape::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == GraphicsItemChange::ItemSelectedChange && value == true) {
-        m_sizeGripItem = new SizeGripItem(new ItemResizer, this);
+        m_sizeGripShape = new SizeGripShape(new ShapeResizer, this);
     }
     if (change == GraphicsItemChange::ItemSelectedChange && value == false) {
-        delete m_sizeGripItem;
+        delete m_sizeGripShape;
     }
+
     return QGraphicsItem::itemChange(change, value);
 }

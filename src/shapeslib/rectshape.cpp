@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2022 by Viktor Ermolov <ermolovva@gmail.com>.
  *
  * This file is part of the RSiSed project, a editor of the alignment of forces
@@ -18,29 +18,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "rectshape.h"
+#include "../include/rectshape.h"
 
 #include <QPainter>
 
-RectShape::RectShape(QMenu *contextMenu, QGraphicsItem *parent)
-    : AbstractShape(contextMenu, parent), m_shapeRect(QRectF(0.0, 0.0, 0.0,0.0))
+RectShape::RectShape(QGraphicsItem *parent)
+    : AbstractShape(parent), m_shapeRect(QRectF(0.0, 0.0, 0.0,0.0))
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
 }
 
-RectShape::RectShape(const QRectF &rect, QMenu *contextMenu, QGraphicsItem *parent)
-    : AbstractShape(contextMenu, parent)
+RectShape::RectShape(const QRectF &rect, QGraphicsItem *parent)
+    : AbstractShape(parent), m_shapeRect(rect)
 {
-    setRect(rect);
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
 }
 
-RectShape::RectShape(qreal x, qreal y, qreal w, qreal h, QMenu *contextMenu,
-                     QGraphicsItem *parent) : AbstractShape(contextMenu, parent)
+RectShape::RectShape(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent)
+    : AbstractShape(parent), m_shapeRect(QRectF(x, y, w, h))
 {
-    setRect(QRectF(x, y, w, h));
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
 }
@@ -51,7 +49,7 @@ RectShape::~RectShape()
 
 QRectF RectShape::boundingRect() const
 {
-    qreal halfpw = pen().style() == Qt::NoPen ? qreal(0) : pen().widthF() / 2;
+    qreal halfpw = pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2;
     QRectF  boundingRect = m_shapeRect;
     if (halfpw > 0.0)
         boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
@@ -72,7 +70,7 @@ void RectShape::setRect(qreal x, qreal y, qreal w, qreal h)
     setRect(QRectF(x, y, w, h));
 }
 
-QRectF RectShape::rect()
+QRectF RectShape::rect() const
 {
     return m_shapeRect;
 }
@@ -80,8 +78,22 @@ QRectF RectShape::rect()
 QPainterPath RectShape::shape() const
 {
     QPainterPath path;
-    path.addRect(m_shapeRect);
-    return path;
+    path.addRect(rect());
+    QPen shapePen = pen();
+    if (shapePen == Qt::NoPen)
+        return path;
+    const qreal penWidthZero = qreal(0.00000001);
+    QPainterPathStroker ps;
+    ps.setCapStyle(shapePen.capStyle());
+    if (shapePen.widthF() <= 0.0)
+        ps.setWidth(penWidthZero);
+    else
+        ps.setWidth(shapePen.widthF());
+    ps.setJoinStyle(shapePen.joinStyle());
+    ps.setMiterLimit(shapePen.miterLimit());
+    QPainterPath p = ps.createStroke(path);
+    p.addPath(path);
+    return p;
 }
 
 bool RectShape::contains(const QPointF &point) const
