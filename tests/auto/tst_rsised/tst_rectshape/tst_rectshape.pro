@@ -10,3 +10,5 @@ SOURCES +=  tst_rectshape.cpp
 
 include( ../../../../common.pri )
 include( ../../../../app.pri )
+
+LIBS += -lshapes$${LIB_SUFFIX}

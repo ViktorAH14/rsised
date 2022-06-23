@@ -22,8 +22,8 @@
 
 #include <QPainter>
 
-BuildingStruct::BuildingStruct(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent)
-    : AbstractShape(contextMenu, parent)
+BuildingStruct::BuildingStruct(ShapeType shapeType, QGraphicsItem *parent)
+    : AbstractShape(parent)
     , shapeRect{QRectF(-30.0, -5.0, 60.0, 10.0)}
     , wallBrush(Qt::lightGray)
     , frameWidth{8.0}

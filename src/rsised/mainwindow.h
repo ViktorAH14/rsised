@@ -22,8 +22,9 @@
 #define MAINWINDOW_H
 
 #include "diagramscene.h"
-#include "technics_shape.h"
-#include "buildingstruct.h"
+#include "../include/technicsshape.h"
+#include "../include/buildingstruct.h"
+#include "../include/deviceshape.h"
 
 #include <QMainWindow>
 

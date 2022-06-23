@@ -32,7 +32,7 @@ public:
     enum { Type = UserType + 40 };
     enum ShapeType { Wall, Window, Door, Open };
 
-    BuildingStruct(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent = nullptr);
+    BuildingStruct(ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
     QRectF boundingRect() const override;
     QPainterPath shape() const override;

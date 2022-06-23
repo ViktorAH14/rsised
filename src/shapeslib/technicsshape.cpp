@@ -22,8 +22,8 @@
 
 #include <QPainter>
 
-TechnicsShape::TechnicsShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent)
-    : AbstractShape(contextMenu, parent)
+TechnicsShape::TechnicsShape(ShapeType shapeType, QGraphicsItem *parent)
+    : AbstractShape(parent)
     , m_shapeType{shapeType}
 {
     setFlag(ItemSendsGeometryChanges, true);

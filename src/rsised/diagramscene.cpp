@@ -19,12 +19,12 @@
  */
 
 #include "diagramscene.h"
-#include "rectshape.h"
-#include "ellipse.h"
-#include "polyline.h"
-#include "curve.h"
-#include "textitem.h"
-#include "pixmapitem.h"
+#include "../include/rectshape.h"
+#include "../include/ellipseshape.h"
+#include "../include/polylineshape.h"
+#include "../include/curve.h"
+#include "../include/textshape.h"
+#include "../include/pixmapshape.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
@@ -75,17 +75,17 @@ void DiagramScene::setItemPen(const QColor &color, const qreal width, const Qt::
             if (QGraphicsLineItem *lineItem = qgraphicsitem_cast<QGraphicsLineItem *>(item)) {
                 lineItem->setPen(itemPen);
             }
-            if (RectShape *rectItem = qgraphicsitem_cast<RectShape *>(item)) {
-                rectItem->setPen(itemPen);
+            if (RectShape *rectshape = qgraphicsitem_cast<RectShape *>(item)) {
+                rectshape->setPen(itemPen);
             }
-            if (Ellipse *ellipseItem = qgraphicsitem_cast<Ellipse *>(item)) {
-                ellipseItem->setPen(itemPen);
+            if (EllipseShape *ellipseShape = qgraphicsitem_cast<EllipseShape *>(item)) {
+                ellipseShape->setPen(itemPen);
             }
-            if (Polyline *polylineItem = qgraphicsitem_cast<Polyline *>(item)) {
-                polylineItem->setPen(itemPen);
+            if (PolylineShape *polylineShape = qgraphicsitem_cast<PolylineShape *>(item)) {
+                polylineShape->setPen(itemPen);
             }
-            if (Curve *curveItem = qgraphicsitem_cast<Curve *>(item)) {
-                curveItem->setPen(itemPen);
+            if (Curve *curveShape = qgraphicsitem_cast<Curve *>(item)) {
+                curveShape->setPen(itemPen);
             }
         }
     }
@@ -99,11 +99,11 @@ void DiagramScene::setItemBrush(const QColor &color, const Qt::BrushStyle &brush
     if (!selectedItems().isEmpty()) {
         QList<QGraphicsItem *> selectedItems = this->selectedItems();
         for (QGraphicsItem *item : qAsConst(selectedItems)) {
-            if (RectShape *rectItem = qgraphicsitem_cast<RectShape *>(item)) {
-                rectItem->setBrush(itemBrush);
+            if (RectShape *rectShape = qgraphicsitem_cast<RectShape *>(item)) {
+                rectShape->setBrush(itemBrush);
             }
-            if (Ellipse *ellipseItem = qgraphicsitem_cast<Ellipse *>(item)) {
-                ellipseItem->setBrush(itemBrush);
+            if (EllipseShape *ellipseShape = qgraphicsitem_cast<EllipseShape *>(item)) {
+                ellipseShape->setBrush(itemBrush);
             }
         }
     }
@@ -117,9 +117,9 @@ void DiagramScene::setItemFont(const QFont &font, const QColor &textColor)
     if (!selectedItems().isEmpty()) {
         QList<QGraphicsItem *> selectedItems = this->selectedItems();
         for (QGraphicsItem *item : qAsConst(selectedItems)) {
-            if (TextItem *textItem = qgraphicsitem_cast<TextItem *>(item)) {
-                textItem->setFont(itemFont);
-                textItem->setDefaultTextColor(fontColor);
+            if (TextShape *textShape = qgraphicsitem_cast<TextShape *>(item)) {
+                textShape->setFont(itemFont);
+                textShape->setDefaultTextColor(fontColor);
             }
         }
     }
@@ -157,7 +157,7 @@ void DiagramScene::setBuildingStructShapeType(BuildingStruct::ShapeType type)
 
 void DiagramScene::insertPixmap(const QString &imageFile)
 {
-    pixmapItem = new PixmapItem();
+    pixmapItem = new PixmapShape();
     QPixmap image(imageFile);
     pixmapItem->setPixmap(image);
     pixmapItem->setZValue(-1000.0);
@@ -187,17 +187,17 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         case InsertPolyline:
             pathPoint.append(mouseEvent->scenePos());
             if (polyline == nullptr) {
-                polyline = new Polyline(m_itemMenu);
+                polyline = new PolylineShape(m_itemMenu);
                 addItem(polyline);
             }
             break;
         case InsertRectShape:
-            m_rectShape = new RectShape(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos())
-                                      , m_itemMenu);
+            m_rectShape = new RectShape(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()));
+            m_rectShape->setMenu(m_itemMenu);
             addItem(m_rectShape);
             break;
         case InsertEllipse:
-            ellipse = new Ellipse(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos())
+            ellipse = new EllipseShape(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos())
                                   , m_itemMenu);
             addItem(ellipse);
             break;
@@ -209,7 +209,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             }
             break;
         case InserText: // TODO добавить editorLostFocus(TextItem *textItem); утечка памяти???
-            textItem = new TextItem(m_itemMenu);
+            textItem = new TextShape(m_itemMenu);
             textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
             textItem->setPos(mouseEvent->scenePos());
             textItem->setFont(itemFont);
@@ -218,17 +218,20 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             addItem(textItem);
             break;
         case InsertTechnicsShape:
-            technicsShape = new TechnicsShape(m_itemMenu, m_technicsShapeType);
+            technicsShape = new TechnicsShape(m_technicsShapeType);
+            technicsShape->setMenu(m_itemMenu);
             technicsShape->setPos(mouseEvent->scenePos());
             addItem(technicsShape);
             break;
         case InsertDeviceShape:
-            deviceShape = new DeviceShape(m_itemMenu, m_deviceShapeType);
+            deviceShape = new DeviceShape(m_deviceShapeType);
+            deviceShape->setMenu(m_itemMenu);
             deviceShape->setPos(mouseEvent->scenePos());
             addItem(deviceShape);
             break;
         case InsertBuildingStruct:
-            buildingStructItem = new BuildingStruct(m_itemMenu, m_buildingStructType);
+            buildingStructItem = new BuildingStruct(m_buildingStructType);
+            buildingStructItem->setMenu(m_itemMenu);
             buildingStructItem->setPos(mouseEvent->scenePos());
             if (m_buildingStructType == BuildingStruct::Wall) {
                 buildingStructItem->setZValue(900.0);

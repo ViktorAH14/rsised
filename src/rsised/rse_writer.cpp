@@ -19,15 +19,15 @@
  */
 
 #include "rse_writer.h"
-#include "rectshape.h"
-#include "ellipse.h"
-#include "polyline.h"
-#include "curve.h"
-#include "textitem.h"
-#include "pixmapitem.h"
-#include "technics_shape.h"
-#include "device_shape.h"
-#include "buildingstruct.h"
+#include "../include/rectshape.h"
+#include "../include/ellipseshape.h"
+#include "../include/polylineshape.h"
+#include "../include/curve.h"
+#include "../include/textshape.h"
+#include "../include/pixmapshape.h"
+#include "../include/technicsshape.h"
+#include "../include/deviceshape.h"
+#include "../include/buildingstruct.h"
 
 #include <QXmlStreamWriter>
 #include <QGraphicsItem>
@@ -85,10 +85,10 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
             rseWriter.writeAttribute("transform", transStr);
             rseWriter.writeEndElement(); // rect
         }
-        if (item->type() == Ellipse::Type) {
-            Ellipse *ellipse = qgraphicsitem_cast<Ellipse *>(item);
-            QRectF rect = ellipse->rect();
-            QTransform trans(ellipse->sceneTransform());
+        if (item->type() == EllipseShape::Type) {
+            EllipseShape *ellipseShape = qgraphicsitem_cast<EllipseShape *>(item);
+            QRectF rect = ellipseShape->rect();
+            QTransform trans(ellipseShape->sceneTransform());
             QString transStr(QString::number(trans.m11()) + "," + QString::number(trans.m12())
                              + "," + QString::number(trans.m13()) + ","
                              + QString::number(trans.m21()) + "," + QString::number(trans.m22())
@@ -100,18 +100,18 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
             rseWriter.writeAttribute("y", QString::number(rect.y()));
             rseWriter.writeAttribute("width", QString::number(rect.width()));
             rseWriter.writeAttribute("height", QString::number(rect.height()));
-            rseWriter.writeAttribute("pen-color", ellipse->pen().color().name());
-            rseWriter.writeAttribute("pen-width", QString::number(ellipse->pen().width()));
-            rseWriter.writeAttribute("pen-style", QString::number(ellipse->pen().style()));
-            rseWriter.writeAttribute("brush-color", ellipse->brush().color().name());
-            rseWriter.writeAttribute("brush-style", QString::number(ellipse->brush().style()));
-            rseWriter.writeAttribute("z", QString::number(ellipse->zValue()));
+            rseWriter.writeAttribute("pen-color", ellipseShape->pen().color().name());
+            rseWriter.writeAttribute("pen-width", QString::number(ellipseShape->pen().width()));
+            rseWriter.writeAttribute("pen-style", QString::number(ellipseShape->pen().style()));
+            rseWriter.writeAttribute("brush-color", ellipseShape->brush().color().name());
+            rseWriter.writeAttribute("brush-style", QString::number(ellipseShape->brush().style()));
+            rseWriter.writeAttribute("z", QString::number(ellipseShape->zValue()));
             rseWriter.writeAttribute("transform", transStr);
             rseWriter.writeEndElement(); // ellipse
         }
-        if (item->type() == Polyline::Type) {
-            Polyline *polyline = qgraphicsitem_cast<Polyline *>(item);
-            QPainterPath linePath = polyline->path();
+        if (item->type() == PolylineShape::Type) {
+            PolylineShape *polylineShape = qgraphicsitem_cast<PolylineShape *>(item);
+            QPainterPath linePath = polylineShape->path();
             QStringList dotList;
             for (int i = 0; i < linePath.elementCount(); i++) {
                 dotList << QString::number(linePath.elementAt(i).x) + ","
@@ -124,7 +124,7 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
                 dotLine += dotList.at(i) + " ";
             }
             dotLine.chop(1);
-            QTransform trans(polyline->sceneTransform());
+            QTransform trans(polylineShape->sceneTransform());
             QString transStr(QString::number(trans.m11()) + "," + QString::number(trans.m12())
                              + "," + QString::number(trans.m13()) + ","
                              + QString::number(trans.m21()) + "," + QString::number(trans.m22())
@@ -132,16 +132,16 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
                              + QString::number(trans.m31()) + "," + QString::number(trans.m32())
                              + "," + QString::number(trans.m33()));
             rseWriter.writeAttribute("l", dotLine);
-            rseWriter.writeAttribute("pen-color", polyline->pen().color().name());
-            rseWriter.writeAttribute("pen-width", QString::number(polyline->pen().width()));
-            rseWriter.writeAttribute("pen-style", QString::number(polyline->pen().style()));
-            rseWriter.writeAttribute("z", QString::number(polyline->zValue()));
+            rseWriter.writeAttribute("pen-color", polylineShape->pen().color().name());
+            rseWriter.writeAttribute("pen-width", QString::number(polylineShape->pen().width()));
+            rseWriter.writeAttribute("pen-style", QString::number(polylineShape->pen().style()));
+            rseWriter.writeAttribute("z", QString::number(polylineShape->zValue()));
             rseWriter.writeAttribute("transform", transStr);
             rseWriter.writeEndElement(); // polyline
         }
         if (item->type() == Curve::Type) {
-            Curve *curve = qgraphicsitem_cast<Curve *>(item);
-            QPainterPath curvePath = curve->path();
+            Curve *curveShape = qgraphicsitem_cast<Curve *>(item);
+            QPainterPath curvePath = curveShape->path();
             QStringList dotList;
             for (int i = 0; i < curvePath.elementCount(); i++) {
                 dotList << QString::number(curvePath.elementAt(i).x) + ","
@@ -154,7 +154,7 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
                 dotLine += dotList.at(i) + " ";
             }
             dotLine.chop(1);
-            QTransform trans(curve->sceneTransform());
+            QTransform trans(curveShape->sceneTransform());
             QString transStr(QString::number(trans.m11()) + "," + QString::number(trans.m12())
                              + "," + QString::number(trans.m13()) + ","
                              + QString::number(trans.m21()) + "," + QString::number(trans.m22())
@@ -162,10 +162,10 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
                              + QString::number(trans.m31()) + "," + QString::number(trans.m32())
                              + "," + QString::number(trans.m33()));
             rseWriter.writeAttribute("c", dotLine);
-            rseWriter.writeAttribute("pen-color", curve->pen().color().name());
-            rseWriter.writeAttribute("pen-width", QString::number(curve->pen().width()));
-            rseWriter.writeAttribute("pen-style", QString::number(curve->pen().style()));
-            rseWriter.writeAttribute("z", QString::number(curve->zValue()));
+            rseWriter.writeAttribute("pen-color", curveShape->pen().color().name());
+            rseWriter.writeAttribute("pen-width", QString::number(curveShape->pen().width()));
+            rseWriter.writeAttribute("pen-style", QString::number(curveShape->pen().style()));
+            rseWriter.writeAttribute("z", QString::number(curveShape->zValue()));
             rseWriter.writeAttribute("transform", transStr);
             rseWriter.writeEndElement(); // curve
         }
@@ -190,30 +190,30 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
             rseWriter.writeAttribute("transform", transStr);
             rseWriter.writeEndElement(); // lineItem
         }
-        if (item->type() == TextItem::Type) {
-            TextItem *textItem = qgraphicsitem_cast<TextItem *>(item);
+        if (item->type() == TextShape::Type) {
+            TextShape *textShape = qgraphicsitem_cast<TextShape *>(item);
             rseWriter.writeStartElement("text");
-            rseWriter.writeAttribute("x", QString::number(textItem->x()));
-            rseWriter.writeAttribute("y", QString::number(textItem->y()));
-            rseWriter.writeAttribute("font", textItem->font().family());
-            rseWriter.writeAttribute("font-size", QString::number(textItem->font().pointSize()));
-            rseWriter.writeAttribute("bold", QString::number(textItem->font().bold()));
-            rseWriter.writeAttribute("italic", QString::number(textItem->font().italic()));
-            rseWriter.writeAttribute("underline", QString::number(textItem->font().underline()));
-            rseWriter.writeAttribute("color", textItem->defaultTextColor().name());
-            rseWriter.writeAttribute("z", QString::number(textItem->zValue()));
-            rseWriter.writeCharacters(textItem->document()->toPlainText());
+            rseWriter.writeAttribute("x", QString::number(textShape->x()));
+            rseWriter.writeAttribute("y", QString::number(textShape->y()));
+            rseWriter.writeAttribute("font", textShape->font().family());
+            rseWriter.writeAttribute("font-size", QString::number(textShape->font().pointSize()));
+            rseWriter.writeAttribute("bold", QString::number(textShape->font().bold()));
+            rseWriter.writeAttribute("italic", QString::number(textShape->font().italic()));
+            rseWriter.writeAttribute("underline", QString::number(textShape->font().underline()));
+            rseWriter.writeAttribute("color", textShape->defaultTextColor().name());
+            rseWriter.writeAttribute("z", QString::number(textShape->zValue()));
+            rseWriter.writeCharacters(textShape->document()->toPlainText());
             rseWriter.writeEndElement(); // textItem
         }
-        if (item->type() == PixmapItem::Type) {
-            PixmapItem *pixmapItem = qgraphicsitem_cast<PixmapItem *> (item);
+        if (item->type() == PixmapShape::Type) {
+            PixmapShape *pixmapShape = qgraphicsitem_cast<PixmapShape *> (item);
             rseWriter.writeStartElement("pixmap");
-            rseWriter.writeAttribute("x", QString::number(pixmapItem->scenePos().x()));
-            rseWriter.writeAttribute("y", QString::number(pixmapItem->scenePos().y()));
-            rseWriter.writeAttribute("width", QString::number(pixmapItem->pixmap().width()));
-            rseWriter.writeAttribute("height", QString::number(pixmapItem->pixmap().height()));
-            rseWriter.writeAttribute("z", QString::number(pixmapItem->zValue()));
-            QTransform trans(pixmapItem->transform());
+            rseWriter.writeAttribute("x", QString::number(pixmapShape->scenePos().x()));
+            rseWriter.writeAttribute("y", QString::number(pixmapShape->scenePos().y()));
+            rseWriter.writeAttribute("width", QString::number(pixmapShape->pixmap().width()));
+            rseWriter.writeAttribute("height", QString::number(pixmapShape->pixmap().height()));
+            rseWriter.writeAttribute("z", QString::number(pixmapShape->zValue()));
+            QTransform trans(pixmapShape->transform());
             QString transPixmap(QString::number(trans.m11()) + "," + QString::number(trans.m12())
                                 + "," + QString::number(trans.m13()) + ","
                                 + QString::number(trans.m21()) + "," + QString::number(trans.m22())
@@ -224,20 +224,20 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
             QByteArray pixmapArray;
             QBuffer buffer(&pixmapArray);
             buffer.open(QIODevice::WriteOnly);
-            pixmapItem->pixmap().save(&buffer, "png");
+            pixmapShape->pixmap().save(&buffer, "png");
             const QString &strPixmap(pixmapArray.toBase64());
             rseWriter.writeCharacters(strPixmap);
             rseWriter.writeEndElement(); // pixmapitems
         }
         if (item->type() == TechnicsShape::Type) {
-            TechnicsShape *technicsShapeItem = qgraphicsitem_cast<TechnicsShape *>(item);
+            TechnicsShape *technicsShape = qgraphicsitem_cast<TechnicsShape *>(item);
             rseWriter.writeStartElement("technics_shape");
-            rseWriter.writeAttribute("x", QString::number(technicsShapeItem->scenePos().x()));
-            rseWriter.writeAttribute("y", QString::number(technicsShapeItem->scenePos().y()));
-            TechnicsShape::ShapeType shapeType = technicsShapeItem->shapeType();
+            rseWriter.writeAttribute("x", QString::number(technicsShape->scenePos().x()));
+            rseWriter.writeAttribute("y", QString::number(technicsShape->scenePos().y()));
+            TechnicsShape::ShapeType shapeType = technicsShape->shapeType();
             rseWriter.writeAttribute("shape_type", QString::number(shapeType));
-            rseWriter.writeAttribute("z", QString::number(technicsShapeItem->zValue()));
-            QTransform transform(technicsShapeItem->transform());
+            rseWriter.writeAttribute("z", QString::number(technicsShape->zValue()));
+            QTransform transform(technicsShape->transform());
             QString transfomTechnicsShape(QString::number(transform.m11()) + ","
                                           + QString::number(transform.m12()) + ","
                                           + QString::number(transform.m13()) + ","
@@ -251,14 +251,14 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
             rseWriter.writeEndElement(); // technicsShapeItem
         }
         if (item->type() == DeviceShape::Type) {
-            DeviceShape *deviceShapeItem = qgraphicsitem_cast<DeviceShape *>(item);
+            DeviceShape *deviceShape = qgraphicsitem_cast<DeviceShape *>(item);
             rseWriter.writeStartElement("device_shape");
-            rseWriter.writeAttribute("x", QString::number(deviceShapeItem->scenePos().x()));
-            rseWriter.writeAttribute("y", QString::number(deviceShapeItem->scenePos().y()));
-            DeviceShape::ShapeType shapeType = deviceShapeItem->shapeType();
+            rseWriter.writeAttribute("x", QString::number(deviceShape->scenePos().x()));
+            rseWriter.writeAttribute("y", QString::number(deviceShape->scenePos().y()));
+            DeviceShape::ShapeType shapeType = deviceShape->shapeType();
             rseWriter.writeAttribute("shape_type", QString::number(shapeType));
-            rseWriter.writeAttribute("z", QString::number(deviceShapeItem->zValue()));
-            QTransform transform(deviceShapeItem->transform());
+            rseWriter.writeAttribute("z", QString::number(deviceShape->zValue()));
+            QTransform transform(deviceShape->transform());
             QString transfomDeviceShape(QString::number(transform.m11()) + ","
                                           + QString::number(transform.m12()) + ","
                                           + QString::number(transform.m13()) + ","
@@ -272,18 +272,18 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
             rseWriter.writeEndElement(); // deviceShapeItem
         }
         if (item->type() == BuildingStruct::Type) {
-            BuildingStruct *buildingItem = qgraphicsitem_cast<BuildingStruct *>(item);
+            BuildingStruct *buildingShape = qgraphicsitem_cast<BuildingStruct *>(item);
             rseWriter.writeStartElement("building_item");
-            rseWriter.writeAttribute("x", QString::number(buildingItem->scenePos().x()));
-            rseWriter.writeAttribute("y", QString::number(buildingItem->scenePos().y()));
-            rseWriter.writeAttribute("item_left", QString::number(buildingItem->getRect().left()));
-            rseWriter.writeAttribute("item_top", QString::number(buildingItem->getRect().top()));
-            rseWriter.writeAttribute("width", QString::number(buildingItem->getRect().width()));
-            rseWriter.writeAttribute("height", QString::number(buildingItem->getRect().height()));
-            BuildingStruct::ShapeType shapeType = buildingItem->shapeType();
+            rseWriter.writeAttribute("x", QString::number(buildingShape->scenePos().x()));
+            rseWriter.writeAttribute("y", QString::number(buildingShape->scenePos().y()));
+            rseWriter.writeAttribute("item_left", QString::number(buildingShape->getRect().left()));
+            rseWriter.writeAttribute("item_top", QString::number(buildingShape->getRect().top()));
+            rseWriter.writeAttribute("width", QString::number(buildingShape->getRect().width()));
+            rseWriter.writeAttribute("height", QString::number(buildingShape->getRect().height()));
+            BuildingStruct::ShapeType shapeType = buildingShape->shapeType();
             rseWriter.writeAttribute("shape_type", QString::number(shapeType));
-            rseWriter.writeAttribute("z", QString::number(buildingItem->zValue()));
-            QTransform transform(buildingItem->transform());
+            rseWriter.writeAttribute("z", QString::number(buildingShape->zValue()));
+            QTransform transform(buildingShape->transform());
             QString transBuildingItem(QString::number(transform.m11()) + ","
                                           + QString::number(transform.m12()) + ","
                                           + QString::number(transform.m13()) + ","

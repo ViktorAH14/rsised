@@ -28,10 +28,11 @@ class SizeGripShape;
 class AbstractShape : public QAbstractGraphicsShapeItem
 {
 public:
-    AbstractShape(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
+    AbstractShape(QGraphicsItem *parent = nullptr);
     virtual ~AbstractShape();
 
     void scaleShape(const QRectF &newRect);
+    void setMenu(QMenu *contextMenu);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;

@@ -70,7 +70,7 @@ public:
                      , Ambulance
                      , Police };
 
-    TechnicsShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent = nullptr);
+    TechnicsShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
     QRectF boundingRect() const override;
     int type() const override { return Type;}
@@ -87,4 +87,4 @@ private:
     ShapeType m_shapeType;
 };
 
-#endif // TECHNICS_SHAPE_H
+#endif // TECHNICSSHAPE_H

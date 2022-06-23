@@ -19,15 +19,15 @@
  */
 
 #include "rse_reader.h"
-#include "rectshape.h"
-#include "ellipse.h"
-#include "polyline.h"
-#include "curve.h"
-#include "textitem.h"
-#include "pixmapitem.h"
-#include "technics_shape.h"
-#include "device_shape.h"
-#include "buildingstruct.h"
+#include "../include/rectshape.h"
+#include "../include/ellipseshape.h"
+#include "../include/polylineshape.h"
+#include "../include/curve.h"
+#include "../include/textshape.h"
+#include "../include/pixmapshape.h"
+#include "../include/technicsshape.h"
+#include "../include/deviceshape.h"
+#include "../include/buildingstruct.h"
 
 #include <QXmlStreamReader>
 #include <QPen>
@@ -88,7 +88,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
     while (!rseItemReader.atEnd()) {
         if (rseItemReader.isStartElement()) {
             if (rseItemReader.name() == "rect") {
-                RectShape *rectShape = new RectShape(m_itemMenu);
+                RectShape *rectShape = new RectShape();
+                rectShape->setMenu(m_itemMenu);
                 qreal x {0.0};
                 qreal y {0.0};
                 qreal width {0.0};
@@ -160,7 +161,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 itemList.append(rectShape);
             }
             if (rseItemReader.name() == "ellipse") {
-                Ellipse *ellipse = new Ellipse(m_itemMenu);
+                EllipseShape *ellipseShape = new EllipseShape(m_itemMenu);
                 qreal x {0.0};
                 qreal y {0.0};
                 qreal width {0.0};
@@ -222,14 +223,14 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         m33 = transList.at(8).toFloat();
                     }
                 }
-                ellipse->setRect(x, y, width, height);
-                ellipse->setPen(itemPen);
-                ellipse->setBrush(itemBrush);
-                ellipse->setZValue(zValue);
+                ellipseShape->setRect(x, y, width, height);
+                ellipseShape->setPen(itemPen);
+                ellipseShape->setBrush(itemBrush);
+                ellipseShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
-                ellipse->setTransform(trans);
+                ellipseShape->setTransform(trans);
 
-                itemList.append(ellipse);
+                itemList.append(ellipseShape);
             }
             if (rseItemReader.name() == "line") {
                 QGraphicsLineItem *line = new QGraphicsLineItem();
@@ -297,7 +298,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 itemList.append(line);
             }
             if (rseItemReader.name() == "polyline") {
-                Polyline *polyline = new Polyline(m_itemMenu);
+                PolylineShape *polylineShape = new PolylineShape(m_itemMenu);
                 QPainterPath path;
                 QPen itemPen;
                 qreal zValue {0.0};
@@ -350,15 +351,15 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         m33 = transList.at(8).toFloat();
                     }
                 }
-                polyline->setPath(path);
-                polyline->setPen(itemPen);
-                polyline->setZValue(zValue);
+                polylineShape->setPath(path);
+                polylineShape->setPen(itemPen);
+                polylineShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
-                polyline->setTransform(trans);
-                itemList.append(polyline);
+                polylineShape->setTransform(trans);
+                itemList.append(polylineShape);
             }
             if (rseItemReader.name() == "curve") {
-                Curve *curve = new Curve(m_itemMenu);
+                Curve *curveShape = new Curve(m_itemMenu);
                 QPainterPath path;
                 QPen itemPen;
                 qreal zValue {0.0};
@@ -415,12 +416,12 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         m33 = transList.at(8).toFloat();
                     }
                 }
-                curve->setPath(path);
-                curve->setPen(itemPen);
-                curve->setZValue(zValue);
+                curveShape->setPath(path);
+                curveShape->setPen(itemPen);
+                curveShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
-                curve->setTransform(trans);
-                itemList.append(curve);
+                curveShape->setTransform(trans);
+                itemList.append(curveShape);
             }
             if (rseItemReader.name() == "text") {
                 qreal x {0.0};
@@ -463,9 +464,9 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     }
                 }
                 QString text(rseItemReader.readElementText());
-                TextItem *textItem = new TextItem(m_itemMenu);
-                textItem->setPlainText(text);
-                textItem->setPos(x, y);
+                TextShape *textShape = new TextShape(m_itemMenu);
+                textShape->setPlainText(text);
+                textShape->setPos(x, y);
                 font.setPointSize(fontSize);
                 if (bold) {
                     font.setBold(true);
@@ -476,10 +477,10 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 if (underline) {
                     font.setUnderline(true);
                 }
-                textItem->setFont(font);
-                textItem->setDefaultTextColor(colorText);
-                textItem->setZValue(zValue);
-                itemList.append(textItem);
+                textShape->setFont(font);
+                textShape->setDefaultTextColor(colorText);
+                textShape->setZValue(zValue);
+                itemList.append(textShape);
             }
             if (rseItemReader.name() == "pixmap") {
                 qreal x {0.0};
@@ -530,14 +531,14 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 const QByteArray &pixmapArray = QByteArray::fromBase64(base64Pixmap.toLatin1());
                 QPixmap pixmap(width, height);
                 pixmap.loadFromData(pixmapArray);
-                PixmapItem *pixmapItem = new PixmapItem();
-                pixmapItem->setPixmap(pixmap);
-                pixmapItem->setPos(QPointF(x, y));
-                pixmapItem->setZValue(zValue);
+                PixmapShape *pixmapShape = new PixmapShape();
+                pixmapShape->setPixmap(pixmap);
+                pixmapShape->setPos(QPointF(x, y));
+                pixmapShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
-                pixmapItem->setTransform(trans);
+                pixmapShape->setTransform(trans);
 
-                itemList.append(pixmapItem);
+                itemList.append(pixmapShape);
             }
             if (rseItemReader.name() == "technics_shape") {
                 qreal x {0.0};
@@ -581,13 +582,14 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     }
                 }
 
-                TechnicsShape *technicsShapeItem = new TechnicsShape(m_itemMenu, shapeType);
-                technicsShapeItem->setPos(QPointF(x, y));
-                technicsShapeItem->setZValue(zValue);
+                TechnicsShape *technicsShape = new TechnicsShape(shapeType);
+                technicsShape->setMenu(m_itemMenu);
+                technicsShape->setPos(QPointF(x, y));
+                technicsShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
-                technicsShapeItem->setTransform(trans);
+                technicsShape->setTransform(trans);
 
-                itemList.append(technicsShapeItem);
+                itemList.append(technicsShape);
             }
             if (rseItemReader.name() == "device_shape") {
                 qreal x {0.0};
@@ -631,13 +633,14 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     }
                 }
 
-                DeviceShape *deviceShapeItem = new DeviceShape(m_itemMenu, shapeType);
-                deviceShapeItem->setPos(QPointF(x, y));
-                deviceShapeItem->setZValue(zValue);
+                DeviceShape *deviceShape = new DeviceShape(shapeType);
+                deviceShape->setMenu(m_itemMenu);
+                deviceShape->setPos(QPointF(x, y));
+                deviceShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
-                deviceShapeItem->setTransform(trans);
+                deviceShape->setTransform(trans);
 
-                itemList.append(deviceShapeItem);
+                itemList.append(deviceShape);
             }
             if (rseItemReader.name() == "building_item") {
                 qreal x {0.0};
@@ -697,7 +700,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     }
                 }
 
-                BuildingStruct *deviceShapeItem = new BuildingStruct(m_itemMenu, shapeType);
+                BuildingStruct *deviceShapeItem = new BuildingStruct(shapeType);
+                deviceShapeItem->setMenu(m_itemMenu);
                 deviceShapeItem->setPos(QPointF(x, y));
                 deviceShapeItem->setRect(QRectF(itemLeft, itemTop, width, height));
                 deviceShapeItem->setZValue(zValue);

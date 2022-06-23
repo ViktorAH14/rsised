@@ -19,7 +19,6 @@
  */
 
 #include "../include/shaperesizer.h"
-
 #include "../include/rectshape.h"
 #include "../include/ellipseshape.h"
 #include "../include/curve.h"

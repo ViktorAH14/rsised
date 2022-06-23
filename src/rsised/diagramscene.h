@@ -21,19 +21,19 @@
 #ifndef DIAGRAMSCENE_H
 #define DIAGRAMSCENE_H
 
-#include "technics_shape.h"
-#include "device_shape.h"
-#include "buildingstruct.h"
+#include "../include/technicsshape.h"
+#include "../include/deviceshape.h"
+#include "../include/buildingstruct.h"
 
 #include <QGraphicsScene>
 #include <QObject>
 
 class RectShape;
-class Ellipse;
-class Polyline;
+class EllipseShape;
+class PolylineShape;
 class Curve;
-class TextItem;
-class PixmapItem;
+class TextShape;
+class PixmapShape;
 
 QT_BEGIN_NAMESPACE
 class QMenu;
@@ -85,11 +85,11 @@ private:
     BuildingStruct::ShapeType m_buildingStructType;
     BuildingStruct *buildingStructItem;
     RectShape   *m_rectShape;
-    Polyline    *polyline;
-    Ellipse     *ellipse;
+    PolylineShape    *polyline;
+    EllipseShape     *ellipse;
     Curve       *curve;
-    TextItem    *textItem;
-    PixmapItem  *pixmapItem;
+    TextShape    *textItem;
+    PixmapShape  *pixmapItem;
     QMenu       *m_itemMenu;
     SceneMode   m_sceneMode;
     QPen        itemPen;

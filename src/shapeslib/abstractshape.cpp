@@ -28,9 +28,9 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
 
-AbstractShape::AbstractShape(QMenu *contextMenu, QGraphicsItem *parent)
+AbstractShape::AbstractShape(QGraphicsItem *parent)
     : QAbstractGraphicsShapeItem(parent)
-    , m_contextMenu{contextMenu}
+    , m_contextMenu{nullptr}
 {
 
 }
@@ -49,6 +49,11 @@ void AbstractShape::scaleShape(const QRectF &newRect)
     qreal scaleFactor = newSize / oldSize;
     setTransform(QTransform::fromScale(scaleFactor, scaleFactor), true);
     update();
+}
+
+void AbstractShape::setMenu(QMenu *contextMenu)
+{
+    m_contextMenu = contextMenu;
 }
 
 void AbstractShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -78,7 +83,7 @@ void AbstractShape::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void AbstractShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if ((mouseEvent->buttons() == Qt::RightButton) && isSelected()) {
+    if ((mouseEvent->buttons() == Qt::RightButton) && isSelected() && m_contextMenu != nullptr) {
         QList<QGraphicsItem *> selItems = scene()->selectedItems();
         for (QGraphicsItem *item : qAsConst(selItems))
             item->setSelected(true);

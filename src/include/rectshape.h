@@ -30,10 +30,9 @@ class RectShape : public AbstractShape
 public:
     enum { Type = UserType + 1 };
 
-    explicit RectShape(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
-    explicit RectShape(const QRectF &rect, QMenu *contextMenu, QGraphicsItem *parent = nullptr);
-    explicit RectShape(qreal x, qreal y, qreal w, qreal h, QMenu *contextMenu,
-                       QGraphicsItem *parent = nullptr);
+    explicit RectShape(QGraphicsItem *parent = nullptr);
+    explicit RectShape(const QRectF &rect, QGraphicsItem *parent = nullptr);
+    explicit RectShape(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent = nullptr);
      ~RectShape();
 
     QRectF boundingRect() const override;
@@ -41,7 +40,7 @@ public:
 
     void setRect(const QRectF &rect);
     void setRect(qreal x, qreal y, qreal w, qreal h);
-    QRectF rect();
+    QRectF rect() const;
     QPainterPath shape() const override;
     bool contains(const QPointF &point) const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -49,8 +48,7 @@ public:
     QPainterPath opaqueArea() const override;
 
 private:
-    RectShape(const RectShape &) = delete;
-    RectShape &operator=(const RectShape &) = delete;
+    Q_DISABLE_COPY(RectShape);
 
     QRectF m_shapeRect;
 };

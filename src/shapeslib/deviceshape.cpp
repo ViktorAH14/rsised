@@ -22,8 +22,8 @@
 
 #include <QPainter>
 
-DeviceShape::DeviceShape(QMenu *contextMenu, ShapeType shapeType, QGraphicsItem *parent)
-    : AbstractShape(contextMenu, parent)
+DeviceShape::DeviceShape(ShapeType shapeType, QGraphicsItem *parent)
+    : AbstractShape(parent)
     , m_shapeType{shapeType}
 {
     setFlag(ItemSendsGeometryChanges, true);
