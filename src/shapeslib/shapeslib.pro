@@ -48,6 +48,6 @@ HEADERS += \
 #!isEmpty(target.path): INSTALLS += target
 
 win32 {
-    QMAKE_TARGET_PRODUCT = ShapesLib
+    QMAKE_TARGET_PRODUCT = libshapes
     QMAKE_TARGET_DESCRIPTION = Library for RSiSed
 }
