@@ -33,6 +33,7 @@ public:
 
     void scaleShape(const QRectF &newRect);
     void setMenu(QMenu *contextMenu);
+    QMenu* menu() const;
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
