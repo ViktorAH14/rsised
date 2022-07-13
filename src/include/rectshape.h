@@ -23,8 +23,6 @@
 
 #include "abstractshape.h"
 
-#include <QBrush>
-
 class RectShape : public AbstractShape
 {
 public:

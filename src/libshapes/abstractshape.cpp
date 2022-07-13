@@ -30,14 +30,13 @@
 
 AbstractShape::AbstractShape(QGraphicsItem *parent)
     : QAbstractGraphicsShapeItem(parent)
+    , m_sizeGripItem{nullptr}
     , m_contextMenu{nullptr}
 {
-
 }
 
 AbstractShape::~AbstractShape()
 {
-
 }
 
 void AbstractShape::scaleShape(const QRectF &newRect)
@@ -54,6 +53,11 @@ void AbstractShape::scaleShape(const QRectF &newRect)
 void AbstractShape::setMenu(QMenu *contextMenu)
 {
     m_contextMenu = contextMenu;
+}
+
+QMenu* AbstractShape::menu() const
+{
+    return m_contextMenu;
 }
 
 void AbstractShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
