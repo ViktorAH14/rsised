@@ -161,7 +161,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 itemList.append(rectShape);
             }
             if (rseItemReader.name() == "ellipse") {
-                EllipseShape *ellipseShape = new EllipseShape(m_itemMenu);
+                EllipseShape *ellipseShape = new EllipseShape();
+                ellipseShape->setMenu(m_itemMenu);
                 qreal x {0.0};
                 qreal y {0.0};
                 qreal width {0.0};

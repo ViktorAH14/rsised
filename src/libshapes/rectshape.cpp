@@ -56,23 +56,15 @@ QRectF RectShape::boundingRect() const
     return boundingRect;
 }
 
-void RectShape::setRect(const QRectF &rect)
+void RectShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    if (m_shapeRect == rect)
-        return;
-    prepareGeometryChange();
-    m_shapeRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
-    update();
-}
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
 
-void RectShape::setRect(qreal x, qreal y, qreal w, qreal h)
-{
-    setRect(QRectF(x, y, w, h));
-}
-
-QRectF RectShape::rect() const
-{
-    return m_shapeRect;
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+    painter->drawRect(m_shapeRect);
 }
 
 QPainterPath RectShape::shape() const
@@ -101,17 +93,6 @@ bool RectShape::contains(const QPointF &point) const
     return QAbstractGraphicsShapeItem::contains(point);
 }
 
-void RectShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    Q_UNUSED(option);
-    Q_UNUSED(widget);
-
-    painter->setRenderHint(QPainter::Antialiasing);
-    painter->setPen(pen());
-    painter->setBrush(brush());
-    painter->drawRect(m_shapeRect);
-}
-
 bool RectShape::isObscuredBy(const QGraphicsItem *item) const
 {
     return QAbstractGraphicsShapeItem::isObscuredBy(item);
@@ -120,4 +101,23 @@ bool RectShape::isObscuredBy(const QGraphicsItem *item) const
 QPainterPath RectShape::opaqueArea() const
 {
     return QAbstractGraphicsShapeItem::opaqueArea();
+}
+
+void RectShape::setRect(const QRectF &rect)
+{
+    if (m_shapeRect == rect)
+        return;
+    prepareGeometryChange();
+    m_shapeRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    update();
+}
+
+void RectShape::setRect(qreal x, qreal y, qreal w, qreal h)
+{
+    setRect(QRectF(x, y, w, h));
+}
+
+QRectF RectShape::rect() const
+{
+    return m_shapeRect;
 }

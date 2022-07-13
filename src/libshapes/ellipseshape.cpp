@@ -19,73 +19,79 @@
  */
 
 #include "../include/ellipseshape.h"
-#include "../include/sizegripshape.h"
-#include "../include/shaperesizer.h"
 
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsScene>
-#include <QMenu>
+#include <QPen>
+#include <QPainter>
 
-EllipseShape::EllipseShape(QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsEllipseItem(parent), m_contextMenu{contextMenu}
+EllipseShape::EllipseShape(QGraphicsItem *parent)
+    : AbstractShape(parent)
+    , m_startAngle(0)
+    , m_spanAngle(0)
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+}
+
+EllipseShape::EllipseShape(const QRectF &rect, QGraphicsItem *parent)
+    : AbstractShape(parent)
+    , m_ellipseRect(rect)
+    , m_startAngle(0)
+    , m_spanAngle(0)
 {
     setAcceptHoverEvents(true);
     setFlag(ItemSendsGeometryChanges, true);
 }
 
-EllipseShape::EllipseShape(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsEllipseItem(parent), m_contextMenu{contextMenu}
+EllipseShape::EllipseShape(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent)
+    : AbstractShape(parent)
+    , m_ellipseRect(QRectF(x, y, w, h))
+    , m_startAngle(0)
+    , m_spanAngle(0)
 {
-    QGraphicsEllipseItem::setRect(rect);
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
 }
 
-void EllipseShape::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
+EllipseShape::~EllipseShape()
 {
-    if ((mouseEvent->buttons() == Qt::LeftButton) && isSelected()) {
-        QList<QGraphicsItem *> selItems = scene()->selectedItems();
-        for (QGraphicsItem *item : qAsConst(selItems)) {
-            qreal dx = mouseEvent->scenePos().x() - mouseEvent->lastScenePos().x();
-            qreal dy = mouseEvent->scenePos().y() - mouseEvent->lastScenePos().y();
-            item->moveBy(dx, dy);
-        }
-    } else {
-        QGraphicsItem::mouseMoveEvent( mouseEvent );
-    }
+
 }
 
-void EllipseShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
+QRectF EllipseShape::boundingRect() const
 {
-    if (isSelected()) {
-        m_sizeGripShape->setActionType((m_sizeGripShape->actionType()
-                                       == SizeGripShape::Resize) ? SizeGripShape::Rotate
-                                                                :SizeGripShape::Resize);
-    } else {
-        QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
-    }
+    qreal halfpw = pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2;
+    QRectF  boundingRect = m_ellipseRect;
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    return boundingRect;
 }
 
-void EllipseShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void EllipseShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    if ((mouseEvent->buttons() == Qt::RightButton) && isSelected()) {
-        QList<QGraphicsItem *> selItems = scene()->selectedItems();
-        for (QGraphicsItem *item : qAsConst(selItems))
-            item->setSelected(true);
-        m_contextMenu->exec(mouseEvent->screenPos());
-    } else {
-        QGraphicsItem::mousePressEvent(mouseEvent);
-    }
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+    painter->drawEllipse(m_ellipseRect);
 }
 
-QVariant EllipseShape::itemChange(GraphicsItemChange change, const QVariant &value)
+void EllipseShape::setRect(const QRectF &rect)
 {
-    if (change == GraphicsItemChange::ItemSelectedChange && value == true) {
-        m_sizeGripShape = new SizeGripShape(new ShapeResizer, this);
-    }
-    if (change == GraphicsItemChange::ItemSelectedChange && value == false) {
-        delete m_sizeGripShape;
-    }
+    if (m_ellipseRect == rect)
+        return;
+    prepareGeometryChange();
+    m_ellipseRect = rect;
+    update();
+}
 
-    return QGraphicsItem::itemChange(change, value);
+void EllipseShape::setRect(qreal x, qreal y, qreal w, qreal h)
+{
+    setRect(QRectF(x, y, w, h));
+}
+
+QRectF EllipseShape::rect() const
+{
+    return m_ellipseRect;
 }

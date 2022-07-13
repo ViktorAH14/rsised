@@ -215,6 +215,7 @@ void MainWindow::copy()
     for (QGraphicsItem *item : qAsConst(selectedItems)) {
         if (RectShape *oldRectangleShape = dynamic_cast<RectShape *>(item)) {
             RectShape *newRectangleShape = new RectShape();
+            newRectangleShape->setMenu(ui->menuEdit);
             newRectangleShape->setRect(oldRectangleShape->rect());
             newRectangleShape->setX(oldRectangleShape->x() + 10.0);
             newRectangleShape->setY(oldRectangleShape->y() + 10.0);
@@ -222,14 +223,15 @@ void MainWindow::copy()
             newRectangleShape->setBrush(oldRectangleShape->brush());
             copyList.append(newRectangleShape);
         }
-        if (EllipseShape *oldEllipse = dynamic_cast<EllipseShape *>(item)) {
-            EllipseShape *newEllipse = new EllipseShape(ui->menuEdit);
-            newEllipse->setRect(oldEllipse->rect());
-            newEllipse->setX(oldEllipse->x() + 10.0);
-            newEllipse->setY(oldEllipse->y() + 10.0);
-            newEllipse->setPen(oldEllipse->pen());
-            newEllipse->setBrush(oldEllipse->brush());
-            copyList.append(newEllipse);
+        if (EllipseShape *oldEllipseShape = dynamic_cast<EllipseShape *>(item)) {
+            EllipseShape *newEllipseShape = new EllipseShape();
+            newEllipseShape->setMenu(ui->menuEdit);
+            newEllipseShape->setRect(oldEllipseShape->rect());
+            newEllipseShape->setX(oldEllipseShape->x() + 10.0);
+            newEllipseShape->setY(oldEllipseShape->y() + 10.0);
+            newEllipseShape->setPen(oldEllipseShape->pen());
+            newEllipseShape->setBrush(oldEllipseShape->brush());
+            copyList.append(newEllipseShape);
         }
         if (PolylineShape *oldPolyline = dynamic_cast<PolylineShape *>(item)) {
             PolylineShape *newPolyline = new PolylineShape(ui->menuEdit);

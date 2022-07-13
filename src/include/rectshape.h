@@ -33,17 +33,17 @@ public:
     explicit RectShape(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent = nullptr);
      ~RectShape();
 
-    QRectF boundingRect() const override;
     int type() const override { return Type;}
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QPainterPath shape() const override;
+    bool contains(const QPointF &point) const override;
+    bool isObscuredBy(const QGraphicsItem *item) const override;
+    QPainterPath opaqueArea() const override;
 
     void setRect(const QRectF &rect);
     void setRect(qreal x, qreal y, qreal w, qreal h);
     QRectF rect() const;
-    QPainterPath shape() const override;
-    bool contains(const QPointF &point) const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    bool isObscuredBy(const QGraphicsItem *item) const override;
-    QPainterPath opaqueArea() const override;
 
 private:
     Q_DISABLE_COPY(RectShape);

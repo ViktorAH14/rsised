@@ -86,7 +86,7 @@ private:
     BuildingStruct *buildingStructItem;
     RectShape   *m_rectShape;
     PolylineShape    *polyline;
-    EllipseShape     *ellipse;
+    EllipseShape     *m_ellipseShape;
     Curve       *curve;
     TextShape    *textItem;
     PixmapShape  *pixmapItem;

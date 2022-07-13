@@ -34,7 +34,7 @@ DiagramScene::DiagramScene(QMenu *itemMenu, QObject *parent)
     : QGraphicsScene(parent)
     , m_rectShape{nullptr}
     , polyline{nullptr}
-    , ellipse{nullptr}
+    , m_ellipseShape{nullptr}
     , curve{nullptr}
     , textItem{nullptr}
     , pixmapItem{nullptr}
@@ -197,9 +197,10 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             addItem(m_rectShape);
             break;
         case InsertEllipse:
-            ellipse = new EllipseShape(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos())
-                                  , m_itemMenu);
-            addItem(ellipse);
+            m_ellipseShape = new EllipseShape(QRectF(mouseEvent->scenePos()
+                                                     , mouseEvent->scenePos()));
+            m_ellipseShape->setMenu(m_itemMenu);
+            addItem(m_ellipseShape);
             break;
         case InsertCurve:
             pathPoint.append(mouseEvent->scenePos());
@@ -260,14 +261,14 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
             m_rectShape->setPen(itemPen);
             m_rectShape->setBrush(itemBrush);
         }
-        if ((m_sceneMode == InsertEllipse) && (ellipse != nullptr)) {
-            qreal dx = mouseEvent->scenePos().x() - ellipse->rect().left();
-            qreal dy = mouseEvent->scenePos().y() - ellipse->rect().top();
-            ellipse->setRect( ( dx > 0 ) ? ellipse->rect().left() : mouseEvent->scenePos().x(),
-                              ( dy > 0 ) ? ellipse->rect().top() : mouseEvent->scenePos().y(),
+        if ((m_sceneMode == InsertEllipse) && (m_ellipseShape != nullptr)) {
+            qreal dx = mouseEvent->scenePos().x() - m_ellipseShape->rect().left();
+            qreal dy = mouseEvent->scenePos().y() - m_ellipseShape->rect().top();
+            m_ellipseShape->setRect( ( dx > 0 ) ? m_ellipseShape->rect().left() : mouseEvent->scenePos().x(),
+                              ( dy > 0 ) ? m_ellipseShape->rect().top() : mouseEvent->scenePos().y(),
                               qAbs( dx ), qAbs( dy ) );
-            ellipse->setPen(itemPen);
-            ellipse->setBrush(itemBrush);
+            m_ellipseShape->setPen(itemPen);
+            m_ellipseShape->setBrush(itemBrush);
         }
 
     }
@@ -304,7 +305,7 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         m_rectShape = nullptr;
         break;
     case InsertEllipse:
-        ellipse = nullptr;
+        m_ellipseShape = nullptr;
         break;
     case InsertCurve:
         break;
