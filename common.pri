@@ -9,6 +9,8 @@ CONFIG(debug, debug|release) {
 } else {
     CONFIG(force_debug_info) {
         BUILD_FLAG = profile
+        QMAKE_CXXFLAGS += --coverage
+        QMAKE_LFLAGS += --coverage
         } else {
         BUILD_FLAG = release
         }

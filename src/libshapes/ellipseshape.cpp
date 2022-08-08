@@ -19,73 +19,147 @@
  */
 
 #include "../include/ellipseshape.h"
-#include "../include/sizegripshape.h"
-#include "../include/shaperesizer.h"
 
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsScene>
-#include <QMenu>
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
 
-EllipseShape::EllipseShape(QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsEllipseItem(parent), m_contextMenu{contextMenu}
+EllipseShape::EllipseShape(QGraphicsItem *parent)
+    : AbstractShape(parent)
+    , m_ellipseRect(QRectF())
+    , m_startAngle(0)
+    , m_spanAngle(360 * 16)
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+}
+
+EllipseShape::EllipseShape(const QRectF &rect, QGraphicsItem *parent)
+    : AbstractShape(parent)
+    , m_ellipseRect(rect)
+    , m_startAngle(0)
+    , m_spanAngle(360 *16)
 {
     setAcceptHoverEvents(true);
     setFlag(ItemSendsGeometryChanges, true);
 }
 
-EllipseShape::EllipseShape(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsEllipseItem(parent), m_contextMenu{contextMenu}
+EllipseShape::EllipseShape(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent)
+    : AbstractShape(parent)
+    , m_ellipseRect(QRectF(x, y, w, h))
+    , m_startAngle(0)
+    , m_spanAngle(360*16)
 {
-    QGraphicsEllipseItem::setRect(rect);
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
 }
 
-void EllipseShape::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
+EllipseShape::~EllipseShape()
 {
-    if ((mouseEvent->buttons() == Qt::LeftButton) && isSelected()) {
-        QList<QGraphicsItem *> selItems = scene()->selectedItems();
-        for (QGraphicsItem *item : qAsConst(selItems)) {
-            qreal dx = mouseEvent->scenePos().x() - mouseEvent->lastScenePos().x();
-            qreal dy = mouseEvent->scenePos().y() - mouseEvent->lastScenePos().y();
-            item->moveBy(dx, dy);
-        }
+
+}
+
+QRectF EllipseShape::boundingRect() const
+{
+    QRectF  boundingRect;
+    qreal pw = pen().style() == Qt::NoPen ? qreal(0) : pen().widthF();
+    if (pw == 0.0 && m_spanAngle == 360 * 16)
+        boundingRect = m_ellipseRect;
+    else
+        boundingRect = shape().controlPointRect();
+    return boundingRect;
+}
+
+void EllipseShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    if ((m_spanAngle != 0) && (qAbs(m_spanAngle) % (360 * 16) == 0))
+        painter->drawEllipse(m_ellipseRect);
+    else
+        painter->drawPie(m_ellipseRect, m_startAngle, m_spanAngle);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+
+}
+
+QPainterPath EllipseShape::shape() const
+{
+    QPainterPath path;
+
+    if (m_ellipseRect.isNull())
+        return path;
+    if (m_spanAngle != 360 * 16) {
+        path.moveTo(m_ellipseRect.center());
+        path.arcTo(m_ellipseRect, m_startAngle / 16.0, m_spanAngle / 16.0);
     } else {
-        QGraphicsItem::mouseMoveEvent( mouseEvent );
+        path.addEllipse(m_ellipseRect);
+    }
+
+    return shapeFromPath(path);
+}
+
+bool EllipseShape::contains(const QPointF &point) const
+{
+    return QAbstractGraphicsShapeItem::contains(point);
+}
+
+bool EllipseShape::isObscuredBy(const QGraphicsItem *item) const
+{
+    return QAbstractGraphicsShapeItem::isObscuredBy(item);
+}
+
+QPainterPath EllipseShape::opaqueArea() const
+{
+    return QAbstractGraphicsShapeItem::opaqueArea();
+}
+
+void EllipseShape::setRect(const QRectF &rect)
+{
+    if (m_ellipseRect == rect)
+        return;
+    prepareGeometryChange();
+    m_ellipseRect = rect;
+    update();
+}
+
+void EllipseShape::setRect(qreal x, qreal y, qreal w, qreal h)
+{
+    setRect(QRectF(x, y, w, h));
+}
+
+QRectF EllipseShape::rect() const
+{
+    return m_ellipseRect;
+}
+
+int EllipseShape::startAngle() const
+{
+    return m_startAngle;
+}
+
+void EllipseShape::setStartAngle(int angle)
+{
+    if (angle != m_startAngle) {
+            prepareGeometryChange();
+            m_startAngle = angle;
+            update();
     }
 }
 
-void EllipseShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
+int EllipseShape::spanAngle() const
 {
-    if (isSelected()) {
-        m_sizeGripShape->setActionType((m_sizeGripShape->actionType()
-                                       == SizeGripShape::Resize) ? SizeGripShape::Rotate
-                                                                :SizeGripShape::Resize);
-    } else {
-        QGraphicsItem::mouseDoubleClickEvent(mouseEvent);
-    }
+    return m_spanAngle;
 }
 
-void EllipseShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void EllipseShape::setSpanAngle(int spanAngle)
 {
-    if ((mouseEvent->buttons() == Qt::RightButton) && isSelected()) {
-        QList<QGraphicsItem *> selItems = scene()->selectedItems();
-        for (QGraphicsItem *item : qAsConst(selItems))
-            item->setSelected(true);
-        m_contextMenu->exec(mouseEvent->screenPos());
-    } else {
-        QGraphicsItem::mousePressEvent(mouseEvent);
+    if (spanAngle != m_spanAngle) {
+        prepareGeometryChange();
+        m_spanAngle = spanAngle;
+        update();
     }
-}
-
-QVariant EllipseShape::itemChange(GraphicsItemChange change, const QVariant &value)
-{
-    if (change == GraphicsItemChange::ItemSelectedChange && value == true) {
-        m_sizeGripShape = new SizeGripShape(new ShapeResizer, this);
-    }
-    if (change == GraphicsItemChange::ItemSelectedChange && value == false) {
-        delete m_sizeGripShape;
-    }
-
-    return QGraphicsItem::itemChange(change, value);
 }

@@ -22,29 +22,42 @@
 #ifndef ELLIPSESHAPE_H
 #define ELLIPSESHAPE_H
 
-#include <QGraphicsEllipseItem>
+#include "abstractshape.h"
 
-class SizeGripShape;
-
-class EllipseShape : public QGraphicsEllipseItem
+class EllipseShape : public AbstractShape
 {
 public:
     enum { Type = UserType + 2 };
 
-    explicit EllipseShape(QMenu *contextMenu, QGraphicsItem *parent = nullptr);
-    explicit EllipseShape(QRectF rect, QMenu *contextMenu, QGraphicsItem *parent = nullptr);
+    explicit EllipseShape(QGraphicsItem *parent = nullptr);
+    explicit EllipseShape(const QRectF &rect, QGraphicsItem *parent = nullptr);
+    explicit EllipseShape(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent = nullptr);
+    ~EllipseShape();
 
-    int type() const override { return Type;}
+    inline int type() const override { return Type;}
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QPainterPath shape() const override;
+    bool contains(const QPointF &point) const override;
+    bool isObscuredBy(const QGraphicsItem *item) const override;
+    QPainterPath opaqueArea() const override;
 
-protected:
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+    void setRect(const QRectF &rect);
+    void setRect(qreal x, qreal y, qreal w, qreal h);
+    QRectF rect() const;
+
+    int startAngle() const;
+    void setStartAngle(int angle);
+
+    int spanAngle() const;
+    void setSpanAngle(int spanAngle);
 
 private:
-    SizeGripShape *m_sizeGripShape;
-    QMenu *m_contextMenu;
+    Q_DISABLE_COPY(EllipseShape);
+
+    QRectF m_ellipseRect;
+    int m_startAngle;
+    int m_spanAngle;
 };
 
 #endif // ELLIPSESHAPE_H

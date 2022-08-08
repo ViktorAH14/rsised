@@ -42,6 +42,9 @@ protected:
     void wheelEvent(QGraphicsSceneWheelEvent *wheelEvent) override;
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
+    void highlightSelected(QPainter *painter, const QStyleOptionGraphicsItem *option);
+    QPainterPath shapeFromPath(const QPainterPath &path) const;
+
 private:
     SizeGripShape *m_sizeGripItem;
     QMenu *m_contextMenu;

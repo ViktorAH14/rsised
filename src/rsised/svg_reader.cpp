@@ -178,7 +178,8 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
 
         QDomElement elementEllipse = gNode.firstChildElement("ellipse");
         if (!elementEllipse.isNull()) {
-            EllipseShape *ellipseShape = new EllipseShape(m_itemMenu);
+            EllipseShape *ellipseShape = new EllipseShape();
+            ellipseShape->setMenu(m_itemMenu);
 // Position and size
             qreal cx = elementEllipse.attribute("cx").toFloat();
             qreal cy = elementEllipse.attribute("cy").toFloat();
