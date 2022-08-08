@@ -22,11 +22,11 @@
 #include "../include/sizegripshape.h"
 #include "../include/shaperesizer.h"
 
-#include <cmath>
-
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
 
 AbstractShape::AbstractShape(QGraphicsItem *parent)
     : QAbstractGraphicsShapeItem(parent)
@@ -40,13 +40,14 @@ AbstractShape::~AbstractShape()
 }
 
 void AbstractShape::scaleShape(const QRectF &newRect)
+// FIXME не совсем коректное масштабирование
+// NOTE Ограничить изменение размера определённым значением
 {
     prepareGeometryChange();
-    QRectF oldRect {boundingRect()};
-    qreal oldSize = sqrt(oldRect.width() * oldRect.width() + oldRect.height() * oldRect.height());
-    qreal newSize = sqrt(newRect.width() * newRect.width() + newRect.height() * newRect.height());
-    qreal scaleFactor = newSize / oldSize;
-    setTransform(QTransform::fromScale(scaleFactor, scaleFactor), true);
+    QSizeF size = boundingRect().size();
+    QSizeF newSize = newRect.size();
+    qreal s_xy = ((newSize.height() > size.height()) ? 1.018 : 0.988);
+    setTransform(QTransform::fromScale(s_xy, s_xy), true);
     update();
 }
 
@@ -100,11 +101,17 @@ void AbstractShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 void AbstractShape::wheelEvent(QGraphicsSceneWheelEvent *wheelEvent)
 {
     if (isSelected()) {
-        qreal s_xy {(wheelEvent->delta() > 0) ? 1.03 : 0.97};
-        setTransform(QTransform::fromScale(s_xy, s_xy), true);
-    } else {
+        prepareGeometryChange();
+        qreal s_xy = ((wheelEvent->delta() > 0) ? 1.03 : 0.97);
+        QTransform shapeTransform = transform();
+        shapeTransform.translate(boundingRect().center().x(), boundingRect().center().y());
+        shapeTransform.scale(s_xy, s_xy);
+        shapeTransform.translate(-boundingRect().center().x(), -boundingRect().center().y());
+        setTransform(shapeTransform);
+        update();
+     } else {
         QGraphicsItem::wheelEvent(wheelEvent);
-    }
+     }
 }
 
 QVariant AbstractShape::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -117,4 +124,46 @@ QVariant AbstractShape::itemChange(GraphicsItemChange change, const QVariant &va
     }
 
     return QGraphicsItem::itemChange(change, value);
+}
+
+void AbstractShape::highlightSelected(QPainter *painter, const QStyleOptionGraphicsItem *option)
+{
+    const QRectF murect = painter->transform().mapRect(QRectF(0, 0, 1, 1));
+    if (qFuzzyIsNull(qMax(murect.width(), murect.height())))
+        return;
+    const QRectF mbrect = painter->transform().mapRect(boundingRect());
+    if (qMin(mbrect.width(), mbrect.height()) < qreal(1.0))
+        return;
+    qreal itemPenWidth = pen().widthF();
+    const qreal pad = itemPenWidth / 2;
+    const qreal penWidth = 0;
+    const QColor fgcolor = option->palette.windowText().color();
+    const QColor bgcolor( fgcolor.red()   > 127 ? 0 : 255,
+                          fgcolor.green() > 127 ? 0 : 255,
+                          fgcolor.blue()  > 127 ? 0 : 255);
+    painter->setPen(QPen(bgcolor, penWidth, Qt::SolidLine));
+    painter->setBrush(Qt::NoBrush);
+    painter->drawRect(boundingRect().adjusted(pad, pad, -pad, -pad));
+    painter->setPen(QPen(option->palette.windowText(), 0, Qt::DashLine));
+    painter->setBrush(Qt::NoBrush);
+    painter->drawRect(boundingRect().adjusted(pad, pad, -pad, -pad));
+}
+
+QPainterPath AbstractShape::shapeFromPath(const QPainterPath &path) const
+{
+        const qreal penWidthZero = qreal(0.00000001);
+        QPen shapePen = pen();
+        if (path == QPainterPath() || shapePen == Qt::NoPen)
+            return path;
+        QPainterPathStroker ps;
+        ps.setCapStyle(shapePen.capStyle());
+        if (shapePen.widthF() <= 0.0)
+            ps.setWidth(penWidthZero);
+        else
+            ps.setWidth(shapePen.widthF());
+        ps.setJoinStyle(shapePen.joinStyle());
+        ps.setMiterLimit(shapePen.miterLimit());
+        QPainterPath p = ps.createStroke(path);
+        p.addPath(path);
+        return p;
 }

@@ -38,6 +38,7 @@ static void sendMousePress(QGraphicsScene *scene, const QPointF &point
     event.setModifiers(modifier);
     QApplication::sendEvent(scene, &event);
 }
+
 static void sendMouseMove(QGraphicsScene *scene, const QPointF &point,
                           Qt::MouseButton button = Qt::NoButton)
 {
@@ -47,6 +48,7 @@ static void sendMouseMove(QGraphicsScene *scene, const QPointF &point,
     event.setButtons(button);
     QApplication::sendEvent(scene, &event);
 }
+
 //static void sendMouseRelease(QGraphicsScene *scene, const QPointF &point
 //                             , Qt::MouseButton button = Qt::LeftButton)
 //{
@@ -63,6 +65,14 @@ static void sendMouseMove(QGraphicsScene *scene, const QPointF &point,
 //    sendMouseRelease(scene, point);
 //}
 
+static void sendMouseWheel(QGraphicsScene *scene, const QPointF &point, int delta)
+{
+    QGraphicsSceneWheelEvent wheelEvent(QEvent::GraphicsSceneWheel);
+    wheelEvent.setScenePos(point);
+    wheelEvent.setDelta(delta);
+    QApplication::sendEvent(scene, &wheelEvent);
+}
+
 class tst_RectShape : public QObject
 {
     Q_OBJECT
@@ -78,9 +88,8 @@ private slots:
     void paint();
     void isObscuredBy();
     void opaqueArea();
+
     //AbstractShape
-    void scaleShape_data();
-    void scaleShape();
     void setMenu();
     void mousePressEvent();
     void mouseMoveEvent();
@@ -96,7 +105,7 @@ void tst_RectShape::constructor()
     rectShape = new RectShape;
     rectShape->setPen(QPen(Qt::black, 0));
     QVERIFY2(rectShape, "rectShape nullptr");
-    QCOMPARE(int(rectShape->type()), int(RectShape::Type));
+    QCOMPARE(int(rectShape->type()), int(QGraphicsItem::UserType + 1));
     QCOMPARE(rectShape->flags(), 0x800); //ItemSendsGeometryChanges true
     QVERIFY(rectShape->acceptHoverEvents());
     QCOMPARE(rectShape->rect(), QRectF());
@@ -106,7 +115,7 @@ void tst_RectShape::constructor()
     rectShape = new RectShape(rect);
     rectShape->setPen(QPen(Qt::black, 0));
     QVERIFY2(rectShape, "rectShape nullptr");
-    QCOMPARE(int(rectShape->type()), int(RectShape::Type));
+    QCOMPARE(int(rectShape->type()), int(QGraphicsItem::UserType + 1));
     QCOMPARE(rectShape->flags(), 0x800);
     QVERIFY(rectShape->acceptHoverEvents());
     QCOMPARE(rectShape->rect(), rect);
@@ -119,7 +128,7 @@ void tst_RectShape::constructor()
     rectShape = new RectShape(x, y, w, h);
     rectShape->setPen(QPen(Qt::black, 0));
     QVERIFY2(rectShape, "rectShape nullptr");
-    QCOMPARE(int(rectShape->type()), int(RectShape::Type));
+    QCOMPARE(int(rectShape->type()), int(QGraphicsItem::UserType + 1));
     QCOMPARE(rectShape->flags(), 0x800);
     QVERIFY(rectShape->acceptHoverEvents());
     QCOMPARE(rectShape->rect(), rect);
@@ -128,7 +137,8 @@ void tst_RectShape::constructor()
 
 void tst_RectShape::type()
 {
-    QCOMPARE(int(RectShape::Type), QGraphicsItem::UserType + 1);
+    RectShape rectShape;
+    QCOMPARE(rectShape.type(), QGraphicsItem::UserType + 1);
 }
 
 void tst_RectShape::boundingRect()
@@ -193,6 +203,14 @@ void tst_RectShape::shape()
     QPainterPath path;
     path.addRect(rect.rect());
     QPainterPath p = ps.createStroke(path);
+    p.addPath(path);
+    QCOMPARE(rect.shape(), p);
+
+    path.clear();
+    p.clear();
+    rect.setRect(QRectF());
+    path.addRect(rect.rect());
+    p = ps.createStroke(path);
     p.addPath(path);
     QCOMPARE(rect.shape(), p);
 }
@@ -301,56 +319,21 @@ void tst_RectShape::opaqueArea()
     rectShape->setZValue(-1.0);
     QPainterPath opaquePath;
     QCOMPARE(rectShape->opaqueArea(), opaquePath);
+
     rectShape->setBrush(QBrush(Qt::red));
     QCOMPARE(rectShape->opaqueArea(), rectShape->shape());
+
     RectShape *opaqueShape = new RectShape(-50.0, -50.0, 200.0, 200.0);
     opaqueShape->setBrush(QBrush(Qt::blue));
     rectShape->setFlag(QGraphicsItem::ItemClipsToShape, true);
     QCOMPARE(rectShape->opaqueArea(), rectShape->clipPath());
+
     RectShape *parentShape = new RectShape(-120.0, -120.0, 200.0, 200.0, rectShape);
     parentShape->setBrush(QBrush(Qt::black));
     QCOMPARE(rectShape->opaqueArea(), rectShape->clipPath());
+
     rectShape->setFlag(QGraphicsItem::ItemClipsChildrenToShape, true);
     QCOMPARE(parentShape->opaqueArea(), parentShape->clipPath());
-}
-
-void tst_RectShape::scaleShape_data()
-{
-    QTest::addColumn<QRectF>("rect");
-    QTest::newRow("rect_0") << QRectF(0, 0, 0, 0);
-    QTest::newRow("rect_1") << QRectF(1, 1, 0, 0);
-    QTest::newRow("rect_2") << QRectF(-1, 1, 0, 0);
-    QTest::newRow("rect_3") << QRectF(1, -1, 0, 0);
-    QTest::newRow("rect_4") << QRectF(-1, -1, 0, 0);
-    QTest::newRow("rect_5") << QRectF(1, 1, 1, 0);
-    QTest::newRow("rect_6") << QRectF(-1, 1, 1, 0);
-    QTest::newRow("rect_7") << QRectF(1, -1, 1, 0);
-    QTest::newRow("rect_8") << QRectF(-1, -1, 1, 0);
-    QTest::newRow("rect_9") << QRectF(1, 1, 0, 1);
-    QTest::newRow("rect_10") << QRectF(-1, 1, 0, 1);
-    QTest::newRow("rect_11") << QRectF(1, -1, 0, 1);
-    QTest::newRow("rect_12") << QRectF(-1, -1, 0, 1);
-    QTest::newRow("rect_12") << QRectF(1, 1, 1, 1);
-    QTest::newRow("rect_13") << QRectF(-1, 1, 1, 1);
-    QTest::newRow("rect_14") << QRectF(1, -1, 1, 1);
-    QTest::newRow("rect_15") << QRectF(-1, -1, 1, 1);
-    QTest::newRow("rect_16") << QRectF(1, 1, -1, 1);
-    QTest::newRow("rect_17") << QRectF(1, 1, 1, -1);
-    QTest::newRow("rect_18") << QRectF(1, 1, -1, -1);
-    QTest::newRow("rect_19") << QRectF(-10, -10, 20, 20);
-    QTest::newRow("rect_19") << QRectF(-999999999, 999999999, 99999999999, 99999999999);
-}
-
-void tst_RectShape::scaleShape()
-{
-    QFETCH(QRectF, rect);
-    RectShape rectShape;
-    QRectF oldRect = rectShape.boundingRect();
-    qreal oldSize = sqrt(oldRect.width() * oldRect.width() + oldRect.height() * oldRect.height());
-    qreal newSize = sqrt(rect.width() * rect.width() + rect.height() * rect.height());
-    qreal scaleFactor = newSize / oldSize;
-    rectShape.scaleShape(rect);
-    QCOMPARE(rectShape.transform(), QTransform::fromScale(scaleFactor, scaleFactor));
 }
 
 void tst_RectShape::setMenu()
@@ -400,8 +383,14 @@ void tst_RectShape::mousePressEvent()
     rectShape->setMenu(contextMenu);
     rectShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
     scene.addItem(rectShape);
-    rectShape->setSelected(true);
 
+    QGraphicsSceneMouseEvent mousePressEvent(QEvent::GraphicsSceneMouseMove);
+    mousePressEvent.setScenePos(rectShape->pos());
+    mousePressEvent.setButton(Qt::LeftButton);
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    rectShape->setSelected(true);
     QSignalSpy contextMenuSpy(contextMenu, &QMenu::aboutToShow);
     QCOMPARE(contextMenuSpy.count(), 0);
 
@@ -426,7 +415,13 @@ void tst_RectShape::mouseMoveEvent()
     RectShape *rectShape = new RectShape(-10.0, -10.0, 20.0, 20.0);
     rectShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
     scene.addItem(rectShape);
-    rectShape->setSelected(true);
+
+    sendMousePress(&scene, rectShape->pos());
+    QGraphicsSceneMouseEvent mouseMoveEvent(QEvent::GraphicsSceneMouseMove);
+    mouseMoveEvent.setScenePos(rectShape->pos());
+    mouseMoveEvent.setButton(Qt::LeftButton);
+    QApplication::sendEvent(&scene, &mouseMoveEvent);
+    QVERIFY(mouseMoveEvent.isAccepted());
 
     sendMousePress(&scene, rectShape->pos());
     sendMouseMove(&scene, QPointF(50.0, -50.0), Qt::LeftButton);
@@ -448,9 +443,14 @@ void tst_RectShape::mouseDoubleClickEvent()
     RectShape *rectShape = new RectShape(-20.0, -20.0, 40.0, 40.0);
     rectShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
     scene.addItem(rectShape);
-
     QCOMPARE(rectShape->childItems().count(), 0);
-    rectShape->setSelected(true);
+
+    QGraphicsSceneMouseEvent mouseDClickEvent(QEvent::GraphicsSceneMouseDoubleClick);
+    mouseDClickEvent.setScenePos(rectShape->pos());
+    mouseDClickEvent.setButton(Qt::LeftButton);
+    QApplication::sendEvent(&scene, &mouseDClickEvent);
+    QVERIFY(mouseDClickEvent.isAccepted());
+
     QGraphicsItem *sizegripItem = rectShape->childItems().constFirst();
     int itemVisible = 0;
     for (int i = 0; i < sizegripItem->childItems().count(); i++) {
@@ -460,12 +460,7 @@ void tst_RectShape::mouseDoubleClickEvent()
     }
     QCOMPARE(itemVisible, 8);
 
-    QGraphicsSceneMouseEvent mouseDClickEvent(QEvent::GraphicsSceneMouseDoubleClick);
-    mouseDClickEvent.setScenePos(rectShape->pos());
-    mouseDClickEvent.setButton(Qt::LeftButton);
     QApplication::sendEvent(&scene, &mouseDClickEvent);
-    QVERIFY(mouseDClickEvent.isAccepted());
-
     sizegripItem = rectShape->childItems().constFirst();
     itemVisible = 0;
     for (int i = 0; i < sizegripItem->childItems().count(); i++) {
@@ -474,19 +469,78 @@ void tst_RectShape::mouseDoubleClickEvent()
             itemVisible++;
     }
     QCOMPARE(itemVisible, 4);
+
+    QApplication::sendEvent(&scene, &mouseDClickEvent);
+    sizegripItem = rectShape->childItems().constFirst();
+    itemVisible = 0;
+    for (int i = 0; i < sizegripItem->childItems().count(); i++) {
+        QGraphicsItem *item {sizegripItem->childItems().at(i)};
+        if (item->isVisible())
+            itemVisible++;
+    }
+    QCOMPARE(itemVisible, 8);
 }
 
 void tst_RectShape::wheelEvent()
 {
     QGraphicsScene scene;
+    QGraphicsView view(&scene);
+    view.show();
+    view.fitInView(scene.sceneRect());
+    QVERIFY(QTest::qWaitForWindowActive(&view));
+
     RectShape *rectShape = new RectShape(-20.0, -20.0, 40.0, 40.0);
     rectShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
     scene.addItem(rectShape);
-    rectShape->setSelected(true);
-    QGraphicsSceneMouseEvent wheelEvent(QEvent::GraphicsSceneWheel);
-    wheelEvent.setScenePos(rectShape->pos());
+
+    QGraphicsSceneWheelEvent wheelEvent(QEvent::GraphicsSceneWheel);
+    wheelEvent.setScenePos(rectShape->scenePos());
+    wheelEvent.setDelta(1);
     QApplication::sendEvent(&scene, &wheelEvent);
-    QVERIFY(wheelEvent.isAccepted());
+    QVERIFY(!wheelEvent.isAccepted());
+
+    rectShape->setSelected(true);
+    rectShape->resetTransform();
+
+    qreal m11Actual = rectShape->transform().m11();
+    qreal m11Expected = 1.0;
+    bool m11Compare = qFuzzyCompare(m11Actual, m11Expected);
+    QVERIFY(m11Compare);
+
+    qreal m22Actual = rectShape->transform().m22();
+    qreal m22Expected = 1.0;
+    bool m22Compare = qFuzzyCompare(m22Actual, m22Expected);
+    QVERIFY(m22Compare);
+
+    QTest::mouseMove(view.viewport(), rectShape->scenePos().toPoint());
+
+    for (int i = 0; i < 40; i++) {
+        sendMouseWheel(&scene, rectShape->scenePos(), 1);
+
+        m11Actual = rectShape->transform().m11();
+        m11Expected *= 1.03;
+        m11Compare = qFuzzyCompare(m11Actual, m11Expected);
+        QVERIFY(m11Compare);
+
+        m22Actual = rectShape->transform().m22();
+        m22Expected *= 1.03;
+        m22Compare = qFuzzyCompare(m22Actual, m22Expected);
+        QVERIFY(m22Compare);
+    }
+
+    for (int i = 0; i < 40; i++) {
+        sendMouseWheel(&scene, rectShape->scenePos(), -1);
+
+        m11Actual = rectShape->transform().m11();
+        m11Expected *= 0.97;
+        m11Compare = qFuzzyCompare(m11Actual, m11Expected);
+        QVERIFY(m11Compare);
+
+        m22Actual = rectShape->transform().m22();
+        m22Expected *= 0.97;
+        m22Compare = qFuzzyCompare(m22Actual, m22Expected);
+        QVERIFY(m22Compare);
+    }
 }
 
 void tst_RectShape::itemChange()

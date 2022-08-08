@@ -21,26 +21,29 @@
 #include "../include/rectshape.h"
 
 #include <QPainter>
+#include <QStyleOptionGraphicsItem>
 
 RectShape::RectShape(QGraphicsItem *parent)
-    : AbstractShape(parent), m_shapeRect(QRectF(0.0, 0.0, 0.0,0.0))
+    : AbstractShape(parent), m_shapeRect(QRectF())
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
 }
 
 RectShape::RectShape(const QRectF &rect, QGraphicsItem *parent)
-    : AbstractShape(parent), m_shapeRect(rect)
+    : AbstractShape(parent)
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
+    setRect(rect);
 }
 
 RectShape::RectShape(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent)
-    : AbstractShape(parent), m_shapeRect(QRectF(x, y, w, h))
+    : AbstractShape(parent)
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
+    setRect(QRectF(x, y, w, h));
 }
 
 RectShape::~RectShape()
@@ -49,43 +52,34 @@ RectShape::~RectShape()
 
 QRectF RectShape::boundingRect() const
 {
+    QRectF boundingRect;
     qreal halfpw = pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2;
-    QRectF  boundingRect = m_shapeRect;
-    if (halfpw > 0.0)
-        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+        boundingRect = m_shapeRect;
+        if (halfpw > 0.0)
+            boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
     return boundingRect;
 }
 
 void RectShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    Q_UNUSED(option);
     Q_UNUSED(widget);
 
-    painter->setRenderHint(QPainter::Antialiasing);
     painter->setPen(pen());
     painter->setBrush(brush());
     painter->drawRect(m_shapeRect);
+
+    if (option->state & QStyle::State_Selected) {
+         highlightSelected(painter, option);
+    }
 }
 
 QPainterPath RectShape::shape() const
 {
     QPainterPath path;
     path.addRect(rect());
-    QPen shapePen = pen();
-    if (shapePen == Qt::NoPen)
-        return path;
-    const qreal penWidthZero = qreal(0.00000001);
-    QPainterPathStroker ps;
-    ps.setCapStyle(shapePen.capStyle());
-    if (shapePen.widthF() <= 0.0)
-        ps.setWidth(penWidthZero);
-    else
-        ps.setWidth(shapePen.widthF());
-    ps.setJoinStyle(shapePen.joinStyle());
-    ps.setMiterLimit(shapePen.miterLimit());
-    QPainterPath p = ps.createStroke(path);
-    p.addPath(path);
-    return p;
+
+    return shapeFromPath(path);
 }
 
 bool RectShape::contains(const QPointF &point) const
@@ -108,7 +102,7 @@ void RectShape::setRect(const QRectF &rect)
     if (m_shapeRect == rect)
         return;
     prepareGeometryChange();
-    m_shapeRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    m_shapeRect = rect;
     update();
 }
 

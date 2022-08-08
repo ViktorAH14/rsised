@@ -33,7 +33,7 @@ public:
     explicit RectShape(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent = nullptr);
      ~RectShape();
 
-    int type() const override { return Type;}
+    inline int type() const override { return Type;}
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QPainterPath shape() const override;

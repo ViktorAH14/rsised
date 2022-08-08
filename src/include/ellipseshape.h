@@ -34,13 +34,23 @@ public:
     explicit EllipseShape(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent = nullptr);
     ~EllipseShape();
 
-    int type() const override { return Type;}
+    inline int type() const override { return Type;}
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QPainterPath shape() const override;
+    bool contains(const QPointF &point) const override;
+    bool isObscuredBy(const QGraphicsItem *item) const override;
+    QPainterPath opaqueArea() const override;
 
     void setRect(const QRectF &rect);
     void setRect(qreal x, qreal y, qreal w, qreal h);
     QRectF rect() const;
+
+    int startAngle() const;
+    void setStartAngle(int angle);
+
+    int spanAngle() const;
+    void setSpanAngle(int spanAngle);
 
 private:
     Q_DISABLE_COPY(EllipseShape);
