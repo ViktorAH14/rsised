@@ -167,6 +167,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 qreal y {0.0};
                 qreal width {0.0};
                 qreal height {0.0};
+                int startAngle {0};
+                int spanAngle {0};
                 qreal zValue {0.0};
                 qreal m11 {0.0};
                 qreal m12 {0.0};
@@ -192,6 +194,12 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     }
                     if (attr.name() == "height") {
                         height = attr.value().toFloat();
+                    }
+                    if (attr.name() == "start-angle") {
+                        startAngle = attr.value().toInt();
+                    }
+                    if (attr.name() == "span-angle") {
+                        spanAngle = attr.value().toInt();
                     }
                     if (attr.name() == "pen-color") {
                         itemPen.setColor(attr.value().toString());
@@ -225,6 +233,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     }
                 }
                 ellipseShape->setRect(x, y, width, height);
+                ellipseShape->setStartAngle(startAngle);
+                ellipseShape->setSpanAngle(spanAngle);
                 ellipseShape->setPen(itemPen);
                 ellipseShape->setBrush(itemBrush);
                 ellipseShape->setZValue(zValue);

@@ -77,7 +77,8 @@ private slots:
 // Simple draw
     void drawPolyline();
     void drawRect();
-    void drawEllipse(); //TODO реализовать рисование дуги
+    void drawEllipse();
+    void drawPie();
     void drawCurve();
     void insertText();
 

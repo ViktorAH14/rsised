@@ -349,8 +349,8 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
             QString firstPoint = pointsList.at(0);
             QStringList firstPointList = firstPoint.replace(QString("M"), QString("")).split(",");
             path.moveTo(firstPointList.at(0).toFloat(), firstPointList.at(1).toFloat());
-            for (int i = 1; i < pointsList.size(); i++) {
-                QString pathPoints = pointsList.at(i);
+            for (int k = 1; k < pointsList.size(); k++) {
+                QString pathPoints = pointsList.at(k);
                 if (pathPoints.at(0) == 'L') {
                     currentPathType = PathType::Polyline;
                     QStringList pointList = pathPoints.replace(QString("L"), QString("")).split(",");
@@ -361,11 +361,11 @@ QList<QGraphicsItem *> SvgReader::getElements(const QString &fileName)
                     QStringList c1PointList = pathPoints.replace(QString("C"), QString("")).split(" ");
                     QStringList c1(c1PointList.at(0).split(","));
                     QPointF ctr_1_Point(c1.at(0).toFloat(), c1.at(1).toFloat());
-                    i++;
-                    QStringList c2(pointsList.at(i).split(","));
+                    k++;
+                    QStringList c2(pointsList.at(k).split(","));
                     QPointF ctr_2_Point(c2.at(0).toFloat(), c2.at(1).toFloat());
-                    i++;
-                    QStringList cur(pointsList.at(i).split(","));
+                    k++;
+                    QStringList cur(pointsList.at(k).split(","));
                     QPointF curvePoint(cur.at(0).toFloat(), cur.at(1).toFloat());
                     path.cubicTo(ctr_1_Point, ctr_2_Point, curvePoint);
                 }

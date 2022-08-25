@@ -27,7 +27,9 @@
 #include <QMenu>
 
 PolylineShape::PolylineShape(QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsPathItem(parent), m_contextMenu{contextMenu}
+    : QGraphicsPathItem(parent)
+    , m_sizeGripShape{nullptr}
+    , m_contextMenu{contextMenu}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);

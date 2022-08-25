@@ -52,6 +52,9 @@ public:
     int spanAngle() const;
     void setSpanAngle(int spanAngle);
 
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
 private:
     Q_DISABLE_COPY(EllipseShape);
 

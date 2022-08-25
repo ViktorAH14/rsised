@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>1662</width>
-     <height>19</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFail">
@@ -79,6 +79,7 @@
     <addaction name="actionDrawPolyline"/>
     <addaction name="actionDrawRectangle"/>
     <addaction name="actionDrawEllipse"/>
+    <addaction name="actionDrawPie"/>
     <addaction name="actionDrawCurve"/>
     <addaction name="actionInsertText"/>
     <addaction name="actionInsertImage"/>
@@ -173,6 +174,7 @@
    <addaction name="actionDrawCurve"/>
    <addaction name="actionDrawRectangle"/>
    <addaction name="actionDrawEllipse"/>
+   <addaction name="actionDrawPie"/>
    <addaction name="actionInsertText"/>
    <addaction name="actionInsertImage"/>
   </widget>
@@ -509,6 +511,24 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionDrawPie">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/piechart_48.png</normaloff>:/images/icons/piechart_48.png</iconset>
+   </property>
+   <property name="text">
+    <string>Pie</string>
+   </property>
+   <property name="toolTip">
+    <string>Draw a pie</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+P</string>
    </property>
   </action>
  </widget>
@@ -900,6 +920,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionDrawPie</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>drawPie()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>830</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>drawPolyline()</slot>
@@ -926,5 +962,6 @@
   <slot>print()</slot>
   <slot>aboutQt()</slot>
   <slot>about()</slot>
+  <slot>drawPie()</slot>
  </slots>
 </ui>

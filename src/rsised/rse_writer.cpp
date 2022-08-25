@@ -40,7 +40,7 @@ RseWriter::RseWriter()
 {
 }
 
-void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QRectF sceneRect)
+void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> &items, QRectF sceneRect)
 {
     QXmlStreamWriter rseWriter(file);
     rseWriter.setAutoFormatting(true);
@@ -100,6 +100,8 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
             rseWriter.writeAttribute("y", QString::number(rect.y()));
             rseWriter.writeAttribute("width", QString::number(rect.width()));
             rseWriter.writeAttribute("height", QString::number(rect.height()));
+            rseWriter.writeAttribute("start-angle", QString::number(ellipseShape->startAngle()));
+            rseWriter.writeAttribute("span-angle", QString::number(ellipseShape->spanAngle()));
             rseWriter.writeAttribute("pen-color", ellipseShape->pen().color().name());
             rseWriter.writeAttribute("pen-width", QString::number(ellipseShape->pen().width()));
             rseWriter.writeAttribute("pen-style", QString::number(ellipseShape->pen().style()));
@@ -118,7 +120,7 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
                            + QString::number(linePath.elementAt(i).y);
             }
             rseWriter.writeStartElement("polyline");
-            rseWriter.writeAttribute("m", dotList.at(0));
+            rseWriter.writeAttribute("m", dotList.constFirst());
             QString dotLine;
             for (int i = 1; i < dotList.count(); i++) {
                 dotLine += dotList.at(i) + " ";
@@ -148,7 +150,7 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> items, QR
                            + QString::number(curvePath.elementAt(i).y);
             }
             rseWriter.writeStartElement("curve");
-            rseWriter.writeAttribute("m", dotList.at(0));
+            rseWriter.writeAttribute("m", dotList.constFirst());
             QString dotLine;
             for (int i = 1; i < dotList.count(); i ++) {
                 dotLine += dotList.at(i) + " ";

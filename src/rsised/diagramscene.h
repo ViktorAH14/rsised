@@ -47,6 +47,7 @@ public:
     enum SceneMode {InsertPolyline
                     , InsertRectShape
                     , InsertEllipse
+                    , InsertPie
                     , InsertCurve
                     , InserText
                     , InsertImage
@@ -65,6 +66,7 @@ public:
     void setTechnicsShapeType(TechnicsShape::ShapeType type);
     void setDeviceShapeType(DeviceShape::ShapeType type);
     void setBuildingStructShapeType(BuildingStruct::ShapeType type);
+    void clearPie();
 
 public slots:
     void setMode(DiagramScene::SceneMode mode);
@@ -87,6 +89,7 @@ private:
     RectShape   *m_rectShape;
     PolylineShape    *polyline;
     EllipseShape     *m_ellipseShape;
+    QGraphicsPathItem *tempPath;
     Curve       *curve;
     TextShape    *textItem;
     PixmapShape  *pixmapItem;
@@ -97,7 +100,7 @@ private:
     QFont       itemFont;
     QColor      fontColor;
     QList<QPointF>  pathPoint;
-    QPointF     startPoint; // NOTE Without this variable, a segmentation fault occurs???
+//    QPointF     startPoint; // NOTE Without this variable, a segmentation fault occurs???
     bool        leftButtonPressed;
     bool        sceneChanged;
 };
