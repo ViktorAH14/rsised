@@ -27,7 +27,9 @@
 #include <QMenu>
 
 Curve::Curve(QMenu *contextMenu, QGraphicsItem *parent)
-    : QGraphicsPathItem(parent), m_contextMenu{contextMenu}
+    : QGraphicsPathItem(parent)
+    , m_sizeGripItem{nullptr}
+    , m_contextMenu{contextMenu}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);

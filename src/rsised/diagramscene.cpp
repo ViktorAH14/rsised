@@ -26,21 +26,32 @@
 #include "../include/textshape.h"
 #include "../include/pixmapshape.h"
 
+#include <math.h>
+
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
 #include <QGraphicsPixmapItem>
+#include <QToolTip>
 
 DiagramScene::DiagramScene(QMenu *itemMenu, QObject *parent)
     : QGraphicsScene(parent)
+    , m_technicsShapeType{TechnicsShape::Base}
+    , technicsShape{nullptr}
+    , m_deviceShapeType{DeviceShape::Barrel_0}
+    , deviceShape{nullptr}
+    , m_buildingStructType{BuildingStruct::Wall}
+    , buildingStructItem{nullptr}
     , m_rectShape{nullptr}
     , polyline{nullptr}
     , m_ellipseShape{nullptr}
+    , tempPath{nullptr}
     , curve{nullptr}
     , textItem{nullptr}
     , pixmapItem{nullptr}
     , m_itemMenu{itemMenu}
     , m_sceneMode{SelectItem}
     , leftButtonPressed{false}
+    , sceneChanged(false)
 {
 }
 
@@ -155,6 +166,14 @@ void DiagramScene::setBuildingStructShapeType(BuildingStruct::ShapeType type)
     m_buildingStructType = type;
 }
 
+void DiagramScene::clearPie()
+{
+    removeItem(tempPath);
+    tempPath = nullptr;
+    pathPoint.clear();
+    m_ellipseShape = nullptr;
+}
+
 void DiagramScene::insertPixmap(const QString &imageFile)
 {
     pixmapItem = new PixmapShape();
@@ -182,7 +201,6 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->button() == Qt::LeftButton) {
         leftButtonPressed = true;
-
         switch (m_sceneMode) {
         case InsertPolyline:
             pathPoint.append(mouseEvent->scenePos());
@@ -201,6 +219,17 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                                                      , mouseEvent->scenePos()));
             m_ellipseShape->setMenu(m_itemMenu);
             addItem(m_ellipseShape);
+            break;
+        case InsertPie:
+            if (m_ellipseShape == nullptr) {
+                m_ellipseShape = new EllipseShape(QRectF(mouseEvent->scenePos()
+                                                         , mouseEvent->scenePos()));
+                m_ellipseShape->setMenu(m_itemMenu);
+                m_ellipseShape->setPen(QPen(Qt::black, 0, Qt::DashLine));
+                addItem(m_ellipseShape);
+                tempPath = new QGraphicsPathItem();
+                addItem(tempPath);
+            }
             break;
         case InsertCurve:
             pathPoint.append(mouseEvent->scenePos());
@@ -262,35 +291,66 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
             m_rectShape->setBrush(itemBrush);
         }
         if ((m_sceneMode == InsertEllipse) && (m_ellipseShape != nullptr)) {
-            qreal dx = mouseEvent->scenePos().x() - m_ellipseShape->rect().left();
-            qreal dy = mouseEvent->scenePos().y() - m_ellipseShape->rect().top();
-            m_ellipseShape->setRect( ( dx > 0 ) ? m_ellipseShape->rect().left() : mouseEvent->scenePos().x(),
-                              ( dy > 0 ) ? m_ellipseShape->rect().top() : mouseEvent->scenePos().y(),
+            qreal dx = mouseEvent->scenePos().x() - m_ellipseShape->rect().x();
+            qreal dy = mouseEvent->scenePos().y() - m_ellipseShape->rect().y();
+            m_ellipseShape->setRect((dx > 0) ? m_ellipseShape->rect().x() : mouseEvent->scenePos().x(),
+                              (dy > 0) ? m_ellipseShape->rect().y() : mouseEvent->scenePos().y(),
                               qAbs( dx ), qAbs( dy ) );
+
             m_ellipseShape->setPen(itemPen);
             m_ellipseShape->setBrush(itemBrush);
         }
+        if ((m_sceneMode == InsertPie) && (m_ellipseShape != nullptr)) {
+                QPointF center = m_ellipseShape->rect().center();
+                QLineF radiusLine(center, mouseEvent->scenePos());
+                qreal radius = radiusLine.length();
+                qreal centerX = center.x();
+                qreal centerY = center.y();
+                qreal x = centerX - radius;
+                qreal y = centerY - radius;
+                m_ellipseShape->setRect(x, y, radius * 2, radius * 2);
 
-    }
-    if (m_sceneMode == InsertCurve && (curve != nullptr)) {
-        QPainterPath newPath;
-        newPath.moveTo(pathPoint.at(0));
-        for (int i = 2; i < pathPoint.count(); i += 2) {
-            newPath.quadTo(pathPoint.at(i - 1), pathPoint.at(i));
+                QPainterPath tempPiePath;
+                tempPiePath.moveTo(center);
+                tempPiePath.lineTo(mouseEvent->scenePos());
+                tempPath->setPath(tempPiePath);
         }
-        newPath.quadTo(pathPoint.back(), mouseEvent->scenePos());
-        curve->setPath(newPath);
-        curve->setPen(itemPen);
-    }
-    if ((m_sceneMode == InsertPolyline) && (polyline != nullptr)) {
-        QPainterPath newPath;
-        newPath.moveTo(pathPoint.at(0));
-        for (int i = 1; i < pathPoint.count(); i++) {
-            newPath.lineTo(pathPoint.at(i));
+    } else {
+        if ((m_sceneMode == InsertPie) && (m_ellipseShape != nullptr)) {
+            QPainterPath tempPiePath;
+            QPointF center = m_ellipseShape->rect().center();
+            tempPiePath.moveTo(center);
+            tempPiePath.lineTo(pathPoint.constFirst());
+            QLineF startRadius(center, pathPoint.constFirst());
+            QLineF spanRadius(center, mouseEvent->scenePos());
+            qreal startAngle = startRadius.angle();
+            qreal spanAngle = startRadius.angleTo(spanRadius);
+            tempPiePath.arcTo(m_ellipseShape->rect(), startAngle, spanAngle);
+            tempPiePath.lineTo(center);
+            tempPath->setPath(tempPiePath);
+            tempPath->setPen(QPen(Qt::black, 1));
+            tempPath->setBrush(QBrush(Qt::lightGray));
         }
-        newPath.lineTo(mouseEvent->scenePos());
-        polyline->setPath(newPath);
-        polyline->setPen(itemPen);
+        if (m_sceneMode == InsertCurve && (curve != nullptr)) {
+            QPainterPath newPath;
+            newPath.moveTo(pathPoint.at(0));
+            for (int i = 2; i < pathPoint.count(); i += 2) {
+                newPath.quadTo(pathPoint.at(i - 1), pathPoint.at(i));
+            }
+            newPath.quadTo(pathPoint.back(), mouseEvent->scenePos());
+            curve->setPath(newPath);
+            curve->setPen(itemPen);
+        }
+        if ((m_sceneMode == InsertPolyline) && (polyline != nullptr)) {
+            QPainterPath newPath;
+            newPath.moveTo(pathPoint.at(0));
+            for (int i = 1; i < pathPoint.count(); i++) {
+                newPath.lineTo(pathPoint.at(i));
+            }
+            newPath.lineTo(mouseEvent->scenePos());
+            polyline->setPath(newPath);
+            polyline->setPen(itemPen);
+        }
     }
 
     QGraphicsScene::mouseMoveEvent(mouseEvent);
@@ -306,6 +366,26 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         break;
     case InsertEllipse:
         m_ellipseShape = nullptr;
+        break;
+    case InsertPie:
+        if (m_ellipseShape != nullptr) {
+            QPointF center = m_ellipseShape->rect().center();
+            if (pathPoint.isEmpty()) {
+                pathPoint.append(mouseEvent->scenePos());
+                QLineF ellipseStartRadius(center, pathPoint.constFirst());
+                qreal startAngle = ellipseStartRadius.angle();
+                m_ellipseShape->setStartAngle(startAngle * 16);
+            } else {
+                pathPoint.append(mouseEvent->scenePos());
+                QLineF ellipseStartRadius(center, pathPoint.constFirst());
+                QLineF ellipseSpanRadius(center, pathPoint.constLast());
+                qreal spanAngle = ellipseStartRadius.angleTo(ellipseSpanRadius);
+                m_ellipseShape->setSpanAngle(spanAngle * 16);
+                m_ellipseShape->setPen(itemPen);
+                m_ellipseShape->setBrush(itemBrush);
+                clearPie();
+            }
+        }
         break;
     case InsertCurve:
         break;

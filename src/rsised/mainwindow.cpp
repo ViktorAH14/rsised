@@ -440,6 +440,16 @@ void MainWindow::drawEllipse()
     ui->actionDeleteItem->setDisabled(true);
 }
 
+void MainWindow::drawPie()
+{
+    ui->mainGraphicsView->setCursor(Qt::CrossCursor);
+    ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
+    scene->setMode(DiagramScene::InsertPie);
+    scene->setSelectableItems(false);
+    ui->actionSelect_All->setDisabled(true);
+    ui->actionDeleteItem->setDisabled(true);
+}
+
 void MainWindow::drawCurve()
 {
     ui->mainGraphicsView->setCursor(Qt::CrossCursor);
@@ -537,15 +547,15 @@ void MainWindow::bringToFront()
     if (scene->selectedItems().isEmpty())
         return;
 
-    QGraphicsItem *selectedItem = scene->selectedItems().constFirst();
-    const QList<QGraphicsItem *> overlapItems = selectedItem->collidingItems();
+    QGraphicsItem *selectItem = scene->selectedItems().constFirst();
+    const QList<QGraphicsItem *> overlapItems = selectItem->collidingItems();
 
     qreal zValue = 0;
     for (const QGraphicsItem *item : overlapItems) {
         if (item->zValue() >= zValue)
             zValue = item->zValue() + 0.1;
     }
-    selectedItem->setZValue(zValue);
+    selectItem->setZValue(zValue);
 }
 
 void MainWindow::sendToBack()
@@ -553,15 +563,15 @@ void MainWindow::sendToBack()
     if (scene->selectedItems().isEmpty())
         return;
 
-    QGraphicsItem *selectedItem = scene->selectedItems().constFirst();
-    const QList<QGraphicsItem *> overlapItems = selectedItem->collidingItems();
+    QGraphicsItem *selectItem = scene->selectedItems().constFirst();
+    const QList<QGraphicsItem *> overlapItems = selectItem->collidingItems();
 
     qreal zValue = 0;
     for (const QGraphicsItem *item : overlapItems) {
         if (item->zValue() <= zValue)
             zValue = item->zValue() - 0.1;
     }
-    selectedItem->setZValue(zValue);
+    selectItem->setZValue(zValue);
 }
 
 void MainWindow::about()
@@ -980,6 +990,7 @@ void MainWindow::createSimpleDrawToolBar()
     simpleDrawModeActionGr->addAction(ui->actionDrawCurve);
     simpleDrawModeActionGr->addAction(ui->actionDrawRectangle);
     simpleDrawModeActionGr->addAction(ui->actionDrawEllipse);
+    simpleDrawModeActionGr->addAction(ui->actionDrawPie);
     simpleDrawModeActionGr->addAction(ui->actionInsertText);
     simpleDrawModeActionGr->addAction(ui->actionInsertImage);
     simpleDrawModeActionGr->setExclusive(true);

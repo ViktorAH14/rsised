@@ -163,3 +163,12 @@ void EllipseShape::setSpanAngle(int spanAngle)
         update();
     }
 }
+
+void EllipseShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if ((m_spanAngle != 0) && (qAbs(m_spanAngle) % (360 *16) != 0)) {
+        return;
+    } else {
+        AbstractShape::mouseDoubleClickEvent(mouseEvent);
+    }
+}

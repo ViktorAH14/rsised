@@ -30,7 +30,7 @@ QT_END_NAMESPACE
 class SvgReader
 {
 public:
-    SvgReader(QMenu *itemMenu);
+    explicit SvgReader(QMenu *itemMenu);
 
     QRectF getSize(const QString &fileName) const;
     QList<QGraphicsItem *> getElements(const QString &fileName);

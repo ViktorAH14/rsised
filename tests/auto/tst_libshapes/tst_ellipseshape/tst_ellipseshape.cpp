@@ -19,6 +19,7 @@
  */
 
 #include "../../../../src/include/ellipseshape.h"
+#include "../../../../src/include/sizegripshape.h"
 
 #include <QtTest>
 
@@ -76,6 +77,7 @@ private slots:
     void setStartAngle();
     void setSpanAngle_data();
     void setSpanAngle();
+    void pieMouseDoubleClickEvent();
 
     //AbstractShape
     void setMenu();
@@ -400,19 +402,50 @@ void tst_EllipseShape::setSpanAngle_data()
 void tst_EllipseShape::setSpanAngle()
 {
     QFETCH(int, spanAngle);
-
-//    QGraphicsScene scene;
-//    QGraphicsView view(&scene);
-//    view.show();
-//    view.fitInView(scene.sceneRect());
-//    QVERIFY(QTest::qWaitForWindowActive(&view));
-
     EllipseShape ellipseShape;
     ellipseShape.setRect(-30.0, -30.0, 60.0, 60.0);
     ellipseShape.setStartAngle(1440);
     ellipseShape.setSpanAngle(spanAngle);
-//    scene.addItem(&ellipseShape);
     QCOMPARE(spanAngle, ellipseShape.spanAngle());
+}
+
+void tst_EllipseShape::pieMouseDoubleClickEvent()
+{
+    QGraphicsScene scene;
+    EllipseShape *pieShape = new EllipseShape(-20.0, -20.0, 40.0, 40.0);
+    pieShape->setSpanAngle(120 * 16);
+    pieShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    scene.addItem(pieShape);
+    QCOMPARE(pieShape->childItems().count(), 0);
+    pieShape->setSelected(true);
+
+    QGraphicsSceneMouseEvent mouseDClickEvent(QEvent::GraphicsSceneMouseDoubleClick);
+    mouseDClickEvent.setScenePos(pieShape->pos());
+    mouseDClickEvent.setButton(Qt::LeftButton);
+    QApplication::sendEvent(&scene, &mouseDClickEvent);
+    QVERIFY(mouseDClickEvent.isAccepted());
+
+    SizeGripShape *sizegripItem
+            = qgraphicsitem_cast<SizeGripShape *>(pieShape->childItems().constFirst());
+    int itemVisible = 0;
+    for (int i = 0; i < sizegripItem->childItems().count(); i++) {
+        QGraphicsItem *item {sizegripItem->childItems().at(i)};
+        if (item->isVisible())
+            itemVisible++;
+    }
+    QCOMPARE(itemVisible, 3);
+    QCOMPARE(sizegripItem->actionType(), SizeGripShape::Resize);
+
+    QApplication::sendEvent(&scene, &mouseDClickEvent);
+    sizegripItem->childItems().constFirst();
+    itemVisible = 0;
+    for (int i = 0; i < sizegripItem->childItems().count(); i++) {
+        QGraphicsItem *item {sizegripItem->childItems().at(i)};
+        if (item->isVisible())
+            itemVisible++;
+    }
+    QCOMPARE(itemVisible, 3);
+    QCOMPARE(sizegripItem->actionType(), SizeGripShape::Resize);
 }
 
 void tst_EllipseShape::setMenu()
@@ -530,7 +563,8 @@ void tst_EllipseShape::mouseDoubleClickEvent()
     QApplication::sendEvent(&scene, &mouseDClickEvent);
     QVERIFY(mouseDClickEvent.isAccepted());
 
-    QGraphicsItem *sizegripItem = ellipseShape->childItems().constFirst();
+    SizeGripShape *sizegripItem
+            = qgraphicsitem_cast<SizeGripShape *>(ellipseShape->childItems().constFirst());
     int itemVisible = 0;
     for (int i = 0; i < sizegripItem->childItems().count(); i++) {
         QGraphicsItem *item {sizegripItem->childItems().at(i)};
@@ -538,9 +572,10 @@ void tst_EllipseShape::mouseDoubleClickEvent()
             itemVisible++;
     }
     QCOMPARE(itemVisible, 8);
+    QCOMPARE(sizegripItem->actionType(), SizeGripShape::Resize);
 
     QApplication::sendEvent(&scene, &mouseDClickEvent);
-    sizegripItem = ellipseShape->childItems().constFirst();
+    sizegripItem->childItems().constFirst();
     itemVisible = 0;
     for (int i = 0; i < sizegripItem->childItems().count(); i++) {
         QGraphicsItem *item {sizegripItem->childItems().at(i)};
@@ -548,9 +583,10 @@ void tst_EllipseShape::mouseDoubleClickEvent()
             itemVisible++;
     }
     QCOMPARE(itemVisible, 4);
+    QCOMPARE(sizegripItem->actionType(), SizeGripShape::Rotate);
 
     QApplication::sendEvent(&scene, &mouseDClickEvent);
-    sizegripItem = ellipseShape->childItems().constFirst();
+    sizegripItem->childItems().constFirst();
     itemVisible = 0;
     for (int i = 0; i < sizegripItem->childItems().count(); i++) {
         QGraphicsItem *item {sizegripItem->childItems().at(i)};
@@ -558,6 +594,7 @@ void tst_EllipseShape::mouseDoubleClickEvent()
             itemVisible++;
     }
     QCOMPARE(itemVisible, 8);
+    QCOMPARE(sizegripItem->actionType(), SizeGripShape::Resize);
 }
 
 void tst_EllipseShape::wheelEvent()

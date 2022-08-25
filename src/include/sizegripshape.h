@@ -23,6 +23,8 @@
 
 #include <QGraphicsItem>
 
+class EllipseShape;
+
 class SizeGripShape : public QGraphicsItem
 {
 public:
@@ -47,6 +49,9 @@ public:
     void setBottom(qreal y);
     void setBottomLeft(const QPointF &pos);
     void setLeft(qreal x);
+    void setCenter(const QPointF &pos);
+    void setStartPoint(const QPointF &pos);
+    void setSpanPoint(const QPointF &pos);
 
     void setActionType(ActionType actionType);
     ActionType actionType();
@@ -63,10 +68,13 @@ private:
         BottomLeft  = Bottom | Left,
         Right       = 0x8,
         TopRight    = Top | Right,
-        BottomRight = Bottom | Right
+        BottomRight = Bottom | Right,
+        Center      = 0xB,
+        StartPoint  = 0xC,
+        SpanPoint    = 0xD
     };
 
-    enum ItemType { RectShape, Path };
+    enum ItemType { Rect, Pie, Path };
 
     class HandleItem : public QGraphicsRectItem
     {
@@ -80,7 +88,7 @@ private:
         void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
         void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
         void hoverEnterEvent(QGraphicsSceneHoverEvent *hoverEvent) override;
-        void hoverLeaveEvent(QGraphicsSceneHoverEvent *hoverevent) override;
+        void hoverLeaveEvent(QGraphicsSceneHoverEvent *hoverEvent) override;
         QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
     private:
@@ -96,6 +104,7 @@ private:
     void rotateParentItem(const QPointF &currentPos, int positionFlag);
     void setItemType(ItemType type);
     void updateHandleItemPositions();
+    void setPieHandleItem();
 
     QList<HandleItem *> handleItemList;
     Resizer *itemResizer;
@@ -103,6 +112,10 @@ private:
     QPainterPath m_parentPath;
     ActionType m_actionType;
     ItemType m_itemType;
+    EllipseShape *m_ellipseShape;
+    QPointF m_centerPoint;
+    QPointF m_startPoint;
+    QPointF m_spanPoint;
 };
 
 #endif // SIZEGRIPSHAPE_H

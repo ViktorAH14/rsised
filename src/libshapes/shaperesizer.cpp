@@ -44,8 +44,7 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
         break;
     }
     case EllipseShape::Type: {
-        EllipseShape *ellipseShape = dynamic_cast<EllipseShape *>(item);
-        if (ellipseShape) {
+        if (EllipseShape *ellipseShape = dynamic_cast<EllipseShape *>(item)) {
             QRectF itemRect = value.toRectF();
             ellipseShape->setRect(itemRect);
         }

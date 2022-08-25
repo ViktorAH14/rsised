@@ -129,8 +129,8 @@ QSet<BuildingStruct *> BuildingStruct::getCollidingWalls()
 void BuildingStruct::setCollidingWals()
 {
     QList<QGraphicsItem *> collidingItem = collidingItems();
-    BuildingStruct *wallItem;
     for (QGraphicsItem *item : qAsConst(collidingItem)) {
+        BuildingStruct *wallItem;
         if ((wallItem = dynamic_cast<BuildingStruct *>(item))
                 && (wallItem->shapeType() == Wall) && (wallItem != this)) {
                 collidingWalls.insert(wallItem);

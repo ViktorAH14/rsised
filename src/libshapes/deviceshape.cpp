@@ -40,10 +40,10 @@ void DeviceShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
 QRectF DeviceShape::boundingRect() const
 {
-    qreal penWidth {2.0};
+    qreal pw {2.0};
+    qreal halfpw = pw / 2;
 
-    return QRectF(-32.0 - penWidth / 2.0, -45.0 - penWidth / 2.0
-                  , 64.0 + penWidth, 90.0 + penWidth);
+    return QRectF(-32.0 - halfpw, -45.0 - halfpw, 64.0 + pw, 90.0 + pw);
 }
 
 QPixmap DeviceShape::image()

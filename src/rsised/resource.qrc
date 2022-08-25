@@ -58,5 +58,6 @@
         <file>images/icons/select_rubber_48.png</file>
         <file>images/icons/qt_48.png</file>
         <file>i18n/rsised_ru.qm</file>
+        <file>images/icons/piechart_48.png</file>
     </qresource>
 </RCC>

@@ -31,7 +31,7 @@ QT_END_MOC_NAMESPACE
 class RseReader
 {
 public:
-    RseReader(QMenu *itemMenu);
+    explicit RseReader(QMenu *itemMenu);
 
     QRectF getSceneRect(QIODevice *device) const;
     QList<QGraphicsItem *> getElement(QIODevice *device) const;

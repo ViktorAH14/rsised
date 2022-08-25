@@ -58,7 +58,7 @@ public:
                      , FoamLift_1
                      , FoamLift_2 };
 
-    DeviceShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
+    explicit DeviceShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
     QRectF boundingRect() const override;
     int type() const override {return Type;}

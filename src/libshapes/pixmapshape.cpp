@@ -28,6 +28,7 @@
 
 PixmapShape::PixmapShape(QGraphicsItem *parent)
     : QGraphicsPixmapItem(parent)
+    , m_sizeGripShape {nullptr}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
