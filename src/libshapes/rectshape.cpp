@@ -24,7 +24,7 @@
 #include <QStyleOptionGraphicsItem>
 
 RectShape::RectShape(QGraphicsItem *parent)
-    : AbstractShape(parent), m_shapeRect(QRectF())
+    : AbstractShape(parent), m_shapeRect{QRectF()}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
@@ -43,20 +43,15 @@ RectShape::RectShape(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent)
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
-    setRect(QRectF(x, y, w, h));
-}
-
-RectShape::~RectShape()
-{
+    setRect(x, y, w, h);
 }
 
 QRectF RectShape::boundingRect() const
 {
-    QRectF boundingRect;
-    qreal halfpw = pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2;
-        boundingRect = m_shapeRect;
-        if (halfpw > 0.0)
-            boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    QRectF boundingRect{m_shapeRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
 
     return boundingRect;
 }

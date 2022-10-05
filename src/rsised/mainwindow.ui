@@ -652,7 +652,7 @@
    <sender>actionDeleteItem</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>deleteItem()</slot>
+   <slot>deleteShape()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -943,7 +943,7 @@
   <slot>drawRect()</slot>
   <slot>drawEllipse()</slot>
   <slot>drawCurve()</slot>
-  <slot>deleteItem()</slot>
+  <slot>deleteShape()</slot>
   <slot>openSVG()</slot>
   <slot>saveSVG()</slot>
   <slot>saveAs()</slot>

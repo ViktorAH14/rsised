@@ -90,39 +90,39 @@ private slots:
 
 void tst_EllipseShape::constructor()
 {
-    EllipseShape *ellipseShape = nullptr;
+    EllipseShape *p_ellipseShape = nullptr;
 
-    ellipseShape = new EllipseShape;
-    ellipseShape->setPen(QPen(Qt::black, 0));
-    QVERIFY2(ellipseShape, "ellipseShape nullptr");
-    QCOMPARE(ellipseShape->type(), int(QGraphicsItem::UserType + 2));
-    QCOMPARE(ellipseShape->flags(), 0x800); //ItemSendsGeometryChanges true
-    QVERIFY(ellipseShape->acceptHoverEvents());
-    QCOMPARE(ellipseShape->rect(), QRectF());
-    delete ellipseShape;
+    p_ellipseShape = new EllipseShape;
+    p_ellipseShape->setPen(QPen(Qt::black, 0));
+    QVERIFY2(p_ellipseShape, "ellipseShape nullptr");
+    QCOMPARE(p_ellipseShape->type(), int(QGraphicsItem::UserType + 2));
+    QCOMPARE(p_ellipseShape->flags(), 0x800); //ItemSendsGeometryChanges true
+    QVERIFY(p_ellipseShape->acceptHoverEvents());
+    QCOMPARE(p_ellipseShape->rect(), QRectF());
+    delete p_ellipseShape;
 
     QRectF rect(-5.0, -5.0, 5.0, 5.0);
-    ellipseShape = new EllipseShape(rect);
-    ellipseShape->setPen(QPen(Qt::black, 0));
-    QVERIFY2(ellipseShape, "rectShape nullptr");
-    QCOMPARE(ellipseShape->type(), int(QGraphicsItem::UserType + 2));
-    QCOMPARE(ellipseShape->flags(), 0x800);
-    QVERIFY(ellipseShape->acceptHoverEvents());
-    QCOMPARE(ellipseShape->rect(), rect);
-    delete ellipseShape;
+    p_ellipseShape = new EllipseShape(rect);
+    p_ellipseShape->setPen(QPen(Qt::black, 0));
+    QVERIFY2(p_ellipseShape, "rectShape nullptr");
+    QCOMPARE(p_ellipseShape->type(), int(QGraphicsItem::UserType + 2));
+    QCOMPARE(p_ellipseShape->flags(), 0x800);
+    QVERIFY(p_ellipseShape->acceptHoverEvents());
+    QCOMPARE(p_ellipseShape->rect(), rect);
+    delete p_ellipseShape;
 
     qreal x{rect.topLeft().x()};
     qreal y{rect.topLeft().y()};
     qreal w{rect.width()};
     qreal h{rect.height()};
-    ellipseShape = new EllipseShape(x, y, w, h);
-    ellipseShape->setPen(QPen(Qt::black, 0));
-    QVERIFY2(ellipseShape, "rectShape nullptr");
-    QCOMPARE(ellipseShape->type(), int(QGraphicsItem::UserType + 2));
-    QCOMPARE(ellipseShape->flags(), 0x800);
-    QVERIFY(ellipseShape->acceptHoverEvents());
-    QCOMPARE(ellipseShape->rect(), rect);
-    delete ellipseShape;
+    p_ellipseShape = new EllipseShape(x, y, w, h);
+    p_ellipseShape->setPen(QPen(Qt::black, 0));
+    QVERIFY2(p_ellipseShape, "rectShape nullptr");
+    QCOMPARE(p_ellipseShape->type(), int(QGraphicsItem::UserType + 2));
+    QCOMPARE(p_ellipseShape->flags(), 0x800);
+    QVERIFY(p_ellipseShape->acceptHoverEvents());
+    QCOMPARE(p_ellipseShape->rect(), rect);
+    delete p_ellipseShape;
 }
 
 void tst_EllipseShape::type()
@@ -149,7 +149,7 @@ void tst_EllipseShape::boundingRect()
 class PaintTester : public EllipseShape
 {
 public:
-    PaintTester() : widget(NULL), painted(0)
+    PaintTester() : m_widget(NULL), m_painted(0)
     {
         setRect(10.0, 10.0, 20.0, 20.0);
     }
@@ -157,12 +157,12 @@ public:
     void paint(QPainter *p, const QStyleOptionGraphicsItem *s, QWidget *w)
     {
         EllipseShape::paint(p, s, w);
-        widget = w;
-        painted++;
+        m_widget = w;
+        m_painted++;
     }
 
-    QWidget*  widget;
-    int painted;
+    QWidget*  m_widget;
+    int m_painted;
 };
 
 void tst_EllipseShape::paint()
@@ -180,7 +180,7 @@ void tst_EllipseShape::paint()
         QSKIP("The Graphics View doesn't get the paint events");
     }
 #endif
-    QTRY_COMPARE(paintTester.widget, view.viewport());
+    QTRY_COMPARE(paintTester.m_widget, view.viewport());
     view.hide();
 
     QGraphicsScene scene2;
@@ -192,21 +192,21 @@ void tst_EllipseShape::paint()
     tester2.setSpanAngle(1440);
     scene2.addItem(&tester2);
     //First show at least one paint
-    QCOMPARE(tester2.painted, 0);
-    QTRY_VERIFY(tester2.painted > 0);
-    int painted = tester2.painted;
+    QCOMPARE(tester2.m_painted, 0);
+    QTRY_VERIFY(tester2.m_painted > 0);
+    int painted = tester2.m_painted;
     //nominal case, update call paint
     tester2.update();
-    QTRY_COMPARE(tester2.painted, painted + 1);
-    painted = tester2.painted;
+    QTRY_COMPARE(tester2.m_painted, painted + 1);
+    painted = tester2.m_painted;
     //we remove the item from the scene, number of updates is still the same
     tester2.update();
     scene2.removeItem(&tester2);
-    QTRY_COMPARE(tester2.painted, painted);
+    QTRY_COMPARE(tester2.m_painted, painted);
     //We re-add the item, the number of paint should increase
     scene2.addItem(&tester2);
     tester2.update();
-    QTRY_COMPARE(tester2.painted, painted + 1);
+    QTRY_COMPARE(tester2.m_painted, painted + 1);
 }
 
 void tst_EllipseShape::shape()
@@ -323,25 +323,29 @@ void tst_EllipseShape::setRect()
 
 void tst_EllipseShape::opaqueArea()
 {
-    EllipseShape *ellipseShape = new EllipseShape(-100.0, -100.0, 200.0, 200.0);
-    ellipseShape->setZValue(-1.0);
+    EllipseShape *p_ellipseShape = new EllipseShape(-100.0, -100.0, 200.0, 200.0);
+    p_ellipseShape->setZValue(-1.0);
     QPainterPath opaquePath;
-    QCOMPARE(ellipseShape->opaqueArea(), opaquePath);
+    QCOMPARE(p_ellipseShape->opaqueArea(), opaquePath);
 
-    ellipseShape->setBrush(QBrush(Qt::red));
-    QCOMPARE(ellipseShape->opaqueArea(), ellipseShape->shape());
+    p_ellipseShape->setBrush(QBrush(Qt::red));
+    QCOMPARE(p_ellipseShape->opaqueArea(), p_ellipseShape->shape());
 
-    EllipseShape *opaqueShape = new EllipseShape(-50.0, -50.0, 200.0, 200.0);
-    opaqueShape->setBrush(QBrush(Qt::blue));
-    ellipseShape->setFlag(QGraphicsItem::ItemClipsToShape, true);
-    QCOMPARE(ellipseShape->opaqueArea(), ellipseShape->clipPath());
+    EllipseShape *p_opaqueShape = new EllipseShape(-50.0, -50.0, 200.0, 200.0);
+    p_opaqueShape->setBrush(QBrush(Qt::blue));
+    p_ellipseShape->setFlag(QGraphicsItem::ItemClipsToShape, true);
+    QCOMPARE(p_ellipseShape->opaqueArea(), p_ellipseShape->clipPath());
 
-    EllipseShape *parentShape = new EllipseShape(-120.0, -120.0, 200.0, 200.0, ellipseShape);
-    parentShape->setBrush(QBrush(Qt::black));
-    QCOMPARE(ellipseShape->opaqueArea(), ellipseShape->clipPath());
+    EllipseShape *p_parentShape = new EllipseShape(-120.0, -120.0, 200.0, 200.0, p_ellipseShape);
+    p_parentShape->setBrush(QBrush(Qt::black));
+    QCOMPARE(p_ellipseShape->opaqueArea(), p_ellipseShape->clipPath());
 
-    ellipseShape->setFlag(QGraphicsItem::ItemClipsChildrenToShape, true);
-    QCOMPARE(parentShape->opaqueArea(), parentShape->clipPath());
+    p_ellipseShape->setFlag(QGraphicsItem::ItemClipsChildrenToShape, true);
+    QCOMPARE(p_parentShape->opaqueArea(), p_parentShape->clipPath());
+
+    delete p_parentShape;
+    delete p_opaqueShape;
+    delete p_ellipseShape;
 }
 
 void tst_EllipseShape::setStartAngle_data()
@@ -412,21 +416,21 @@ void tst_EllipseShape::setSpanAngle()
 void tst_EllipseShape::pieMouseDoubleClickEvent()
 {
     QGraphicsScene scene;
-    EllipseShape *pieShape = new EllipseShape(-20.0, -20.0, 40.0, 40.0);
-    pieShape->setSpanAngle(120 * 16);
-    pieShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
-    scene.addItem(pieShape);
-    QCOMPARE(pieShape->childItems().count(), 0);
-    pieShape->setSelected(true);
+    EllipseShape *p_pieShape = new EllipseShape(-20.0, -20.0, 40.0, 40.0);
+    p_pieShape->setSpanAngle(120 * 16);
+    p_pieShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    scene.addItem(p_pieShape);
+    QCOMPARE(p_pieShape->childItems().count(), 0);
+    p_pieShape->setSelected(true);
 
     QGraphicsSceneMouseEvent mouseDClickEvent(QEvent::GraphicsSceneMouseDoubleClick);
-    mouseDClickEvent.setScenePos(pieShape->pos());
+    mouseDClickEvent.setScenePos(p_pieShape->pos());
     mouseDClickEvent.setButton(Qt::LeftButton);
     QApplication::sendEvent(&scene, &mouseDClickEvent);
     QVERIFY(mouseDClickEvent.isAccepted());
 
     SizeGripShape *sizegripItem
-            = qgraphicsitem_cast<SizeGripShape *>(pieShape->childItems().constFirst());
+            = qgraphicsitem_cast<SizeGripShape *>(p_pieShape->childItems().constFirst());
     int itemVisible = 0;
     for (int i = 0; i < sizegripItem->childItems().count(); i++) {
         QGraphicsItem *item {sizegripItem->childItems().at(i)};
@@ -446,15 +450,19 @@ void tst_EllipseShape::pieMouseDoubleClickEvent()
     }
     QCOMPARE(itemVisible, 3);
     QCOMPARE(sizegripItem->actionType(), SizeGripShape::Resize);
+
+    delete p_pieShape;
 }
 
 void tst_EllipseShape::setMenu()
 {
     EllipseShape ellipseShape;
     QCOMPARE(ellipseShape.menu(), nullptr);
-    QMenu *contextMenu = new QMenu;
-    ellipseShape.setMenu(contextMenu);
-    QCOMPARE(ellipseShape.menu(), contextMenu);
+    QMenu *p_contextMenu = new QMenu;
+    ellipseShape.setMenu(p_contextMenu);
+    QCOMPARE(ellipseShape.menu(), p_contextMenu);
+
+    delete p_contextMenu;
 }
 
 class ContextMenuTester :public QMenu
@@ -489,82 +497,89 @@ void tst_EllipseShape::mousePressEvent()
     view.show();
     view.fitInView(scene.sceneRect());
     QVERIFY(QTest::qWaitForWindowActive(&view));
-    ContextMenuTester *contextMenu = new ContextMenuTester;
+    ContextMenuTester *p_contextMenu = new ContextMenuTester;
 
-    EllipseShape *ellipseShape = new EllipseShape(-20.0, -20.0, 40.0, 40.0);
-    ellipseShape->setMenu(contextMenu);
-    ellipseShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
-    scene.addItem(ellipseShape);
+    EllipseShape *p_ellipseShape = new EllipseShape(-20.0, -20.0, 40.0, 40.0);
+    p_ellipseShape->setMenu(p_contextMenu);
+    p_ellipseShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    scene.addItem(p_ellipseShape);
 
     QGraphicsSceneMouseEvent mousePressEvent(QEvent::GraphicsSceneMouseMove);
-    mousePressEvent.setScenePos(ellipseShape->pos());
+    mousePressEvent.setScenePos(p_ellipseShape->pos());
     mousePressEvent.setButton(Qt::LeftButton);
     QApplication::sendEvent(&scene, &mousePressEvent);
     QVERIFY(mousePressEvent.isAccepted());
 
-    ellipseShape->setSelected(true);
-    QSignalSpy contextMenuSpy(contextMenu, &QMenu::aboutToShow);
+    p_ellipseShape->setSelected(true);
+    QSignalSpy contextMenuSpy(p_contextMenu, &QMenu::aboutToShow);
     QCOMPARE(contextMenuSpy.count(), 0);
 
     QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
-                      , view.mapFromScene(ellipseShape->boundingRect().center()));
+                      , view.mapFromScene(p_ellipseShape->boundingRect().center()));
     QCOMPARE(contextMenuSpy.count(), 1);
 
-    EllipseShape *ellipseShape2 = new EllipseShape(-50.0, -50.0, 20.0, 20.0);
-    ellipseShape2->setMenu(contextMenu);
-    ellipseShape2->setFlag(QGraphicsItem::ItemIsSelectable, true);
-    scene.addItem(ellipseShape2);
-    ellipseShape2->setSelected(true);
+    EllipseShape *p_ellipseShape2 = new EllipseShape(-50.0, -50.0, 20.0, 20.0);
+    p_ellipseShape2->setMenu(p_contextMenu);
+    p_ellipseShape2->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    scene.addItem(p_ellipseShape2);
+    p_ellipseShape2->setSelected(true);
 
     QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
-                      , view.mapFromScene(ellipseShape2->boundingRect().center()));
+                      , view.mapFromScene(p_ellipseShape2->boundingRect().center()));
     QCOMPARE(contextMenuSpy.count(), 2);
+
+    delete p_ellipseShape2;
+    delete p_ellipseShape;
+    delete p_contextMenu;
 }
 
 void tst_EllipseShape::mouseMoveEvent()
 {
     QGraphicsScene scene;
-    EllipseShape *ellipseShape = new EllipseShape(-10.0, -10.0, 20.0, 20.0);
-    ellipseShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
-    scene.addItem(ellipseShape);
+    EllipseShape *p_ellipseShape = new EllipseShape(-10.0, -10.0, 20.0, 20.0);
+    p_ellipseShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    scene.addItem(p_ellipseShape);
 
-    sendMousePress(&scene, ellipseShape->pos());
+    sendMousePress(&scene, p_ellipseShape->pos());
     QGraphicsSceneMouseEvent mouseMoveEvent(QEvent::GraphicsSceneMouseMove);
-    mouseMoveEvent.setScenePos(ellipseShape->pos());
+    mouseMoveEvent.setScenePos(p_ellipseShape->pos());
     mouseMoveEvent.setButton(Qt::LeftButton);
     QApplication::sendEvent(&scene, &mouseMoveEvent);
     QVERIFY(mouseMoveEvent.isAccepted());
 
-    sendMousePress(&scene, ellipseShape->pos());
+    sendMousePress(&scene, p_ellipseShape->pos());
     sendMouseMove(&scene, QPointF(50.0, -50.0), Qt::LeftButton);
-    QCOMPARE(ellipseShape->pos(), QPointF(50.0, -50.0));
+    QCOMPARE(p_ellipseShape->pos(), QPointF(50.0, -50.0));
 
-    EllipseShape *ellipseShape2 = new EllipseShape(-50.0, -50.0, 30.0, 25.0);
-    ellipseShape2->setFlag(QGraphicsItem::ItemIsSelectable, true);
-    scene.addItem(ellipseShape2);
-    ellipseShape2->setSelected(true);
+    EllipseShape *p_ellipseShape2 = new EllipseShape(-50.0, -50.0, 30.0, 25.0);
+    p_ellipseShape2->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    scene.addItem(p_ellipseShape2);
+    p_ellipseShape2->setSelected(true);
 
-    sendMousePress(&scene, ellipseShape2->pos());
+    sendMousePress(&scene, p_ellipseShape2->pos());
     sendMouseMove(&scene, QPointF(20.0, 20.0), Qt::LeftButton);
-    QCOMPARE(ellipseShape2->pos(), QPointF(20.0, 20.0));
+    QCOMPARE(p_ellipseShape2->pos(), QPointF(20.0, 20.0));
+
+    delete p_ellipseShape2;
+    delete p_ellipseShape;
 }
 
 void tst_EllipseShape::mouseDoubleClickEvent()
 {
     QGraphicsScene scene;
-    EllipseShape *ellipseShape = new EllipseShape(-20.0, -20.0, 40.0, 40.0);
-    ellipseShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
-    scene.addItem(ellipseShape);
-    QCOMPARE(ellipseShape->childItems().count(), 0);
+    EllipseShape *p_ellipseShape = new EllipseShape(-20.0, -20.0, 40.0, 40.0);
+    p_ellipseShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    scene.addItem(p_ellipseShape);
+    QCOMPARE(p_ellipseShape->childItems().count(), 0);
 
     QGraphicsSceneMouseEvent mouseDClickEvent(QEvent::GraphicsSceneMouseDoubleClick);
-    mouseDClickEvent.setScenePos(ellipseShape->pos());
+    mouseDClickEvent.setScenePos(p_ellipseShape->pos());
     mouseDClickEvent.setButton(Qt::LeftButton);
     QApplication::sendEvent(&scene, &mouseDClickEvent);
     QVERIFY(mouseDClickEvent.isAccepted());
 
     SizeGripShape *sizegripItem
-            = qgraphicsitem_cast<SizeGripShape *>(ellipseShape->childItems().constFirst());
+            = qgraphicsitem_cast<SizeGripShape *>(p_ellipseShape->childItems().constFirst());
     int itemVisible = 0;
     for (int i = 0; i < sizegripItem->childItems().count(); i++) {
         QGraphicsItem *item {sizegripItem->childItems().at(i)};
@@ -595,6 +610,8 @@ void tst_EllipseShape::mouseDoubleClickEvent()
     }
     QCOMPARE(itemVisible, 8);
     QCOMPARE(sizegripItem->actionType(), SizeGripShape::Resize);
+
+    delete p_ellipseShape;
 }
 
 void tst_EllipseShape::wheelEvent()
@@ -605,72 +622,74 @@ void tst_EllipseShape::wheelEvent()
     view.fitInView(scene.sceneRect());
     QVERIFY(QTest::qWaitForWindowActive(&view));
 
-    EllipseShape *ellipseShape = new EllipseShape(-20.0, -20.0, 40.0, 40.0);
-    ellipseShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
-    scene.addItem(ellipseShape);
+    EllipseShape *p_ellipseShape = new EllipseShape(-20.0, -20.0, 40.0, 40.0);
+    p_ellipseShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    scene.addItem(p_ellipseShape);
 
     QGraphicsSceneWheelEvent wheelEvent(QEvent::GraphicsSceneWheel);
-    wheelEvent.setScenePos(ellipseShape->scenePos());
+    wheelEvent.setScenePos(p_ellipseShape->scenePos());
     wheelEvent.setDelta(1);
     QApplication::sendEvent(&scene, &wheelEvent);
     QVERIFY(!wheelEvent.isAccepted());
 
-    ellipseShape->setSelected(true);
-    ellipseShape->resetTransform();
+    p_ellipseShape->setSelected(true);
+    p_ellipseShape->resetTransform();
 
-    qreal m11Actual = ellipseShape->transform().m11();
+    qreal m11Actual = p_ellipseShape->transform().m11();
     qreal m11Expected = 1.0;
     bool m11Compare = qFuzzyCompare(m11Actual, m11Expected);
     QVERIFY(m11Compare);
 
-    qreal m22Actual = ellipseShape->transform().m22();
+    qreal m22Actual = p_ellipseShape->transform().m22();
     qreal m22Expected = 1.0;
     bool m22Compare = qFuzzyCompare(m22Actual, m22Expected);
     QVERIFY(m22Compare);
 
-    QTest::mouseMove(view.viewport(), ellipseShape->scenePos().toPoint());
+    QTest::mouseMove(view.viewport(), p_ellipseShape->scenePos().toPoint());
 
     for (int i = 0; i < 40; i++) {
-        sendMouseWheel(&scene, ellipseShape->scenePos(), 1);
+        sendMouseWheel(&scene, p_ellipseShape->scenePos(), 1);
 
-        m11Actual = ellipseShape->transform().m11();
+        m11Actual = p_ellipseShape->transform().m11();
         m11Expected *= 1.03;
         m11Compare = qFuzzyCompare(m11Actual, m11Expected);
         QVERIFY(m11Compare);
 
-        m22Actual = ellipseShape->transform().m22();
+        m22Actual = p_ellipseShape->transform().m22();
         m22Expected *= 1.03;
         m22Compare = qFuzzyCompare(m22Actual, m22Expected);
         QVERIFY(m22Compare);
     }
 
     for (int i = 0; i < 40; i++) {
-        sendMouseWheel(&scene, ellipseShape->scenePos(), -1);
+        sendMouseWheel(&scene, p_ellipseShape->scenePos(), -1);
 
-        m11Actual = ellipseShape->transform().m11();
+        m11Actual = p_ellipseShape->transform().m11();
         m11Expected *= 0.97;
         m11Compare = qFuzzyCompare(m11Actual, m11Expected);
         QVERIFY(m11Compare);
 
-        m22Actual = ellipseShape->transform().m22();
+        m22Actual = p_ellipseShape->transform().m22();
         m22Expected *= 0.97;
         m22Compare = qFuzzyCompare(m22Actual, m22Expected);
         QVERIFY(m22Compare);
     }
+
+    delete p_ellipseShape;
 }
 
 void tst_EllipseShape::itemChange()
 {
     QGraphicsScene scene;
-    EllipseShape *ellipseShape = new EllipseShape(-20.0, -20.0, 40.0, 40.0);
-    ellipseShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
-    scene.addItem(ellipseShape);
-    QCOMPARE(ellipseShape->childItems().count(), 0);
-    ellipseShape->setSelected(true);
-    QGraphicsItem *sizegripItem = ellipseShape->childItems().constFirst();
+    EllipseShape *p_ellipseShape = new EllipseShape(-20.0, -20.0, 40.0, 40.0);
+    p_ellipseShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    scene.addItem(p_ellipseShape);
+    QCOMPARE(p_ellipseShape->childItems().count(), 0);
+    p_ellipseShape->setSelected(true);
+    QGraphicsItem *sizegripItem = p_ellipseShape->childItems().constFirst();
     QCOMPARE(sizegripItem->childItems().count(), 8);
-    ellipseShape->setSelected(false);
-    QCOMPARE(ellipseShape->childItems().count(), 0);
+    p_ellipseShape->setSelected(false);
+    QCOMPARE(p_ellipseShape->childItems().count(), 0);
 }
 
 QTEST_MAIN(tst_EllipseShape)

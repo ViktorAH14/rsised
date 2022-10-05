@@ -27,11 +27,12 @@
 #include "../include/pixmapshape.h"
 #include "../include/technicsshape.h"
 #include "../include/deviceshape.h"
-#include "../include/buildingstruct.h"
+#include "../include/buildingshape.h"
 
 #include <QXmlStreamReader>
 #include <QPen>
 #include <QFont>
+#include <QScopedPointer>
 
 RseReader::RseReader(QMenu *itemMenu) : m_itemMenu{itemMenu}
 {
@@ -653,14 +654,14 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
 
                 itemList.append(deviceShape);
             }
-            if (rseItemReader.name() == "building_item") {
+            if (rseItemReader.name() == "building_shape") { // FIXME read BuildingShape
                 qreal x {0.0};
                 qreal y {0.0};
                 qreal itemLeft {0.0};
                 qreal itemTop {0.0};
                 qreal width {0.0};
                 qreal height {0.0};
-                BuildingStruct::ShapeType shapeType = BuildingStruct::Wall;
+                BuildingShape::ShapeType shapeType = BuildingShape::Wall;
                 qreal zValue {0.0};
                 qreal m11 {0.0};
                 qreal m12 {0.0};
@@ -692,7 +693,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         height = attr.value().toFloat();
                     }
                     if (attr.name() == "shape_type") {
-                        shapeType = BuildingStruct::ShapeType(attr.value().toInt());
+                        shapeType = BuildingShape::ShapeType(attr.value().toInt());
                     }
                     if (attr.name() == "z") {
                         zValue = attr.value().toFloat();
@@ -705,21 +706,29 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         m21 = transList.at(3).toFloat();
                         m22 = transList.at(4).toFloat();
                         m23 = transList.at(5).toFloat();
-//                        m31 = transList.at(6).toFloat(); происходит смещение относительно начального положения
-//                        m32 = transList.at(7).toFloat();
-                        m33 = transList.at(8).toFloat();
+                        m33 = transList.at(6).toFloat();
                     }
                 }
-
-                BuildingStruct *deviceShapeItem = new BuildingStruct(shapeType);
-                deviceShapeItem->setMenu(m_itemMenu);
-                deviceShapeItem->setPos(QPointF(x, y));
-                deviceShapeItem->setRect(QRectF(itemLeft, itemTop, width, height));
-                deviceShapeItem->setZValue(zValue);
+                BuildingShape *buildingShape = BuildingShape::createBuildingShape(shapeType);
+//                BuildingShape *buildingShape = nullptr;
+//                switch (shapeType) {
+//                case BuildingShape::Wall: {
+//                    QScopedPointer<BuildingFactory, BuildingFactory::ScopedPointerDeleter>
+//                            wallShapeFactory(new WallShapeFactory());
+//                    buildingShape = wallShapeFactory->createBuildingShape();
+//                }
+//                    break;
+//                default:
+//                    break;
+//                }
+                buildingShape->setMenu(m_itemMenu);
+                buildingShape->setPos(QPointF(x, y));
+                buildingShape->setRect(QRectF(itemLeft, itemTop, width, height));
+                buildingShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
-                deviceShapeItem->setTransform(trans);
+                buildingShape->setTransform(trans);
 
-                itemList.append(deviceShapeItem);
+                itemList.append(buildingShape);
             }
         }
         rseItemReader.readNext();

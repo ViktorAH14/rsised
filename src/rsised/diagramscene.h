@@ -23,7 +23,7 @@
 
 #include "../include/technicsshape.h"
 #include "../include/deviceshape.h"
-#include "../include/buildingstruct.h"
+#include "../include/buildingshape.h"
 
 #include <QGraphicsScene>
 #include <QObject>
@@ -53,7 +53,7 @@ public:
                     , InsertImage
                     , InsertTechnicsShape
                     , InsertDeviceShape
-                    , InsertBuildingStruct
+                    , InsertBuildingShape
                     , SelectItem };
 
     explicit DiagramScene(QMenu *itemMenu, QObject *parent = nullptr);
@@ -65,7 +65,7 @@ public:
     void setSelectableItems(bool selectable);
     void setTechnicsShapeType(TechnicsShape::ShapeType type);
     void setDeviceShapeType(DeviceShape::ShapeType type);
-    void setBuildingStructShapeType(BuildingStruct::ShapeType type);
+    void setBuildingShapeType(BuildingShape::ShapeType type);
     void clearPie();
 
 public slots:
@@ -81,11 +81,14 @@ protected:
 
 private:
     TechnicsShape::ShapeType m_technicsShapeType;
-    TechnicsShape *technicsShape;
+    TechnicsShape *m_technicsShape;
+
     DeviceShape::ShapeType m_deviceShapeType;
-    DeviceShape *deviceShape;
-    BuildingStruct::ShapeType m_buildingStructType;
-    BuildingStruct *buildingStructItem;
+    DeviceShape *m_deviceShape;
+
+    BuildingShape::ShapeType m_buildingShapeType;
+    BuildingShape *m_buildingShape;
+
     RectShape   *m_rectShape;
     PolylineShape    *polyline;
     EllipseShape     *m_ellipseShape;
@@ -93,14 +96,13 @@ private:
     Curve       *curve;
     TextShape    *textItem;
     PixmapShape  *pixmapItem;
-    QMenu       *m_itemMenu;
+    QMenu       *m_shapeMenu;
     SceneMode   m_sceneMode;
-    QPen        itemPen;
-    QBrush      itemBrush;
-    QFont       itemFont;
-    QColor      fontColor;
-    QList<QPointF>  pathPoint;
-//    QPointF     startPoint; // NOTE Without this variable, a segmentation fault occurs???
+    QPen        m_shapePen;
+    QBrush      m_shapeBrush;
+    QFont       m_shapeFont;
+    QColor      m_fontColor;
+    QList<QPointF>  m_pathPointList;
     bool        leftButtonPressed;
     bool        sceneChanged;
 };

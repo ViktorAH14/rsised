@@ -28,14 +28,15 @@ class SizeGripShape;
 class AbstractShape : public QAbstractGraphicsShapeItem
 {
 public:
-    AbstractShape(QGraphicsItem *parent = nullptr);
-    virtual ~AbstractShape();
 
     void scaleShape(const QRectF &newRect);
     void setMenu(QMenu *contextMenu);
     QMenu* menu() const;
 
 protected:
+    explicit AbstractShape(QGraphicsItem *parent = nullptr);
+    virtual ~AbstractShape() = default;
+
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
@@ -46,6 +47,8 @@ protected:
     QPainterPath shapeFromPath(const QPainterPath &path) const;
 
 private:
+     Q_DISABLE_COPY(AbstractShape)
+
     SizeGripShape *m_sizeGripItem;
     QMenu *m_contextMenu;
 };

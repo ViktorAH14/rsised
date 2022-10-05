@@ -15,7 +15,7 @@ CONFIG += c++17
 
 SOURCES += \
     abstractshape.cpp \
-    buildingstruct.cpp \
+    buildingshape.cpp \
     curve.cpp \
     deviceshape.cpp \
     ellipseshape.cpp \
@@ -29,7 +29,7 @@ SOURCES += \
 
 HEADERS += \
     ../include/abstractshape.h \
-    ../include/buildingstruct.h \
+    ../include/buildingshape.h \
     ../include/curve.h \
     ../include/deviceshape.h \
     ../include/ellipseshape.h \
@@ -51,3 +51,6 @@ win32 {
     QMAKE_TARGET_PRODUCT = libshapes
     QMAKE_TARGET_DESCRIPTION = Library for RSiSed
 }
+
+DISTFILES += \
+    ../../doc/dev/buildingShape/buildingshape.qmodel

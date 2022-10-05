@@ -35,18 +35,14 @@ AbstractShape::AbstractShape(QGraphicsItem *parent)
 {
 }
 
-AbstractShape::~AbstractShape()
-{
-}
-
 void AbstractShape::scaleShape(const QRectF &newRect)
 // FIXME не совсем коректное масштабирование
 // NOTE Ограничить изменение размера определённым значением
 {
     prepareGeometryChange();
-    QSizeF size = boundingRect().size();
-    QSizeF newSize = newRect.size();
-    qreal s_xy = ((newSize.height() > size.height()) ? 1.018 : 0.988);
+    QSizeF size{boundingRect().size()};
+    QSizeF newSize{newRect.size()};
+    qreal s_xy{((newSize.height() > size.height()) ? 1.018 : 0.988)};
     setTransform(QTransform::fromScale(s_xy, s_xy), true);
     update();
 }
@@ -75,11 +71,11 @@ void AbstractShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 void AbstractShape::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if ((mouseEvent->buttons() == Qt::LeftButton) && isSelected()) {
-        QList<QGraphicsItem *> selItems = scene()->selectedItems();
-        for (QGraphicsItem *item : qAsConst(selItems)) {
-            qreal dx = mouseEvent->scenePos().x() - mouseEvent->lastScenePos().x();
-            qreal dy = mouseEvent->scenePos().y() - mouseEvent->lastScenePos().y();
-            item->moveBy(dx, dy);
+        QList<QGraphicsItem *> selectedShapeList = scene()->selectedItems();
+        for (QGraphicsItem *p_shape : qAsConst(selectedShapeList)) {
+            qreal dx{mouseEvent->scenePos().x() - mouseEvent->lastScenePos().x()};
+            qreal dy{mouseEvent->scenePos().y() - mouseEvent->lastScenePos().y()};
+            p_shape->moveBy(dx, dy);
         }
     } else {
         QGraphicsItem::mouseMoveEvent( mouseEvent );
@@ -89,9 +85,9 @@ void AbstractShape::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 void AbstractShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if ((mouseEvent->buttons() == Qt::RightButton) && isSelected() && m_contextMenu != nullptr) {
-        QList<QGraphicsItem *> selItems = scene()->selectedItems();
-        for (QGraphicsItem *item : qAsConst(selItems))
-            item->setSelected(true);
+        QList<QGraphicsItem *> selectedShapeList = scene()->selectedItems();
+        for (QGraphicsItem *p_shape : qAsConst(selectedShapeList))
+            p_shape->setSelected(true);
         m_contextMenu->exec(mouseEvent->screenPos());
     } else {
         QGraphicsItem::mousePressEvent(mouseEvent);
@@ -102,7 +98,7 @@ void AbstractShape::wheelEvent(QGraphicsSceneWheelEvent *wheelEvent)
 {
     if (isSelected()) {
         prepareGeometryChange();
-        qreal s_xy = ((wheelEvent->delta() > 0) ? 1.03 : 0.97);
+        qreal s_xy{((wheelEvent->delta() > 0) ? 1.03 : 0.97)};
         QTransform shapeTransform = transform();
         shapeTransform.translate(boundingRect().center().x(), boundingRect().center().y());
         shapeTransform.scale(s_xy, s_xy);
@@ -128,19 +124,19 @@ QVariant AbstractShape::itemChange(GraphicsItemChange change, const QVariant &va
 
 void AbstractShape::highlightSelected(QPainter *painter, const QStyleOptionGraphicsItem *option)
 {
-    const QRectF murect = painter->transform().mapRect(QRectF(0, 0, 1, 1));
+    const QRectF murect{painter->transform().mapRect(QRectF(0, 0, 1, 1))};
     if (qFuzzyIsNull(qMax(murect.width(), murect.height())))
         return;
-    const QRectF mbrect = painter->transform().mapRect(boundingRect());
+    const QRectF mbrect{painter->transform().mapRect(boundingRect())};
     if (qMin(mbrect.width(), mbrect.height()) < qreal(1.0))
         return;
-    qreal itemPenWidth = pen().widthF();
-    const qreal pad = itemPenWidth / 2;
-    const qreal penWidth = 0;
-    const QColor fgcolor = option->palette.windowText().color();
-    const QColor bgcolor( fgcolor.red()   > 127 ? 0 : 255,
-                          fgcolor.green() > 127 ? 0 : 255,
-                          fgcolor.blue()  > 127 ? 0 : 255);
+    qreal shapePenWidth{pen().widthF()};
+    const qreal pad{shapePenWidth / 2};
+    const qreal penWidth{0};
+    const QColor fgcolor{option->palette.windowText().color()};
+    const QColor bgcolor{fgcolor.red()   > 127 ? 0 : 255,
+                        fgcolor.green() > 127 ? 0 : 255,
+                        fgcolor.blue()  > 127 ? 0 : 255};
     painter->setPen(QPen(bgcolor, penWidth, Qt::SolidLine));
     painter->setBrush(Qt::NoBrush);
     painter->drawRect(boundingRect().adjusted(pad, pad, -pad, -pad));
@@ -151,8 +147,8 @@ void AbstractShape::highlightSelected(QPainter *painter, const QStyleOptionGraph
 
 QPainterPath AbstractShape::shapeFromPath(const QPainterPath &path) const
 {
-        const qreal penWidthZero = qreal(0.00000001);
-        QPen shapePen = pen();
+        const qreal penWidthZero{qreal(0.00000001)};
+        QPen shapePen{pen()};
         if (path == QPainterPath() || shapePen == Qt::NoPen)
             return path;
         QPainterPathStroker ps;
@@ -163,7 +159,7 @@ QPainterPath AbstractShape::shapeFromPath(const QPainterPath &path) const
             ps.setWidth(shapePen.widthF());
         ps.setJoinStyle(shapePen.joinStyle());
         ps.setMiterLimit(shapePen.miterLimit());
-        QPainterPath p = ps.createStroke(path);
+        QPainterPath p{ps.createStroke(path)};
         p.addPath(path);
         return p;
 }

@@ -32,7 +32,7 @@ public:
     explicit EllipseShape(QGraphicsItem *parent = nullptr);
     explicit EllipseShape(const QRectF &rect, QGraphicsItem *parent = nullptr);
     explicit EllipseShape(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent = nullptr);
-    ~EllipseShape();
+    ~EllipseShape() = default;
 
     inline int type() const override { return Type;}
     QRectF boundingRect() const override;
