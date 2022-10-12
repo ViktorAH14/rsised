@@ -57,23 +57,6 @@ BuildingShape *BuildingShape::createBuildingShape(ShapeType shapeType, QGraphics
     return p_buildingShape;
 }
 
-//QRectF BuildingShape::boundingRect() const
-//{
-//    qreal penWidth = 1;
-//    QRectF rect;
-//    if (m_shapeType == Door) {
-//        rect = QRectF((shapeRect.left() - penWidth / 2.0)
-//                      , (shapeRect.top() - shapeRect.width() - penWidth / 2.0)
-//                      , shapeRect.width() + penWidth
-//                      , shapeRect.height() + shapeRect.width() + penWidth);
-//    } else {
-//        rect = QRectF(shapeRect.left() - penWidth / 2.0, shapeRect.top() - penWidth / 2.0
-//                , shapeRect.width() + penWidth, shapeRect.height() + penWidth);
-//    }
-
-//    return rect;
-//}
-
 //QPainterPath BuildingShape::shape() const
 //{
 //    QPainterPath path;
@@ -181,12 +164,45 @@ BuildingShape *BuildingShape::createBuildingShape(ShapeType shapeType, QGraphics
 WallShape::WallShape(QGraphicsItem *parent)
     : BuildingShape(parent)
     , m_wallType{Wall}
-    , m_wallRect{QRectF(-30.0, -5.0, 60.0, 10.0)}
+    , m_wallHeight{10}
+    , m_wallRect{QRectF(-30.0, -5.0, 60.0, m_wallHeight)}
+    , m_leftButtonPressed{false}
+    , m_bindingOffset{m_wallHeight - 2.0}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
     setPen(QPen(Qt::black, 1));
     setBrush(QBrush(Qt::lightGray));
+}
+
+void WallShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    setCollidingWalls();
+    if (m_collidingWallSet.isEmpty()) {
+        painter->drawPath(shape());
+    } else {
+        QPainterPath wallPath;
+        wallPath.setFillRule(Qt::WindingFill);
+        wallPath.addRect(rect());
+        for (WallShape *p_wallShape : qAsConst(m_collidingWallSet)) {
+            wallPath.addPolygon(mapFromItem(p_wallShape, p_wallShape->boundingRect()));
+        }
+        QPainterPath fillPath{wallPath};
+        painter->fillPath(fillPath, brush());
+        painter->strokePath(wallPath.simplified(), pen());
+    }
+
+    if (option->state & QStyle::State_Selected) {
+         highlightSelected(painter, option);
+    }
+
 }
 
 QRectF WallShape::boundingRect() const
@@ -205,6 +221,11 @@ QPainterPath WallShape::shape() const
     path.addRect(rect());
 
     return shapeFromPath(path);
+}
+
+bool WallShape::contains(const QPointF &point) const
+{
+    return AbstractShape::contains(point);
 }
 
 QPixmap WallShape::image()
@@ -239,11 +260,6 @@ QRectF WallShape::rect() const
     return m_wallRect;
 }
 
-bool WallShape::collidingWallsIsEmpty()
-{
-    return m_collidingWallSet.isEmpty() ? true : false;
-}
-
 QSet<WallShape *> WallShape::collidingWalls()
 {
     return m_collidingWallSet;
@@ -254,34 +270,23 @@ bool WallShape::removeCollidingWall(WallShape *wallShape)
     return m_collidingWallSet.remove(wallShape);
 }
 
-void WallShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void WallShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    Q_UNUSED(widget);
-
-    painter->setRenderHint(QPainter::Antialiasing);
-    painter->setRenderHint(QPainter::SmoothPixmapTransform);
-    painter->setPen(pen());
-    painter->setBrush(brush());
-
-    setCollidingWalls();
-    if (m_collidingWallSet.isEmpty()) {
-        painter->drawPath(shape());
+    if (mouseEvent->buttons() == Qt::LeftButton) {
+        m_leftButtonPressed = true;
     } else {
-        QPainterPath wallPath;
-        wallPath.setFillRule(Qt::WindingFill);
-        wallPath.addRect(rect());
-        for (WallShape *p_wallShape : qAsConst(m_collidingWallSet)) {
-            wallPath.addPolygon(mapFromItem(p_wallShape, p_wallShape->boundingRect()));
-        }
-        QPainterPath fillPath{wallPath};
-        painter->fillPath(fillPath, brush());
-        painter->strokePath(wallPath.simplified(), pen());
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void WallShape::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (m_leftButtonPressed) {
+        bindingWall();
+        m_leftButtonPressed = false;
     }
 
-    if (option->state & QStyle::State_Selected) {
-         highlightSelected(painter, option);
-    }
-
+    QGraphicsItem::mouseReleaseEvent(mouseEvent);
 }
 
 void WallShape::setCollidingWalls()
@@ -289,14 +294,45 @@ void WallShape::setCollidingWalls()
     m_collidingWallSet.clear();
     QList<QGraphicsItem *> collidingShapeList{collidingItems()};
     for (QGraphicsItem *p_shape : qAsConst(collidingShapeList)) {
-        WallShape *p_wallShape;
-        if ((p_wallShape = dynamic_cast<WallShape *>(p_shape)) && (p_wallShape != this)) {
+        if (WallShape *p_wallShape = dynamic_cast<WallShape *>(p_shape)) {
             m_collidingWallSet.insert(p_wallShape);
             if (!p_wallShape->collidingWallsIsEmpty()) {
                 m_collidingWallSet += p_wallShape->collidingWalls();
             }
         }
     }
+}
+
+bool WallShape::collidingWallsIsEmpty()
+{
+    return m_collidingWallSet.isEmpty() ? true : false;
+}
+
+void WallShape::bindingWall()
+{
+    prepareGeometryChange();
+    QList<QGraphicsItem *> collidingShapeList{collidingItems()};
+    for (QGraphicsItem *p_shape : qAsConst(collidingShapeList)) {
+        if (WallShape *p_collidingWall = dynamic_cast<WallShape *>(p_shape)) {
+            QRectF collidingRect{mapRectFromItem(p_collidingWall, p_collidingWall->rect())};
+            QList<QPointF> collidingCornerList{collidingRect.topLeft(), collidingRect.topRight()
+                        , collidingRect.bottomLeft(), collidingRect.bottomRight()};
+            QList<QPointF> cornerList{m_wallRect.topLeft(), m_wallRect.bottomRight()};
+            for (int i = 0; i < cornerList.size(); i++) {
+                for (int j = 0; j < collidingCornerList.size(); j++) {
+                    QLineF distLine(cornerList.at(i), collidingCornerList.at(j));
+                    if (distLine.length() < m_bindingOffset) {
+                        cornerList[i] = collidingCornerList.at(j);
+                        break;
+                    }
+                }
+            }
+            setRect(QRectF(cornerList.at(0), cornerList.at(1)));
+        }
+    }
+    m_wallRect.setHeight(m_wallHeight);
+    setSelected(false);
+    update();
 }
 
 DoorShape::DoorShape(QGraphicsItem *parent)
@@ -515,10 +551,12 @@ void DoorShape::bindingWall()
     QList<QGraphicsItem *> collidingShapeList{collidingItems()};
     for (QGraphicsItem *p_shape : qAsConst(collidingShapeList)) {
         if (WallShape *p_collidingWall = dynamic_cast<WallShape *>(p_shape)) {
+            prepareGeometryChange();
             setTransform(p_collidingWall->transform());
             QRectF wallRect{mapRectFromItem(p_collidingWall, p_collidingWall->boundingRect())};
             setRect(QRectF(m_doorRect.x(), wallRect.y(), m_doorRect.width(), wallRect.height()));
             setSelected(false);
+            update();
             break;
         }
     }

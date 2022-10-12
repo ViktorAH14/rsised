@@ -59,12 +59,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(BuildingShape)
-//    friend struct BuildingShapeDeleter;
 //    void drawShape(QPainter *painter);
 //    qreal   frameWidth;
 };
 
-// TODO сделать привязку стен друг к другу
 // TODO сделать настройку толщины стены из основного и контектстного меню
 class WallShape : public BuildingShape
 {
@@ -77,6 +75,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
+    bool contains(const QPointF &point) const override;
 
     QPixmap image() override;
     ShapeType shapeType() const override;
@@ -89,18 +88,24 @@ public:
 protected:
     ~WallShape() = default;
 
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
 private:
     Q_DISABLE_COPY(WallShape)
 
     void setCollidingWalls();
     bool collidingWallsIsEmpty();
+    void bindingWall();
 
     QSet<WallShape *>  m_collidingWallSet;
     const ShapeType m_wallType;
+    qreal m_wallHeight;
     QRectF  m_wallRect;
+    bool m_leftButtonPressed;
+    qreal m_bindingOffset;
 };
 
-// TODO сделать привязку деверей к стенам
 class DoorShape :public BuildingShape
 {
 public:

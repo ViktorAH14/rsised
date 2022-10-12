@@ -94,7 +94,7 @@ void tst_BuildingShape::shape()
     QPainterPath doorPath;
 
     QRectF doorRect(p_doorShape->rect());
-//    doorPath.addRect(doorRect);
+    doorPath.addRect(doorRect);
 
     qreal frameWidth{doorRect.height() / 2};
     qreal frameHeight{doorRect.height()};

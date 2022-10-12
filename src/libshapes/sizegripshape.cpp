@@ -401,11 +401,11 @@ void SizeGripShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     Q_UNUSED(widget);
 }
 
-#define IMPL_SET_FN(TYPE, POS)                  \
-    void SizeGripShape::set ## POS (TYPE v)      \
-    {                                           \
-        m_parentItemRect.set ## POS (v);                   \
-        doResize();                             \
+#define IMPL_SET_FN(TYPE, POS)              \
+    void SizeGripShape::set ## POS (TYPE v) \
+    {                                       \
+        m_parentItemRect.set ## POS (v);    \
+        doResize();                         \
     }
 
 IMPL_SET_FN(qreal, Top)
@@ -576,8 +576,12 @@ void SizeGripShape::setParentItemPath(QPainterPath newPath)
 void SizeGripShape::setActionType(SizeGripShape::ActionType actionType)
 {
     m_actionType = actionType;
-    if (actionType != Rotate)
+    if (actionType != Rotate) {
+        for (HandleItem *p_handleItem : qAsConst(handleItemList)) {
+            p_handleItem->show();
+        }
         return;
+    }
 
     if ((parentItem()->type() == WallShape::Type) || (parentItem()->type() == DoorShape::Type)) {
         for (HandleItem *p_handleItem : qAsConst(handleItemList)) {

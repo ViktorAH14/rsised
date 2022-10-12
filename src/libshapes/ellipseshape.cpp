@@ -101,17 +101,17 @@ QPainterPath EllipseShape::shape() const
 
 bool EllipseShape::contains(const QPointF &point) const
 {
-    return QAbstractGraphicsShapeItem::contains(point);
+    return AbstractShape::contains(point);
 }
 
 bool EllipseShape::isObscuredBy(const QGraphicsItem *item) const
 {
-    return QAbstractGraphicsShapeItem::isObscuredBy(item);
+    return AbstractShape::isObscuredBy(item);
 }
 
 QPainterPath EllipseShape::opaqueArea() const
 {
-    return QAbstractGraphicsShapeItem::opaqueArea();
+    return AbstractShape::opaqueArea();
 }
 
 void EllipseShape::setRect(const QRectF &rect)

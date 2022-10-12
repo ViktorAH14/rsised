@@ -79,17 +79,17 @@ QPainterPath RectShape::shape() const
 
 bool RectShape::contains(const QPointF &point) const
 {
-    return QAbstractGraphicsShapeItem::contains(point);
+    return AbstractShape::contains(point);
 }
 
 bool RectShape::isObscuredBy(const QGraphicsItem *item) const
 {
-    return QAbstractGraphicsShapeItem::isObscuredBy(item);
+    return AbstractShape::isObscuredBy(item);
 }
 
 QPainterPath RectShape::opaqueArea() const
 {
-    return QAbstractGraphicsShapeItem::opaqueArea();
+    return AbstractShape::opaqueArea();
 }
 
 void RectShape::setRect(const QRectF &rect)
