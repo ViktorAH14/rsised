@@ -265,6 +265,11 @@ void WallShape::setHeight(const qreal &height)
     m_wallHeight = height;
 }
 
+qreal WallShape::height() const
+{
+    return m_wallHeight;
+}
+
 QSet<WallShape *> WallShape::collidingWalls()
 {
     return m_collidingWallSet;
@@ -450,6 +455,11 @@ QRectF DoorShape::rect() const
 void DoorShape::setHeight(const qreal &height)
 {
     m_doorRect.setHeight(height);
+}
+
+qreal DoorShape::height() const
+{
+    return m_doorRect.height();
 }
 
 DoorShape::DoorState DoorShape::doorState() const

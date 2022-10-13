@@ -51,6 +51,7 @@ public:
     virtual void setRect(const QRectF &rect) = 0;
     virtual QRectF rect() const = 0;
     virtual void setHeight(const qreal &height) = 0;
+    virtual qreal height() const = 0;
 
 
 protected:
@@ -83,6 +84,7 @@ public:
     void setRect(const QRectF &rect) override;
     QRectF rect() const override;
     void setHeight(const qreal &height) override;
+    qreal height() const override;
 
 
     QSet<WallShape *> collidingWalls();
@@ -128,6 +130,7 @@ public:
     void setRect(const QRectF &rect) override;
     QRectF rect() const override;
     void setHeight(const qreal &height) override;
+    qreal height() const override;
 
     DoorState doorState() const;
     void setDoorState(DoorState doorState);

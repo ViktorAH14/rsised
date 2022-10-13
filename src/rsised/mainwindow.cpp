@@ -300,17 +300,22 @@ void MainWindow::copy()
             BuildingShape::ShapeType shapeType = p_oldBuildingShape->shapeType();
             QTransform shapeTransform = p_oldBuildingShape->transform();
             BuildingShape *p_newBuildingShape{BuildingShape::createBuildingShape(shapeType)};
+            p_newBuildingShape->setMenu(m_contextMenu);
+            p_newBuildingShape->setRect(p_oldBuildingShape->rect());
+            p_newBuildingShape->setPos(QPointF(p_oldBuildingShape->x() + 10
+                                             , p_oldBuildingShape->y() + 10));
+            p_newBuildingShape->setHeight(p_oldBuildingShape->height());
+            p_newBuildingShape->setPen(p_oldBuildingShape->pen());
+            p_newBuildingShape->setBrush(p_oldBuildingShape->brush());
+            p_newBuildingShape->setZValue(p_oldBuildingShape->zValue());
+            p_newBuildingShape->setTransform(shapeTransform);
+
             if (DoorShape *p_oldDoorShape = dynamic_cast<DoorShape *>(p_shape)) {
                 DoorShape *p_newDoorShape = dynamic_cast<DoorShape *>(p_newBuildingShape);
                 p_newDoorShape->setDoorState(p_oldDoorShape->doorState());
                 p_newDoorShape->setLeafPosition(p_oldDoorShape->leafPosition());
             }
-            p_newBuildingShape->setMenu(m_contextMenu);
-            p_newBuildingShape->setRect(p_oldBuildingShape->rect());
-            p_newBuildingShape->setPos(QPointF(p_oldBuildingShape->x() + 10
-                                             , p_oldBuildingShape->y() + 10));
-            p_newBuildingShape->setZValue(p_oldBuildingShape->zValue());
-            p_newBuildingShape->setTransform(shapeTransform);
+
             m_copyList.append(p_newBuildingShape);
         }
     }
