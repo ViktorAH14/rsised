@@ -172,7 +172,7 @@ WallShape::WallShape(QGraphicsItem *parent)
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
     setPen(QPen(Qt::black, 1));
-    setBrush(QBrush(Qt::lightGray));
+    setBrush(Qt::lightGray);
 }
 
 void WallShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -258,6 +258,11 @@ void WallShape::setRect(const QRectF &rect)
 QRectF WallShape::rect() const
 {
     return m_wallRect;
+}
+
+void WallShape::setHeight(const qreal &height)
+{
+    m_wallHeight = height;
 }
 
 QSet<WallShape *> WallShape::collidingWalls()
@@ -440,6 +445,11 @@ void DoorShape::setRect(const QRectF &rect)
 QRectF DoorShape::rect() const
 {
     return m_doorRect;
+}
+
+void DoorShape::setHeight(const qreal &height)
+{
+    m_doorRect.setHeight(height);
 }
 
 DoorShape::DoorState DoorShape::doorState() const

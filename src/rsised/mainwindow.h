@@ -98,6 +98,9 @@ private slots:
     void changeDoorState();
     void changeDoorLeafPosition();
 
+// Wall setting
+    bool showWallSettingDialog();
+
 private:
     void createShapeToolBox();
     void disableAction();

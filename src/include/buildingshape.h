@@ -50,6 +50,7 @@ public:
     virtual ShapeType shapeType() const = 0;
     virtual void setRect(const QRectF &rect) = 0;
     virtual QRectF rect() const = 0;
+    virtual void setHeight(const qreal &height) = 0;
 
 
 protected:
@@ -81,6 +82,8 @@ public:
     ShapeType shapeType() const override;
     void setRect(const QRectF &rect) override;
     QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+
 
     QSet<WallShape *> collidingWalls();
     bool removeCollidingWall(WallShape *wallShape);
@@ -124,6 +127,7 @@ public:
     ShapeType shapeType() const override;
     void setRect(const QRectF &rect) override;
     QRectF rect() const override;
+    void setHeight(const qreal &height) override;
 
     DoorState doorState() const;
     void setDoorState(DoorState doorState);

@@ -59,5 +59,22 @@
         <file>images/icons/qt_48.png</file>
         <file>i18n/rsised_ru.qm</file>
         <file>images/icons/piechart_48.png</file>
+        <file>images/icons/white_48.png</file>
+        <file>images/icons/black_48.png</file>
+        <file>images/icons/lightgray_48.png</file>
+        <file>images/icons/gray_48.png</file>
+        <file>images/icons/darkgray_48.png</file>
+        <file>images/icons/reed_48.png</file>
+        <file>images/icons/darkreed_48.png</file>
+        <file>images/icons/green_48.png</file>
+        <file>images/icons/darkgreen_48.png</file>
+        <file>images/icons/blue_48.png</file>
+        <file>images/icons/darkblue_48.png</file>
+        <file>images/icons/cyan_48.png</file>
+        <file>images/icons/darkcyan_48.png</file>
+        <file>images/icons/magneta_48.png</file>
+        <file>images/icons/darkmagneta_48.png</file>
+        <file>images/icons/yellow_48.png</file>
+        <file>images/icons/darkyellow_48.png</file>
     </qresource>
 </RCC>

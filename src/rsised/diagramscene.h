@@ -61,6 +61,9 @@ public:
     bool isChanged();
     void setItemPen(const QColor &color, const qreal width, const Qt::PenStyle &penStyle);
     void setItemBrush(const QColor &color, const Qt::BrushStyle &brushStyle);
+    void setWallPen(const QColor &color, const int width);
+    void setWallHatching(const QColor &color, const Qt::BrushStyle &brushStyle);
+    void setWallHeight(const qreal &height);
     void setItemFont(const QFont &font , const QColor &textColor);
     void setSelectableItems(bool selectable);
     void setTechnicsShapeType(TechnicsShape::ShapeType type);
@@ -100,6 +103,9 @@ private:
     SceneMode   m_sceneMode;
     QPen        m_shapePen;
     QBrush      m_shapeBrush;
+    qreal       m_wallHeight;
+    QPen        m_wallPen;
+    QBrush      m_wallBrush;
     QFont       m_shapeFont;
     QColor      m_fontColor;
     QList<QPointF>  m_pathPointList;

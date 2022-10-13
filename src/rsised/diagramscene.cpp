@@ -50,6 +50,9 @@ DiagramScene::DiagramScene(QMenu *itemMenu, QObject *parent)
     , pixmapItem{nullptr}
     , m_shapeMenu{itemMenu}
     , m_sceneMode{SelectItem}
+    , m_wallHeight{10}
+    , m_wallPen{Qt::black, 1}
+    , m_wallBrush{Qt::lightGray}
     , leftButtonPressed{false}
     , sceneChanged(false)
 {
@@ -81,8 +84,8 @@ void DiagramScene::setItemPen(const QColor &color, const qreal width, const Qt::
     m_shapePen.setStyle(penStyle);
 
     if (!selectedItems().isEmpty()){
-        QList<QGraphicsItem *> selectedItems = this->selectedItems();
-        for (QGraphicsItem *item : qAsConst(selectedItems)) {
+        QList<QGraphicsItem *> selectedShapeList = selectedItems();
+        for (QGraphicsItem *item : qAsConst(selectedShapeList)) {
             if (QGraphicsLineItem *lineItem = qgraphicsitem_cast<QGraphicsLineItem *>(item)) {
                 lineItem->setPen(m_shapePen);
             }
@@ -115,6 +118,47 @@ void DiagramScene::setItemBrush(const QColor &color, const Qt::BrushStyle &brush
             }
             if (EllipseShape *ellipseShape = qgraphicsitem_cast<EllipseShape *>(item)) {
                 ellipseShape->setBrush(m_shapeBrush);
+            }
+        }
+    }
+}
+
+void DiagramScene::setWallPen(const QColor &color, const int width)
+{
+    m_wallPen.setColor(color);
+    m_wallPen.setWidth(width);
+    if (!selectedItems().isEmpty()) {
+        QList<QGraphicsItem *> selectedShapeList = selectedItems();
+        for (QGraphicsItem *p_shape : qAsConst(selectedShapeList)) {
+            if (WallShape *wallShape = qgraphicsitem_cast<WallShape *>(p_shape)) {
+                wallShape->setPen(m_wallPen);
+            }
+        }
+    }
+}
+
+void DiagramScene::setWallHatching(const QColor &color, const Qt::BrushStyle &brushStyle)
+{
+    m_wallBrush.setColor(color);
+    m_wallBrush.setStyle(brushStyle);
+    if (!selectedItems().isEmpty()) {
+        QList<QGraphicsItem *> selectedShapeList = selectedItems();
+        for (QGraphicsItem *p_shape : qAsConst(selectedShapeList)) {
+            if (WallShape *wallShape = qgraphicsitem_cast<WallShape *>(p_shape)) {
+                wallShape->setBrush(m_wallBrush);
+            }
+        }
+    }
+}
+
+void DiagramScene::setWallHeight(const qreal &height)
+{
+    m_wallHeight = height;
+    if (!selectedItems().isEmpty()) {
+        QList<QGraphicsItem *> selectedShapeList = selectedItems();
+        for (QGraphicsItem *p_shape : qAsConst(selectedShapeList)) {
+            if (WallShape *wallShape = qgraphicsitem_cast<WallShape *>(p_shape)) {
+                wallShape->setHeight(height);
             }
         }
     }
@@ -265,6 +309,9 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             m_buildingShape->setMenu(m_shapeMenu);
             m_buildingShape->setPos(mouseEvent->scenePos());
             if (m_buildingShapeType == BuildingShape::Wall) {
+                m_buildingShape->setPen(m_wallPen);
+                m_buildingShape->setBrush(m_wallBrush);
+                m_buildingShape->setHeight(m_wallHeight);
                 m_buildingShape->setZValue(900.0);
             } else {
                 m_buildingShape->setZValue(950.0);
