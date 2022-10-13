@@ -51,7 +51,7 @@
     <message>
         <location filename="../mainwindow.ui" line="117"/>
         <source>Setting</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="136"/>
@@ -383,27 +383,27 @@
     <message>
         <location filename="../mainwindow.ui" line="532"/>
         <source>Pie</source>
-        <translation type="unfinished"></translation>
+        <translation>Сектор</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="535"/>
         <source>Draw a pie</source>
-        <translation type="unfinished"></translation>
+        <translation>Нарисовать сектор</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="538"/>
         <source>Alt+P</source>
-        <translation type="unfinished"></translation>
+        <translation>Alt+P</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="543"/>
         <source>Walls</source>
-        <translation type="unfinished"></translation>
+        <translation>Стен</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="546"/>
         <source>Show wall setting dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать диалог настройки стен</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="91"/>
@@ -982,22 +982,22 @@
     <message>
         <location filename="../mainwindow.cpp" line="927"/>
         <source>Leaf position change</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить положение полотна двери</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="930"/>
         <source>Open door</source>
-        <translation type="unfinished"></translation>
+        <translation>Открытая дверь</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="934"/>
         <source>Ajar door</source>
-        <translation type="unfinished"></translation>
+        <translation>Приоткрытая дверь</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="938"/>
         <source>Close door</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрытая дверь</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="976"/>
@@ -1254,32 +1254,32 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../wallsetting.ui" line="23"/>
         <source>Configuring wall parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройка параметров стен</translation>
     </message>
     <message>
         <location filename="../wallsetting.ui" line="51"/>
         <source>Pen width</source>
-        <translation type="unfinished"></translation>
+        <translation>Толщина обводки</translation>
     </message>
     <message>
         <location filename="../wallsetting.ui" line="64"/>
         <source>Hatching style</source>
-        <translation type="unfinished"></translation>
+        <translation>Стиль заполнения</translation>
     </message>
     <message>
         <location filename="../wallsetting.ui" line="77"/>
         <source>Wall width</source>
-        <translation type="unfinished"></translation>
+        <translation>Ширина стены</translation>
     </message>
     <message>
         <location filename="../wallsetting.ui" line="90"/>
         <source>Hatching color</source>
-        <translation type="unfinished"></translation>
+        <translation>Цвет заполнения</translation>
     </message>
     <message>
         <location filename="../wallsetting.ui" line="103"/>
         <source>Pen color</source>
-        <translation type="unfinished"></translation>
+        <translation>Цвет обводки</translation>
     </message>
     <message>
         <source>Changing the pen thickness</source>
@@ -1288,12 +1288,12 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../wallsetting.cpp" line="154"/>
         <source>No brush</source>
-        <translation type="unfinished">Без заливки</translation>
+        <translation>Без заливки</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="155"/>
         <source>Solid</source>
-        <translation type="unfinished">Сплошная</translation>
+        <translation>Сплошная</translation>
     </message>
     <message>
         <source>Horizontal</source>
@@ -1306,192 +1306,184 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../wallsetting.cpp" line="74"/>
         <source>Change the thickness of the stroke line</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменение толщины линии обводки</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="82"/>
         <location filename="../wallsetting.cpp" line="118"/>
         <source>White</source>
-        <translation type="unfinished"></translation>
+        <translation>Белый</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="84"/>
         <location filename="../wallsetting.cpp" line="119"/>
         <source>Light gray</source>
-        <translation type="unfinished"></translation>
+        <translation>Светло-серый</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="86"/>
         <location filename="../wallsetting.cpp" line="121"/>
         <source>Gray</source>
-        <translation type="unfinished"></translation>
+        <translation>Серый</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="87"/>
         <location filename="../wallsetting.cpp" line="122"/>
         <source>Dark gray</source>
-        <translation type="unfinished"></translation>
+        <translation>Тёмно-серый</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="83"/>
         <location filename="../wallsetting.cpp" line="124"/>
         <source>Black</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../wallsetting.cpp" line="125"/>
-        <source>Reed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../wallsetting.cpp" line="126"/>
-        <source>Dark reed</source>
-        <translation type="unfinished"></translation>
+        <translation>Чёрный</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="92"/>
         <location filename="../wallsetting.cpp" line="128"/>
         <source>Green</source>
-        <translation type="unfinished"></translation>
+        <translation>Зелёный</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="89"/>
+        <location filename="../wallsetting.cpp" line="125"/>
         <source>Red</source>
-        <translation type="unfinished"></translation>
+        <translation>Красный</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="90"/>
+        <location filename="../wallsetting.cpp" line="126"/>
         <source>Dark red</source>
-        <translation type="unfinished"></translation>
+        <translation>Бордовый</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="93"/>
         <location filename="../wallsetting.cpp" line="129"/>
         <source>Dark green</source>
-        <translation type="unfinished"></translation>
+        <translation>Тёмно-зелёный</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="95"/>
         <location filename="../wallsetting.cpp" line="131"/>
         <source>Blue</source>
-        <translation type="unfinished"></translation>
+        <translation>Синий</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="96"/>
         <location filename="../wallsetting.cpp" line="132"/>
         <source>Dark blue</source>
-        <translation type="unfinished"></translation>
+        <translation>Фиолетовый</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="98"/>
         <location filename="../wallsetting.cpp" line="134"/>
         <source>Cyan</source>
-        <translation type="unfinished"></translation>
+        <translation>Голубой</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="99"/>
         <location filename="../wallsetting.cpp" line="135"/>
         <source>Dark cyan</source>
-        <translation type="unfinished"></translation>
+        <translation>Тёмно-голубой</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="101"/>
         <location filename="../wallsetting.cpp" line="137"/>
         <source>Magenta</source>
-        <translation type="unfinished"></translation>
+        <translation>Пурпурный</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="103"/>
         <location filename="../wallsetting.cpp" line="139"/>
         <source>Dark magenta</source>
-        <translation type="unfinished"></translation>
+        <translation>Тёмно-пурпурный</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="105"/>
         <location filename="../wallsetting.cpp" line="141"/>
         <source>Yellow</source>
-        <translation type="unfinished"></translation>
+        <translation>Жёлтый</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="106"/>
         <location filename="../wallsetting.cpp" line="142"/>
         <source>Dark yellow</source>
-        <translation type="unfinished"></translation>
+        <translation>Тёмно-жёлтый</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="109"/>
         <source>Change the wall pen color</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменение цвета обводки стен</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="145"/>
         <source>Change the wall fill color</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменение цвета заливки стен</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="157"/>
         <source>Cross</source>
-        <translation type="unfinished">Клетка</translation>
+        <translation>Клетка</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="159"/>
         <source>BDiag</source>
-        <translation type="unfinished">Диагональ 1</translation>
+        <translation>Диагональ 1</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="161"/>
         <source>FDiag</source>
-        <translation type="unfinished">Диагональ 2</translation>
+        <translation>Диагональ 2</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="163"/>
         <source>DiagCross</source>
-        <translation type="unfinished">Диагональная сетка</translation>
+        <translation>Диагональная сетка</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="165"/>
         <source>Dense 1</source>
-        <translation type="unfinished">Заполнение 1</translation>
+        <translation>Заполнение 1</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="167"/>
         <source>Dense 2</source>
-        <translation type="unfinished">Заполнение 2</translation>
+        <translation>Заполнение 2</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="169"/>
         <source>Dense 3</source>
-        <translation type="unfinished">Заполнение 3</translation>
+        <translation>Заполнение 3</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="171"/>
         <source>Dense 4</source>
-        <translation type="unfinished">Заполнение 4</translation>
+        <translation>Заполнение 4</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="173"/>
         <source>Dense 5</source>
-        <translation type="unfinished">Заполнение 5</translation>
+        <translation>Заполнение 5</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="175"/>
         <source>Dense 6</source>
-        <translation type="unfinished">Заполнение 6</translation>
+        <translation>Заполнение 6</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="177"/>
         <source>Dense 7</source>
-        <translation type="unfinished">Заполнение 7</translation>
+        <translation>Заполнение 7</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="180"/>
         <source>Change the wall fill style</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменение стиля заполнения стен</translation>
     </message>
     <message>
         <location filename="../wallsetting.cpp" line="192"/>
         <source>Change the wall thickness</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменение толщины стен</translation>
     </message>
     <message>
         <source>Changing the fill style</source>

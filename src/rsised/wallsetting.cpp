@@ -122,8 +122,8 @@ void WallSetting::createColorHatchingCombo()
     m_colorHatchingCombo->addItem(QIcon(":images/icons/darkgray_48.png"), tr("Dark gray")
                                   , "Qt::darkGray");
     m_colorHatchingCombo->addItem(QIcon(":images/icons/black_48.png"), tr("Black"), "Qt::black");
-    m_colorHatchingCombo->addItem(QIcon(":images/icons/reed_48.png"), tr("Reed"), "Qt::red");
-    m_colorHatchingCombo->addItem(QIcon(":images/icons/darkreed_48.png"), tr("Dark reed")
+    m_colorHatchingCombo->addItem(QIcon(":images/icons/reed_48.png"), tr("Red"), "Qt::red");
+    m_colorHatchingCombo->addItem(QIcon(":images/icons/darkreed_48.png"), tr("Dark red")
                                   , "Qt::darkRed");
     m_colorHatchingCombo->addItem(QIcon(":images/icons/green_48.png"), tr("Green"), "Qt::green");
     m_colorHatchingCombo->addItem(QIcon(":images/icons/darkgreen_48.png"), tr("Dark green")
