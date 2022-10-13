@@ -281,7 +281,11 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> &items, Q
             rseWriter.writeAttribute("item_top", QString::number(buildingShape->rect().top()));
             rseWriter.writeAttribute("width", QString::number(buildingShape->rect().width()));
             rseWriter.writeAttribute("height", QString::number(buildingShape->rect().height()));
-            BuildingShape::ShapeType shapeType = buildingShape->shapeType();
+            rseWriter.writeAttribute("pen-color", buildingShape->pen().color().name());
+            rseWriter.writeAttribute("pen-width", QString::number(buildingShape->pen().width()));
+            rseWriter.writeAttribute("brush-color", buildingShape->brush().color().name());
+            rseWriter.writeAttribute("brush-style", QString::number(buildingShape->brush().style()));
+            BuildingShape::ShapeType shapeType{buildingShape->shapeType()};
             rseWriter.writeAttribute("shape_type", QString::number(shapeType));
             rseWriter.writeAttribute("z", QString::number(buildingShape->zValue()));
             QTransform transform(buildingShape->transform());
@@ -293,6 +297,12 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> &items, Q
                                           + QString::number(transform.m23()) + ","
                                           + QString::number(transform.m33()));
             rseWriter.writeAttribute("transform", transBuildingItem);
+            if (DoorShape *p_doorShape = dynamic_cast<DoorShape *>(buildingShape)) {
+                DoorShape::DoorState doorState{p_doorShape->doorState()};
+                rseWriter.writeAttribute("door-state", QString::number(doorState));
+                DoorShape::LeafPosition leafPosition{p_doorShape->leafPosition()};
+                rseWriter.writeAttribute("leaf-position", QString::number(leafPosition));
+            }
             rseWriter.writeEndElement(); // buildingItem
         }
     }
