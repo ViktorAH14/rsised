@@ -29,6 +29,7 @@
 #include "rse_writer.h"
 #include "rse_reader.h"
 #include "svg_reader.h"
+#include "wallsetting.h"
 
 #include <QtWidgets>
 #include <QSvgGenerator>
@@ -678,6 +679,23 @@ void MainWindow::changeDoorLeafPosition()
                     ? p_doorShape->setLeafPosition(DoorShape::Right)
                     : p_doorShape->setLeafPosition(DoorShape::Left);
     }
+}
+
+bool MainWindow::showWallSettingDialog()
+{
+    WallSetting *p_wallSettingDialog = new WallSetting(this);
+    if (p_wallSettingDialog->exec() != QDialog::Accepted)
+        return false;
+    int currentPenWidth{p_wallSettingDialog->penWidth()};
+    QColor currentPenColor{p_wallSettingDialog->penColor()};
+    m_scene->setWallPen(currentPenColor, currentPenWidth);
+    QColor currentHtchingColor{p_wallSettingDialog->hatchingColor()};
+    Qt::BrushStyle currentHatchingStyle{p_wallSettingDialog->hatchingStyle()};
+    m_scene->setWallHatching(currentHtchingColor, currentHatchingStyle);
+    qreal currentWallHeight{p_wallSettingDialog->wallHeight()};
+    m_scene->setWallHeight(currentWallHeight);
+
+    return true;
 }
 
 void MainWindow::createShapeToolBox()

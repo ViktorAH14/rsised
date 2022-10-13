@@ -16,17 +16,20 @@ SOURCES += \
     mainwindow.cpp \
     rse_reader.cpp \
     rse_writer.cpp \
-    svg_reader.cpp
+    svg_reader.cpp \
+    wallsetting.cpp
 
 HEADERS += \
     diagramscene.h \
     mainwindow.h \
     rse_reader.h \
     rse_writer.h \
-    svg_reader.h
+    svg_reader.h \
+    wallsetting.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    wallsetting.ui
 
 TRANSLATIONS += \
             i18n/rsised_ru.ts
