@@ -42,14 +42,16 @@ DiagramScene::DiagramScene(QMenu *itemMenu, QObject *parent)
     , m_buildingShapeType{BuildingShape::Wall}
     , m_buildingShape{nullptr}
     , m_rectShape{nullptr}
-    , polyline{nullptr}
+    , m_polyline{nullptr}
     , m_ellipseShape{nullptr}
-    , tempPath{nullptr}
-    , curve{nullptr}
-    , textItem{nullptr}
-    , pixmapItem{nullptr}
+    , m_tempPath{nullptr}
+    , m_curve{nullptr}
+    , m_textItem{nullptr}
+    , m_pixmapItem{nullptr}
     , m_shapeMenu{itemMenu}
     , m_sceneMode{SelectItem}
+    , m_shapePen{Qt::black, 1}
+    , m_shapeBrush{Qt::white}
     , m_wallHeight{10}
     , m_wallPen{Qt::black, 1}
     , m_wallBrush{Qt::lightGray}
@@ -212,29 +214,29 @@ void DiagramScene::setBuildingShapeType(BuildingShape::ShapeType type)
 
 void DiagramScene::clearPie()
 {
-    removeItem(tempPath);
-    tempPath = nullptr;
+    removeItem(m_tempPath);
+    m_tempPath = nullptr;
     m_pathPointList.clear();
     m_ellipseShape = nullptr;
 }
 
 void DiagramScene::insertPixmap(const QString &imageFile)
 {
-    pixmapItem = new PixmapShape();
+    m_pixmapItem = new PixmapShape();
     QPixmap image(imageFile);
-    pixmapItem->setPixmap(image);
-    pixmapItem->setZValue(-1000.0);
-    addItem(pixmapItem);
+    m_pixmapItem->setPixmap(image);
+    m_pixmapItem->setZValue(-1000.0);
+    addItem(m_pixmapItem);
 }
 
 void DiagramScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (m_sceneMode == InsertPolyline) {
-        polyline = nullptr;
+        m_polyline = nullptr;
         m_pathPointList.clear();
     }
     if (m_sceneMode == InsertCurve) {
-        curve = nullptr;
+        m_curve = nullptr;
         m_pathPointList.clear();
     }
 
@@ -248,9 +250,9 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         switch (m_sceneMode) {
         case InsertPolyline:
             m_pathPointList.append(mouseEvent->scenePos());
-            if (polyline == nullptr) {
-                polyline = new PolylineShape(m_shapeMenu);
-                addItem(polyline);
+            if (m_polyline == nullptr) {
+                m_polyline = new PolylineShape(m_shapeMenu);
+                addItem(m_polyline);
             }
             break;
         case InsertRectShape:
@@ -271,25 +273,25 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 m_ellipseShape->setMenu(m_shapeMenu);
                 m_ellipseShape->setPen(QPen(Qt::black, 0, Qt::DashLine));
                 addItem(m_ellipseShape);
-                tempPath = new QGraphicsPathItem();
-                addItem(tempPath);
+                m_tempPath = new QGraphicsPathItem();
+                addItem(m_tempPath);
             }
             break;
         case InsertCurve:
             m_pathPointList.append(mouseEvent->scenePos());
-            if (curve == nullptr) {
-                curve = new Curve(m_shapeMenu);
-                addItem(curve);
+            if (m_curve == nullptr) {
+                m_curve = new Curve(m_shapeMenu);
+                addItem(m_curve);
             }
             break;
         case InserText: // TODO добавить editorLostFocus(TextItem *textItem); утечка памяти???
-            textItem = new TextShape(m_shapeMenu);
-            textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
-            textItem->setPos(mouseEvent->scenePos());
-            textItem->setFont(m_shapeFont);
-            textItem->setDefaultTextColor(m_fontColor);
-            textItem->setZValue(1000.0);
-            addItem(textItem);
+            m_textItem = new TextShape(m_shapeMenu);
+            m_textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_textItem->setPos(mouseEvent->scenePos());
+            m_textItem->setFont(m_shapeFont);
+            m_textItem->setDefaultTextColor(m_fontColor);
+            m_textItem->setZValue(1000.0);
+            addItem(m_textItem);
             break;
         case InsertTechnicsShape:
             m_technicsShape = new TechnicsShape(m_technicsShapeType);
@@ -361,7 +363,7 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 QPainterPath tempPiePath;
                 tempPiePath.moveTo(center);
                 tempPiePath.lineTo(mouseEvent->scenePos());
-                tempPath->setPath(tempPiePath);
+                m_tempPath->setPath(tempPiePath);
         }
     } else {
         if ((m_sceneMode == InsertPie) && (m_ellipseShape != nullptr)) {
@@ -375,29 +377,29 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
             qreal spanAngle = startRadius.angleTo(spanRadius);
             tempPiePath.arcTo(m_ellipseShape->rect(), startAngle, spanAngle);
             tempPiePath.lineTo(center);
-            tempPath->setPath(tempPiePath);
-            tempPath->setPen(QPen(Qt::black, 1));
-            tempPath->setBrush(QBrush(Qt::lightGray));
+            m_tempPath->setPath(tempPiePath);
+            m_tempPath->setPen(QPen(Qt::black, 1));
+            m_tempPath->setBrush(QBrush(Qt::lightGray));
         }
-        if (m_sceneMode == InsertCurve && (curve != nullptr)) {
+        if (m_sceneMode == InsertCurve && (m_curve != nullptr)) {
             QPainterPath newPath;
             newPath.moveTo(m_pathPointList.at(0));
             for (int i = 2; i < m_pathPointList.count(); i += 2) {
                 newPath.quadTo(m_pathPointList.at(i - 1), m_pathPointList.at(i));
             }
             newPath.quadTo(m_pathPointList.back(), mouseEvent->scenePos());
-            curve->setPath(newPath);
-            curve->setPen(m_shapePen);
+            m_curve->setPath(newPath);
+            m_curve->setPen(m_shapePen);
         }
-        if ((m_sceneMode == InsertPolyline) && (polyline != nullptr)) {
+        if ((m_sceneMode == InsertPolyline) && (m_polyline != nullptr)) {
             QPainterPath newPath;
             newPath.moveTo(m_pathPointList.at(0));
             for (int i = 1; i < m_pathPointList.count(); i++) {
                 newPath.lineTo(m_pathPointList.at(i));
             }
             newPath.lineTo(mouseEvent->scenePos());
-            polyline->setPath(newPath);
-            polyline->setPen(m_shapePen);
+            m_polyline->setPath(newPath);
+            m_polyline->setPen(m_shapePen);
         }
     }
 

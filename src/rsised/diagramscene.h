@@ -93,12 +93,12 @@ private:
     BuildingShape *m_buildingShape;
 
     RectShape   *m_rectShape;
-    PolylineShape    *polyline;
+    PolylineShape    *m_polyline;
     EllipseShape     *m_ellipseShape;
-    QGraphicsPathItem *tempPath;
-    Curve       *curve;
-    TextShape    *textItem;
-    PixmapShape  *pixmapItem;
+    QGraphicsPathItem *m_tempPath;
+    Curve       *m_curve;
+    TextShape    *m_textItem;
+    PixmapShape  *m_pixmapItem;
     QMenu       *m_shapeMenu;
     SceneMode   m_sceneMode;
     QPen        m_shapePen;
