@@ -57,43 +57,6 @@ BuildingShape *BuildingShape::createBuildingShape(ShapeType shapeType, QGraphics
     return p_buildingShape;
 }
 
-//QPainterPath BuildingShape::shape() const
-//{
-//    QPainterPath path;
-//    path.moveTo(shapeRect.topLeft());
-//    if (m_shapeType == Door) {
-//        path.lineTo(shapeRect.left() + frameWidth, shapeRect.top());
-//        path.quadTo(shapeRect.left() + frameWidth
-//                    , shapeRect.top() - shapeRect.width() / 4.0
-//                    , shapeRect.right() - frameWidth - shapeRect.width() / 2.0
-//                    , shapeRect.top() - shapeRect.width() / 2.0);
-//        path.lineTo(shapeRect.right() - frameWidth, shapeRect.top());
-//        path.lineTo(shapeRect.topRight());
-//        path.lineTo(shapeRect.bottomRight());
-//        path.lineTo(shapeRect.bottomLeft());
-//        path.lineTo(shapeRect.topLeft());
-//    } else {
-//        path.lineTo(shapeRect.topRight());
-//        path.lineTo(shapeRect.bottomRight());
-//        path.lineTo(shapeRect.bottomLeft());
-//        path.lineTo(shapeRect.topLeft());
-//    }
-//    return path;
-//}
-
-//QPixmap BuildingShape::image()
-//{
-//    qreal pixmapWidth = boundingRect().width();
-//    qreal pixmapHeight = boundingRect().height();
-//    QPixmap pixmap(pixmapWidth, pixmapHeight);
-//    pixmap.fill(Qt::transparent);
-//    QPainter painter(&pixmap);
-//    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
-//    drawShape(&painter);
-
-//    return pixmap;
-//}
-
 //void BuildingShape::drawShape(QPainter *painter)
 //{
 //    painter->setRenderHint(QPainter::Antialiasing);

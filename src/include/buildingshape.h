@@ -65,7 +65,6 @@ private:
 //    qreal   frameWidth;
 };
 
-// TODO сделать настройку толщины стены из основного и контектстного меню
 class WallShape : public BuildingShape
 {
 public:
