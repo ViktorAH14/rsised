@@ -903,11 +903,13 @@ void MainWindow::createActions()
     m_sceneScaleMinAction = new QAction(QIcon(":images/icons/zoomminus.png"),
                                       tr("Zoom out"), this);
     m_sceneScaleMinAction->setShortcut(tr("Ctrl+-"));
+    m_sceneScaleMinAction->setText("Zoom out");
     m_sceneScaleMinAction->setToolTip(tr("Zoom out the scene by 10%"));
     connect(m_sceneScaleMinAction, &QAction::triggered, this, &MainWindow::sceneZoomInOut);
 
     m_sceneScaleMaxAction = new QAction(QIcon(":images/icons/zoomplus.png"),
                                       tr("Zoom in"), this);
+    m_sceneScaleMaxAction->setText("Zoom in");
     m_sceneScaleMaxAction->setShortcut(tr("Ctrl++"));
     m_sceneScaleMaxAction->setToolTip(tr("Zoom in on the scene by 10%"));
     connect(m_sceneScaleMaxAction, &QAction::triggered, this, &MainWindow::sceneZoomInOut);
@@ -929,10 +931,12 @@ void MainWindow::createActions()
     connect(m_underLineAction, &QAction::triggered, this, &MainWindow::changedFont);
 
     // Door
-    m_doorLeafPosAction = new QAction(tr("Leaf position change"), this);
+    m_doorLeafPosAction = new QAction(tr("Leaf change"), this);
+    m_doorLeafPosAction->setToolTip("Changing the position of the door leaf");
     connect(m_doorLeafPosAction, &QAction::triggered, this, &MainWindow::changeDoorLeafPosition);
 
     m_doorOpenAction = new QAction(tr("Open door"), this);
+    m_doorOpenAction->setToolTip("Change the state of the door");
     m_doorOpenAction->setCheckable(true);
     connect(m_doorOpenAction, &QAction::triggered, this, &MainWindow::changeDoorState);
 
@@ -953,6 +957,7 @@ void MainWindow::createActions()
 
 void MainWindow::createMenu()
 {
+    //Create menuView
     ui->menuView->addAction(m_sceneScaleMinAction);
     ui->menuView->addAction(m_sceneScaleMaxAction);
 
