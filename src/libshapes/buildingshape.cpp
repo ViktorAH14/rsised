@@ -188,7 +188,7 @@ QPainterPath WallShape::shape() const
 
 bool WallShape::contains(const QPointF &point) const
 {
-    return AbstractShape::contains(point);
+    return QAbstractGraphicsShapeItem::contains(point);
 }
 
 QPixmap WallShape::image()
