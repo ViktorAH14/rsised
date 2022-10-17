@@ -36,7 +36,8 @@ private slots:
     void image();
     void setRect_data();
     void setRect();
-    void contains();
+    void setHeight_data();
+    void setHeight();
     void collidingWall();
 };
 
@@ -191,19 +192,35 @@ void tst_BuildingShape::setRect()
     BuildingShape::BuildingShapeDeleter::cleanup(p_doorShape);
 }
 
-void tst_BuildingShape::contains()
+void tst_BuildingShape::setHeight_data()
 {
-    if (sizeof(qreal) != sizeof(double))
-        QSKIP("Skipped due to rounding errors");
+    QTest::addColumn<qreal>("height");
+    QTest::newRow("height_0") << 0.0;
+    QTest::newRow("height_01") << 0.1;
+    QTest::newRow("height_-01") << -0.1;
+    QTest::newRow("height_-6") << -6.0;
+    QTest::newRow("height_6") << 6.0;
+    QTest::newRow("height_8") << 8.0;
+    QTest::newRow("height_10") << 10.0;
+    QTest::newRow("height_12") << 12.0;
+    QTest::newRow("height_14") << 14.0;
+    QTest::newRow("height_16") << 16.0;
+    QTest::newRow("height_18") << 18.0;
+    QTest::newRow("height_20") << 20.0;
+    QTest::newRow("height_22") << 22.0;
+    QTest::newRow("height_24") << 24.0;
+    QTest::newRow("height_26") << 26.0;
+}
 
+void tst_BuildingShape::setHeight()
+{
+    QFETCH(qreal, height);
+
+    // WallShape
     BuildingShape *p_wallShape = BuildingShape::createBuildingShape(BuildingShape::Wall);
-    QVERIFY(!p_wallShape->contains(QPointF(-31, -6)));
-    QVERIFY(p_wallShape->contains(QPointF(-30, -5)));
-    QVERIFY(!p_wallShape->contains(QPointF(-31, 0)));
-    QVERIFY(p_wallShape->contains(QPointF(-30, 0)));
-    QVERIFY(p_wallShape->contains(QPointF(0, -5)));
-    QVERIFY(p_wallShape->contains(QPointF(0, 0)));
-    QVERIFY(p_wallShape->contains(QPointF(30, 5)));
+    p_wallShape->setHeight(height);
+    QCOMPARE(p_wallShape->height(), height);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_wallShape);
 }
 
 void tst_BuildingShape::collidingWall()
