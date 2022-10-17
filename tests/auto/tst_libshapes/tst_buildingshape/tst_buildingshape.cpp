@@ -36,6 +36,7 @@ private slots:
     void image();
     void setRect_data();
     void setRect();
+    void contains();
     void collidingWall();
 };
 
@@ -188,6 +189,21 @@ void tst_BuildingShape::setRect()
     p_doorShape->setRect(rect);
     QCOMPARE(p_doorShape->rect(), rect);
     BuildingShape::BuildingShapeDeleter::cleanup(p_doorShape);
+}
+
+void tst_BuildingShape::contains()
+{
+    if (sizeof(qreal) != sizeof(double))
+        QSKIP("Skipped due to rounding errors");
+
+    BuildingShape *p_wallShape = BuildingShape::createBuildingShape(BuildingShape::Wall);
+    QVERIFY(!p_wallShape->contains(QPointF(-31, -6)));
+    QVERIFY(p_wallShape->contains(QPointF(-30, -5)));
+    QVERIFY(!p_wallShape->contains(QPointF(-31, 0)));
+    QVERIFY(p_wallShape->contains(QPointF(-30, 0)));
+    QVERIFY(p_wallShape->contains(QPointF(0, -5)));
+    QVERIFY(p_wallShape->contains(QPointF(0, 0)));
+    QVERIFY(p_wallShape->contains(QPointF(30, 5)));
 }
 
 void tst_BuildingShape::collidingWall()
