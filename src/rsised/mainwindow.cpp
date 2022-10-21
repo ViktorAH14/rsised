@@ -39,7 +39,12 @@
 #include <QScopedPointer>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), m_currentFile("")
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+    , m_currentFile("")
+    , m_wallPen(QPen(Qt::black, 1))
+    , m_wallBrush(QBrush(Qt::lightGray))
+    , m_wallHeight{10}
 {
     ui->setupUi(this);
 
@@ -543,8 +548,11 @@ void MainWindow::insertBuildingShape(QAbstractButton *button)
     const int idButton = m_buildingShapeButtonGroup->id(button);
     BuildingShape::ShapeType shapeType {BuildingShape::ShapeType(idButton)};
     QScopedPointer<BuildingShape, BuildingShape::BuildingShapeDeleter>
-            buildingShape{BuildingShape::createBuildingShape(shapeType)};
-    ui->mainGraphicsView->setCursor(QCursor(buildingShape->image()));
+            sc_buildingShape{BuildingShape::createBuildingShape(shapeType)};
+    sc_buildingShape->setPen(m_wallPen);
+    sc_buildingShape->setBrush(m_wallBrush);
+    sc_buildingShape->setHeight(m_wallHeight);
+    ui->mainGraphicsView->setCursor(QCursor(sc_buildingShape->image()));
     ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     m_scene->setMode(DiagramScene::InsertBuildingShape);
     m_scene->setBuildingShapeType(BuildingShape::ShapeType(idButton));
@@ -688,17 +696,36 @@ void MainWindow::changeDoorLeafPosition()
 
 bool MainWindow::showWallSettingDialog()
 {
-    WallSetting *p_wallSettingDialog = new WallSetting(this);
+    WallSetting *p_wallSettingDialog = new WallSetting(m_wallPen, m_wallBrush, m_wallHeight, this);
+
     if (p_wallSettingDialog->exec() != QDialog::Accepted)
         return false;
+
     int currentPenWidth{p_wallSettingDialog->penWidth()};
     QColor currentPenColor{p_wallSettingDialog->penColor()};
+    m_wallPen = QPen(currentPenColor, currentPenWidth);
     m_scene->setWallPen(currentPenColor, currentPenWidth);
     QColor currentHtchingColor{p_wallSettingDialog->hatchingColor()};
     Qt::BrushStyle currentHatchingStyle{p_wallSettingDialog->hatchingStyle()};
+    m_wallBrush = QBrush(currentHtchingColor, currentHatchingStyle);
     m_scene->setWallHatching(currentHtchingColor, currentHatchingStyle);
     qreal currentWallHeight{p_wallSettingDialog->wallHeight()};
+    m_wallHeight = currentWallHeight;
     m_scene->setWallHeight(currentWallHeight);
+
+    QScopedPointer<BuildingShape, BuildingShape::BuildingShapeDeleter>
+            sc_buildingShape{BuildingShape::createBuildingShape(BuildingShape::Wall)};
+    sc_buildingShape->setPen(QPen(currentPenColor, currentPenWidth));
+    sc_buildingShape->setBrush(QBrush(currentHtchingColor, currentHatchingStyle));
+    sc_buildingShape->setHeight(currentWallHeight);
+    QIcon icon(sc_buildingShape->image());
+    qreal iconWidth{sc_buildingShape->rect().width() / 2.0};
+    qreal iconHeight{36.0};
+    m_buildingShapeButtonGroup->button(BuildingShape::Wall)->setIcon(icon);
+    m_buildingShapeButtonGroup->button(BuildingShape::Wall)->setIconSize(QSize(iconWidth
+                                                                               , iconHeight));
+    ui->actionSelectedItem->setChecked(true);
+    selectedItem();
 
     return true;
 }

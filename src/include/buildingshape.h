@@ -104,10 +104,8 @@ private:
 
     QSet<WallShape *>  m_collidingWallSet;
     const ShapeType m_wallType;
-    qreal m_wallHeight;
     QRectF  m_wallRect;
     bool m_leftButtonPressed;
-    qreal m_bindingOffset;
 };
 
 class DoorShape :public BuildingShape

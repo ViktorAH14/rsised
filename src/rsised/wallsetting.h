@@ -14,7 +14,8 @@ class WallSetting : public QDialog
     Q_OBJECT
 
 public:
-    explicit WallSetting(QWidget *parent = nullptr);
+    explicit WallSetting(const QPen &wallPen, const QBrush &wallBrush, const qreal &wallHeight
+                         , QWidget *parent = nullptr);
     ~WallSetting();
 
     int penWidth();

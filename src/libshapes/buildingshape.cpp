@@ -127,10 +127,8 @@ BuildingShape *BuildingShape::createBuildingShape(ShapeType shapeType, QGraphics
 WallShape::WallShape(QGraphicsItem *parent)
     : BuildingShape(parent)
     , m_wallType{Wall}
-    , m_wallHeight{10}
-    , m_wallRect{QRectF(-30.0, -5.0, 60.0, m_wallHeight)}
+    , m_wallRect{QRectF(-30.0, -5.0, 60.0, 10)}
     , m_leftButtonPressed{false}
-    , m_bindingOffset{m_wallHeight - 2.0}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
@@ -194,6 +192,7 @@ QPixmap WallShape::image()
     pixmap.fill(Qt::transparent);
 
     QPainter painter(&pixmap);
+    painter.setPen(pen());
     painter.setBrush(brush());
     painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
     painter.drawRect(rect());
@@ -208,6 +207,9 @@ BuildingShape::ShapeType WallShape::shapeType() const
 
 void WallShape::setRect(const QRectF &rect)
 {
+    if (m_wallRect == rect)
+        return;
+
     prepareGeometryChange();
     m_wallRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
     update();
@@ -220,12 +222,20 @@ QRectF WallShape::rect() const
 
 void WallShape::setHeight(const qreal &height)
 {
-    m_wallHeight = height;
+    if (m_wallRect.height() == height)
+        return;
+
+    qreal oldHeight{m_wallRect.height()};
+    prepareGeometryChange();
+    m_wallRect.setHeight(height);
+    qreal dy{(m_wallRect.height() - oldHeight) / 2};
+    m_wallRect.moveTo(QPointF(m_wallRect.x(), m_wallRect.y() - dy));
+    update();
 }
 
 qreal WallShape::height() const
 {
-    return m_wallHeight;
+    return m_wallRect.height();
 }
 
 QSet<WallShape *> WallShape::collidingWalls()
@@ -278,6 +288,8 @@ bool WallShape::collidingWallsIsEmpty()
 
 void WallShape::bindingWall()
 {
+    qreal wallHeight{m_wallRect.height()};
+    qreal bindingOffset{wallHeight/2 - 1};
     prepareGeometryChange();
     QList<QGraphicsItem *> collidingShapeList{collidingItems()};
     for (QGraphicsItem *p_shape : qAsConst(collidingShapeList)) {
@@ -289,7 +301,7 @@ void WallShape::bindingWall()
             for (int i = 0; i < cornerList.size(); i++) {
                 for (int j = 0; j < collidingCornerList.size(); j++) {
                     QLineF distLine(cornerList.at(i), collidingCornerList.at(j));
-                    if (distLine.length() < m_bindingOffset) {
+                    if (distLine.length() < bindingOffset) {
                         cornerList[i] = collidingCornerList.at(j);
                         break;
                     }
@@ -298,7 +310,7 @@ void WallShape::bindingWall()
             setRect(QRectF(cornerList.at(0), cornerList.at(1)));
         }
     }
-    m_wallRect.setHeight(m_wallHeight);
+    m_wallRect.setHeight(wallHeight);
     setSelected(false);
     update();
 }
