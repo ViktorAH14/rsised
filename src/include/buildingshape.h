@@ -76,7 +76,6 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
-    bool contains(const QPointF &point) const override;
 
     QPixmap image() override;
     ShapeType shapeType() const override;
@@ -104,10 +103,8 @@ private:
 
     QSet<WallShape *>  m_collidingWallSet;
     const ShapeType m_wallType;
-    qreal m_wallHeight;
     QRectF  m_wallRect;
     bool m_leftButtonPressed;
-    qreal m_bindingOffset;
 };
 
 class DoorShape :public BuildingShape

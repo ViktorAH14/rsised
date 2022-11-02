@@ -161,5 +161,10 @@ private:
     QButtonGroup *m_technicsButtonGroup;
     QButtonGroup *m_deviceButtonGroup;
     QButtonGroup *m_buildingShapeButtonGroup;
+
+    // Wall setting
+    QPen m_wallPen;
+    QBrush m_wallBrush;
+    qreal m_wallHeight;
 };
 #endif // MAINWINDOW_H

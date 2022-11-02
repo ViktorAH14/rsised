@@ -127,10 +127,8 @@ BuildingShape *BuildingShape::createBuildingShape(ShapeType shapeType, QGraphics
 WallShape::WallShape(QGraphicsItem *parent)
     : BuildingShape(parent)
     , m_wallType{Wall}
-    , m_wallHeight{10}
-    , m_wallRect{QRectF(-30.0, -5.0, 60.0, m_wallHeight)}
+    , m_wallRect{QRectF(-30.0, -5.0, 60.0, 10)}
     , m_leftButtonPressed{false}
-    , m_bindingOffset{m_wallHeight - 2.0}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
@@ -146,19 +144,21 @@ void WallShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     painter->setRenderHint(QPainter::SmoothPixmapTransform);
     painter->setPen(pen());
     painter->setBrush(brush());
+    painter->setBackgroundMode(Qt::OpaqueMode);
 
     setCollidingWalls();
     if (m_collidingWallSet.isEmpty()) {
-        painter->drawPath(shape());
+        painter->drawRect(rect());
     } else {
+        QPainterPath fillPath;
+        fillPath.addRect(rect());
+        painter->fillPath(fillPath, brush());
         QPainterPath wallPath;
         wallPath.setFillRule(Qt::WindingFill);
         wallPath.addRect(rect());
         for (WallShape *p_wallShape : qAsConst(m_collidingWallSet)) {
-            wallPath.addPolygon(mapFromItem(p_wallShape, p_wallShape->boundingRect()));
+            wallPath.addPolygon(mapFromItem(p_wallShape, p_wallShape->rect()));
         }
-        QPainterPath fillPath{wallPath};
-        painter->fillPath(fillPath, brush());
         painter->strokePath(wallPath.simplified(), pen());
     }
 
@@ -186,11 +186,6 @@ QPainterPath WallShape::shape() const
     return shapeFromPath(path);
 }
 
-bool WallShape::contains(const QPointF &point) const
-{
-    return AbstractShape::contains(point);
-}
-
 QPixmap WallShape::image()
 {
     qreal pixmapWidth{boundingRect().width()};
@@ -199,6 +194,7 @@ QPixmap WallShape::image()
     pixmap.fill(Qt::transparent);
 
     QPainter painter(&pixmap);
+    painter.setPen(pen());
     painter.setBrush(brush());
     painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
     painter.drawRect(rect());
@@ -213,6 +209,9 @@ BuildingShape::ShapeType WallShape::shapeType() const
 
 void WallShape::setRect(const QRectF &rect)
 {
+    if (m_wallRect == rect)
+        return;
+
     prepareGeometryChange();
     m_wallRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
     update();
@@ -225,12 +224,20 @@ QRectF WallShape::rect() const
 
 void WallShape::setHeight(const qreal &height)
 {
-    m_wallHeight = height;
+    if (m_wallRect.height() == height)
+        return;
+
+    qreal oldHeight{m_wallRect.height()};
+    prepareGeometryChange();
+    m_wallRect.setHeight(height);
+    qreal dy{(m_wallRect.height() - oldHeight) / 2};
+    m_wallRect.moveTo(QPointF(m_wallRect.x(), m_wallRect.y() - dy));
+    update();
 }
 
 qreal WallShape::height() const
 {
-    return m_wallHeight;
+    return m_wallRect.height();
 }
 
 QSet<WallShape *> WallShape::collidingWalls()
@@ -254,7 +261,7 @@ void WallShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void WallShape::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (m_leftButtonPressed) {
+    if (m_leftButtonPressed && !collidingWallsIsEmpty()) {
         bindingWall();
         m_leftButtonPressed = false;
     }
@@ -274,6 +281,7 @@ void WallShape::setCollidingWalls()
             }
         }
     }
+    m_collidingWallSet.remove(this);
 }
 
 bool WallShape::collidingWallsIsEmpty()
@@ -283,28 +291,19 @@ bool WallShape::collidingWallsIsEmpty()
 
 void WallShape::bindingWall()
 {
+    qreal bindingOffset{m_wallRect.height() < 10 ? m_wallRect.height() - 1 : m_wallRect.height() / 2};
     prepareGeometryChange();
-    QList<QGraphicsItem *> collidingShapeList{collidingItems()};
-    for (QGraphicsItem *p_shape : qAsConst(collidingShapeList)) {
-        if (WallShape *p_collidingWall = dynamic_cast<WallShape *>(p_shape)) {
-            QRectF collidingRect{mapRectFromItem(p_collidingWall, p_collidingWall->rect())};
-            QList<QPointF> collidingCornerList{collidingRect.topLeft(), collidingRect.topRight()
-                        , collidingRect.bottomLeft(), collidingRect.bottomRight()};
-            QList<QPointF> cornerList{m_wallRect.topLeft(), m_wallRect.bottomRight()};
-            for (int i = 0; i < cornerList.size(); i++) {
-                for (int j = 0; j < collidingCornerList.size(); j++) {
-                    QLineF distLine(cornerList.at(i), collidingCornerList.at(j));
-                    if (distLine.length() < m_bindingOffset) {
-                        cornerList[i] = collidingCornerList.at(j);
-                        break;
-                    }
-                }
-            }
-            setRect(QRectF(cornerList.at(0), cornerList.at(1)));
+    for (WallShape *p_collidingWall : qAsConst(m_collidingWallSet)) {
+        QRectF collidingRect{mapRectFromItem(p_collidingWall, p_collidingWall->rect())};
+        if ((qAbs(m_wallRect.left() - collidingRect.left())) < bindingOffset) {
+            qreal left{collidingRect.left()};
+            m_wallRect.setLeft(left);
+        }
+        if ((qAbs(m_wallRect.right() - collidingRect.right())) < bindingOffset) {
+            qreal right{collidingRect.right()};
+            m_wallRect.setRight(right);
         }
     }
-    m_wallRect.setHeight(m_wallHeight);
-    setSelected(false);
     update();
 }
 
