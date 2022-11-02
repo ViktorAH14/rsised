@@ -75,7 +75,6 @@ public:
     inline int type() const override {return Type;}
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QRectF boundingRect() const override;
-
     QPainterPath shape() const override;
 
     QPixmap image() override;

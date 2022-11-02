@@ -207,7 +207,7 @@ bool MainWindow::saveAs()
     return saveFile(fileDialog.selectedFiles().constFirst());
 }
 
-void MainWindow::copy()
+void MainWindow::copy() //FIXME change the context menu
 {
     if (!m_copyList.isEmpty()) {
         QList<QGraphicsItem *> shapeList = m_scene->items();
@@ -549,9 +549,11 @@ void MainWindow::insertBuildingShape(QAbstractButton *button)
     BuildingShape::ShapeType shapeType {BuildingShape::ShapeType(idButton)};
     QScopedPointer<BuildingShape, BuildingShape::BuildingShapeDeleter>
             sc_buildingShape{BuildingShape::createBuildingShape(shapeType)};
-    sc_buildingShape->setPen(m_wallPen);
-    sc_buildingShape->setBrush(m_wallBrush);
-    sc_buildingShape->setHeight(m_wallHeight);
+    if (shapeType == BuildingShape::Wall) {
+        sc_buildingShape->setPen(m_wallPen);
+        sc_buildingShape->setBrush(m_wallBrush);
+        sc_buildingShape->setHeight(m_wallHeight);
+    }
     ui->mainGraphicsView->setCursor(QCursor(sc_buildingShape->image()));
     ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     m_scene->setMode(DiagramScene::InsertBuildingShape);
@@ -710,7 +712,7 @@ bool MainWindow::showWallSettingDialog()
     m_wallBrush = QBrush(currentHtchingColor, currentHatchingStyle);
     m_scene->setWallHatching(currentHtchingColor, currentHatchingStyle);
     qreal currentWallHeight{p_wallSettingDialog->wallHeight()};
-    m_wallHeight = currentWallHeight;
+    m_wallHeight = p_wallSettingDialog->wallHeight();
     m_scene->setWallHeight(currentWallHeight);
 
     QScopedPointer<BuildingShape, BuildingShape::BuildingShapeDeleter>

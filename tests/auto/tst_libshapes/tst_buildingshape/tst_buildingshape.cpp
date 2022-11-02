@@ -36,6 +36,9 @@ private slots:
     void image();
     void setRect_data();
     void setRect();
+    void bindingWall();
+
+    // WallShape
     void setHeight_data();
     void setHeight();
     void collidingWall();
@@ -192,6 +195,44 @@ void tst_BuildingShape::setRect()
     BuildingShape::BuildingShapeDeleter::cleanup(p_doorShape);
 }
 
+void tst_BuildingShape::bindingWall()
+{
+    QGraphicsScene scene;
+    QGraphicsView view(&scene);
+    view.show();
+
+    // WallShape
+    BuildingShape *p_testWall = BuildingShape::createBuildingShape(BuildingShape::Wall);
+    scene.addItem(p_testWall);
+
+    BuildingShape *p_leftWall = BuildingShape::createBuildingShape(BuildingShape::Wall);
+    scene.addItem(p_leftWall);
+    p_leftWall->setRotation(90);
+    p_leftWall->moveBy(-29, 0);
+    QTest::qWait(10);
+    QTest::mouseClick(view.viewport(), Qt::LeftButton, Qt::NoModifier
+                      , view.mapFromScene(p_testWall->boundingRect().center()));
+    qreal leftLWall{p_leftWall->mapRectToItem(p_testWall, p_leftWall->rect()).left()};
+    QCOMPARE(leftLWall, p_testWall->rect().left());
+
+    BuildingShape *p_rightWall = BuildingShape::createBuildingShape(BuildingShape::Wall);
+    scene.addItem(p_rightWall);
+    p_rightWall->setRotation(90);
+    p_rightWall->moveBy(29, 0);
+    QTest::qWait(10);
+    QTest::mouseClick(view.viewport(), Qt::LeftButton, Qt::NoModifier
+                      , view.mapFromScene(p_testWall->boundingRect().center()));
+    qreal rightRWall{p_rightWall->mapRectToItem(p_testWall, p_rightWall->rect()).right()};
+    QCOMPARE(rightRWall, p_testWall->rect().right());
+
+    leftLWall = p_leftWall->mapRectToItem(p_testWall, p_leftWall->rect()).left();
+    QCOMPARE(leftLWall, p_testWall->rect().left());
+
+    BuildingShape::BuildingShapeDeleter::cleanup(p_testWall);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_leftWall);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_rightWall);
+}
+
 void tst_BuildingShape::setHeight_data()
 {
     QTest::addColumn<qreal>("height");
@@ -239,28 +280,26 @@ void tst_BuildingShape::collidingWall()
     scene.addItem(p_wallShape2);
     p_wallShape2->setPos(p_wallShape->x() + 10, p_wallShape->y() + 10);
     QTest::qWait(50);
-    QCOMPARE(p_wallShape->collidingWalls().size(), 2);
+    QCOMPARE(p_wallShape->collidingWalls().size(), 1);
 
     BuildingShape *p_buildingShape3 = BuildingShape::createBuildingShape(BuildingShape::Wall);
     WallShape *p_wallShape3 = dynamic_cast<WallShape *>(p_buildingShape3);
     scene.addItem(p_wallShape3);
     QTest::qWait(50);
     p_wallShape3->setPos(p_wallShape2->x() + 10, p_wallShape2->y() + 10);
-    QCOMPARE(p_wallShape->collidingWalls().size(), 3);
+    QCOMPARE(p_wallShape->collidingWalls().size(), 2);
 
     scene.removeItem(p_wallShape3);
     p_wallShape->removeCollidingWall(p_wallShape3);
-    QCOMPARE(p_wallShape->collidingWalls().size(), 2);
+    QCOMPARE(p_wallShape->collidingWalls().size(), 1);
     BuildingShape::BuildingShapeDeleter::cleanup(p_wallShape3);
 
     scene.removeItem(p_wallShape2);
     p_wallShape->removeCollidingWall(p_wallShape2);
-    QCOMPARE(p_wallShape->collidingWalls().size(), 1);
+    QCOMPARE(p_wallShape->collidingWalls().size(), 0);
     BuildingShape::BuildingShapeDeleter::cleanup(p_wallShape2);
 
     scene.removeItem(p_wallShape);
-    p_wallShape->removeCollidingWall(p_wallShape);
-    QCOMPARE(p_wallShape->collidingWalls().size(), 0);
     BuildingShape::BuildingShapeDeleter::cleanup(p_wallShape);
 }
 
