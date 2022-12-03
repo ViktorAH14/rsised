@@ -187,6 +187,7 @@ public:
     QPainterPath shape() const override;
 
     QPixmap image() override;
+    ShapeType shapeType() const override;
 
 protected:
     ~WindowShape() = default;

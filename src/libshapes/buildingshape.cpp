@@ -650,3 +650,8 @@ QPixmap WindowShape::image()
 
     return pixmap;
 }
+
+BuildingShape::ShapeType WindowShape::shapeType() const
+{
+    return m_windowType;
+}
