@@ -612,3 +612,13 @@ void WindowShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
          highlightSelected(painter, option);
     }
 }
+
+QRectF WindowShape::boundingRect() const
+{
+    QRectF boundingRect{m_windowRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
