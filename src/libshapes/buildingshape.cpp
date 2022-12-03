@@ -603,6 +603,10 @@ void WindowShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->setBrush(brush());
 
     painter->drawRect(rect());
+    qreal centerY{rect().center().y()};
+    QPointF leftCenter{rect().left(), centerY};
+    QPointF rightCenter{rect().right(), centerY};
+    painter->drawLine(leftCenter, rightCenter);
 
     if (option->state & QStyle::State_Selected) {
          highlightSelected(painter, option);
