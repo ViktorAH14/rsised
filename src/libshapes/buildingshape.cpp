@@ -602,7 +602,7 @@ void WindowShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->setPen(pen());
     painter->setBrush(brush());
 
-    painter->drawRect(rect());
+    painter->drawRect(rect()); // TODO подумать о создании метода void drawWindow()
     qreal centerY{rect().center().y()};
     QPointF leftCenter{rect().left(), centerY};
     QPointF rightCenter{rect().right(), centerY};
@@ -629,4 +629,24 @@ QPainterPath WindowShape::shape() const
     path.addRect(rect());
 
     return shapeFromPath(path);
+}
+
+QPixmap WindowShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    painter.drawRect(rect());
+    qreal centerY{rect().center().y()};
+    QPointF leftCenter{rect().left(), centerY};
+    QPointF rightCenter{rect().right(), centerY};
+    painter.drawLine(leftCenter, rightCenter);
+
+    return pixmap;
 }
