@@ -683,3 +683,8 @@ void WindowShape::setHeight(const qreal &height)
     m_windowRect.moveTo(QPointF(m_windowRect.x(), m_windowRect.y() - dy));
     update();
 }
+
+qreal WindowShape::height() const
+{
+    return m_windowRect.height();
+}
