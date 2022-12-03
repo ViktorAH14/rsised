@@ -622,3 +622,11 @@ QRectF WindowShape::boundingRect() const
 
     return boundingRect;
 }
+
+QPainterPath WindowShape::shape() const
+{
+    QPainterPath path;
+    path.addRect(rect());
+
+    return shapeFromPath(path);
+}
