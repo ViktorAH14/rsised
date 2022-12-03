@@ -665,3 +665,8 @@ void WindowShape::setRect(const QRectF &rect)
     m_windowRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
     update();
 }
+
+QRectF WindowShape::rect() const
+{
+    return m_windowRect;
+}
