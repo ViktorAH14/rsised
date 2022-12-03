@@ -134,7 +134,7 @@ WallShape::WallShape(QGraphicsItem *parent)
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
-    setPen(QPen(Qt::black, 1));
+    setPen(QPen(Qt::black, 1)); // TODO возможно удалить?
     setBrush(Qt::lightGray);
 }
 
@@ -584,8 +584,27 @@ void DoorShape::createAction()
 }
 
 
-WindowShape::WindowShape(QGraphicsItem *parent) : BuildingShape(parent)
+WindowShape::WindowShape(QGraphicsItem *parent)
+    : BuildingShape(parent)
+    , m_windowType{Wall}
+    , m_windowRect{QRectF(-20.0, -5.0, 40.0, 10.0)}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
+}
+
+void WindowShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    painter->drawRect(rect());
+
+    if (option->state & QStyle::State_Selected) {
+         highlightSelected(painter, option);
+    }
 }

@@ -36,7 +36,7 @@ class BuildingShape : public AbstractShape
 {
 public:
     enum { Type = UserType + 400 };
-    enum ShapeType { Wall, Window, Door, Open };
+    enum ShapeType { Wall, Door, Window, Open };
 
     struct BuildingShapeDeleter
     {
@@ -182,12 +182,16 @@ public:
     explicit WindowShape(QGraphicsItem *parent = nullptr);
 
     inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 protected:
     ~WindowShape() = default;
 
 private:
     Q_DISABLE_COPY(WindowShape)
+
+    const ShapeType m_windowType;
+    QRectF  m_windowRect;
 };
 
 #endif // BUILDINGSHAPE_H
