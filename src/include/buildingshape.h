@@ -190,6 +190,7 @@ public:
     ShapeType shapeType() const override;
     void setRect(const QRectF &rect) override;
     QRectF rect() const override;
+    void setHeight(const qreal &height) override;
 
 protected:
     ~WindowShape() = default;

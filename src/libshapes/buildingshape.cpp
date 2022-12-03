@@ -670,3 +670,16 @@ QRectF WindowShape::rect() const
 {
     return m_windowRect;
 }
+
+void WindowShape::setHeight(const qreal &height)
+{
+    if (m_windowRect.height() == height)
+        return;
+
+    qreal oldHeight{m_windowRect.height()};
+    prepareGeometryChange();
+    m_windowRect.setHeight(height);
+    qreal dy{(m_windowRect.height() - oldHeight) / 2};
+    m_windowRect.moveTo(QPointF(m_windowRect.x(), m_windowRect.y() - dy));
+    update();
+}
