@@ -42,6 +42,8 @@ private slots:
     void setHeight_data();
     void setHeight();
     void collidingWall();
+
+    // DoorShape
 };
 
 

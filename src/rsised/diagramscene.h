@@ -56,7 +56,7 @@ public:
                     , InsertBuildingShape
                     , SelectItem };
 
-    explicit DiagramScene(QMenu *fullShapeMenu, QObject *parent = nullptr);
+    explicit DiagramScene(QMenu *contextShapeMenu, QObject *parent = nullptr);
 
     bool isChanged();
     void setItemPen(const QColor &color, const qreal width, const Qt::PenStyle &penStyle);
@@ -83,8 +83,6 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
 
 private:
-    void createSimpleShapeMenu(QMenu *menu);
-
     TechnicsShape::ShapeType m_technicsShapeType;
     TechnicsShape *m_technicsShape;
 
@@ -101,8 +99,7 @@ private:
     Curve       *m_curve;
     TextShape    *m_textItem;
     PixmapShape  *m_pixmapItem;
-    QMenu       *m_fullShapeMenu;
-    QMenu       *m_simpleShapeMenu;
+    QMenu       *m_contextShapeMenu;
     SceneMode   m_sceneMode;
     QPen        m_shapePen;
     QBrush      m_shapeBrush;

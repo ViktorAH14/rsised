@@ -32,7 +32,7 @@
 #include <QMenu>
 #include <QGraphicsPixmapItem>
 
-DiagramScene::DiagramScene(QMenu *fullShapeMenu, QObject *parent)
+DiagramScene::DiagramScene(QMenu *contextShapeMenu, QObject *parent)
     : QGraphicsScene(parent)
     , m_technicsShapeType{TechnicsShape::Base}
     , m_technicsShape{nullptr}
@@ -47,8 +47,7 @@ DiagramScene::DiagramScene(QMenu *fullShapeMenu, QObject *parent)
     , m_curve{nullptr}
     , m_textItem{nullptr}
     , m_pixmapItem{nullptr}
-    , m_fullShapeMenu{fullShapeMenu}
-    , m_simpleShapeMenu{nullptr}
+    , m_contextShapeMenu{contextShapeMenu}
     , m_sceneMode{SelectItem}
     , m_shapePen{Qt::black, 1}
     , m_shapeBrush{Qt::white}
@@ -58,7 +57,6 @@ DiagramScene::DiagramScene(QMenu *fullShapeMenu, QObject *parent)
     , leftButtonPressed{false}
     , sceneChanged(false)
 {
-    createSimpleShapeMenu(fullShapeMenu);
 }
 
 void DiagramScene::setMode(SceneMode mode)
@@ -252,41 +250,41 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         case InsertPolyline:
             m_pathPointList.append(mouseEvent->scenePos());
             if (m_polyline == nullptr) {
-                m_polyline = new PolylineShape(m_simpleShapeMenu);
+                m_polyline = new PolylineShape(m_contextShapeMenu);
                 addItem(m_polyline);
             }
             break;
         case InsertRectShape:
             m_rectShape = new RectShape(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()));
-            m_rectShape->setMenu(m_simpleShapeMenu);
+            m_rectShape->setMenu(m_contextShapeMenu);
             addItem(m_rectShape);
             break;
         case InsertEllipse:
             m_ellipseShape = new EllipseShape(QRectF(mouseEvent->scenePos()
                                                      , mouseEvent->scenePos()));
-            m_ellipseShape->setMenu(m_simpleShapeMenu);
+            m_ellipseShape->setMenu(m_contextShapeMenu);
             addItem(m_ellipseShape);
             break;
         case InsertPie:
             if (m_ellipseShape == nullptr) {
                 m_ellipseShape = new EllipseShape(QRectF(mouseEvent->scenePos()
                                                          , mouseEvent->scenePos()));
-                m_ellipseShape->setMenu(m_simpleShapeMenu);
+                m_ellipseShape->setMenu(m_contextShapeMenu);
                 m_ellipseShape->setPen(QPen(Qt::black, 0, Qt::DashLine));
                 addItem(m_ellipseShape);
-                m_tempPath = new QGraphicsPathItem();
+                m_tempPath = new QGraphicsPathItem(); //FIXME 4,616 (16 direct, 4,600 indirect) bytes in 1 blocks are definitely lost in loss record 1,627 of 1,645
                 addItem(m_tempPath);
             }
             break;
         case InsertCurve:
             m_pathPointList.append(mouseEvent->scenePos());
             if (m_curve == nullptr) {
-                m_curve = new Curve(m_simpleShapeMenu);
+                m_curve = new Curve(m_contextShapeMenu);
                 addItem(m_curve);
             }
             break;
         case InserText: // TODO добавить editorLostFocus(TextItem *textItem); утечка памяти???
-            m_textItem = new TextShape(m_simpleShapeMenu);
+            m_textItem = new TextShape(m_contextShapeMenu);
             m_textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
             m_textItem->setPos(mouseEvent->scenePos());
             m_textItem->setFont(m_shapeFont);
@@ -296,25 +294,19 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             break;
         case InsertTechnicsShape:
             m_technicsShape = new TechnicsShape(m_technicsShapeType);
-            m_technicsShape->setMenu(m_simpleShapeMenu);
+            m_technicsShape->setMenu(m_contextShapeMenu);
             m_technicsShape->setPos(mouseEvent->scenePos());
             addItem(m_technicsShape);
             break;
         case InsertDeviceShape:
             m_deviceShape = new DeviceShape(m_deviceShapeType);
-            m_deviceShape->setMenu(m_simpleShapeMenu);
+            m_deviceShape->setMenu(m_contextShapeMenu);
             m_deviceShape->setPos(mouseEvent->scenePos());
             addItem(m_deviceShape);
             break;
         case InsertBuildingShape:
             m_buildingShape = BuildingShape::createBuildingShape(m_buildingShapeType);
-
-            if (m_buildingShapeType == BuildingShape::Door) {
-                m_buildingShape->setMenu(m_fullShapeMenu);
-            } else {
-                m_buildingShape->setMenu(m_simpleShapeMenu);
-            }
-
+            m_buildingShape->setMenu(m_contextShapeMenu);
             m_buildingShape->setPos(mouseEvent->scenePos());
             if (m_buildingShapeType == BuildingShape::Wall) {
                 m_buildingShape->setPen(m_wallPen);
@@ -462,17 +454,4 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     setSceneChanged(true);
 
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
-}
-
-void DiagramScene::createSimpleShapeMenu(QMenu *menu)
-{
-    m_simpleShapeMenu = new QMenu();
-    QList<QAction *> menuActionList = menu->actions();
-    QList<QAction *> simpleMenuList;
-    for (int i = 0; i < menuActionList.size(); i++) {
-        if ((!menuActionList.at(i)->text().contains(tr("door")))
-                && (!menuActionList.at(i)->text().contains(tr("Leaf change"))))
-            simpleMenuList.append(menuActionList.at(i));
-    }
-    m_simpleShapeMenu->addActions(simpleMenuList);
 }

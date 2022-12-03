@@ -51,7 +51,6 @@ MainWindow::MainWindow(QWidget *parent)
     createActions();
     createShapeToolBox();
     createMenu();
-    m_doorOpenAction->setChecked(true);
     disableAction();
     setUnifiedTitleAndToolBarOnMac(true);
 
@@ -103,7 +102,7 @@ void MainWindow::loadFile(const QString &fileName)
 
     m_scene->clear();
 
-    QScopedPointer<RseReader> sc_rseReader(new RseReader(ui->menuEdit));
+    QScopedPointer<RseReader> sc_rseReader(new RseReader(m_contextMenu));
     QRectF sceneRect = sc_rseReader->getSceneRect(&file);
     m_scene->setSceneRect(sceneRect);
     file.close();
@@ -155,7 +154,7 @@ void MainWindow::loadFile(const QString &fileName)
 
     m_scene->setSelectableItems(true);
     setCurrentFile(fileName);
-    ui->statusBar->showMessage(tr("File loaded"), 2000);
+    ui->statusBar->showMessage(tr("File loaded"), 10000);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -207,7 +206,7 @@ bool MainWindow::saveAs()
     return saveFile(fileDialog.selectedFiles().constFirst());
 }
 
-void MainWindow::copy() //FIXME change the context menu
+void MainWindow::copy()
 {
     if (!m_copyList.isEmpty()) {
         QList<QGraphicsItem *> shapeList = m_scene->items();
@@ -659,43 +658,6 @@ void MainWindow::changedFont()
     m_scene->setItemFont(m_currentFont, currentTextColor);
 }
 
-void MainWindow::changeDoorState()
-{
-    QList<QGraphicsItem *> selectedList = m_scene->selectedItems();
-    if (selectedList.isEmpty())
-        return;
-
-    DoorShape::DoorState doorState{DoorShape::Open};
-    if (m_doorStateActionGroup->checkedAction() == m_doorOpenAction) {
-        doorState = DoorShape::Open;
-    } else if (m_doorStateActionGroup->checkedAction() == m_doorAjarAction) {
-        doorState = DoorShape::Ajar;
-    } else if (m_doorStateActionGroup->checkedAction() == m_doorCloseAction){
-        doorState = DoorShape::Close;
-    }
-
-    for (QGraphicsItem *p_shape : qAsConst(selectedList)) {
-        if (DoorShape *p_doorShape = dynamic_cast<DoorShape *>(p_shape)) {
-            if (p_doorShape->doorState() != doorState)
-                p_doorShape->setDoorState(doorState);
-        }
-    }
-    m_doorOpenAction->setChecked(true);
-}
-
-void MainWindow::changeDoorLeafPosition()
-{
-    QList<QGraphicsItem *> selectedList = m_scene->selectedItems();
-    if (selectedList.isEmpty())
-        return;
-    for (QGraphicsItem *p_shape : qAsConst(selectedList)) {
-        if (DoorShape *p_doorShape = dynamic_cast<DoorShape *>(p_shape))
-            p_doorShape->leafPosition() == DoorShape::Left
-                    ? p_doorShape->setLeafPosition(DoorShape::Right)
-                    : p_doorShape->setLeafPosition(DoorShape::Left);
-    }
-}
-
 bool MainWindow::showWallSettingDialog()
 {
     WallSetting *p_wallSettingDialog = new WallSetting(m_wallPen, m_wallBrush, m_wallHeight, this);
@@ -958,30 +920,6 @@ void MainWindow::createActions()
     m_underLineAction->setCheckable(true);
     m_underLineAction->setShortcut(tr("Ctrl+U"));
     connect(m_underLineAction, &QAction::triggered, this, &MainWindow::changedFont);
-
-    // Door
-    m_doorLeafPosAction = new QAction(tr("Leaf change"), this);
-    m_doorLeafPosAction->setToolTip("Changing the position of the door leaf");
-    connect(m_doorLeafPosAction, &QAction::triggered, this, &MainWindow::changeDoorLeafPosition);
-
-    m_doorOpenAction = new QAction(tr("Open door"), this);
-    m_doorOpenAction->setToolTip("Change the state of the door");
-    m_doorOpenAction->setCheckable(true);
-    connect(m_doorOpenAction, &QAction::triggered, this, &MainWindow::changeDoorState);
-
-    m_doorAjarAction = new QAction(tr("Ajar door"), this);
-    m_doorAjarAction->setCheckable(true);
-    connect(m_doorAjarAction, &QAction::triggered, this, &MainWindow::changeDoorState);
-
-    m_doorCloseAction = new QAction(tr("Close door"), this);
-    m_doorCloseAction->setCheckable(true);
-    connect(m_doorCloseAction, &QAction::triggered, this, &MainWindow::changeDoorState);
-
-    m_doorStateActionGroup = new QActionGroup(this);
-    m_doorStateActionGroup->addAction(m_doorOpenAction);
-    m_doorStateActionGroup->addAction(m_doorAjarAction);
-    m_doorStateActionGroup->addAction(m_doorCloseAction);
-
 }
 
 void MainWindow::createMenu()
@@ -1000,12 +938,6 @@ void MainWindow::createMenu()
     m_contextMenu->addSeparator();
     m_contextMenu->addAction(ui->actionBring_to_front);
     m_contextMenu->addAction(ui->actionSend_to_back);
-    m_contextMenu->addSeparator();
-    m_contextMenu->addAction(m_doorOpenAction);
-    m_contextMenu->addAction(m_doorAjarAction);
-    m_contextMenu->addAction(m_doorCloseAction);
-    m_contextMenu->addSeparator();
-    m_contextMenu->addAction(m_doorLeafPosAction);
 }
 
 void MainWindow::createStyleToolBar()
@@ -1282,7 +1214,7 @@ bool MainWindow::saveFile(const QString &fileName)
         return false;
     }
 
-    ui->statusBar->showMessage(tr("File saved"), 2000);
+    ui->statusBar->showMessage(tr("File saved"), 10000);
     setCurrentFile(fileName);
 
     return true;

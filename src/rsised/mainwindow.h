@@ -94,10 +94,6 @@ private slots:
 // Font style toolbar
     void changedFont();
 
-// Door setting
-    void changeDoorState();
-    void changeDoorLeafPosition();
-
 // Wall setting
     bool showWallSettingDialog();
 
@@ -130,12 +126,6 @@ private:
     QToolBar *m_styleToolBar;
     QToolBar *m_textStyleToolBar;
     QToolBar *m_sceneScaleToolBar;
-
-    QAction *m_doorLeafPosAction;
-    QAction *m_doorOpenAction;
-    QAction *m_doorAjarAction;
-    QAction *m_doorCloseAction;
-    QActionGroup    *m_doorStateActionGroup;
 
     QAction *m_boldAction;
     QAction *m_italicAction;

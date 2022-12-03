@@ -24,15 +24,19 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
-#include <QMenu>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
 AbstractShape::AbstractShape(QGraphicsItem *parent)
     : QAbstractGraphicsShapeItem(parent)
     , m_sizeGripItem{nullptr}
-    , m_contextMenu{nullptr}
+    , m_contextMenu{new QMenu()}
 {
+}
+
+AbstractShape::~AbstractShape()
+{
+    m_contextMenu->deleteLater();
 }
 
 void AbstractShape::scaleShape(const QRectF &newRect)
@@ -47,14 +51,24 @@ void AbstractShape::scaleShape(const QRectF &newRect)
     update();
 }
 
-void AbstractShape::setMenu(QMenu *contextMenu)
+void AbstractShape::setMenu(QMenu *contextMenu) //TODO удалить после рефакторинга libshapes
 {
-    m_contextMenu = contextMenu;
+    QList<QAction *> actionList{contextMenu->actions()};
+    if (!m_contextMenu->isEmpty())
+        m_contextMenu->addSeparator();
+    for (int i = 0; i < actionList.size(); i++)
+        m_contextMenu->addAction(actionList.at(i));
 }
 
 QMenu* AbstractShape::menu() const
 {
     return m_contextMenu;
+}
+
+void AbstractShape::addActions(const QList<QAction *> &actions)
+{
+    for (int i = 0; i < actions.size(); i++)
+        m_contextMenu->addAction(actions.at(i));
 }
 
 void AbstractShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)

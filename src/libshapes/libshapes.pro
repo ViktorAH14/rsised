@@ -40,6 +40,15 @@ HEADERS += \
     ../include/sizegripshape.h \
     ../include/technicsshape.h \
     ../include/textshape.h
+    
+TRANSLATIONS += \
+    ../rsised/i18n/libshapes_ru.ts
+
+system(lrelease "$$_PRO_FILE_")
+
+tr.commands = lupdate "$$_PRO_FILE_" && lrelease "$$_PRO_FILE_"
+PRE_TARGETDEPS += tr
+QMAKE_EXTRA_TARGETS += tr
 
 # Default rules for deployment.
 #unix {

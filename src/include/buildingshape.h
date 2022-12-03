@@ -26,8 +26,11 @@
 #include <QBrush>
 #include <QPen>
 #include <QSet>
-#include <QSharedPointer>
 
+QT_BEGIN_NAMESPACE
+class QAction;
+class QActionGroup;
+QT_END_NAMESPACE
 
 class BuildingShape : public AbstractShape
 {
@@ -146,6 +149,7 @@ private:
     void drawDoor(QPainter *painter);
     void setDoor();
     void bindingWall();
+    void createAction();
 
     const int INIT_ANGLE = 1440; // 90 degrees
 
@@ -160,5 +164,12 @@ private:
     int m_startAngle;
     int m_spanAngle;
     bool m_leftButtonPressed;
+
+    QScopedPointer<QAction> m_doorLeafPosAction;
+    QScopedPointer<QAction> m_doorOpenAction;
+    QScopedPointer<QAction> m_doorAjarAction;
+    QScopedPointer<QAction> m_doorCloseAction;
+    QScopedPointer<QActionGroup> m_doorStateActionGroup;
+    QList<QAction *> m_actionList;
 };
 #endif // BUILDINGSHAPE_H
