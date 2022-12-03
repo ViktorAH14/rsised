@@ -200,7 +200,7 @@ private:
     Q_DISABLE_COPY(WindowShape)
 
     const ShapeType m_windowType;
-    QRectF  m_windowRect;
+    QRectF m_windowRect;
 };
 
 #endif // BUILDINGSHAPE_H

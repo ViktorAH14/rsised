@@ -586,7 +586,7 @@ void DoorShape::createAction()
 
 WindowShape::WindowShape(QGraphicsItem *parent)
     : BuildingShape(parent)
-    , m_windowType{Wall}
+    , m_windowType{Window}
     , m_windowRect{QRectF(-30.0, -5.0, 60.0, 10.0)}
 {
     setFlag(ItemSendsGeometryChanges, true);
