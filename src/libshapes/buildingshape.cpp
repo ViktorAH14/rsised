@@ -45,10 +45,11 @@ BuildingShape *BuildingShape::createBuildingShape(ShapeType shapeType, QGraphics
     case Wall:
         p_buildingShape = new WallShape(parent);
         break;
-    case Window:
-        break;
     case Door:
         p_buildingShape = new DoorShape(parent);
+        break;
+    case Window:
+        p_buildingShape = new WindowShape(parent);
         break;
     case Open:
         break;
@@ -582,3 +583,9 @@ void DoorShape::createAction()
     addActions(m_actionList);
 }
 
+
+WindowShape::WindowShape(QGraphicsItem *parent) : BuildingShape(parent)
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+}

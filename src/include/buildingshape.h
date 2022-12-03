@@ -110,10 +110,11 @@ private:
     bool m_leftButtonPressed;
 };
 
+
 class DoorShape :public BuildingShape
 {
 public:
-    enum { Type = UserType + 402};
+    enum { Type = UserType + 402 };
     enum DoorState { Open, Ajar, Close };
     enum LeafPosition { Left, Right };
 
@@ -172,4 +173,18 @@ private:
     QScopedPointer<QActionGroup> m_doorStateActionGroup;
     QList<QAction *> m_actionList;
 };
+
+class WindowShape : public BuildingShape
+{
+public:
+    enum { Type = UserType + 403 };
+
+    explicit WindowShape(QGraphicsItem *parent = nullptr);
+
+protected:
+
+private:
+    Q_DISABLE_COPY(WindowShape)
+};
+
 #endif // BUILDINGSHAPE_H
