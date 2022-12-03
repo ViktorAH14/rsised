@@ -655,3 +655,13 @@ BuildingShape::ShapeType WindowShape::shapeType() const
 {
     return m_windowType;
 }
+
+void WindowShape::setRect(const QRectF &rect)
+{
+    if (m_windowRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_windowRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    update();
+}

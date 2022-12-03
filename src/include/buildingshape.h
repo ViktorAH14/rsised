@@ -188,6 +188,7 @@ public:
 
     QPixmap image() override;
     ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
 
 protected:
     ~WindowShape() = default;
