@@ -182,6 +182,7 @@ public:
     explicit WindowShape(QGraphicsItem *parent = nullptr);
 
 protected:
+    ~WindowShape() = default;
 
 private:
     Q_DISABLE_COPY(WindowShape)
