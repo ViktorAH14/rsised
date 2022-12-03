@@ -181,6 +181,8 @@ public:
 
     explicit WindowShape(QGraphicsItem *parent = nullptr);
 
+    inline int type() const override {return Type;}
+
 protected:
     ~WindowShape() = default;
 
