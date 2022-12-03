@@ -587,10 +587,12 @@ void DoorShape::createAction()
 WindowShape::WindowShape(QGraphicsItem *parent)
     : BuildingShape(parent)
     , m_windowType{Wall}
-    , m_windowRect{QRectF(-20.0, -5.0, 40.0, 10.0)}
+    , m_windowRect{QRectF(-30.0, -5.0, 60.0, 10.0)}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
+    setPen(QPen(Qt::black, 1)); // TODO возможно удалить?
+    setBrush(Qt::white);
 }
 
 void WindowShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
