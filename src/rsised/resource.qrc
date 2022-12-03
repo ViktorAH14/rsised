@@ -76,5 +76,6 @@
         <file>images/icons/darkmagneta_48.png</file>
         <file>images/icons/yellow_48.png</file>
         <file>images/icons/darkyellow_48.png</file>
+        <file>i18n/libshapes_ru.qm</file>
     </qresource>
 </RCC>

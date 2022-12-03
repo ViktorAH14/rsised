@@ -80,8 +80,6 @@ private slots:
     void pieMouseDoubleClickEvent();
 
     //AbstractShape
-    void setMenu();
-    void mousePressEvent();
     void mouseMoveEvent();
     void mouseDoubleClickEvent();
     void wheelEvent();
@@ -452,85 +450,6 @@ void tst_EllipseShape::pieMouseDoubleClickEvent()
     QCOMPARE(sizegripItem->actionType(), SizeGripShape::Resize);
 
     delete p_pieShape;
-}
-
-void tst_EllipseShape::setMenu()
-{
-    EllipseShape ellipseShape;
-    QCOMPARE(ellipseShape.menu(), nullptr);
-    QMenu *p_contextMenu = new QMenu;
-    ellipseShape.setMenu(p_contextMenu);
-    QCOMPARE(ellipseShape.menu(), p_contextMenu);
-
-    delete p_contextMenu;
-}
-
-class ContextMenuTester :public QMenu
-{
-    Q_OBJECT
-public:
-    ContextMenuTester() : QMenu("Menu-Title"), m_timerId(-1)
-    {
-        addAction("Item 1");
-    }
-
-protected:
-    void showEvent(QShowEvent *shEvent) override
-    {
-        m_timerId = startTimer(50);
-        QMenu::showEvent(shEvent);
-    }
-    void timerEvent(QTimerEvent *tEvent) override
-    {
-        if (tEvent->timerId() == m_timerId)
-            close();
-    }
-
-private:
-    int m_timerId;
-};
-
-void tst_EllipseShape::mousePressEvent()
-{
-    QGraphicsScene scene;
-    QGraphicsView view(&scene);
-    view.show();
-    view.fitInView(scene.sceneRect());
-    QVERIFY(QTest::qWaitForWindowActive(&view));
-    ContextMenuTester *p_contextMenu = new ContextMenuTester;
-
-    EllipseShape *p_ellipseShape = new EllipseShape(-20.0, -20.0, 40.0, 40.0);
-    p_ellipseShape->setMenu(p_contextMenu);
-    p_ellipseShape->setFlag(QGraphicsItem::ItemIsSelectable, true);
-    scene.addItem(p_ellipseShape);
-
-    QGraphicsSceneMouseEvent mousePressEvent(QEvent::GraphicsSceneMouseMove);
-    mousePressEvent.setScenePos(p_ellipseShape->pos());
-    mousePressEvent.setButton(Qt::LeftButton);
-    QApplication::sendEvent(&scene, &mousePressEvent);
-    QVERIFY(mousePressEvent.isAccepted());
-
-    p_ellipseShape->setSelected(true);
-    QSignalSpy contextMenuSpy(p_contextMenu, &QMenu::aboutToShow);
-    QCOMPARE(contextMenuSpy.count(), 0);
-
-    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
-                      , view.mapFromScene(p_ellipseShape->boundingRect().center()));
-    QCOMPARE(contextMenuSpy.count(), 1);
-
-    EllipseShape *p_ellipseShape2 = new EllipseShape(-50.0, -50.0, 20.0, 20.0);
-    p_ellipseShape2->setMenu(p_contextMenu);
-    p_ellipseShape2->setFlag(QGraphicsItem::ItemIsSelectable, true);
-    scene.addItem(p_ellipseShape2);
-    p_ellipseShape2->setSelected(true);
-
-    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
-                      , view.mapFromScene(p_ellipseShape2->boundingRect().center()));
-    QCOMPARE(contextMenuSpy.count(), 2);
-
-    delete p_ellipseShape2;
-    delete p_ellipseShape;
-    delete p_contextMenu;
 }
 
 void tst_EllipseShape::mouseMoveEvent()
