@@ -36,7 +36,7 @@ class BuildingShape : public AbstractShape
 {
 public:
     enum { Type = UserType + 400 };
-    enum ShapeType { Wall, Window, Door, Open };
+    enum ShapeType { Wall, Door, Window, Open };
 
     struct BuildingShapeDeleter
     {
@@ -110,10 +110,11 @@ private:
     bool m_leftButtonPressed;
 };
 
+
 class DoorShape :public BuildingShape
 {
 public:
-    enum { Type = UserType + 402};
+    enum { Type = UserType + 402 };
     enum DoorState { Open, Ajar, Close };
     enum LeafPosition { Left, Right };
 
@@ -172,4 +173,40 @@ private:
     QScopedPointer<QActionGroup> m_doorStateActionGroup;
     QList<QAction *> m_actionList;
 };
+
+class WindowShape : public BuildingShape
+{
+public:
+    enum { Type = UserType + 403 };
+
+    explicit WindowShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+
+protected:
+    ~WindowShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(WindowShape)
+
+    void bindingWall();
+
+    const ShapeType m_windowType;
+    QRectF m_windowRect;
+    bool m_leftButtonPressed;
+};
+
 #endif // BUILDINGSHAPE_H

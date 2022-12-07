@@ -81,6 +81,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             p_doorShape->setRect(value.toRectF());
         break;
     }
+    case WindowShape::Type: {
+        if (WindowShape *p_windowShape = dynamic_cast<WindowShape *>(item))
+            p_windowShape->setRect(value.toRectF());
+        break;
+    }
     default:
         break;
     }

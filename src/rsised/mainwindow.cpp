@@ -847,8 +847,8 @@ void MainWindow::createShapeToolBox()
     QGridLayout *p_buildShapeLayout= new QGridLayout(this); //FIXME add buildingWidget
     p_buildShapeLayout->addWidget(createBuildingShapeCellWidget(tr("Wall")
                                                                 , BuildingShape::Wall), 0, 0);
-//    buildShapeLayout->addWidget(createBuildingShapeCellWidget(tr("Window")
-//                                                                , BuildingShape::Window), 0, 1);
+    p_buildShapeLayout->addWidget(createBuildingShapeCellWidget(tr("Window")
+                                                                , BuildingShape::Window), 0, 1);
     p_buildShapeLayout->addWidget(createBuildingShapeCellWidget(tr("Door")
                                                                 , BuildingShape::Door), 0, 2);
 //    buildShapeLayout->addWidget(createBuildingShapeCellWidget(tr("Opening")

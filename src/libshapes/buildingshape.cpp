@@ -45,10 +45,11 @@ BuildingShape *BuildingShape::createBuildingShape(ShapeType shapeType, QGraphics
     case Wall:
         p_buildingShape = new WallShape(parent);
         break;
-    case Window:
-        break;
     case Door:
         p_buildingShape = new DoorShape(parent);
+        break;
+    case Window:
+        p_buildingShape = new WindowShape(parent);
         break;
     case Open:
         break;
@@ -133,7 +134,7 @@ WallShape::WallShape(QGraphicsItem *parent)
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
-    setPen(QPen(Qt::black, 1));
+    setPen(QPen(Qt::black, 1)); // TODO возможно удалить?
     setBrush(Qt::lightGray);
 }
 
@@ -582,3 +583,146 @@ void DoorShape::createAction()
     addActions(m_actionList);
 }
 
+
+WindowShape::WindowShape(QGraphicsItem *parent)
+    : BuildingShape(parent)
+    , m_windowType{Window}
+    , m_windowRect{QRectF(-30.0, -5.0, 60.0, 10.0)}
+    , m_leftButtonPressed{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::black, 1)); // TODO возможно удалить?
+    setBrush(Qt::white);
+}
+
+void WindowShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    painter->drawRect(rect()); // TODO подумать о создании метода void drawWindow()
+    qreal centerY{rect().center().y()};
+    QPointF leftCenter{rect().left(), centerY};
+    QPointF rightCenter{rect().right(), centerY};
+    painter->drawLine(leftCenter, rightCenter);
+
+    if (option->state & QStyle::State_Selected) {
+         highlightSelected(painter, option);
+    }
+}
+
+QRectF WindowShape::boundingRect() const
+{
+    QRectF boundingRect{m_windowRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath WindowShape::shape() const
+{
+    QPainterPath path;
+    path.addRect(rect());
+
+    return shapeFromPath(path);
+}
+
+QPixmap WindowShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    painter.drawRect(rect());
+    qreal centerY{rect().center().y()};
+    QPointF leftCenter{rect().left(), centerY};
+    QPointF rightCenter{rect().right(), centerY};
+    painter.drawLine(leftCenter, rightCenter);
+
+    return pixmap;
+}
+
+BuildingShape::ShapeType WindowShape::shapeType() const
+{
+    return m_windowType;
+}
+
+void WindowShape::setRect(const QRectF &rect)
+{
+    if (m_windowRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_windowRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    update();
+}
+
+QRectF WindowShape::rect() const
+{
+    return m_windowRect;
+}
+
+void WindowShape::setHeight(const qreal &height)
+{
+    if (m_windowRect.height() == height)
+        return;
+
+    qreal oldHeight{m_windowRect.height()};
+    prepareGeometryChange();
+    m_windowRect.setHeight(height);
+    qreal dy{(m_windowRect.height() - oldHeight) / 2};
+    m_windowRect.moveTo(QPointF(m_windowRect.x(), m_windowRect.y() - dy));
+    update();
+}
+
+qreal WindowShape::height() const
+{
+    return m_windowRect.height();
+}
+
+void WindowShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::LeftButton) {
+        m_leftButtonPressed = true;
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void WindowShape::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (m_leftButtonPressed) {
+        bindingWall();
+        m_leftButtonPressed = false;
+    }
+
+    QGraphicsItem::mouseReleaseEvent(mouseEvent);
+}
+
+void WindowShape::bindingWall()
+{
+    QList<QGraphicsItem *> collidingShapeList{collidingItems()};
+    for (QGraphicsItem *p_shape : qAsConst(collidingShapeList)) {
+        if (WallShape *p_collidingWall = dynamic_cast<WallShape *>(p_shape)) {
+            prepareGeometryChange();
+            setTransform(p_collidingWall->transform());
+            QRectF wallRect{mapRectFromItem(p_collidingWall, p_collidingWall->boundingRect())};
+            setRect(QRectF(m_windowRect.x(), wallRect.y(), m_windowRect.width(), wallRect.height()));
+            setSelected(false);
+            update();
+            break;
+        }
+    }
+}

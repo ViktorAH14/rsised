@@ -916,8 +916,9 @@
         <translation>Стена</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="850"/>
         <source>Window</source>
-        <translation type="vanished">Окно</translation>
+        <translation>Окно</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="852"/>
