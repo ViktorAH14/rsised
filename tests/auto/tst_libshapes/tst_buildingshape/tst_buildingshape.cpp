@@ -61,10 +61,18 @@ void tst_BuildingShape::constructor()
     // DoorShape
     BuildingShape *p_doorShape = nullptr;
     p_doorShape = BuildingShape::createBuildingShape(BuildingShape::Door);
-    QVERIFY2(p_doorShape, "wallShape nullptr");
+    QVERIFY2(p_doorShape, "doorShape nullptr");
     QCOMPARE(int(p_doorShape->type()), int(QGraphicsItem::UserType + 402));
     QCOMPARE(p_doorShape->shapeType(), BuildingShape::Door);
     BuildingShape::BuildingShapeDeleter::cleanup(p_doorShape);
+
+    // WindowShape
+    BuildingShape *p_windowShape = nullptr;
+    p_windowShape = BuildingShape::createBuildingShape(BuildingShape::Window);
+    QVERIFY2(p_windowShape, "windowShape nullptr");
+    QCOMPARE(int(p_windowShape->type()), int(QGraphicsItem::UserType + 403));
+    QCOMPARE(p_windowShape->shapeType(), BuildingShape::Window);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
 }
 
 void tst_BuildingShape::boundingRect()
@@ -78,6 +86,11 @@ void tst_BuildingShape::boundingRect()
     BuildingShape *p_doorShape = BuildingShape::createBuildingShape(BuildingShape::Door);
     QCOMPARE(p_doorShape->boundingRect(), QRectF(-30.5, -30.5, 61.0, 61.0));
     BuildingShape::BuildingShapeDeleter::cleanup(p_doorShape);
+
+    // WindowShape
+    BuildingShape *p_windowShape = BuildingShape::createBuildingShape(BuildingShape::Window);
+    QCOMPARE(p_windowShape->boundingRect(), QRectF(-30.5, -5.5, 61.0, 11.0));
+    BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
 }
 
 void tst_BuildingShape::shape()
@@ -211,9 +224,8 @@ void tst_BuildingShape::bindingWall()
     scene.addItem(p_leftWall);
     p_leftWall->setRotation(90);
     p_leftWall->moveBy(-29, 0);
-    QTest::qWait(10);
     QTest::mouseClick(view.viewport(), Qt::LeftButton, Qt::NoModifier
-                      , view.mapFromScene(p_testWall->boundingRect().center()));
+                      , view.mapFromScene(p_testWall->boundingRect().center()), 50);
     qreal leftLWall{p_leftWall->mapRectToItem(p_testWall, p_leftWall->rect()).left()};
     QCOMPARE(leftLWall, p_testWall->rect().left());
 
@@ -221,9 +233,8 @@ void tst_BuildingShape::bindingWall()
     scene.addItem(p_rightWall);
     p_rightWall->setRotation(90);
     p_rightWall->moveBy(29, 0);
-    QTest::qWait(10);
     QTest::mouseClick(view.viewport(), Qt::LeftButton, Qt::NoModifier
-                      , view.mapFromScene(p_testWall->boundingRect().center()));
+                      , view.mapFromScene(p_testWall->boundingRect().center()), 50);
     qreal rightRWall{p_rightWall->mapRectToItem(p_testWall, p_rightWall->rect()).right()};
     QCOMPARE(rightRWall, p_testWall->rect().right());
 
