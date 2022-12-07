@@ -152,6 +152,16 @@ void tst_BuildingShape::shape()
     QCOMPARE(p_doorShape->shape(), strokeDoorPath);
     BuildingShape::BuildingShapeDeleter::cleanup(p_doorShape);
 
+    // WindowShape
+    BuildingShape *p_windowShape = BuildingShape::createBuildingShape(BuildingShape::Window);
+    QPainterPathStroker ps_windowShape;
+    ps_windowShape.setWidth(p_windowShape->pen().widthF());
+    QPainterPath windowPath;
+    windowPath.addRect(p_windowShape->rect());
+    QPainterPath strokeWindowPath = ps_windowShape.createStroke(windowPath);
+    strokeWindowPath.addPath(windowPath);
+    QCOMPARE(p_windowShape->shape(), strokeWindowPath);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
 }
 
 void tst_BuildingShape::image()
