@@ -177,10 +177,18 @@ void tst_BuildingShape::image()
     // DoorShape
     BuildingShape *p_doorShape = BuildingShape::createBuildingShape(BuildingShape::Door);
     QPixmap doorImage = p_doorShape->image();
-    QVERIFY2(!doorImage.isNull(), "WallShape::image() returned a null pixmap");
+    QVERIFY2(!doorImage.isNull(), "DoorShape::image() returned a null pixmap");
     QCOMPARE(doorImage.width(), p_doorShape->boundingRect().width());
     QCOMPARE(doorImage.height(), p_doorShape->boundingRect().width());
     BuildingShape::BuildingShapeDeleter::cleanup(p_doorShape);
+
+    // WindowShape
+    BuildingShape *p_windowShape = BuildingShape::createBuildingShape(BuildingShape::Window);
+    QPixmap windowImage = p_windowShape->image();
+    QVERIFY2(!windowImage.isNull(), "WindowShape::image() returned a null pixmap");
+    QCOMPARE(windowImage.width(), p_windowShape->boundingRect().width());
+    QCOMPARE(windowImage.height(), p_windowShape->boundingRect().height());
+    BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
 }
 
 void tst_BuildingShape::setRect_data()
