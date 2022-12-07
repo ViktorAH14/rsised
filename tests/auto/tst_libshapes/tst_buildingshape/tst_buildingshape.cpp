@@ -37,13 +37,14 @@ private slots:
     void setRect_data();
     void setRect();
     void bindingWall();
-
-    // WallShape
     void setHeight_data();
     void setHeight();
+
+    // WallShape
     void collidingWall();
 
     // DoorShape
+    void doorState();
 };
 
 
@@ -380,6 +381,20 @@ void tst_BuildingShape::collidingWall()
 
     scene.removeItem(p_wallShape);
     BuildingShape::BuildingShapeDeleter::cleanup(p_wallShape);
+}
+
+void tst_BuildingShape::doorState()
+{
+    BuildingShape *p_buildingShape = BuildingShape::createBuildingShape(BuildingShape::Door);
+    DoorShape *p_doorShape = dynamic_cast<DoorShape *>(p_buildingShape);
+    QCOMPARE(p_doorShape->doorState(), DoorShape::Open);
+    p_doorShape->setDoorState(DoorShape::Ajar);
+    QCOMPARE(p_doorShape->doorState(), DoorShape::Ajar);
+    p_doorShape->setDoorState(DoorShape::Close);
+    QCOMPARE(p_doorShape->doorState(), DoorShape::Close);
+    p_doorShape->setDoorState(DoorShape::Open);
+    QCOMPARE(p_doorShape->doorState(), DoorShape::Open);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_buildingShape);
 }
 
 QTEST_MAIN(tst_BuildingShape)
