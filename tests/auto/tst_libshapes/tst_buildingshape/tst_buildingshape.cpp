@@ -268,6 +268,36 @@ void tst_BuildingShape::bindingWall()
     BuildingShape::BuildingShapeDeleter::cleanup(p_testWall);
     BuildingShape::BuildingShapeDeleter::cleanup(p_leftWall);
     BuildingShape::BuildingShapeDeleter::cleanup(p_rightWall);
+
+    // DoorShape
+    BuildingShape *p_wallShape = BuildingShape::createBuildingShape(BuildingShape::Wall);
+    scene.addItem(p_wallShape);
+    p_wallShape->setHeight(18);
+
+    BuildingShape *p_doorShape = BuildingShape::createBuildingShape(BuildingShape::Door);
+    scene.addItem(p_doorShape);
+    QCOMPARE(p_doorShape->height(), 10);
+    QTest::mouseClick(view.viewport(), Qt::LeftButton, Qt::NoModifier
+                      , view.mapFromScene(p_doorShape->boundingRect().center()), 50);
+    QCOMPARE(p_doorShape->height(), 19); //wallShape.height() + penWidth
+
+    BuildingShape::BuildingShapeDeleter::cleanup(p_doorShape);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_wallShape);
+
+    // WindowShape
+    BuildingShape *p_wallShape2 = BuildingShape::createBuildingShape(BuildingShape::Wall);
+    scene.addItem(p_wallShape2);
+    p_wallShape2->setHeight(20);
+
+    BuildingShape *p_windowShape = BuildingShape::createBuildingShape(BuildingShape::Window);
+    scene.addItem(p_windowShape);
+    QCOMPARE(p_windowShape->height(), 10);
+    QTest::mouseClick(view.viewport(), Qt::LeftButton, Qt::NoModifier
+                      , view.mapFromScene(p_windowShape->boundingRect().center()), 50);
+    QCOMPARE(p_windowShape->height(), 21); //wallShape.height() + penWidth
+
+    BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_wallShape2);
 }
 
 void tst_BuildingShape::setHeight_data()
