@@ -45,6 +45,7 @@ private slots:
 
     // DoorShape
     void doorState();
+    void leafPosition();
 };
 
 
@@ -127,8 +128,8 @@ void tst_BuildingShape::shape()
     doorPath.addRect(rightFrame);
 
     QLineF doorLeaf(rightFrame.topLeft(), leftFrame.topRight());
-    DoorShape::DoorState doorState{p_doorShape->doorState()};
-    switch (doorState) {
+    DoorShape::DoorState currentDoorState{p_doorShape->doorState()};
+    switch (currentDoorState) {
     case DoorShape::Open:
         doorLeaf.setAngle(90);
         break;
@@ -394,6 +395,18 @@ void tst_BuildingShape::doorState()
     QCOMPARE(p_doorShape->doorState(), DoorShape::Close);
     p_doorShape->setDoorState(DoorShape::Open);
     QCOMPARE(p_doorShape->doorState(), DoorShape::Open);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_buildingShape);
+}
+
+void tst_BuildingShape::leafPosition()
+{
+    BuildingShape *p_buildingShape = BuildingShape::createBuildingShape(BuildingShape::Door);
+    DoorShape *p_doorShape = dynamic_cast<DoorShape *>(p_buildingShape);
+    QCOMPARE(p_doorShape->leafPosition(), DoorShape::Right);
+    p_doorShape->setLeafPosition(DoorShape::Left);
+    QCOMPARE(p_doorShape->leafPosition(), DoorShape::Left);
+    p_doorShape->setLeafPosition(DoorShape::Right);
+    QCOMPARE(p_doorShape->leafPosition(), DoorShape::Right);
     BuildingShape::BuildingShapeDeleter::cleanup(p_buildingShape);
 }
 
