@@ -196,11 +196,17 @@ public:
 protected:
     ~WindowShape() = default;
 
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
 private:
     Q_DISABLE_COPY(WindowShape)
 
+    void bindingWall();
+
     const ShapeType m_windowType;
     QRectF m_windowRect;
+    bool m_leftButtonPressed;
 };
 
 #endif // BUILDINGSHAPE_H

@@ -588,6 +588,7 @@ WindowShape::WindowShape(QGraphicsItem *parent)
     : BuildingShape(parent)
     , m_windowType{Window}
     , m_windowRect{QRectF(-30.0, -5.0, 60.0, 10.0)}
+    , m_leftButtonPressed{false}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
@@ -689,4 +690,39 @@ void WindowShape::setHeight(const qreal &height)
 qreal WindowShape::height() const
 {
     return m_windowRect.height();
+}
+
+void WindowShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::LeftButton) {
+        m_leftButtonPressed = true;
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void WindowShape::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (m_leftButtonPressed) {
+        bindingWall();
+        m_leftButtonPressed = false;
+    }
+
+    QGraphicsItem::mouseReleaseEvent(mouseEvent);
+}
+
+void WindowShape::bindingWall()
+{
+    QList<QGraphicsItem *> collidingShapeList{collidingItems()};
+    for (QGraphicsItem *p_shape : qAsConst(collidingShapeList)) {
+        if (WallShape *p_collidingWall = dynamic_cast<WallShape *>(p_shape)) {
+            prepareGeometryChange();
+            setTransform(p_collidingWall->transform());
+            QRectF wallRect{mapRectFromItem(p_collidingWall, p_collidingWall->boundingRect())};
+            setRect(QRectF(m_windowRect.x(), wallRect.y(), m_windowRect.width(), wallRect.height()));
+            setSelected(false);
+            update();
+            break;
+        }
+    }
 }
