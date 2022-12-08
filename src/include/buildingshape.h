@@ -223,6 +223,8 @@ public:
 
     QPixmap image() override;
     ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
 
 protected:
     ~OpenShape() = default;

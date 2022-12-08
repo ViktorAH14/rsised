@@ -794,3 +794,18 @@ BuildingShape::ShapeType OpenShape::shapeType() const
 {
     return m_openType;
 }
+
+void OpenShape::setRect(const QRectF &rect)
+{
+    if (m_openRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_openRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    update();
+}
+
+QRectF OpenShape::rect() const
+{
+    return m_openRect;
+}
