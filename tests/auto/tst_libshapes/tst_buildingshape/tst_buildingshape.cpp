@@ -75,6 +75,14 @@ void tst_BuildingShape::constructor()
     QCOMPARE(int(p_windowShape->type()), int(QGraphicsItem::UserType + 403));
     QCOMPARE(p_windowShape->shapeType(), BuildingShape::Window);
     BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
+
+    // OpenShape
+    BuildingShape *p_openShape = nullptr;
+    p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
+    QVERIFY2(p_openShape, "OpenShape nullptr");
+    QCOMPARE(int(p_openShape->type()), int(QGraphicsItem::UserType + 404));
+    QCOMPARE(p_openShape->shapeType(), BuildingShape::Open);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
 }
 
 void tst_BuildingShape::boundingRect()
