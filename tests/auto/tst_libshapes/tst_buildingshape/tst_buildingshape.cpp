@@ -261,11 +261,17 @@ void tst_BuildingShape::setRect()
     QCOMPARE(p_doorShape->rect(), rect);
     BuildingShape::BuildingShapeDeleter::cleanup(p_doorShape);
 
-    // Windowshape
+    // WindowShape
     BuildingShape *p_windowShape = BuildingShape::createBuildingShape(BuildingShape::Window);
     p_windowShape->setRect(rect);
     QCOMPARE(p_windowShape->rect(), rect);
     BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
+
+    // OpenShape
+    BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
+    p_openShape->setRect(rect);
+    QCOMPARE(p_openShape->rect(), rect);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
 }
 
 void tst_BuildingShape::bindingWall()
