@@ -755,3 +755,13 @@ void OpenShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
          highlightSelected(painter, option);
     }
 }
+
+QRectF OpenShape::boundingRect() const
+{
+    QRectF boundingRect{m_openRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
