@@ -879,3 +879,21 @@ QRectF StairwellShape::rect() const
 {
     return m_stairwellRect;
 }
+
+void StairwellShape::setHeight(const qreal &height) // TODO проверить необходимость метода
+{
+    if (m_stairwellRect.height() == height)
+        return;
+
+    qreal oldHeight{m_stairwellRect.height()};
+    prepareGeometryChange();
+    m_stairwellRect.setHeight(height);
+    qreal dy{(m_stairwellRect.height() - oldHeight) / 2};
+    m_stairwellRect.moveTo(QPointF(m_stairwellRect.x(), m_stairwellRect.y() - dy));
+    update();
+}
+
+qreal StairwellShape::height() const // TODO проверить необходимость метода
+{
+    return m_stairwellRect.height();
+}
