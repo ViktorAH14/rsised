@@ -217,6 +217,7 @@ public:
     explicit OpenShape(QGraphicsItem *parent = nullptr);
 
     inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 protected:
     ~OpenShape() = default;
