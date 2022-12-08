@@ -809,3 +809,21 @@ QRectF OpenShape::rect() const
 {
     return m_openRect;
 }
+
+void OpenShape::setHeight(const qreal &height)
+{
+    if (m_openRect.height() == height)
+        return;
+
+    qreal oldHeight{m_openRect.height()};
+    prepareGeometryChange();
+    m_openRect.setHeight(height);
+    qreal dy{(m_openRect.height() - oldHeight) / 2};
+    m_openRect.moveTo(QPointF(m_openRect.x(), m_openRect.y() - dy));
+    update();
+}
+
+qreal OpenShape::height() const
+{
+    return m_openRect.height();
+}
