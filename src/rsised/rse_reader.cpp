@@ -654,7 +654,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
 
                 itemList.append(deviceShape);
             }
-            if (rseItemReader.name() == "building_shape") { // FIXME read BuildingShape
+            if (rseItemReader.name() == "building_shape") {
                 qreal x {0.0};
                 qreal y {0.0};
                 qreal itemLeft {0.0};

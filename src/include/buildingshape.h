@@ -64,8 +64,6 @@ protected:
 
 private:
     Q_DISABLE_COPY(BuildingShape)
-//    void drawShape(QPainter *painter);
-//    qreal   frameWidth;
 };
 
 class WallShape : public BuildingShape

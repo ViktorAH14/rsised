@@ -844,7 +844,7 @@ void MainWindow::createShapeToolBox()
     connect(m_buildingShapeButtonGroup
             , QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked)
             , this, &MainWindow::insertBuildingShape);
-    QGridLayout *p_buildShapeLayout= new QGridLayout(this); //FIXME add buildingWidget
+    QGridLayout *p_buildShapeLayout= new QGridLayout(this);
     p_buildShapeLayout->addWidget(createBuildingShapeCellWidget(tr("Wall")
                                                                 , BuildingShape::Wall), 0, 0);
     p_buildShapeLayout->addWidget(createBuildingShapeCellWidget(tr("Window")

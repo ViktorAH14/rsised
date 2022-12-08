@@ -60,73 +60,6 @@ BuildingShape *BuildingShape::createBuildingShape(ShapeType shapeType, QGraphics
     return p_buildingShape;
 }
 
-//void BuildingShape::drawShape(QPainter *painter)
-//{
-//    painter->setRenderHint(QPainter::Antialiasing);
-//    painter->setRenderHint(QPainter::SmoothPixmapTransform);
-//    painter->setPen(QPen(Qt::black, 1 ));
-
-//    prepareGeometryChange();
-//    switch (m_shapeType) {
-//    case Wall: {
-//        QPainterPath wallPath;
-//        wallPath.setFillRule(Qt::WindingFill);
-//        wallPath.addRect(boundingRect());
-
-//        setCollidingWals();
-
-//        for (BuildingShape *item : qAsConst(collidingWalls)) {
-//            wallPath.addPolygon(mapFromItem(item, item->boundingRect()));
-//        }
-
-//        QPainterPath fillPath = wallPath;
-//        painter->fillPath(fillPath, wallBrush);
-//        painter->strokePath(wallPath.simplified(), QPen(Qt::black, 1));
-
-//        break;
-//    }
-//    case Window: {
-//        painter->setBrush(QBrush(Qt::white));
-//        painter->drawRect(shapeRect);
-//        painter->drawLine(shapeRect.left(), 0.0, shapeRect.right(), 0.0);   //Center line
-//        break;
-//    }
-//    case Door: {
-//        painter->setBrush(QBrush(Qt::white));
-//        painter->setPen(QPen(Qt::white, 1));
-//        painter->drawRect(shapeRect);
-//        painter->setPen(QPen(Qt::black, 1));
-//        painter->drawRect(QRectF(shapeRect.topLeft(), QSizeF(frameWidth, shapeRect.height())));
-//        painter->drawRect(QRectF(shapeRect.right() - frameWidth
-//                                 , shapeRect.top(), frameWidth, shapeRect.height()));
-//        painter->drawLine(shapeRect.right() - frameWidth, shapeRect.top()
-//                          , shapeRect.right() - frameWidth - shapeRect.width() / 2.0
-//                          , shapeRect.top() - shapeRect.width() / 2.0);
-//        QPainterPath arcPath;
-//        arcPath.moveTo(shapeRect.left() + frameWidth, shapeRect.top());
-//        arcPath.quadTo(shapeRect.left() + frameWidth
-//                       , shapeRect.top() - shapeRect.width() / 4.0
-//                       , shapeRect.right() - frameWidth - shapeRect.width() / 2.0
-//                       , shapeRect.top() - shapeRect.width() / 2.0);
-//        painter->drawPath(arcPath);
-//        break;
-//    }
-//    case Open: {
-//        painter->setBrush(QBrush(Qt::white));
-//        painter->setPen(QPen(Qt::white, 1));
-//        painter->drawRect(shapeRect);
-//        painter->setPen(QPen(Qt::black, 1));
-//        painter->drawRect(QRectF(shapeRect.topLeft(), QSizeF(frameWidth, shapeRect.height())));
-//        painter->drawRect(QRectF(shapeRect.right() - frameWidth
-//                                 , shapeRect.top(), frameWidth, shapeRect.height()));
-//        break;
-//    }
-//    default:
-//        break;
-//    }
-//    update();
-//}
-
 WallShape::WallShape(QGraphicsItem *parent)
     : BuildingShape(parent)
     , m_wallType{Wall}
@@ -135,7 +68,7 @@ WallShape::WallShape(QGraphicsItem *parent)
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
-    setPen(QPen(Qt::black, 1)); // TODO возможно удалить?
+    setPen(QPen(Qt::black, 1));
     setBrush(Qt::lightGray);
 }
 
@@ -593,7 +526,7 @@ WindowShape::WindowShape(QGraphicsItem *parent)
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
-    setPen(QPen(Qt::black, 1)); // TODO возможно удалить?
+    setPen(QPen(Qt::black, 1));
     setBrush(Qt::white);
 }
 
@@ -606,7 +539,7 @@ void WindowShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->setPen(pen());
     painter->setBrush(brush());
 
-    painter->drawRect(rect()); // TODO подумать о создании метода void drawWindow()
+    painter->drawRect(rect());
     qreal centerY{rect().center().y()};
     QPointF leftCenter{rect().left(), centerY};
     QPointF rightCenter{rect().right(), centerY};
@@ -736,7 +669,7 @@ OpenShape::OpenShape(QGraphicsItem *parent)
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
-    setPen(QPen(Qt::black, 1)); // TODO возможно удалить?
+    setPen(QPen(Qt::black, 1));
     setBrush(Qt::white);
 }
 
