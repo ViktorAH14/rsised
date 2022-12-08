@@ -231,8 +231,13 @@ public:
 protected:
     ~OpenShape() = default;
 
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
 private:
     Q_DISABLE_COPY(OpenShape)
+
+    void bindingWall();
 
     const ShapeType m_openType;
     QRectF m_openRect;

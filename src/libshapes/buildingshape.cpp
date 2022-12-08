@@ -827,3 +827,38 @@ qreal OpenShape::height() const
 {
     return m_openRect.height();
 }
+
+void OpenShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::LeftButton) {
+        m_leftButtonPressed = true;
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void OpenShape::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (m_leftButtonPressed) {
+        bindingWall();
+        m_leftButtonPressed = false;
+    }
+
+    QGraphicsItem::mouseReleaseEvent(mouseEvent);
+}
+
+void OpenShape::bindingWall()
+{
+    QList<QGraphicsItem *> collidingShapeList{collidingItems()};
+    for (QGraphicsItem *p_shape : qAsConst(collidingShapeList)) {
+        if (WallShape *p_collidingWall = dynamic_cast<WallShape *>(p_shape)) {
+            prepareGeometryChange();
+            setTransform(p_collidingWall->transform());
+            QRectF wallRect{mapRectFromItem(p_collidingWall, p_collidingWall->boundingRect())};
+            setRect(QRectF(m_openRect.x(), wallRect.y(), m_openRect.width(), wallRect.height()));
+            setSelected(false);
+            update();
+            break;
+        }
+    }
+}
