@@ -338,6 +338,21 @@ void tst_BuildingShape::bindingWall()
 
     BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
     BuildingShape::BuildingShapeDeleter::cleanup(p_wallShape2);
+
+    // OpenShape
+    BuildingShape *p_wallShape3 = BuildingShape::createBuildingShape(BuildingShape::Wall);
+    scene.addItem(p_wallShape3);
+    p_wallShape3->setHeight(8);
+
+    BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
+    scene.addItem(p_openShape);
+    QCOMPARE(p_openShape->height(), 10);
+    QTest::mouseClick(view.viewport(), Qt::LeftButton, Qt::NoModifier
+                      , view.mapFromScene(p_openShape->boundingRect().center()), 50);
+    QCOMPARE(p_openShape->height(), 9); //wallShape.height() + penWidth
+
+    BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_wallShape3);
 }
 
 void tst_BuildingShape::setHeight_data()
