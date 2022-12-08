@@ -819,7 +819,7 @@ void StairwellShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
     painter->setPen(pen());
     painter->setBrush(brush());
 
-    painter->drawRect(rect()); //FIXME предварительная реализация
+    painter->drawRect(rect()); // FIXME предварительная реализация
 
     if (option->state & QStyle::State_Selected) {
          highlightSelected(painter, option);
@@ -834,4 +834,12 @@ QRectF StairwellShape::boundingRect() const
         boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
 
     return boundingRect;
+}
+
+QPainterPath StairwellShape::shape() const
+{
+    QPainterPath path;
+    path.addRect(rect()); // FIXME предварительная реализация
+
+    return shapeFromPath(path);
 }
