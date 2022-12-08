@@ -773,3 +773,19 @@ QPainterPath OpenShape::shape() const
 
     return shapeFromPath(path);
 }
+
+QPixmap OpenShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    painter.drawRect(rect());
+
+    return pixmap;
+}

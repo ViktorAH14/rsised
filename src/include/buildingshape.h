@@ -221,6 +221,8 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
 
+    QPixmap image() override;
+
 protected:
     ~OpenShape() = default;
 
