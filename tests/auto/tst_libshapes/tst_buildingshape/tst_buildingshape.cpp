@@ -215,6 +215,14 @@ void tst_BuildingShape::image()
     QCOMPARE(windowImage.width(), p_windowShape->boundingRect().width());
     QCOMPARE(windowImage.height(), p_windowShape->boundingRect().height());
     BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
+
+    // OpenShape
+    BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
+    QPixmap openImage = p_openShape->image();
+    QVERIFY2(!openImage.isNull(), "OpenShape::image() returned a null pixmap");
+    QCOMPARE(openImage.width(), p_openShape->boundingRect().width());
+    QCOMPARE(openImage.height(), p_openShape->boundingRect().height());
+    BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
 }
 
 void tst_BuildingShape::setRect_data()
