@@ -765,3 +765,11 @@ QRectF OpenShape::boundingRect() const
 
     return boundingRect;
 }
+
+QPainterPath OpenShape::shape() const
+{
+    QPainterPath path;
+    path.addRect(rect());
+
+    return shapeFromPath(path);
+}
