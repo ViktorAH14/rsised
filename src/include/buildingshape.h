@@ -249,6 +249,8 @@ public:
 
     explicit StairwellShape(QGraphicsItem *parent = nullptr);
 
+    inline int type() const override {return Type;}
+
 protected:
     ~StairwellShape() = default;
 
