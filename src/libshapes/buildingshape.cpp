@@ -859,3 +859,8 @@ QPixmap StairwellShape::image()
 
     return pixmap;
 }
+
+BuildingShape::ShapeType StairwellShape::shapeType() const
+{
+    return m_stairwellType;
+}
