@@ -216,6 +216,8 @@ public:
 
     explicit OpenShape(QGraphicsItem *parent = nullptr);
 
+    inline int type() const override {return Type;}
+
 protected:
     ~OpenShape() = default;
 
