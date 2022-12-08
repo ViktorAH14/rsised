@@ -64,8 +64,6 @@ protected:
 
 private:
     Q_DISABLE_COPY(BuildingShape)
-//    void drawShape(QPainter *painter);
-//    qreal   frameWidth;
 };
 
 class WallShape : public BuildingShape
@@ -206,6 +204,41 @@ private:
 
     const ShapeType m_windowType;
     QRectF m_windowRect;
+    bool m_leftButtonPressed;
+};
+
+class OpenShape : public BuildingShape
+{
+public:
+    enum { Type = UserType + 404 };
+
+    explicit OpenShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+
+protected:
+    ~OpenShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(OpenShape)
+
+    void bindingWall();
+
+    const ShapeType m_openType;
+    QRectF m_openRect;
     bool m_leftButtonPressed;
 };
 

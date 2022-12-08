@@ -926,8 +926,9 @@
         <translation>Дверь</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="854"/>
         <source>Opening</source>
-        <translation type="vanished">Проём</translation>
+        <translation>Проём</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="862"/>

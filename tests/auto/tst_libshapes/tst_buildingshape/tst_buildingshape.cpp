@@ -75,6 +75,14 @@ void tst_BuildingShape::constructor()
     QCOMPARE(int(p_windowShape->type()), int(QGraphicsItem::UserType + 403));
     QCOMPARE(p_windowShape->shapeType(), BuildingShape::Window);
     BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
+
+    // OpenShape
+    BuildingShape *p_openShape = nullptr;
+    p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
+    QVERIFY2(p_openShape, "OpenShape nullptr");
+    QCOMPARE(int(p_openShape->type()), int(QGraphicsItem::UserType + 404));
+    QCOMPARE(p_openShape->shapeType(), BuildingShape::Open);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
 }
 
 void tst_BuildingShape::boundingRect()
@@ -93,6 +101,11 @@ void tst_BuildingShape::boundingRect()
     BuildingShape *p_windowShape = BuildingShape::createBuildingShape(BuildingShape::Window);
     QCOMPARE(p_windowShape->boundingRect(), QRectF(-30.5, -5.5, 61.0, 11.0));
     BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
+
+    // OpenShape
+    BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
+    QCOMPARE(p_openShape->boundingRect(), QRectF(-30.5, -5.5, 61.0, 11.0));
+    BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
 }
 
 void tst_BuildingShape::shape()
@@ -164,6 +177,17 @@ void tst_BuildingShape::shape()
     strokeWindowPath.addPath(windowPath);
     QCOMPARE(p_windowShape->shape(), strokeWindowPath);
     BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
+
+    // OpenShape
+    BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
+    QPainterPathStroker ps_openShape;
+    ps_openShape.setWidth(p_openShape->pen().widthF());
+    QPainterPath openPath;
+    openPath.addRect(p_openShape->rect());
+    QPainterPath strokeOpenPath = ps_openShape.createStroke(openPath);
+    strokeOpenPath.addPath(openPath);
+    QCOMPARE(p_openShape->shape(), strokeOpenPath);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
 }
 
 void tst_BuildingShape::image()
@@ -191,6 +215,14 @@ void tst_BuildingShape::image()
     QCOMPARE(windowImage.width(), p_windowShape->boundingRect().width());
     QCOMPARE(windowImage.height(), p_windowShape->boundingRect().height());
     BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
+
+    // OpenShape
+    BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
+    QPixmap openImage = p_openShape->image();
+    QVERIFY2(!openImage.isNull(), "OpenShape::image() returned a null pixmap");
+    QCOMPARE(openImage.width(), p_openShape->boundingRect().width());
+    QCOMPARE(openImage.height(), p_openShape->boundingRect().height());
+    BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
 }
 
 void tst_BuildingShape::setRect_data()
@@ -229,11 +261,17 @@ void tst_BuildingShape::setRect()
     QCOMPARE(p_doorShape->rect(), rect);
     BuildingShape::BuildingShapeDeleter::cleanup(p_doorShape);
 
-    // Windowshape
+    // WindowShape
     BuildingShape *p_windowShape = BuildingShape::createBuildingShape(BuildingShape::Window);
     p_windowShape->setRect(rect);
     QCOMPARE(p_windowShape->rect(), rect);
     BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
+
+    // OpenShape
+    BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
+    p_openShape->setRect(rect);
+    QCOMPARE(p_openShape->rect(), rect);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
 }
 
 void tst_BuildingShape::bindingWall()
@@ -300,6 +338,21 @@ void tst_BuildingShape::bindingWall()
 
     BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
     BuildingShape::BuildingShapeDeleter::cleanup(p_wallShape2);
+
+    // OpenShape
+    BuildingShape *p_wallShape3 = BuildingShape::createBuildingShape(BuildingShape::Wall);
+    scene.addItem(p_wallShape3);
+    p_wallShape3->setHeight(8);
+
+    BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
+    scene.addItem(p_openShape);
+    QCOMPARE(p_openShape->height(), 10);
+    QTest::mouseClick(view.viewport(), Qt::LeftButton, Qt::NoModifier
+                      , view.mapFromScene(p_openShape->boundingRect().center()), 50);
+    QCOMPARE(p_openShape->height(), 9); //wallShape.height() + penWidth
+
+    BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_wallShape3);
 }
 
 void tst_BuildingShape::setHeight_data()
@@ -343,6 +396,12 @@ void tst_BuildingShape::setHeight()
     p_windowShape->setHeight(height);
     QCOMPARE(p_windowShape->height(), height);
     BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
+
+    // OpenShape
+    BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
+    p_openShape->setHeight(height);
+    QCOMPARE(p_openShape->height(), height);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
 }
 
 void tst_BuildingShape::collidingWall()
