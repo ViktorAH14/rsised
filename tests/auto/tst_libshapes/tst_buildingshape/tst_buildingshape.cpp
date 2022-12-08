@@ -396,6 +396,12 @@ void tst_BuildingShape::setHeight()
     p_windowShape->setHeight(height);
     QCOMPARE(p_windowShape->height(), height);
     BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
+
+    // OpenShape
+    BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
+    p_openShape->setHeight(height);
+    QCOMPARE(p_openShape->height(), height);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
 }
 
 void tst_BuildingShape::collidingWall()
