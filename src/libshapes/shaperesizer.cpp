@@ -86,6 +86,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             p_windowShape->setRect(value.toRectF());
         break;
     }
+    case OpenShape::Type: {
+        if (OpenShape *p_openShape = dynamic_cast<OpenShape *>(item))
+            p_openShape->setRect(value.toRectF());
+        break;
+    }
     default:
         break;
     }

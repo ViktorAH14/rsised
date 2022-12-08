@@ -368,7 +368,8 @@ SizeGripShape::SizeGripShape(Resizer *resizer, QGraphicsItem *parent)
     }
 
     if ((parent->type() == WallShape::Type) || (parent->type() == DoorShape::Type)
-            || (parent->type() == WindowShape::Type)) {
+            || (parent->type() == WindowShape::Type)
+            || (parent->type() == OpenShape::Type)) {
         BuildingShape *p_parentBuildingshape = dynamic_cast<BuildingShape *>(parentItem());
         m_parentItemRect = p_parentBuildingshape->rect();
         setItemType(Rect); // NOTE возможно изменить?
@@ -509,7 +510,8 @@ void SizeGripShape::rotateParentItem(const QPointF &currentPos, int positionFlag
     QPointF corner;
 
     if ((parentItem()->type() ==  WallShape::Type) || (parentItem()->type() == DoorShape::Type)
-            || (parentItem()->type() == WindowShape::Type)) {
+            || (parentItem()->type() == WindowShape::Type)
+            || (parentItem()->type() == OpenShape::Type)) {
         switch (positionFlag) {
         case Left:
             corner = m_parentItemRect.topLeft();
@@ -586,7 +588,8 @@ void SizeGripShape::setActionType(SizeGripShape::ActionType actionType)
     }
 
     if ((parentItem()->type() == WallShape::Type) || (parentItem()->type() == DoorShape::Type)
-            || (parentItem()->type() == WindowShape::Type)) {
+            || (parentItem()->type() == WindowShape::Type)
+            || (parentItem()->type() == OpenShape::Type)) {
         for (HandleItem *p_handleItem : qAsConst(handleItemList)) {
             p_handleItem->show();
         }
