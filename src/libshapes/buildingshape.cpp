@@ -864,3 +864,18 @@ BuildingShape::ShapeType StairwellShape::shapeType() const
 {
     return m_stairwellType;
 }
+
+void StairwellShape::setRect(const QRectF &rect)
+{
+    if (m_stairwellRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_stairwellRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    update();
+}
+
+QRectF StairwellShape::rect() const
+{
+    return m_stairwellRect;
+}
