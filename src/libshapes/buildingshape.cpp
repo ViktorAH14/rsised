@@ -802,10 +802,26 @@ void OpenShape::bindingWall()
 StairwellShape::StairwellShape(QGraphicsItem *parent)
     : BuildingShape(parent)
     , m_stairwellType{Stairwell}
-    , m_stairwellRect{QRectF()}
+    , m_stairwellRect{QRectF(-30.0, -30.0, 60.0, 60.0)}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
     setPen(QPen(Qt::black, 1));
     setBrush(Qt::white);
+}
+
+void StairwellShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    painter->drawRect(rect()); //FIXME предварительная реализация
+
+    if (option->state & QStyle::State_Selected) {
+         highlightSelected(painter, option);
+    }
 }

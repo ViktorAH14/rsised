@@ -250,6 +250,7 @@ public:
     explicit StairwellShape(QGraphicsItem *parent = nullptr);
 
     inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 protected:
     ~StairwellShape() = default;
