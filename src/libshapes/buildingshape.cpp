@@ -54,6 +54,9 @@ BuildingShape *BuildingShape::createBuildingShape(ShapeType shapeType, QGraphics
     case Open:
         p_buildingShape = new OpenShape(parent);
         break;
+    case Stairwell:
+        p_buildingShape = new StairwellShape(parent);
+        break;
     default:
         break;
     }
@@ -794,4 +797,15 @@ void OpenShape::bindingWall()
             break;
         }
     }
+}
+
+StairwellShape::StairwellShape(QGraphicsItem *parent)
+    : BuildingShape(parent)
+    , m_stairwellType{Stairwell}
+    , m_stairwellRect{QRectF()}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::black, 1));
+    setBrush(Qt::white);
 }
