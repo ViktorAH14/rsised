@@ -52,6 +52,7 @@ BuildingShape *BuildingShape::createBuildingShape(ShapeType shapeType, QGraphics
         p_buildingShape = new WindowShape(parent);
         break;
     case Open:
+        p_buildingShape = new OpenShape(parent);
         break;
     default:
         break;
@@ -725,4 +726,16 @@ void WindowShape::bindingWall()
             break;
         }
     }
+}
+
+OpenShape::OpenShape(QGraphicsItem *parent)
+    : BuildingShape(parent)
+    , m_openType{Open}
+    , m_openRect{QRectF(-30.0, -5.0, 60.0, 10.0)}
+    , m_leftButtonPressed{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::black, 1)); // TODO возможно удалить?
+    setBrush(Qt::white);
 }

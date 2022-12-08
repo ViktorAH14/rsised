@@ -209,4 +209,22 @@ private:
     bool m_leftButtonPressed;
 };
 
+class OpenShape : public BuildingShape
+{
+public:
+    enum { Type = UserType + 404 };
+
+    explicit OpenShape(QGraphicsItem *parent = nullptr);
+
+protected:
+    ~OpenShape() = default;
+
+private:
+    Q_DISABLE_COPY(OpenShape)
+
+    const ShapeType m_openType;
+    QRectF m_openRect;
+    bool m_leftButtonPressed;
+};
+
 #endif // BUILDINGSHAPE_H
