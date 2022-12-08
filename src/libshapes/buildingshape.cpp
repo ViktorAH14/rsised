@@ -789,3 +789,8 @@ QPixmap OpenShape::image()
 
     return pixmap;
 }
+
+BuildingShape::ShapeType OpenShape::shapeType() const
+{
+    return m_openType;
+}
