@@ -102,7 +102,7 @@ void tst_BuildingShape::boundingRect()
     QCOMPARE(p_windowShape->boundingRect(), QRectF(-30.5, -5.5, 61.0, 11.0));
     BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
 
-    // WindowShape
+    // OpenShape
     BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
     QCOMPARE(p_openShape->boundingRect(), QRectF(-30.5, -5.5, 61.0, 11.0));
     BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
@@ -177,6 +177,17 @@ void tst_BuildingShape::shape()
     strokeWindowPath.addPath(windowPath);
     QCOMPARE(p_windowShape->shape(), strokeWindowPath);
     BuildingShape::BuildingShapeDeleter::cleanup(p_windowShape);
+
+    // OpenShape
+    BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
+    QPainterPathStroker ps_openShape;
+    ps_openShape.setWidth(p_openShape->pen().widthF());
+    QPainterPath openPath;
+    openPath.addRect(p_openShape->rect());
+    QPainterPath strokeOpenPath = ps_openShape.createStroke(openPath);
+    strokeOpenPath.addPath(openPath);
+    QCOMPARE(p_openShape->shape(), strokeOpenPath);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
 }
 
 void tst_BuildingShape::image()
