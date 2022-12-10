@@ -833,7 +833,22 @@ QRectF StairwellShape::boundingRect() const
 QPainterPath StairwellShape::shape() const
 {
     QPainterPath path;
-    path.addRect(rect()); // FIXME предварительная реализация
+    path.moveTo(m_stairwellRect.topLeft());
+    path.lineTo(m_stairwellRect.topRight());
+    path.lineTo(m_stairwellRect.bottomRight());
+    qreal rightRailingX{m_stairwellRect.center().x() + 2.0};
+    QPointF rightRailingBottom{rightRailingX, m_stairwellRect.bottom()};
+    path.lineTo(rightRailingBottom);
+    qreal marchWidth{m_stairwellRect.width() / 2.0 - 2.0};
+    QPointF rightRailingTop{rightRailingX, m_stairwellRect.top() + marchWidth};
+    path.lineTo(rightRailingTop);
+    qreal leftRailingX{m_stairwellRect.center().x() - 2.0};
+    QPointF leftRailingTop{(leftRailingX), m_stairwellRect.top() + marchWidth};
+    path.lineTo(leftRailingTop);
+    QPointF leftRailingBottom{leftRailingX, m_stairwellRect.bottom()};
+    path.lineTo(leftRailingBottom);
+    path.lineTo(m_stairwellRect.bottomLeft());
+    path.lineTo(m_stairwellRect.topLeft());
 
     return shapeFromPath(path);
 }
