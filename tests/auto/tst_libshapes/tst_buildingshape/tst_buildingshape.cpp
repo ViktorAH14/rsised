@@ -262,6 +262,14 @@ void tst_BuildingShape::image()
     QCOMPARE(openImage.width(), p_openShape->boundingRect().width());
     QCOMPARE(openImage.height(), p_openShape->boundingRect().height());
     BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
+
+    // StairwellShape
+    BuildingShape *p_stairwellShape = BuildingShape::createBuildingShape(BuildingShape::Stairwell);
+    QPixmap stairwellImage = p_stairwellShape->image();
+    QVERIFY2(!stairwellImage.isNull(), "StairwellShape::image() returned a null pixmap");
+    QCOMPARE(stairwellImage.width(), p_stairwellShape->boundingRect().width());
+    QCOMPARE(stairwellImage.height(), p_stairwellShape->boundingRect().height());
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
 }
 
 void tst_BuildingShape::setRect_data()
