@@ -201,6 +201,32 @@ void tst_BuildingShape::shape()
     strokeOpenPath.addPath(openPath);
     QCOMPARE(p_openShape->shape(), strokeOpenPath);
     BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
+
+    // StairwellShape
+    BuildingShape *p_stairwellShape = BuildingShape::createBuildingShape(BuildingShape::Stairwell);
+    QPainterPathStroker ps_stairwellShape;
+    ps_stairwellShape.setWidth(p_stairwellShape->pen().widthF());
+    QPainterPath stairwellPath;
+    stairwellPath.moveTo(p_stairwellShape->rect().topLeft());
+    stairwellPath.lineTo(p_stairwellShape->rect().topRight());
+    stairwellPath.lineTo(p_stairwellShape->rect().bottomRight());
+    qreal rightRailingX{p_stairwellShape->rect().center().x() + 2.0};
+    QPointF rightRailingBottom{rightRailingX, p_stairwellShape->rect().bottom()};
+    stairwellPath.lineTo(rightRailingBottom);
+    qreal marchWidth{p_stairwellShape->rect().width() / 2.0 - 2.0};
+    QPointF rightRailingTop{rightRailingX, p_stairwellShape->rect().top() + marchWidth};
+    stairwellPath.lineTo(rightRailingTop);
+    qreal leftRailingX{p_stairwellShape->rect().center().x() - 2.0};
+    QPointF leftRailingTop{(leftRailingX), p_stairwellShape->rect().top() + marchWidth};
+    stairwellPath.lineTo(leftRailingTop);
+    QPointF leftRailingBottom{leftRailingX, p_stairwellShape->rect().bottom()};
+    stairwellPath.lineTo(leftRailingBottom);
+    stairwellPath.lineTo(p_stairwellShape->rect().bottomLeft());
+    stairwellPath.lineTo(p_stairwellShape->rect().topLeft());
+    QPainterPath strokeStairwellPath = ps_stairwellShape.createStroke(stairwellPath);
+    strokeStairwellPath.addPath(stairwellPath);
+    QCOMPARE(p_stairwellShape->shape(), strokeStairwellPath);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
 }
 
 void tst_BuildingShape::image()
