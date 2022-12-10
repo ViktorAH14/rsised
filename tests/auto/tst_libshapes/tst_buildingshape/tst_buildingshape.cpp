@@ -83,6 +83,14 @@ void tst_BuildingShape::constructor()
     QCOMPARE(int(p_openShape->type()), int(QGraphicsItem::UserType + 404));
     QCOMPARE(p_openShape->shapeType(), BuildingShape::Open);
     BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
+
+    // StairwellShape
+    BuildingShape *p_stairwellShape = nullptr;
+    p_stairwellShape = BuildingShape::createBuildingShape(BuildingShape::Stairwell);
+    QVERIFY2(p_stairwellShape, "StairwellShape nullptr");
+    QCOMPARE(int(p_stairwellShape->type()), int(QGraphicsItem::UserType + 405));
+    QCOMPARE(p_stairwellShape->shapeType(), BuildingShape::Stairwell);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
 }
 
 void tst_BuildingShape::boundingRect()
