@@ -267,6 +267,8 @@ protected:
 private:
     Q_DISABLE_COPY(StairwellShape)
 
+    void drawStairwell(QPainter *painter);
+
     const ShapeType m_stairwellType;
     QRectF m_stairwellRect;
 };
