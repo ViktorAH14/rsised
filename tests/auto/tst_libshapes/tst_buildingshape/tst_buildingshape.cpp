@@ -114,6 +114,11 @@ void tst_BuildingShape::boundingRect()
     BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
     QCOMPARE(p_openShape->boundingRect(), QRectF(-30.5, -5.5, 61.0, 11.0));
     BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
+
+    // StairwellShape
+    BuildingShape *p_stairwellShape = BuildingShape::createBuildingShape(BuildingShape::Stairwell);
+    QCOMPARE(p_stairwellShape->boundingRect(), QRectF(-30.5, -40.5, 61.0, 81.0));
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
 }
 
 void tst_BuildingShape::shape()
