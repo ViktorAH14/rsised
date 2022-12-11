@@ -997,4 +997,12 @@ QRectF StairsShape::boundingRect() const
         boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
 
     return boundingRect;
+                }
+
+QPainterPath StairsShape::shape() const
+{
+    QPainterPath path;
+    path.addRect(rect());
+
+    return shapeFromPath(path);
 }
