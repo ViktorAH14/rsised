@@ -1060,3 +1060,36 @@ qreal StairsShape::height() const
 {
     return m_stairsRect.height();
 }
+
+void StairsShape::drawStairs(QPainter *painter)
+{
+    QPointF stBottomLeft{m_stairsRect.bottomLeft()};
+    QPointF stTopLeft{m_stairsRect.topLeft()};
+    QLineF leftSide{stBottomLeft, stTopLeft};
+    painter->drawLine(leftSide);
+
+    QPointF stBotttomRight{m_stairsRect.bottomRight()};
+    QPointF stTopRight{m_stairsRect.topRight()};
+    QLineF rightSide{stBotttomRight, stTopRight};
+    painter->drawLine(rightSide);
+
+    qreal stairsLength{m_stairsRect.height()};
+    int stepHeight{8};
+    div_t divResalt{div(stairsLength, stepHeight)};
+    int stepNum{divResalt.quot};
+    int stepCorrection{divResalt.rem};
+    qreal stepPosY{m_stairsRect.bottom()};
+    qreal stLeft{m_stairsRect.left()};
+    qreal stRight{m_stairsRect.right()};
+
+    // Draw steps
+    for (int i = 0; i <= stepNum; i++) {
+        QLineF step{stLeft, stepPosY, stRight, stepPosY};
+        painter->drawLine(step);
+        stepPosY -= stepHeight;
+        if (stepCorrection > 0) {
+            stepPosY -= 1;
+            stepCorrection -= 1;
+        }
+    }
+}
