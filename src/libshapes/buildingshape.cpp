@@ -965,7 +965,7 @@ void StairwellShape::drawStairwell(QPainter *painter)
 
 StairsShape::StairsShape(QGraphicsItem *parent)
     : BuildingShape(parent)
-    , m_stairsType{Stairwell}
+    , m_stairsType{Stairs}
     , m_stairsRect{QRectF(-30.0, -40.0, 60.0, 80.0)}
 {
     setFlag(ItemSendsGeometryChanges, true);
