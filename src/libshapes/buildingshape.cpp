@@ -58,6 +58,9 @@ BuildingShape *BuildingShape::createBuildingShape(ShapeType shapeType, QGraphics
     case Stairwell:
         p_buildingShape = new StairwellShape(parent);
         break;
+    case Stairs:
+        p_buildingShape = new StairsShape(parent);
+        break;
     default:
         break;
     }
@@ -958,4 +961,15 @@ void StairwellShape::drawStairwell(QPainter *painter)
     }
     QLineF topStep{stLeft, stepPosY, stRight, stepPosY};
     painter->drawLine(topStep);
+}
+
+StairsShape::StairsShape(QGraphicsItem *parent)
+    : BuildingShape(parent)
+    , m_stairsType{Stairwell}
+    , m_stairsRect{QRectF(-30.0, -40.0, 60.0, 80.0)}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::black, 1));
+    setBrush(Qt::white);
 }
