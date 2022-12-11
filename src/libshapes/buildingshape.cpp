@@ -1022,3 +1022,8 @@ QPixmap StairsShape::image()
 
     return pixmap;
 }
+
+BuildingShape::ShapeType StairsShape::shapeType() const
+{
+    return m_stairsType;
+}
