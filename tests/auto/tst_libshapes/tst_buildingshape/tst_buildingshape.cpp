@@ -499,6 +499,12 @@ void tst_BuildingShape::setHeight()
     p_stairwellShape->setHeight(height);
     QCOMPARE(p_stairwellShape->height(), height);
     BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
+
+    // StairsShape
+    BuildingShape *p_stairsShape = BuildingShape::createBuildingShape(BuildingShape::Stairs);
+    p_stairsShape->setHeight(height);
+    QCOMPARE(p_stairsShape->height(), height);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairsShape);
 }
 
 void tst_BuildingShape::collidingWall()
