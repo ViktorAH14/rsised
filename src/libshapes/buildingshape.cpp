@@ -1027,3 +1027,18 @@ BuildingShape::ShapeType StairsShape::shapeType() const
 {
     return m_stairsType;
 }
+
+void StairsShape::setRect(const QRectF &rect)
+{
+    if (m_stairsRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_stairsRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    update();
+}
+
+QRectF StairsShape::rect() const
+{
+    return m_stairsRect;
+}
