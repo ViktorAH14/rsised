@@ -91,6 +91,14 @@ void tst_BuildingShape::constructor()
     QCOMPARE(int(p_stairwellShape->type()), int(QGraphicsItem::UserType + 405));
     QCOMPARE(p_stairwellShape->shapeType(), BuildingShape::Stairwell);
     BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
+
+    // StairsShape
+    BuildingShape *p_stairsShape = nullptr;
+    p_stairsShape = BuildingShape::createBuildingShape(BuildingShape::Stairs);
+    QVERIFY2(p_stairsShape, "StairsShape nullptr");
+    QCOMPARE(int(p_stairsShape->type()), int(QGraphicsItem::UserType + 406));
+    QCOMPARE(p_stairsShape->shapeType(), BuildingShape::Stairs);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairsShape);
 }
 
 void tst_BuildingShape::boundingRect()
@@ -119,6 +127,11 @@ void tst_BuildingShape::boundingRect()
     BuildingShape *p_stairwellShape = BuildingShape::createBuildingShape(BuildingShape::Stairwell);
     QCOMPARE(p_stairwellShape->boundingRect(), QRectF(-30.5, -40.5, 61.0, 81.0));
     BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
+
+    // StairsShape
+    BuildingShape *p_stairsShape = BuildingShape::createBuildingShape(BuildingShape::Stairs);
+    QCOMPARE(p_stairsShape->boundingRect(), QRectF(-30.5, -40.5, 61.0, 81.0));
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairsShape);
 }
 
 void tst_BuildingShape::shape()
@@ -227,6 +240,17 @@ void tst_BuildingShape::shape()
     strokeStairwellPath.addPath(stairwellPath);
     QCOMPARE(p_stairwellShape->shape(), strokeStairwellPath);
     BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
+
+    // StairsShape
+    BuildingShape *p_stairsShape = BuildingShape::createBuildingShape(BuildingShape::Stairs);
+    QPainterPathStroker ps_stairsShape;
+    ps_stairsShape.setWidth(p_stairsShape->pen().widthF());
+    QPainterPath stairsPath;
+    stairsPath.addRect(p_stairsShape->rect());
+    QPainterPath strokeStairsPath = ps_stairsShape.createStroke(stairsPath);
+    strokeStairsPath.addPath(stairsPath);
+    QCOMPARE(p_stairsShape->shape(), strokeStairsPath);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairsShape);
 }
 
 void tst_BuildingShape::image()
@@ -270,6 +294,14 @@ void tst_BuildingShape::image()
     QCOMPARE(stairwellImage.width(), p_stairwellShape->boundingRect().width());
     QCOMPARE(stairwellImage.height(), p_stairwellShape->boundingRect().height());
     BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
+
+    // StairsShape
+    BuildingShape *p_stairsShape = BuildingShape::createBuildingShape(BuildingShape::Stairs);
+    QPixmap stairsImage = p_stairsShape->image();
+    QVERIFY2(!stairsImage.isNull(), "StairsShape::image() returned a null pixmap");
+    QCOMPARE(stairsImage.width(), p_stairsShape->boundingRect().width());
+    QCOMPARE(stairsImage.height(), p_stairsShape->boundingRect().height());
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairsShape);
 }
 
 void tst_BuildingShape::setRect_data()
@@ -325,6 +357,12 @@ void tst_BuildingShape::setRect()
     p_stairwellShape->setRect(rect);
     QCOMPARE(p_stairwellShape->rect(), rect);
     BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
+
+    // StairsShape
+    BuildingShape *p_stairsShape = BuildingShape::createBuildingShape(BuildingShape::Stairs);
+    p_stairsShape->setRect(rect);
+    QCOMPARE(p_stairsShape->rect(), rect);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairsShape);
 }
 
 void tst_BuildingShape::bindingWall()
@@ -461,6 +499,12 @@ void tst_BuildingShape::setHeight()
     p_stairwellShape->setHeight(height);
     QCOMPARE(p_stairwellShape->height(), height);
     BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
+
+    // StairsShape
+    BuildingShape *p_stairsShape = BuildingShape::createBuildingShape(BuildingShape::Stairs);
+    p_stairsShape->setHeight(height);
+    QCOMPARE(p_stairsShape->height(), height);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairsShape);
 }
 
 void tst_BuildingShape::collidingWall()

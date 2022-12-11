@@ -299,7 +299,7 @@ SizeGripShape::SizeGripShape(Resizer *resizer, QGraphicsItem *parent)
 {
     if ((parent->type() == RectShape::Type) || (parent->type() == PixmapShape::Type)
             || (parent->type() == TechnicsShape::Type) || (parent->type() == DeviceShape::Type)
-            || (parent->type() == StairwellShape::Type)) {
+            || (parent->type() == StairwellShape::Type) || (parent->type() == StairsShape::Type)) {
         m_parentItemRect = parentItem()->boundingRect();
         setItemType(Rect);
         int handleNum {-1};
