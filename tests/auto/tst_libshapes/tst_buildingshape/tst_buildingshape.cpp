@@ -240,6 +240,17 @@ void tst_BuildingShape::shape()
     strokeStairwellPath.addPath(stairwellPath);
     QCOMPARE(p_stairwellShape->shape(), strokeStairwellPath);
     BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
+
+    // StairsShape
+    BuildingShape *p_stairsShape = BuildingShape::createBuildingShape(BuildingShape::Stairs);
+    QPainterPathStroker ps_stairsShape;
+    ps_stairsShape.setWidth(p_stairsShape->pen().widthF());
+    QPainterPath stairsPath;
+    stairsPath.addRect(p_stairsShape->rect());
+    QPainterPath strokeStairsPath = ps_stairsShape.createStroke(stairsPath);
+    strokeStairsPath.addPath(stairsPath);
+    QCOMPARE(p_stairsShape->shape(), strokeStairsPath);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairsShape);
 }
 
 void tst_BuildingShape::image()
