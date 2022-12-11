@@ -988,3 +988,13 @@ void StairsShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     if (option->state & QStyle::State_Selected)
         highlightSelected(painter, option);
 }
+
+QRectF StairsShape::boundingRect() const
+{
+    QRectF boundingRect{m_stairsRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
