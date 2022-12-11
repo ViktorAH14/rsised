@@ -889,7 +889,7 @@ QRectF StairwellShape::rect() const
     return m_stairwellRect;
 }
 
-void StairwellShape::setHeight(const qreal &height) // TODO проверить необходимость метода
+void StairwellShape::setHeight(const qreal &height)
 {
     if (m_stairwellRect.height() == height)
         return;
@@ -902,7 +902,7 @@ void StairwellShape::setHeight(const qreal &height) // TODO проверить �
     update();
 }
 
-qreal StairwellShape::height() const // TODO проверить необходимость метода
+qreal StairwellShape::height() const
 {
     return m_stairwellRect.height();
 }
@@ -943,6 +943,8 @@ void StairwellShape::drawStairwell(QPainter *painter)
     qreal stepPosY{m_stairwellRect.bottom()};
     qreal stLeft{m_stairwellRect.left()};
     qreal stRight{m_stairwellRect.right()};
+
+    // Draw steps
     for (int i = 0; i < stepNum; i++) {
         QLineF leftStep{stLeft, stepPosY, (stLeft + marchWidth), stepPosY};
         painter->drawLine(leftStep);
