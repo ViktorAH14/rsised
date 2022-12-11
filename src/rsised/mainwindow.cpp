@@ -855,6 +855,8 @@ void MainWindow::createShapeToolBox()
                                                                 , BuildingShape::Open), 1, 0);
     p_buildShapeLayout->addWidget(createBuildingShapeCellWidget(tr("Stairwell")
                                                                 , BuildingShape::Stairwell), 1, 1);
+    p_buildShapeLayout->addWidget(createBuildingShapeCellWidget(tr("Stairs")
+                                                                , BuildingShape::Stairs), 1, 2);
     p_buildShapeLayout->setRowStretch(3, 10);
     p_buildShapeLayout->setColumnStretch(3, 10);
     QWidget *p_buildingWidget = new QWidget(this);
