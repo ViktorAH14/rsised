@@ -997,7 +997,7 @@ QRectF StairsShape::boundingRect() const
         boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
 
     return boundingRect;
-                }
+}
 
 QPainterPath StairsShape::shape() const
 {
@@ -1041,4 +1041,22 @@ void StairsShape::setRect(const QRectF &rect)
 QRectF StairsShape::rect() const
 {
     return m_stairsRect;
+}
+
+void StairsShape::setHeight(const qreal &height)
+{
+    if (m_stairsRect.height() == height)
+        return;
+
+    qreal oldHeight{m_stairsRect.height()};
+    prepareGeometryChange();
+    m_stairsRect.setHeight(height);
+    qreal dy{(m_stairsRect.height() - oldHeight) / 2};
+    m_stairsRect.moveTo(QPointF(m_stairsRect.x(), m_stairsRect.y() - dy));
+    update();
+}
+
+qreal StairsShape::height() const
+{
+    return m_stairsRect.height();
 }
