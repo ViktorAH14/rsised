@@ -83,6 +83,14 @@ void tst_BuildingShape::constructor()
     QCOMPARE(int(p_openShape->type()), int(QGraphicsItem::UserType + 404));
     QCOMPARE(p_openShape->shapeType(), BuildingShape::Open);
     BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
+
+    // StairwellShape
+    BuildingShape *p_stairwellShape = nullptr;
+    p_stairwellShape = BuildingShape::createBuildingShape(BuildingShape::Stairwell);
+    QVERIFY2(p_stairwellShape, "StairwellShape nullptr");
+    QCOMPARE(int(p_stairwellShape->type()), int(QGraphicsItem::UserType + 405));
+    QCOMPARE(p_stairwellShape->shapeType(), BuildingShape::Stairwell);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
 }
 
 void tst_BuildingShape::boundingRect()
@@ -106,6 +114,11 @@ void tst_BuildingShape::boundingRect()
     BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
     QCOMPARE(p_openShape->boundingRect(), QRectF(-30.5, -5.5, 61.0, 11.0));
     BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
+
+    // StairwellShape
+    BuildingShape *p_stairwellShape = BuildingShape::createBuildingShape(BuildingShape::Stairwell);
+    QCOMPARE(p_stairwellShape->boundingRect(), QRectF(-30.5, -40.5, 61.0, 81.0));
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
 }
 
 void tst_BuildingShape::shape()
@@ -188,6 +201,32 @@ void tst_BuildingShape::shape()
     strokeOpenPath.addPath(openPath);
     QCOMPARE(p_openShape->shape(), strokeOpenPath);
     BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
+
+    // StairwellShape
+    BuildingShape *p_stairwellShape = BuildingShape::createBuildingShape(BuildingShape::Stairwell);
+    QPainterPathStroker ps_stairwellShape;
+    ps_stairwellShape.setWidth(p_stairwellShape->pen().widthF());
+    QPainterPath stairwellPath;
+    stairwellPath.moveTo(p_stairwellShape->rect().topLeft());
+    stairwellPath.lineTo(p_stairwellShape->rect().topRight());
+    stairwellPath.lineTo(p_stairwellShape->rect().bottomRight());
+    qreal rightRailingX{p_stairwellShape->rect().center().x() + 2.0};
+    QPointF rightRailingBottom{rightRailingX, p_stairwellShape->rect().bottom()};
+    stairwellPath.lineTo(rightRailingBottom);
+    qreal marchWidth{p_stairwellShape->rect().width() / 2.0 - 2.0};
+    QPointF rightRailingTop{rightRailingX, p_stairwellShape->rect().top() + marchWidth};
+    stairwellPath.lineTo(rightRailingTop);
+    qreal leftRailingX{p_stairwellShape->rect().center().x() - 2.0};
+    QPointF leftRailingTop{(leftRailingX), p_stairwellShape->rect().top() + marchWidth};
+    stairwellPath.lineTo(leftRailingTop);
+    QPointF leftRailingBottom{leftRailingX, p_stairwellShape->rect().bottom()};
+    stairwellPath.lineTo(leftRailingBottom);
+    stairwellPath.lineTo(p_stairwellShape->rect().bottomLeft());
+    stairwellPath.lineTo(p_stairwellShape->rect().topLeft());
+    QPainterPath strokeStairwellPath = ps_stairwellShape.createStroke(stairwellPath);
+    strokeStairwellPath.addPath(stairwellPath);
+    QCOMPARE(p_stairwellShape->shape(), strokeStairwellPath);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
 }
 
 void tst_BuildingShape::image()
@@ -223,6 +262,14 @@ void tst_BuildingShape::image()
     QCOMPARE(openImage.width(), p_openShape->boundingRect().width());
     QCOMPARE(openImage.height(), p_openShape->boundingRect().height());
     BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
+
+    // StairwellShape
+    BuildingShape *p_stairwellShape = BuildingShape::createBuildingShape(BuildingShape::Stairwell);
+    QPixmap stairwellImage = p_stairwellShape->image();
+    QVERIFY2(!stairwellImage.isNull(), "StairwellShape::image() returned a null pixmap");
+    QCOMPARE(stairwellImage.width(), p_stairwellShape->boundingRect().width());
+    QCOMPARE(stairwellImage.height(), p_stairwellShape->boundingRect().height());
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
 }
 
 void tst_BuildingShape::setRect_data()
@@ -272,6 +319,12 @@ void tst_BuildingShape::setRect()
     p_openShape->setRect(rect);
     QCOMPARE(p_openShape->rect(), rect);
     BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
+
+    // StairwellShape
+    BuildingShape *p_stairwellShape = BuildingShape::createBuildingShape(BuildingShape::Stairwell);
+    p_stairwellShape->setRect(rect);
+    QCOMPARE(p_stairwellShape->rect(), rect);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
 }
 
 void tst_BuildingShape::bindingWall()
@@ -402,6 +455,12 @@ void tst_BuildingShape::setHeight()
     p_openShape->setHeight(height);
     QCOMPARE(p_openShape->height(), height);
     BuildingShape::BuildingShapeDeleter::cleanup(p_openShape);
+
+    // StairwellShape
+    BuildingShape *p_stairwellShape = BuildingShape::createBuildingShape(BuildingShape::Stairwell);
+    p_stairwellShape->setHeight(height);
+    QCOMPARE(p_stairwellShape->height(), height);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
 }
 
 void tst_BuildingShape::collidingWall()

@@ -18,6 +18,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
 #include "../include/buildingshape.h"
 
 #include <QtMath>
@@ -53,6 +54,9 @@ BuildingShape *BuildingShape::createBuildingShape(ShapeType shapeType, QGraphics
         break;
     case Open:
         p_buildingShape = new OpenShape(parent);
+        break;
+    case Stairwell:
+        p_buildingShape = new StairwellShape(parent);
         break;
     default:
         break;
@@ -92,16 +96,14 @@ void WallShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         QPainterPath wallPath;
         wallPath.setFillRule(Qt::WindingFill);
         wallPath.addRect(rect());
-        for (WallShape *p_wallShape : qAsConst(m_collidingWallSet)) {
+        for (WallShape *p_wallShape : qAsConst(m_collidingWallSet))
             wallPath.addPolygon(mapFromItem(p_wallShape, p_wallShape->rect()));
-        }
+
         painter->strokePath(wallPath.simplified(), pen());
     }
 
-    if (option->state & QStyle::State_Selected) {
-         highlightSelected(painter, option);
-    }
-
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
 }
 
 QRectF WallShape::boundingRect() const
@@ -212,9 +214,8 @@ void WallShape::setCollidingWalls()
     for (QGraphicsItem *p_shape : qAsConst(collidingShapeList)) {
         if (WallShape *p_wallShape = dynamic_cast<WallShape *>(p_shape)) {
             m_collidingWallSet.insert(p_wallShape);
-            if (!p_wallShape->collidingWallsIsEmpty()) {
+            if (!p_wallShape->collidingWallsIsEmpty())
                 m_collidingWallSet += p_wallShape->collidingWalls();
-            }
         }
     }
     m_collidingWallSet.remove(this);
@@ -291,9 +292,8 @@ void DoorShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     drawDoor(painter);
 
-    if (option->state & QStyle::State_Selected) {
-         highlightSelected(painter, option);
-    }
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
 }
 
 QRectF DoorShape::boundingRect() const
@@ -545,9 +545,8 @@ void WindowShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     QPointF rightCenter{rect().right(), centerY};
     painter->drawLine(leftCenter, rightCenter);
 
-    if (option->state & QStyle::State_Selected) {
-         highlightSelected(painter, option);
-    }
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
 }
 
 QRectF WindowShape::boundingRect() const
@@ -684,9 +683,8 @@ void OpenShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     painter->drawRect(rect());
 
-    if (option->state & QStyle::State_Selected) {
-         highlightSelected(painter, option);
-    }
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
 }
 
 QRectF OpenShape::boundingRect() const
@@ -794,4 +792,170 @@ void OpenShape::bindingWall()
             break;
         }
     }
+}
+
+StairwellShape::StairwellShape(QGraphicsItem *parent)
+    : BuildingShape(parent)
+    , m_stairwellType{Stairwell}
+    , m_stairwellRect{QRectF(-30.0, -40.0, 60.0, 80.0)}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::black, 1));
+    setBrush(Qt::white);
+}
+
+void StairwellShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawStairwell(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF StairwellShape::boundingRect() const
+{
+    QRectF boundingRect{m_stairwellRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath StairwellShape::shape() const
+{
+    QPainterPath path;
+    path.moveTo(m_stairwellRect.topLeft());
+    path.lineTo(m_stairwellRect.topRight());
+    path.lineTo(m_stairwellRect.bottomRight());
+    qreal rightRailingX{m_stairwellRect.center().x() + 2.0};
+    QPointF rightRailingBottom{rightRailingX, m_stairwellRect.bottom()};
+    path.lineTo(rightRailingBottom);
+    qreal marchWidth{m_stairwellRect.width() / 2.0 - 2.0};
+    QPointF rightRailingTop{rightRailingX, m_stairwellRect.top() + marchWidth};
+    path.lineTo(rightRailingTop);
+    qreal leftRailingX{m_stairwellRect.center().x() - 2.0};
+    QPointF leftRailingTop{(leftRailingX), m_stairwellRect.top() + marchWidth};
+    path.lineTo(leftRailingTop);
+    QPointF leftRailingBottom{leftRailingX, m_stairwellRect.bottom()};
+    path.lineTo(leftRailingBottom);
+    path.lineTo(m_stairwellRect.bottomLeft());
+    path.lineTo(m_stairwellRect.topLeft());
+
+    return shapeFromPath(path);
+}
+
+QPixmap StairwellShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawStairwell(&painter);
+
+    return pixmap;
+}
+
+BuildingShape::ShapeType StairwellShape::shapeType() const
+{
+    return m_stairwellType;
+}
+
+void StairwellShape::setRect(const QRectF &rect)
+{
+    if (m_stairwellRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_stairwellRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    update();
+}
+
+QRectF StairwellShape::rect() const
+{
+    return m_stairwellRect;
+}
+
+void StairwellShape::setHeight(const qreal &height)
+{
+    if (m_stairwellRect.height() == height)
+        return;
+
+    qreal oldHeight{m_stairwellRect.height()};
+    prepareGeometryChange();
+    m_stairwellRect.setHeight(height);
+    qreal dy{(m_stairwellRect.height() - oldHeight) / 2};
+    m_stairwellRect.moveTo(QPointF(m_stairwellRect.x(), m_stairwellRect.y() - dy));
+    update();
+}
+
+qreal StairwellShape::height() const
+{
+    return m_stairwellRect.height();
+}
+
+void StairwellShape::drawStairwell(QPainter *painter)
+{
+    QPointF stBottomLeft{m_stairwellRect.bottomLeft()};
+    QPointF stTopLeft{m_stairwellRect.topLeft()};
+    QLineF leftSide{stBottomLeft, stTopLeft};
+    painter->drawLine(leftSide);
+
+    QPointF stBotttomRight{m_stairwellRect.bottomRight()};
+    QPointF stTopRight{m_stairwellRect.topRight()};
+    QLineF rightSide{stBotttomRight, stTopRight};
+    painter->drawLine(rightSide);
+
+    QLineF topSide{stTopLeft, stTopRight};
+    painter->drawLine(topSide);
+
+    qreal marchWidth{m_stairwellRect.width() / 2.0 - 2.0};
+    qreal leftRailingX{m_stairwellRect.center().x() - 2.0};
+    QPointF leftRailingBottom{leftRailingX, m_stairwellRect.bottom()};
+    QPointF leftRailingTop{(leftRailingX), m_stairwellRect.top() + marchWidth};
+    QLineF leftRailing{leftRailingBottom, leftRailingTop};
+    painter->drawLine(leftRailing);
+
+    qreal rightRailingX{m_stairwellRect.center().x() + 2.0};
+    QPointF rightRailingBottom{rightRailingX, m_stairwellRect.bottom()};
+    QPointF rightRailingTop{rightRailingX, m_stairwellRect.top() + marchWidth};
+    QLineF rightRailing{rightRailingBottom, rightRailingTop};
+    painter->drawLine(rightRailing);
+
+    qreal railingLength{m_stairwellRect.height() - marchWidth};
+    int stepHeight{8};
+    div_t divResalt{div(railingLength, stepHeight)};
+    int stepNum{divResalt.quot};
+    int stepCorrection{divResalt.rem};
+    qreal stepPosY{m_stairwellRect.bottom()};
+    qreal stLeft{m_stairwellRect.left()};
+    qreal stRight{m_stairwellRect.right()};
+
+    // Draw steps
+    for (int i = 0; i < stepNum; i++) {
+        QLineF leftStep{stLeft, stepPosY, (stLeft + marchWidth), stepPosY};
+        painter->drawLine(leftStep);
+        QLineF rightStep{stRight, stepPosY, (stRight - marchWidth), stepPosY};
+        painter->drawLine(rightStep);
+        stepPosY -= stepHeight;
+        if (stepCorrection > 0) {
+            stepPosY -= 1;
+            stepCorrection -= 1;
+        }
+    }
+    QLineF topStep{stLeft, stepPosY, stRight, stepPosY};
+    painter->drawLine(topStep);
 }

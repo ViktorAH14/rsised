@@ -36,7 +36,7 @@ class BuildingShape : public AbstractShape
 {
 public:
     enum { Type = UserType + 400 };
-    enum ShapeType { Wall, Door, Window, Open };
+    enum ShapeType { Wall, Door, Window, Open, Stairwell };
 
     struct BuildingShapeDeleter
     {
@@ -240,6 +240,37 @@ private:
     const ShapeType m_openType;
     QRectF m_openRect;
     bool m_leftButtonPressed;
+};
+
+class StairwellShape : public BuildingShape
+{
+public:
+    enum { Type = UserType + 405 };
+
+    explicit StairwellShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+
+protected:
+    ~StairwellShape() = default;
+
+private:
+    Q_DISABLE_COPY(StairwellShape)
+
+    void drawStairwell(QPainter *painter);
+
+    const ShapeType m_stairwellType;
+    QRectF m_stairwellRect;
 };
 
 #endif // BUILDINGSHAPE_H

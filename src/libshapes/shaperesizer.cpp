@@ -91,6 +91,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             p_openShape->setRect(value.toRectF());
         break;
     }
+    case StairwellShape::Type: {
+        if (StairwellShape *p_stairwellShape = dynamic_cast<StairwellShape *>(item))
+            p_stairwellShape->setRect(value.toRectF());
+        break;
+    }
     default:
         break;
     }
