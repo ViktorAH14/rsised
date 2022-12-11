@@ -357,6 +357,12 @@ void tst_BuildingShape::setRect()
     p_stairwellShape->setRect(rect);
     QCOMPARE(p_stairwellShape->rect(), rect);
     BuildingShape::BuildingShapeDeleter::cleanup(p_stairwellShape);
+
+    // StairsShape
+    BuildingShape *p_stairsShape = BuildingShape::createBuildingShape(BuildingShape::Stairs);
+    p_stairsShape->setRect(rect);
+    QCOMPARE(p_stairsShape->rect(), rect);
+    BuildingShape::BuildingShapeDeleter::cleanup(p_stairsShape);
 }
 
 void tst_BuildingShape::bindingWall()
