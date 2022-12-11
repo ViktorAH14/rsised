@@ -973,3 +973,18 @@ StairsShape::StairsShape(QGraphicsItem *parent)
     setPen(QPen(Qt::black, 1));
     setBrush(Qt::white);
 }
+
+void StairsShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawStairs(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
