@@ -28,7 +28,7 @@
 #include <QStyleOptionGraphicsItem>
 
 AbstractShape::AbstractShape(QGraphicsItem *parent)
-    : QAbstractGraphicsShapeItem(parent)
+    : QGraphicsItem(parent)
     , m_sizeGripItem{nullptr}
     , m_contextMenu{new QMenu()}
 {
@@ -37,6 +37,46 @@ AbstractShape::AbstractShape(QGraphicsItem *parent)
 AbstractShape::~AbstractShape()
 {
     m_contextMenu->deleteLater();
+}
+
+QPen AbstractShape::pen() const
+{
+    return m_pen;
+}
+
+void AbstractShape::setPen(const QPen &pen)
+{
+    if (m_pen == pen)
+        return;
+    prepareGeometryChange();
+    m_pen = pen;
+    update();
+}
+
+QBrush AbstractShape::brush() const
+{
+    return m_brush;
+}
+
+void AbstractShape::setBrush(const QBrush &brush)
+{
+    if (m_brush == brush)
+        return;
+    prepareGeometryChange();
+    m_brush = brush;
+    update();
+}
+
+bool AbstractShape::isObscuredBy(const QGraphicsItem *item) const
+{
+    return QGraphicsItem::isObscuredBy(item);
+}
+
+QPainterPath AbstractShape::opaqueArea() const
+{
+    if (m_brush.isOpaque())
+            return isClipped() ? clipPath() : shape();
+        return QGraphicsItem::opaqueArea();
 }
 
 void AbstractShape::scaleShape(const QRectF &newRect)
