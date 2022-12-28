@@ -26,7 +26,7 @@
 #include "../include/pixmapshape.h"
 #include "../include/technicsshape.h"
 #include "../include/deviceshape.h"
-#include "../include/buildingstruct.h"
+#include "../include/buildingshape.h"
 
 #include <QPainterPath>
 
@@ -36,63 +36,70 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
 {
     switch (item->type()) {
     case RectShape::Type: {
-        RectShape *rectShape = dynamic_cast<RectShape *>(item);
-        if (rectShape) {
-            QRectF shapeRect = value.toRectF();
-            rectShape->setRect(shapeRect);
-        }
+        if (RectShape *p_rectShape = dynamic_cast<RectShape *>(item))
+            p_rectShape->setRect(value.toRectF());
         break;
     }
     case EllipseShape::Type: {
-        if (EllipseShape *ellipseShape = dynamic_cast<EllipseShape *>(item)) {
-            QRectF itemRect = value.toRectF();
-            ellipseShape->setRect(itemRect);
+        if (EllipseShape *p_ellipseShape = dynamic_cast<EllipseShape *>(item)) {
+            p_ellipseShape->setRect(value.toRectF());
         }
         break;
     }
     case Curve::Type: {
-        Curve *curveShape = dynamic_cast<Curve *>(item);
-        if (curveShape) {
-            QPainterPath itemPath = value.value<QPainterPath>();
-            curveShape->setPath(itemPath);
-        }
+        if (Curve *p_curveShape = dynamic_cast<Curve *>(item))
+            p_curveShape->setPath(value.value<QPainterPath>());
         break;
     }
     case PolylineShape::Type: {
-        PolylineShape *polylineShape = dynamic_cast<PolylineShape *>(item);
-        if (polylineShape) {
-            QPainterPath itemPath = value.value<QPainterPath>();
-            polylineShape->setPath(itemPath);
-        }
+        if (PolylineShape *polylineShape = dynamic_cast<PolylineShape *>(item))
+            polylineShape->setPath(value.value<QPainterPath>());
         break;
     }
     case PixmapShape::Type: {
-        PixmapShape *pixmapShape = dynamic_cast<PixmapShape *>(item);
-        if (pixmapShape) {
+        if (PixmapShape *pixmapShape = dynamic_cast<PixmapShape *>(item))
             pixmapShape->scalePixmap(value.toRectF());
-        }
         break;
     }
     case TechnicsShape::Type: {
-        TechnicsShape *technicsShape = dynamic_cast<TechnicsShape *>(item);
-        if (technicsShape) {
+        if (TechnicsShape *technicsShape = dynamic_cast<TechnicsShape *>(item))
             technicsShape->scaleShape(value.toRectF());
-        }
         break;
     }
     case DeviceShape::Type: {
-        DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item);
-        if (deviceShape) {
+        if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());
-        }
         break;
     }
-    case BuildingStruct::Type: {
-        BuildingStruct *buildingItem = dynamic_cast<BuildingStruct *>(item);
-        if (buildingItem) {
-            QRectF itemRect = value.toRectF();
-            buildingItem->setRect(itemRect);
-        }
+    case WallShape::Type: {
+        if (WallShape *wallShape = dynamic_cast<WallShape *>(item))
+            wallShape->setRect(value.toRectF());
+        break;
+    }
+    case DoorShape::Type: {
+        if (DoorShape *p_doorShape = dynamic_cast<DoorShape *>(item))
+            p_doorShape->setRect(value.toRectF());
+        break;
+    }
+    case WindowShape::Type: {
+        if (WindowShape *p_windowShape = dynamic_cast<WindowShape *>(item))
+            p_windowShape->setRect(value.toRectF());
+        break;
+    }
+    case OpenShape::Type: {
+        if (OpenShape *p_openShape = dynamic_cast<OpenShape *>(item))
+            p_openShape->setRect(value.toRectF());
+        break;
+    }
+    case StairwellShape::Type: {
+        if (StairwellShape *p_stairwellShape = dynamic_cast<StairwellShape *>(item))
+            p_stairwellShape->setRect(value.toRectF());
+        break;
+    }
+    case StairsShape::Type: {
+        if (StairsShape *p_stairsShape = dynamic_cast<StairsShape *>(item))
+            p_stairsShape->setRect(value.toRectF());
+        break;
     }
     default:
         break;

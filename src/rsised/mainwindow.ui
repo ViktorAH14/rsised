@@ -112,10 +112,17 @@
     <addaction name="separator"/>
     <addaction name="actionSelect_All"/>
    </widget>
+   <widget class="QMenu" name="menuSetting">
+    <property name="title">
+     <string>Setting</string>
+    </property>
+    <addaction name="actionWallSetting"/>
+   </widget>
    <addaction name="menuFail"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuDraw"/>
+   <addaction name="menuSetting"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -531,6 +538,14 @@
     <string>Alt+P</string>
    </property>
   </action>
+  <action name="actionWallSetting">
+   <property name="text">
+    <string>Walls</string>
+   </property>
+   <property name="toolTip">
+    <string>Show wall setting dialog</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resource.qrc"/>
@@ -652,7 +667,7 @@
    <sender>actionDeleteItem</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>deleteItem()</slot>
+   <slot>deleteShape()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -936,6 +951,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionWallSetting</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>showWallSettingDialog()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>830</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>drawPolyline()</slot>
@@ -943,7 +974,7 @@
   <slot>drawRect()</slot>
   <slot>drawEllipse()</slot>
   <slot>drawCurve()</slot>
-  <slot>deleteItem()</slot>
+  <slot>deleteShape()</slot>
   <slot>openSVG()</slot>
   <slot>saveSVG()</slot>
   <slot>saveAs()</slot>
@@ -963,5 +994,6 @@
   <slot>aboutQt()</slot>
   <slot>about()</slot>
   <slot>drawPie()</slot>
+  <slot>showWallSettingDialog()</slot>
  </slots>
 </ui>

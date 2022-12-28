@@ -25,9 +25,9 @@
 
 EllipseShape::EllipseShape(QGraphicsItem *parent)
     : AbstractShape(parent)
-    , m_ellipseRect(QRectF())
-    , m_startAngle(0)
-    , m_spanAngle(360 * 16)
+    , m_ellipseRect{QRectF()}
+    , m_startAngle{0}
+    , m_spanAngle{360 * 16}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
@@ -35,9 +35,9 @@ EllipseShape::EllipseShape(QGraphicsItem *parent)
 
 EllipseShape::EllipseShape(const QRectF &rect, QGraphicsItem *parent)
     : AbstractShape(parent)
-    , m_ellipseRect(rect)
-    , m_startAngle(0)
-    , m_spanAngle(360 *16)
+    , m_ellipseRect{rect}
+    , m_startAngle{0}
+    , m_spanAngle{360 *16}
 {
     setAcceptHoverEvents(true);
     setFlag(ItemSendsGeometryChanges, true);
@@ -45,27 +45,23 @@ EllipseShape::EllipseShape(const QRectF &rect, QGraphicsItem *parent)
 
 EllipseShape::EllipseShape(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent)
     : AbstractShape(parent)
-    , m_ellipseRect(QRectF(x, y, w, h))
-    , m_startAngle(0)
-    , m_spanAngle(360*16)
+    , m_ellipseRect{QRectF(x, y, w, h)}
+    , m_startAngle{0}
+    , m_spanAngle{360*16}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
 }
 
-EllipseShape::~EllipseShape()
-{
-
-}
-
 QRectF EllipseShape::boundingRect() const
 {
     QRectF  boundingRect;
-    qreal pw = pen().style() == Qt::NoPen ? qreal(0) : pen().widthF();
-    if (pw == 0.0 && m_spanAngle == 360 * 16)
+    qreal pw{pen().style() == Qt::NoPen ? qreal(0) : pen().widthF()};
+    if (pw == 0.0 && m_spanAngle == 360 * 16) {
         boundingRect = m_ellipseRect;
-    else
+    } else {
         boundingRect = shape().controlPointRect();
+    }
     return boundingRect;
 }
 
@@ -76,10 +72,11 @@ void EllipseShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     painter->setPen(pen());
     painter->setBrush(brush());
 
-    if ((m_spanAngle != 0) && (qAbs(m_spanAngle) % (360 * 16) == 0))
+    if ((m_spanAngle != 0) && (qAbs(m_spanAngle) % (360 * 16) == 0)) {
         painter->drawEllipse(m_ellipseRect);
-    else
+    } else {
         painter->drawPie(m_ellipseRect, m_startAngle, m_spanAngle);
+    }
 
     if (option->state & QStyle::State_Selected)
         highlightSelected(painter, option);
@@ -104,17 +101,17 @@ QPainterPath EllipseShape::shape() const
 
 bool EllipseShape::contains(const QPointF &point) const
 {
-    return QAbstractGraphicsShapeItem::contains(point);
+    return AbstractShape::contains(point);
 }
 
 bool EllipseShape::isObscuredBy(const QGraphicsItem *item) const
 {
-    return QAbstractGraphicsShapeItem::isObscuredBy(item);
+    return AbstractShape::isObscuredBy(item);
 }
 
 QPainterPath EllipseShape::opaqueArea() const
 {
-    return QAbstractGraphicsShapeItem::opaqueArea();
+    return AbstractShape::opaqueArea();
 }
 
 void EllipseShape::setRect(const QRectF &rect)

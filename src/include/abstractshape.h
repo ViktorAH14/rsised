@@ -22,20 +22,23 @@
 #define ABSTRACTSHAPE_H
 
 #include <QAbstractGraphicsShapeItem>
+#include <QMenu>
 
 class SizeGripShape;
 
-class AbstractShape : public QAbstractGraphicsShapeItem
+class AbstractShape : public QAbstractGraphicsShapeItem //TODO добавить brush и pen, и унаследоваться от QGraphicsItem
 {
 public:
-    AbstractShape(QGraphicsItem *parent = nullptr);
-    virtual ~AbstractShape();
 
     void scaleShape(const QRectF &newRect);
     void setMenu(QMenu *contextMenu);
     QMenu* menu() const;
+    void addActions(const QList<QAction *> &actions);
 
 protected:
+    explicit AbstractShape(QGraphicsItem *parent = nullptr);
+    virtual ~AbstractShape();
+
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
@@ -46,6 +49,8 @@ protected:
     QPainterPath shapeFromPath(const QPainterPath &path) const;
 
 private:
+     Q_DISABLE_COPY(AbstractShape)
+
     SizeGripShape *m_sizeGripItem;
     QMenu *m_contextMenu;
 };

@@ -23,7 +23,7 @@
 
 #include "../include/technicsshape.h"
 #include "../include/deviceshape.h"
-#include "../include/buildingstruct.h"
+#include "../include/buildingshape.h"
 
 #include <QGraphicsScene>
 #include <QObject>
@@ -53,19 +53,22 @@ public:
                     , InsertImage
                     , InsertTechnicsShape
                     , InsertDeviceShape
-                    , InsertBuildingStruct
+                    , InsertBuildingShape
                     , SelectItem };
 
-    explicit DiagramScene(QMenu *itemMenu, QObject *parent = nullptr);
+    explicit DiagramScene(QMenu *contextShapeMenu, QObject *parent = nullptr);
 
     bool isChanged();
     void setItemPen(const QColor &color, const qreal width, const Qt::PenStyle &penStyle);
     void setItemBrush(const QColor &color, const Qt::BrushStyle &brushStyle);
+    void setWallPen(const QColor &color, const int width);
+    void setWallHatching(const QColor &color, const Qt::BrushStyle &brushStyle);
+    void setWallHeight(const qreal &height);
     void setItemFont(const QFont &font , const QColor &textColor);
     void setSelectableItems(bool selectable);
     void setTechnicsShapeType(TechnicsShape::ShapeType type);
     void setDeviceShapeType(DeviceShape::ShapeType type);
-    void setBuildingStructShapeType(BuildingStruct::ShapeType type);
+    void setBuildingShapeType(BuildingShape::ShapeType type);
     void clearPie();
 
 public slots:
@@ -81,26 +84,31 @@ protected:
 
 private:
     TechnicsShape::ShapeType m_technicsShapeType;
-    TechnicsShape *technicsShape;
+    TechnicsShape *m_technicsShape;
+
     DeviceShape::ShapeType m_deviceShapeType;
-    DeviceShape *deviceShape;
-    BuildingStruct::ShapeType m_buildingStructType;
-    BuildingStruct *buildingStructItem;
+    DeviceShape *m_deviceShape;
+
+    BuildingShape::ShapeType m_buildingShapeType;
+    BuildingShape *m_buildingShape;
+
     RectShape   *m_rectShape;
-    PolylineShape    *polyline;
+    PolylineShape    *m_polyline;
     EllipseShape     *m_ellipseShape;
-    QGraphicsPathItem *tempPath;
-    Curve       *curve;
-    TextShape    *textItem;
-    PixmapShape  *pixmapItem;
-    QMenu       *m_itemMenu;
+    QGraphicsPathItem *m_tempPath;
+    Curve       *m_curve;
+    TextShape    *m_textItem;
+    PixmapShape  *m_pixmapItem;
+    QMenu       *m_contextShapeMenu;
     SceneMode   m_sceneMode;
-    QPen        itemPen;
-    QBrush      itemBrush;
-    QFont       itemFont;
-    QColor      fontColor;
-    QList<QPointF>  pathPoint;
-//    QPointF     startPoint; // NOTE Without this variable, a segmentation fault occurs???
+    QPen        m_shapePen;
+    QBrush      m_shapeBrush;
+    qreal       m_wallHeight;
+    QPen        m_wallPen;
+    QBrush      m_wallBrush;
+    QFont       m_shapeFont;
+    QColor      m_fontColor;
+    QList<QPointF>  m_pathPointList;
     bool        leftButtonPressed;
     bool        sceneChanged;
 };

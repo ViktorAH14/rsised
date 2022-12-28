@@ -36,11 +36,13 @@ public:
         virtual ~Resizer() = 0;
         virtual void operator()(QGraphicsItem *item, const QVariant &value) = 0;
     };
-    SizeGripShape(Resizer *resizer = nullptr, QGraphicsItem *parent = nullptr);
+
+    explicit SizeGripShape(Resizer *resizer = nullptr, QGraphicsItem *parent = nullptr);
     virtual ~SizeGripShape();
+
     QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-               QWidget *widget = 0) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,QWidget *widget) override;
+
     void setTopLeft(const QPointF &pos);
     void setTop(qreal y);
     void setTopRight(const QPointF &pos);
@@ -94,10 +96,10 @@ private:
     private:
         QPointF restrictPosition(const QPointF &newPos);
 
-        int handlePositionFlags;
-        SizeGripShape *parentItem;
-        bool leftButtonPressed;
-        int pathElementNum;
+        int m_handlePositionFlags;
+        SizeGripShape *m_parentItem;
+        bool m_leftButtonPressed;
+        int m_pathElementNum;
     };
 
     void doResize();
@@ -107,7 +109,7 @@ private:
     void setPieHandleItem();
 
     QList<HandleItem *> handleItemList;
-    Resizer *itemResizer;
+    Resizer *m_itemResizer;
     QRectF m_parentItemRect;
     QPainterPath m_parentPath;
     ActionType m_actionType;

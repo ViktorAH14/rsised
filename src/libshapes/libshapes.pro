@@ -15,7 +15,7 @@ CONFIG += c++17
 
 SOURCES += \
     abstractshape.cpp \
-    buildingstruct.cpp \
+    buildingshape.cpp \
     curve.cpp \
     deviceshape.cpp \
     ellipseshape.cpp \
@@ -29,7 +29,7 @@ SOURCES += \
 
 HEADERS += \
     ../include/abstractshape.h \
-    ../include/buildingstruct.h \
+    ../include/buildingshape.h \
     ../include/curve.h \
     ../include/deviceshape.h \
     ../include/ellipseshape.h \
@@ -40,6 +40,15 @@ HEADERS += \
     ../include/sizegripshape.h \
     ../include/technicsshape.h \
     ../include/textshape.h
+    
+TRANSLATIONS += \
+    ../rsised/i18n/libshapes_ru.ts
+
+system(lrelease "$$_PRO_FILE_")
+
+tr.commands = lupdate "$$_PRO_FILE_" && lrelease "$$_PRO_FILE_"
+PRE_TARGETDEPS += tr
+QMAKE_EXTRA_TARGETS += tr
 
 # Default rules for deployment.
 #unix {
@@ -51,3 +60,6 @@ win32 {
     QMAKE_TARGET_PRODUCT = libshapes
     QMAKE_TARGET_DESCRIPTION = Library for RSiSed
 }
+
+DISTFILES += \
+    ../../doc/dev/buildingShape/buildingshape.qmodel

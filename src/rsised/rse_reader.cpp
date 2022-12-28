@@ -27,11 +27,12 @@
 #include "../include/pixmapshape.h"
 #include "../include/technicsshape.h"
 #include "../include/deviceshape.h"
-#include "../include/buildingstruct.h"
+#include "../include/buildingshape.h"
 
 #include <QXmlStreamReader>
 #include <QPen>
 #include <QFont>
+#include <QScopedPointer>
 
 RseReader::RseReader(QMenu *itemMenu) : m_itemMenu{itemMenu}
 {
@@ -653,14 +654,14 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
 
                 itemList.append(deviceShape);
             }
-            if (rseItemReader.name() == "building_item") {
+            if (rseItemReader.name() == "building_shape") {
                 qreal x {0.0};
                 qreal y {0.0};
                 qreal itemLeft {0.0};
                 qreal itemTop {0.0};
                 qreal width {0.0};
                 qreal height {0.0};
-                BuildingStruct::ShapeType shapeType = BuildingStruct::Wall;
+                BuildingShape::ShapeType shapeType = BuildingShape::Wall;
                 qreal zValue {0.0};
                 qreal m11 {0.0};
                 qreal m12 {0.0};
@@ -671,6 +672,10 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 qreal m31 {0.0};
                 qreal m32 {0.0};
                 qreal m33 {0.0};
+                QPen itemPen;
+                QBrush itemBrush;
+                DoorShape::DoorState doorState{DoorShape::Open};
+                DoorShape::LeafPosition leafPosition{DoorShape::Right};
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
                 for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
                     if (attr.name() == "x") {
@@ -691,8 +696,20 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     if (attr.name() == "height") {
                         height = attr.value().toFloat();
                     }
+                    if (attr.name() == "pen-color") {
+                        itemPen.setColor(attr.value().toString());
+                    }
+                    if (attr.name() == "pen-width") {
+                        itemPen.setWidth(attr.value().toInt());
+                    }
+                    if (attr.name() == "brush-color") {
+                        itemBrush.setColor(attr.value().toString());
+                    }
+                    if (attr.name() == "brush-style") {
+                        itemBrush.setStyle(Qt::BrushStyle(attr.value().toInt()));
+                    }
                     if (attr.name() == "shape_type") {
-                        shapeType = BuildingStruct::ShapeType(attr.value().toInt());
+                        shapeType = BuildingShape::ShapeType(attr.value().toInt());
                     }
                     if (attr.name() == "z") {
                         zValue = attr.value().toFloat();
@@ -705,21 +722,32 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         m21 = transList.at(3).toFloat();
                         m22 = transList.at(4).toFloat();
                         m23 = transList.at(5).toFloat();
-//                        m31 = transList.at(6).toFloat(); происходит смещение относительно начального положения
-//                        m32 = transList.at(7).toFloat();
-                        m33 = transList.at(8).toFloat();
+                        m33 = transList.at(6).toFloat();
+                    }
+                    if (shapeType == BuildingShape::Door) {
+                        if (attr.name() == "door-state") {
+                            doorState = DoorShape::DoorState(attr.value().toInt());
+                        }
+                        if (attr.name() == "leaf-position") {
+                            leafPosition = DoorShape::LeafPosition(attr.value().toInt());
+                        }
                     }
                 }
-
-                BuildingStruct *deviceShapeItem = new BuildingStruct(shapeType);
-                deviceShapeItem->setMenu(m_itemMenu);
-                deviceShapeItem->setPos(QPointF(x, y));
-                deviceShapeItem->setRect(QRectF(itemLeft, itemTop, width, height));
-                deviceShapeItem->setZValue(zValue);
+                BuildingShape *buildingShape = BuildingShape::createBuildingShape(shapeType);
+                buildingShape->setMenu(m_itemMenu);
+                buildingShape->setPos(QPointF(x, y));
+                buildingShape->setRect(QRectF(itemLeft, itemTop, width, height));
+                buildingShape->setPen(itemPen);
+                buildingShape->setBrush(itemBrush);
+                buildingShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
-                deviceShapeItem->setTransform(trans);
+                buildingShape->setTransform(trans);
+                if (DoorShape *p_doorShape = dynamic_cast<DoorShape *>(buildingShape)) {
+                    p_doorShape->setDoorState(doorState);
+                    p_doorShape->setLeafPosition(leafPosition);
+                }
 
-                itemList.append(deviceShapeItem);
+                itemList.append(buildingShape);
             }
         }
         rseItemReader.readNext();

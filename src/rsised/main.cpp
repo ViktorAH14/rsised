@@ -30,6 +30,9 @@ int main(int argc, char *argv[])
     QTranslator rsisedTranslator;
     if (rsisedTranslator.load(QString(":/i18n/rsised_" + QLocale::system().name())))
         rsised.installTranslator(&rsisedTranslator);
+    QTranslator libshapesTranslator;
+    if (libshapesTranslator.load(QString(":/i18n/libshapes_" + QLocale::system().name())))
+        rsised.installTranslator(&libshapesTranslator);
 
     MainWindow mainwindow;
     mainwindow.show();

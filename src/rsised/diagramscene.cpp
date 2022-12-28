@@ -31,25 +31,29 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
 #include <QGraphicsPixmapItem>
-#include <QToolTip>
 
-DiagramScene::DiagramScene(QMenu *itemMenu, QObject *parent)
+DiagramScene::DiagramScene(QMenu *contextShapeMenu, QObject *parent)
     : QGraphicsScene(parent)
     , m_technicsShapeType{TechnicsShape::Base}
-    , technicsShape{nullptr}
+    , m_technicsShape{nullptr}
     , m_deviceShapeType{DeviceShape::Barrel_0}
-    , deviceShape{nullptr}
-    , m_buildingStructType{BuildingStruct::Wall}
-    , buildingStructItem{nullptr}
+    , m_deviceShape{nullptr}
+    , m_buildingShapeType{BuildingShape::Wall}
+    , m_buildingShape{nullptr}
     , m_rectShape{nullptr}
-    , polyline{nullptr}
+    , m_polyline{nullptr}
     , m_ellipseShape{nullptr}
-    , tempPath{nullptr}
-    , curve{nullptr}
-    , textItem{nullptr}
-    , pixmapItem{nullptr}
-    , m_itemMenu{itemMenu}
+    , m_tempPath{nullptr}
+    , m_curve{nullptr}
+    , m_textItem{nullptr}
+    , m_pixmapItem{nullptr}
+    , m_contextShapeMenu{contextShapeMenu}
     , m_sceneMode{SelectItem}
+    , m_shapePen{Qt::black, 1}
+    , m_shapeBrush{Qt::white}
+    , m_wallHeight{10}
+    , m_wallPen{Qt::black, 1}
+    , m_wallBrush{Qt::lightGray}
     , leftButtonPressed{false}
     , sceneChanged(false)
 {
@@ -76,27 +80,27 @@ void DiagramScene::setSelectableItems(bool selectable)
 
 void DiagramScene::setItemPen(const QColor &color, const qreal width, const Qt::PenStyle &penStyle)
 {
-    itemPen.setColor(color);
-    itemPen.setWidth(width);
-    itemPen.setStyle(penStyle);
+    m_shapePen.setColor(color);
+    m_shapePen.setWidth(width);
+    m_shapePen.setStyle(penStyle);
 
     if (!selectedItems().isEmpty()){
-        QList<QGraphicsItem *> selectedItems = this->selectedItems();
-        for (QGraphicsItem *item : qAsConst(selectedItems)) {
+        QList<QGraphicsItem *> selectedShapeList = selectedItems();
+        for (QGraphicsItem *item : qAsConst(selectedShapeList)) {
             if (QGraphicsLineItem *lineItem = qgraphicsitem_cast<QGraphicsLineItem *>(item)) {
-                lineItem->setPen(itemPen);
+                lineItem->setPen(m_shapePen);
             }
             if (RectShape *rectshape = qgraphicsitem_cast<RectShape *>(item)) {
-                rectshape->setPen(itemPen);
+                rectshape->setPen(m_shapePen);
             }
             if (EllipseShape *ellipseShape = qgraphicsitem_cast<EllipseShape *>(item)) {
-                ellipseShape->setPen(itemPen);
+                ellipseShape->setPen(m_shapePen);
             }
             if (PolylineShape *polylineShape = qgraphicsitem_cast<PolylineShape *>(item)) {
-                polylineShape->setPen(itemPen);
+                polylineShape->setPen(m_shapePen);
             }
             if (Curve *curveShape = qgraphicsitem_cast<Curve *>(item)) {
-                curveShape->setPen(itemPen);
+                curveShape->setPen(m_shapePen);
             }
         }
     }
@@ -104,17 +108,58 @@ void DiagramScene::setItemPen(const QColor &color, const qreal width, const Qt::
 
 void DiagramScene::setItemBrush(const QColor &color, const Qt::BrushStyle &brushStyle)
 {
-    itemBrush.setColor(color);
-    itemBrush.setStyle(brushStyle);
+    m_shapeBrush.setColor(color);
+    m_shapeBrush.setStyle(brushStyle);
 
     if (!selectedItems().isEmpty()) {
         QList<QGraphicsItem *> selectedItems = this->selectedItems();
         for (QGraphicsItem *item : qAsConst(selectedItems)) {
             if (RectShape *rectShape = qgraphicsitem_cast<RectShape *>(item)) {
-                rectShape->setBrush(itemBrush);
+                rectShape->setBrush(m_shapeBrush);
             }
             if (EllipseShape *ellipseShape = qgraphicsitem_cast<EllipseShape *>(item)) {
-                ellipseShape->setBrush(itemBrush);
+                ellipseShape->setBrush(m_shapeBrush);
+            }
+        }
+    }
+}
+
+void DiagramScene::setWallPen(const QColor &color, const int width)
+{
+    m_wallPen.setColor(color);
+    m_wallPen.setWidth(width);
+    if (!selectedItems().isEmpty()) {
+        QList<QGraphicsItem *> selectedShapeList = selectedItems();
+        for (QGraphicsItem *p_shape : qAsConst(selectedShapeList)) {
+            if (WallShape *wallShape = qgraphicsitem_cast<WallShape *>(p_shape)) {
+                wallShape->setPen(m_wallPen);
+            }
+        }
+    }
+}
+
+void DiagramScene::setWallHatching(const QColor &color, const Qt::BrushStyle &brushStyle)
+{
+    m_wallBrush.setColor(color);
+    m_wallBrush.setStyle(brushStyle);
+    if (!selectedItems().isEmpty()) {
+        QList<QGraphicsItem *> selectedShapeList = selectedItems();
+        for (QGraphicsItem *p_shape : qAsConst(selectedShapeList)) {
+            if (WallShape *wallShape = qgraphicsitem_cast<WallShape *>(p_shape)) {
+                wallShape->setBrush(m_wallBrush);
+            }
+        }
+    }
+}
+
+void DiagramScene::setWallHeight(const qreal &height)
+{
+    m_wallHeight = height;
+    if (!selectedItems().isEmpty()) {
+        QList<QGraphicsItem *> selectedShapeList = selectedItems();
+        for (QGraphicsItem *p_shape : qAsConst(selectedShapeList)) {
+            if (WallShape *wallShape = qgraphicsitem_cast<WallShape *>(p_shape)) {
+                wallShape->setHeight(height);
             }
         }
     }
@@ -122,15 +167,15 @@ void DiagramScene::setItemBrush(const QColor &color, const Qt::BrushStyle &brush
 
 void DiagramScene::setItemFont(const QFont &font, const QColor &textColor)
 {
-    itemFont = font;
-    fontColor = textColor;
+    m_shapeFont = font;
+    m_fontColor = textColor;
 
     if (!selectedItems().isEmpty()) {
         QList<QGraphicsItem *> selectedItems = this->selectedItems();
         for (QGraphicsItem *item : qAsConst(selectedItems)) {
             if (TextShape *textShape = qgraphicsitem_cast<TextShape *>(item)) {
-                textShape->setFont(itemFont);
-                textShape->setDefaultTextColor(fontColor);
+                textShape->setFont(m_shapeFont);
+                textShape->setDefaultTextColor(m_fontColor);
             }
         }
     }
@@ -161,37 +206,37 @@ void DiagramScene::setDeviceShapeType(DeviceShape::ShapeType type)
     m_deviceShapeType = type;
 }
 
-void DiagramScene::setBuildingStructShapeType(BuildingStruct::ShapeType type)
+void DiagramScene::setBuildingShapeType(BuildingShape::ShapeType type)
 {
-    m_buildingStructType = type;
+    m_buildingShapeType = type;
 }
 
 void DiagramScene::clearPie()
 {
-    removeItem(tempPath);
-    tempPath = nullptr;
-    pathPoint.clear();
+    removeItem(m_tempPath);
+    m_tempPath = nullptr;
+    m_pathPointList.clear();
     m_ellipseShape = nullptr;
 }
 
 void DiagramScene::insertPixmap(const QString &imageFile)
 {
-    pixmapItem = new PixmapShape();
+    m_pixmapItem = new PixmapShape();
     QPixmap image(imageFile);
-    pixmapItem->setPixmap(image);
-    pixmapItem->setZValue(-1000.0);
-    addItem(pixmapItem);
+    m_pixmapItem->setPixmap(image);
+    m_pixmapItem->setZValue(-1000.0);
+    addItem(m_pixmapItem);
 }
 
 void DiagramScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (m_sceneMode == InsertPolyline) {
-        polyline = nullptr;
-        pathPoint.clear();
+        m_polyline = nullptr;
+        m_pathPointList.clear();
     }
     if (m_sceneMode == InsertCurve) {
-        curve = nullptr;
-        pathPoint.clear();
+        m_curve = nullptr;
+        m_pathPointList.clear();
     }
 
     QGraphicsScene::mouseDoubleClickEvent(mouseEvent);
@@ -203,72 +248,75 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         leftButtonPressed = true;
         switch (m_sceneMode) {
         case InsertPolyline:
-            pathPoint.append(mouseEvent->scenePos());
-            if (polyline == nullptr) {
-                polyline = new PolylineShape(m_itemMenu);
-                addItem(polyline);
+            m_pathPointList.append(mouseEvent->scenePos());
+            if (m_polyline == nullptr) {
+                m_polyline = new PolylineShape(m_contextShapeMenu);
+                addItem(m_polyline);
             }
             break;
         case InsertRectShape:
             m_rectShape = new RectShape(QRectF(mouseEvent->scenePos(), mouseEvent->scenePos()));
-            m_rectShape->setMenu(m_itemMenu);
+            m_rectShape->setMenu(m_contextShapeMenu);
             addItem(m_rectShape);
             break;
         case InsertEllipse:
             m_ellipseShape = new EllipseShape(QRectF(mouseEvent->scenePos()
                                                      , mouseEvent->scenePos()));
-            m_ellipseShape->setMenu(m_itemMenu);
+            m_ellipseShape->setMenu(m_contextShapeMenu);
             addItem(m_ellipseShape);
             break;
         case InsertPie:
             if (m_ellipseShape == nullptr) {
                 m_ellipseShape = new EllipseShape(QRectF(mouseEvent->scenePos()
                                                          , mouseEvent->scenePos()));
-                m_ellipseShape->setMenu(m_itemMenu);
+                m_ellipseShape->setMenu(m_contextShapeMenu);
                 m_ellipseShape->setPen(QPen(Qt::black, 0, Qt::DashLine));
                 addItem(m_ellipseShape);
-                tempPath = new QGraphicsPathItem();
-                addItem(tempPath);
+                m_tempPath = new QGraphicsPathItem(); //FIXME 4,616 (16 direct, 4,600 indirect) bytes in 1 blocks are definitely lost in loss record 1,627 of 1,645
+                addItem(m_tempPath);
             }
             break;
         case InsertCurve:
-            pathPoint.append(mouseEvent->scenePos());
-            if (curve == nullptr) {
-                curve = new Curve(m_itemMenu);
-                addItem(curve);
+            m_pathPointList.append(mouseEvent->scenePos());
+            if (m_curve == nullptr) {
+                m_curve = new Curve(m_contextShapeMenu);
+                addItem(m_curve);
             }
             break;
         case InserText: // TODO добавить editorLostFocus(TextItem *textItem); утечка памяти???
-            textItem = new TextShape(m_itemMenu);
-            textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
-            textItem->setPos(mouseEvent->scenePos());
-            textItem->setFont(itemFont);
-            textItem->setDefaultTextColor(fontColor);
-            textItem->setZValue(1000.0);
-            addItem(textItem);
+            m_textItem = new TextShape(m_contextShapeMenu);
+            m_textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_textItem->setPos(mouseEvent->scenePos());
+            m_textItem->setFont(m_shapeFont);
+            m_textItem->setDefaultTextColor(m_fontColor);
+            m_textItem->setZValue(1000.0);
+            addItem(m_textItem);
             break;
         case InsertTechnicsShape:
-            technicsShape = new TechnicsShape(m_technicsShapeType);
-            technicsShape->setMenu(m_itemMenu);
-            technicsShape->setPos(mouseEvent->scenePos());
-            addItem(technicsShape);
+            m_technicsShape = new TechnicsShape(m_technicsShapeType);
+            m_technicsShape->setMenu(m_contextShapeMenu);
+            m_technicsShape->setPos(mouseEvent->scenePos());
+            addItem(m_technicsShape);
             break;
         case InsertDeviceShape:
-            deviceShape = new DeviceShape(m_deviceShapeType);
-            deviceShape->setMenu(m_itemMenu);
-            deviceShape->setPos(mouseEvent->scenePos());
-            addItem(deviceShape);
+            m_deviceShape = new DeviceShape(m_deviceShapeType);
+            m_deviceShape->setMenu(m_contextShapeMenu);
+            m_deviceShape->setPos(mouseEvent->scenePos());
+            addItem(m_deviceShape);
             break;
-        case InsertBuildingStruct:
-            buildingStructItem = new BuildingStruct(m_buildingStructType);
-            buildingStructItem->setMenu(m_itemMenu);
-            buildingStructItem->setPos(mouseEvent->scenePos());
-            if (m_buildingStructType == BuildingStruct::Wall) {
-                buildingStructItem->setZValue(900.0);
+        case InsertBuildingShape:
+            m_buildingShape = BuildingShape::createBuildingShape(m_buildingShapeType);
+            m_buildingShape->setMenu(m_contextShapeMenu);
+            m_buildingShape->setPos(mouseEvent->scenePos());
+            if (m_buildingShapeType == BuildingShape::Wall) {
+                m_buildingShape->setPen(m_wallPen);
+                m_buildingShape->setBrush(m_wallBrush);
+                m_buildingShape->setHeight(m_wallHeight);
+                m_buildingShape->setZValue(900.0);
             } else {
-                buildingStructItem->setZValue(950.0);
+                m_buildingShape->setZValue(950.0);
             }
-            addItem(buildingStructItem);
+            addItem(m_buildingShape);
             break;
         default:
             break;
@@ -287,8 +335,8 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
             m_rectShape->setRect(( dx > 0 ) ? m_rectShape->rect().left() : mouseEvent->scenePos().x(),
                            ( dy > 0 ) ? m_rectShape->rect().top() : mouseEvent->scenePos().y(),
                            qAbs( dx ), qAbs( dy ));
-            m_rectShape->setPen(itemPen);
-            m_rectShape->setBrush(itemBrush);
+            m_rectShape->setPen(m_shapePen);
+            m_rectShape->setBrush(m_shapeBrush);
         }
         if ((m_sceneMode == InsertEllipse) && (m_ellipseShape != nullptr)) {
             qreal dx = mouseEvent->scenePos().x() - m_ellipseShape->rect().x();
@@ -297,8 +345,8 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
                               (dy > 0) ? m_ellipseShape->rect().y() : mouseEvent->scenePos().y(),
                               qAbs( dx ), qAbs( dy ) );
 
-            m_ellipseShape->setPen(itemPen);
-            m_ellipseShape->setBrush(itemBrush);
+            m_ellipseShape->setPen(m_shapePen);
+            m_ellipseShape->setBrush(m_shapeBrush);
         }
         if ((m_sceneMode == InsertPie) && (m_ellipseShape != nullptr)) {
                 QPointF center = m_ellipseShape->rect().center();
@@ -313,43 +361,43 @@ void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 QPainterPath tempPiePath;
                 tempPiePath.moveTo(center);
                 tempPiePath.lineTo(mouseEvent->scenePos());
-                tempPath->setPath(tempPiePath);
+                m_tempPath->setPath(tempPiePath);
         }
     } else {
         if ((m_sceneMode == InsertPie) && (m_ellipseShape != nullptr)) {
             QPainterPath tempPiePath;
             QPointF center = m_ellipseShape->rect().center();
             tempPiePath.moveTo(center);
-            tempPiePath.lineTo(pathPoint.constFirst());
-            QLineF startRadius(center, pathPoint.constFirst());
+            tempPiePath.lineTo(m_pathPointList.constFirst());
+            QLineF startRadius(center, m_pathPointList.constFirst());
             QLineF spanRadius(center, mouseEvent->scenePos());
             qreal startAngle = startRadius.angle();
             qreal spanAngle = startRadius.angleTo(spanRadius);
             tempPiePath.arcTo(m_ellipseShape->rect(), startAngle, spanAngle);
             tempPiePath.lineTo(center);
-            tempPath->setPath(tempPiePath);
-            tempPath->setPen(QPen(Qt::black, 1));
-            tempPath->setBrush(QBrush(Qt::lightGray));
+            m_tempPath->setPath(tempPiePath);
+            m_tempPath->setPen(QPen(Qt::black, 1));
+            m_tempPath->setBrush(QBrush(Qt::lightGray));
         }
-        if (m_sceneMode == InsertCurve && (curve != nullptr)) {
+        if (m_sceneMode == InsertCurve && (m_curve != nullptr)) {
             QPainterPath newPath;
-            newPath.moveTo(pathPoint.at(0));
-            for (int i = 2; i < pathPoint.count(); i += 2) {
-                newPath.quadTo(pathPoint.at(i - 1), pathPoint.at(i));
+            newPath.moveTo(m_pathPointList.at(0));
+            for (int i = 2; i < m_pathPointList.count(); i += 2) {
+                newPath.quadTo(m_pathPointList.at(i - 1), m_pathPointList.at(i));
             }
-            newPath.quadTo(pathPoint.back(), mouseEvent->scenePos());
-            curve->setPath(newPath);
-            curve->setPen(itemPen);
+            newPath.quadTo(m_pathPointList.back(), mouseEvent->scenePos());
+            m_curve->setPath(newPath);
+            m_curve->setPen(m_shapePen);
         }
-        if ((m_sceneMode == InsertPolyline) && (polyline != nullptr)) {
+        if ((m_sceneMode == InsertPolyline) && (m_polyline != nullptr)) {
             QPainterPath newPath;
-            newPath.moveTo(pathPoint.at(0));
-            for (int i = 1; i < pathPoint.count(); i++) {
-                newPath.lineTo(pathPoint.at(i));
+            newPath.moveTo(m_pathPointList.at(0));
+            for (int i = 1; i < m_pathPointList.count(); i++) {
+                newPath.lineTo(m_pathPointList.at(i));
             }
             newPath.lineTo(mouseEvent->scenePos());
-            polyline->setPath(newPath);
-            polyline->setPen(itemPen);
+            m_polyline->setPath(newPath);
+            m_polyline->setPen(m_shapePen);
         }
     }
 
@@ -370,19 +418,19 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     case InsertPie:
         if (m_ellipseShape != nullptr) {
             QPointF center = m_ellipseShape->rect().center();
-            if (pathPoint.isEmpty()) {
-                pathPoint.append(mouseEvent->scenePos());
-                QLineF ellipseStartRadius(center, pathPoint.constFirst());
+            if (m_pathPointList.isEmpty()) {
+                m_pathPointList.append(mouseEvent->scenePos());
+                QLineF ellipseStartRadius(center, m_pathPointList.constFirst());
                 qreal startAngle = ellipseStartRadius.angle();
                 m_ellipseShape->setStartAngle(startAngle * 16);
             } else {
-                pathPoint.append(mouseEvent->scenePos());
-                QLineF ellipseStartRadius(center, pathPoint.constFirst());
-                QLineF ellipseSpanRadius(center, pathPoint.constLast());
+                m_pathPointList.append(mouseEvent->scenePos());
+                QLineF ellipseStartRadius(center, m_pathPointList.constFirst());
+                QLineF ellipseSpanRadius(center, m_pathPointList.constLast());
                 qreal spanAngle = ellipseStartRadius.angleTo(ellipseSpanRadius);
                 m_ellipseShape->setSpanAngle(spanAngle * 16);
-                m_ellipseShape->setPen(itemPen);
-                m_ellipseShape->setBrush(itemBrush);
+                m_ellipseShape->setPen(m_shapePen);
+                m_ellipseShape->setBrush(m_shapeBrush);
                 clearPie();
             }
         }
@@ -390,13 +438,13 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     case InsertCurve:
         break;
     case InsertTechnicsShape:
-        technicsShape = nullptr;
+        m_technicsShape = nullptr;
         break;
     case InsertDeviceShape:
-        deviceShape = nullptr;
+        m_deviceShape = nullptr;
         break;
-    case InsertBuildingStruct:
-        buildingStructItem = nullptr;
+    case InsertBuildingShape:
+        m_buildingShape = nullptr;
         break;
     default:
         break;

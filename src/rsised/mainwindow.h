@@ -23,7 +23,7 @@
 
 #include "diagramscene.h"
 #include "../include/technicsshape.h"
-#include "../include/buildingstruct.h"
+#include "../include/buildingshape.h"
 #include "../include/deviceshape.h"
 
 #include <QMainWindow>
@@ -45,7 +45,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 protected:
@@ -64,7 +64,7 @@ private slots:
     bool saveSVG();
     void print();
     void insertImage();
-    void deleteItem();
+    void deleteShape();
     void selectAll();
     void sceneZoomInOut();
     void sceneScaleChanged(const QString &scale);
@@ -85,7 +85,7 @@ private slots:
 // Shapes
     void insertTechnicsShape(QAbstractButton *button);
     void insertDeviceShape(QAbstractButton *button);
-    void insertBuildingStructShape(QAbstractButton *button);
+    void insertBuildingShape(QAbstractButton *button);
 
 // Style toolbar
     void changedItemPen();
@@ -93,6 +93,9 @@ private slots:
 
 // Font style toolbar
     void changedFont();
+
+// Wall setting
+    bool showWallSettingDialog();
 
 private:
     void createShapeToolBox();
@@ -105,7 +108,7 @@ private:
     void createSceneScaleToolBar();
     QWidget *createTechnicsCellWidget(const QString &text, TechnicsShape::ShapeType type);
     QWidget *createDeviceCellWidget(const QString &text, DeviceShape::ShapeType type);
-    QWidget *createBuildingStructCellWidget(const QString &text, BuildingStruct::ShapeType type);
+    QWidget *createBuildingShapeCellWidget(const QString &text, BuildingShape::ShapeType type);
 
     void loadFile(const QString &fileName);
     bool maybeSave();
@@ -113,38 +116,45 @@ private:
     void setCurrentFile(const QString &fileName);
 
     Ui::MainWindow *ui;
-    DiagramScene *scene;
+    DiagramScene *m_scene;
+    QMenu *m_contextMenu;
 
-    QString currentFile;
-    QString imagePath;
-    QList<QGraphicsItem *> copyList;
+    QString m_currentFile;
+    QString m_imagePath;
+    QList<QGraphicsItem *> m_copyList;
 
-    QToolBar *styleToolBar;
-    QToolBar *textStyleToolBar;
-    QToolBar *sceneScaleToolBar;
+    QToolBar *m_styleToolBar;
+    QToolBar *m_textStyleToolBar;
+    QToolBar *m_sceneScaleToolBar;
 
-    QAction *boldAction;
-    QAction *italicAction;
-    QAction *underLineAction;
-    QAction *sceneScaleMinAction;
-    QAction *sceneScaleMaxAction;
-    QActionGroup *simpleDrawModeActionGr;
+    QAction *m_boldAction;
+    QAction *m_italicAction;
+    QAction *m_underLineAction;
 
-    QComboBox *penStyleCombo;
-    QComboBox *penSizeCombo;
-    QComboBox *brushStyleCombo;
-    QFont currentFont;
-    QFontComboBox *fontCombo;
-    QComboBox *fontSizeCombo;
-    QComboBox *sceneScaleCombo;
+    QAction *m_sceneScaleMinAction;
+    QAction *m_sceneScaleMaxAction;
+    QActionGroup *m_simpleDrawModeActionGr;
 
-    KColorButton *penColorButton;
-    KColorButton *brushColorButton;
-    KColorButton *textColorButton;
+    QComboBox *m_penStyleCombo;
+    QComboBox *m_penSizeCombo;
+    QComboBox *m_brushStyleCombo;
+    QFont m_currentFont;
+    QFontComboBox *m_fontCombo;
+    QComboBox *m_fontSizeCombo;
+    QComboBox *m_sceneScaleCombo;
 
-    QToolBox *shapeToolBox;
-    QButtonGroup *technicsButtonGroup;
-    QButtonGroup *deviceButtonGroup;
-    QButtonGroup *buildingStructButtonGroup;
+    KColorButton *m_penColorButton;
+    KColorButton *m_brushColorButton;
+    KColorButton *m_textColorButton;
+
+    QToolBox *m_shapeToolBox;
+    QButtonGroup *m_technicsButtonGroup;
+    QButtonGroup *m_deviceButtonGroup;
+    QButtonGroup *m_buildingShapeButtonGroup;
+
+    // Wall setting
+    QPen m_wallPen;
+    QBrush m_wallBrush;
+    qreal m_wallHeight;
 };
 #endif // MAINWINDOW_H
