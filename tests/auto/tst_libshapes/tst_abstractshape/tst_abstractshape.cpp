@@ -53,7 +53,6 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override
     {
         Q_UNUSED(widget);
-//        Q_UNUSED(option);
 
         painter->setPen(pen());
         painter->setBrush(brush());
@@ -83,6 +82,7 @@ public:
     }
 private slots:
     void init();
+    void pen();
     void itemChange();
     void cleanup();
 
@@ -95,6 +95,16 @@ private:
 void tst_AbstractShape::init()
 {
     p_abstractShapeTester = new AbstractShapeTester();
+}
+
+void tst_AbstractShape::pen()
+{
+    p_abstractShapeTester->setPen(QPen(Qt::black));
+    QCOMPARE(QPen(Qt::black), p_abstractShapeTester->pen());
+    p_abstractShapeTester->setPen(QPen(Qt::red));
+    QCOMPARE(QPen(Qt::red), p_abstractShapeTester->pen());
+    p_abstractShapeTester->setPen(QPen(Qt::white));
+    QCOMPARE(QPen(Qt::white), p_abstractShapeTester->pen());
 }
 
 void tst_AbstractShape::itemChange()
