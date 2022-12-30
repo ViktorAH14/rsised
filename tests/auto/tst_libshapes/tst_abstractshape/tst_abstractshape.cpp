@@ -83,6 +83,7 @@ public:
 private slots:
     void init();
     void pen();
+    void brush();
     void itemChange();
     void cleanup();
 
@@ -100,11 +101,21 @@ void tst_AbstractShape::init()
 void tst_AbstractShape::pen()
 {
     p_abstractShapeTester->setPen(QPen(Qt::black));
-    QCOMPARE(QPen(Qt::black), p_abstractShapeTester->pen());
+    QCOMPARE(p_abstractShapeTester->pen(), QPen(Qt::black));
     p_abstractShapeTester->setPen(QPen(Qt::red));
-    QCOMPARE(QPen(Qt::red), p_abstractShapeTester->pen());
+    QCOMPARE( p_abstractShapeTester->pen(), QPen(Qt::red));
     p_abstractShapeTester->setPen(QPen(Qt::white));
-    QCOMPARE(QPen(Qt::white), p_abstractShapeTester->pen());
+    QCOMPARE(p_abstractShapeTester->pen(), QPen(Qt::white));
+}
+
+void tst_AbstractShape::brush()
+{
+    p_abstractShapeTester->setBrush(QBrush(Qt::black));
+    QCOMPARE(p_abstractShapeTester->brush(), QBrush(Qt::black));
+    p_abstractShapeTester->setBrush(QBrush(Qt::red, Qt::CrossPattern));
+    QCOMPARE(p_abstractShapeTester->brush(), QBrush(Qt::red, Qt::CrossPattern));
+    p_abstractShapeTester->setBrush(QBrush(Qt::white, Qt::NoBrush));
+    QCOMPARE(p_abstractShapeTester->brush(), QBrush(Qt::white, Qt::NoBrush));
 }
 
 void tst_AbstractShape::itemChange()
