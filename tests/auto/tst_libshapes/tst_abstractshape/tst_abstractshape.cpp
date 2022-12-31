@@ -27,6 +27,53 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsView> //Проверить необходимость
 
+static void sendMousePress(QGraphicsScene *scene, const QPointF &point
+                           , Qt::MouseButton button = Qt::LeftButton
+                            , Qt::KeyboardModifier modifier = Qt::NoModifier)
+{
+    QGraphicsSceneMouseEvent event(QEvent::GraphicsSceneMousePress);
+    event.setScenePos(point);
+    event.setButton(button);
+    event.setButtons(button);
+    event.setModifiers(modifier);
+    QApplication::sendEvent(scene, &event);
+}
+
+static void sendMouseMove(QGraphicsScene *scene, const QPointF &point,
+                          Qt::MouseButton button = Qt::NoButton)
+{
+    QGraphicsSceneMouseEvent event(QEvent::GraphicsSceneMouseMove);
+    event.setScenePos(point);
+    event.setButton(button);
+    event.setButtons(button);
+    QApplication::sendEvent(scene, &event);
+}
+
+//static void sendMouseRelease(QGraphicsScene *scene, const QPointF &point
+//                             , Qt::MouseButton button = Qt::LeftButton)
+//{
+//    QGraphicsSceneMouseEvent event(QEvent::GraphicsSceneMouseRelease);
+//    event.setScenePos(point);
+//    event.setButton(button);
+//    QApplication::sendEvent(scene, &event);
+//}
+//static void sendMouseClick(QGraphicsScene *scene, const QPointF &point
+//                           , Qt::MouseButton button = Qt::LeftButton
+//        , Qt::KeyboardModifier modifier = Qt::NoModifier)
+//{
+//    sendMousePress(scene, point, button, modifier);
+//    sendMouseRelease(scene, point);
+//}
+
+//static void sendMouseWheel(QGraphicsScene *scene, const QPointF &point, int delta)
+//{
+//    QGraphicsSceneWheelEvent wheelEvent(QEvent::GraphicsSceneWheel);
+//    wheelEvent.setScenePos(point);
+//    wheelEvent.setDelta(delta);
+//    QApplication::sendEvent(scene, &wheelEvent);
+//}
+
+
 class AbstractShapeTester : public AbstractShape
 {
 public:
@@ -106,6 +153,7 @@ private slots:
     void menu();
     void addActions();
     void mouseDoubleClickEvent();
+    void mouseMoveEvent();
     void itemChange();
     void cleanup();
 
@@ -271,6 +319,38 @@ void tst_AbstractShape::mouseDoubleClickEvent()
     QCOMPARE(itemVisible, 8);
 
     scene.removeItem(p_abstractShapeTester);
+}
+
+void tst_AbstractShape::mouseMoveEvent()
+{
+    QGraphicsScene scene;
+    p_abstractShapeTester->setRect(QRectF(-10.0, -10.0, 20.0, 20.0));
+    scene.addItem(p_abstractShapeTester);
+
+    sendMousePress(&scene, p_abstractShapeTester->pos());
+    QGraphicsSceneMouseEvent mouseMoveEvent(QEvent::GraphicsSceneMouseMove);
+    mouseMoveEvent.setScenePos(p_abstractShapeTester->pos());
+    mouseMoveEvent.setButton(Qt::LeftButton);
+    QApplication::sendEvent(&scene, &mouseMoveEvent);
+    QVERIFY(mouseMoveEvent.isAccepted());
+
+    sendMousePress(&scene, p_abstractShapeTester->pos());
+    sendMouseMove(&scene, QPointF(50.0, -50.0), Qt::LeftButton);
+    QCOMPARE(p_abstractShapeTester->pos(), QPointF(50.0, -50.0));
+
+    AbstractShapeTester *p_abstractShapeTester2 = new AbstractShapeTester();
+    p_abstractShapeTester2->setRect(QRectF(-50.0, -50.0, 30.0, 25.0));
+    p_abstractShapeTester2->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    scene.addItem(p_abstractShapeTester2);
+    p_abstractShapeTester2->setSelected(true);
+
+    sendMousePress(&scene, p_abstractShapeTester2->pos());
+    sendMouseMove(&scene, QPointF(20.0, 20.0), Qt::LeftButton);
+    QCOMPARE(p_abstractShapeTester2->pos(), QPointF(20.0, 20.0));
+
+    scene.removeItem(p_abstractShapeTester);
+    scene.removeItem(p_abstractShapeTester2);
+    delete p_abstractShapeTester2;
 }
 
 void tst_AbstractShape::itemChange()
