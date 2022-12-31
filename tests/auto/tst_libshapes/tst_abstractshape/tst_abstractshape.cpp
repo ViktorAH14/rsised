@@ -101,6 +101,10 @@ private slots:
     void brush();
     void isObscuredBy();
     void opaqueArea();
+    void scaleShape();
+    void menu();
+    void addActions();
+    void mouseDoubleClickEvent();
     void itemChange();
     void cleanup();
 
@@ -199,6 +203,28 @@ void tst_AbstractShape::opaqueArea()
     scene.removeItem(p_abstractShapeTester);
     delete p_parentShape;
     delete p_opaqueShape;
+}
+
+void tst_AbstractShape::scaleShape()
+{
+    //TODO реализовать!
+}
+
+void tst_AbstractShape::menu()
+{
+    //TODO подумать о реализации.
+}
+
+void tst_AbstractShape::addActions()
+{
+    QCOMPARE(p_abstractShapeTester->menu()->actions().count(), 0);
+    QAction *p_action1 = new QAction();
+    QAction *p_action2 = new QAction();
+    QAction *p_action3 = new QAction();
+    QList<QAction *> actions;
+    actions << p_action1 << p_action2 << p_action3;
+    p_abstractShapeTester->addActions(actions);
+    QCOMPARE(p_abstractShapeTester->menu()->actions().count(), 3);
 }
 
 void tst_AbstractShape::itemChange()
