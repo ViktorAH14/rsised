@@ -24,6 +24,7 @@
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QStyleOptionGraphicsItem>
+#include <QGraphicsSceneMouseEvent>
 #include <QGraphicsView> //Проверить необходимость
 
 class AbstractShapeTester : public AbstractShape
@@ -225,6 +226,51 @@ void tst_AbstractShape::addActions()
     actions << p_action1 << p_action2 << p_action3;
     p_abstractShapeTester->addActions(actions);
     QCOMPARE(p_abstractShapeTester->menu()->actions().count(), 3);
+}
+
+void tst_AbstractShape::mouseDoubleClickEvent()
+{
+    QGraphicsScene scene;
+    p_abstractShapeTester->setRect(QRectF(-20.0, -20.0, 40.0, 40.0));
+    scene.addItem(p_abstractShapeTester);
+    QCOMPARE(p_abstractShapeTester->childItems().count(), 0);
+
+    QGraphicsSceneMouseEvent mouseDClickEvent(QEvent::GraphicsSceneMouseDoubleClick);
+    mouseDClickEvent.setScenePos(p_abstractShapeTester->pos());
+    mouseDClickEvent.setButton(Qt::LeftButton);
+    QApplication::sendEvent(&scene, &mouseDClickEvent);
+    QVERIFY(mouseDClickEvent.isAccepted());
+
+    QGraphicsItem *sizegripItem = p_abstractShapeTester->childItems().constFirst();
+    int itemVisible{0};
+    for (int i = 0; i < sizegripItem->childItems().count(); i++) {
+        QGraphicsItem *item {sizegripItem->childItems().at(i)};
+        if (item->isVisible())
+            itemVisible++;
+    }
+    QCOMPARE(itemVisible, 8);
+
+    QApplication::sendEvent(&scene, &mouseDClickEvent);
+    sizegripItem = p_abstractShapeTester->childItems().constFirst();
+    itemVisible = 0;
+    for (int i = 0; i < sizegripItem->childItems().count(); i++) {
+        QGraphicsItem *item {sizegripItem->childItems().at(i)};
+        if (item->isVisible())
+            itemVisible++;
+    }
+    QCOMPARE(itemVisible, 4);
+
+    QApplication::sendEvent(&scene, &mouseDClickEvent);
+    sizegripItem = p_abstractShapeTester->childItems().constFirst();
+    itemVisible = 0;
+    for (int i = 0; i < sizegripItem->childItems().count(); i++) {
+        QGraphicsItem *item {sizegripItem->childItems().at(i)};
+        if (item->isVisible())
+            itemVisible++;
+    }
+    QCOMPARE(itemVisible, 8);
+
+    scene.removeItem(p_abstractShapeTester);
 }
 
 void tst_AbstractShape::itemChange()
