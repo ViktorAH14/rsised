@@ -63,7 +63,13 @@ public:
              highlightSelected(painter, option);
         }
     }
-//    QPainterPath shape() const override;
+    QPainterPath shape() const override
+    {
+        QPainterPath path;
+        path.addRect(m_shapeRect);
+
+        return shapeFromPath(path);
+    }
 //    bool contains(const QPointF &point) const override;
 //    bool isObscuredBy(const QGraphicsItem *item) const override;
 //    QPainterPath opaqueArea() const override;
@@ -94,6 +100,7 @@ private slots:
     void pen();
     void brush();
     void isObscuredBy();
+    void opaqueArea();
     void itemChange();
     void cleanup();
 
@@ -156,6 +163,42 @@ void tst_AbstractShape::isObscuredBy()
     scene.removeItem(p_abstractShapeTester);
     scene.removeItem(p_abstractShapeTester2);
     delete p_abstractShapeTester2;
+}
+
+void tst_AbstractShape::opaqueArea()
+{
+    QGraphicsScene scene;
+
+    p_abstractShapeTester->setRect(QRectF(-100.0, -100.0, 200.0, 200.0));
+    p_abstractShapeTester->setZValue(-1.0);
+    scene.addItem(p_abstractShapeTester);
+    QPainterPath opaquePath;
+    QCOMPARE(p_abstractShapeTester->opaqueArea(), opaquePath);
+
+    p_abstractShapeTester->setBrush(QBrush(Qt::red));
+    QCOMPARE(p_abstractShapeTester->opaqueArea(), p_abstractShapeTester->shape());
+
+    AbstractShapeTester *p_opaqueShape = new AbstractShapeTester();
+    p_opaqueShape->setRect(QRectF(-50.0, -50.0, 200.0, 200.0));
+    p_opaqueShape->setBrush(QBrush(Qt::blue));
+    p_abstractShapeTester->setFlag(QGraphicsItem::ItemClipsToShape, true);
+    scene.addItem(p_opaqueShape);
+    QCOMPARE(p_abstractShapeTester->opaqueArea(), p_abstractShapeTester->clipPath());
+
+    AbstractShapeTester *p_parentShape = new AbstractShapeTester();
+    p_parentShape->setRect(QRectF(-120.0, -120.0, 200.0, 200.0));
+    p_parentShape->setParentItem(p_abstractShapeTester);
+    p_parentShape->setBrush(QBrush(Qt::black));
+    QCOMPARE(p_abstractShapeTester->opaqueArea(), p_abstractShapeTester->clipPath());
+
+    p_abstractShapeTester->setFlag(QGraphicsItem::ItemClipsChildrenToShape, true);
+    QCOMPARE(p_parentShape->opaqueArea(), p_parentShape->clipPath());
+
+    scene.removeItem(p_parentShape);
+    scene.removeItem(p_opaqueShape);
+    scene.removeItem(p_abstractShapeTester);
+    delete p_parentShape;
+    delete p_opaqueShape;
 }
 
 void tst_AbstractShape::itemChange()
