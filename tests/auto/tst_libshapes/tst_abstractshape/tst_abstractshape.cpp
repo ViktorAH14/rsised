@@ -24,6 +24,7 @@
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QStyleOptionGraphicsItem>
+#include <QGraphicsView> //Проверить необходимость
 
 class AbstractShapeTester : public AbstractShape
 {
@@ -66,6 +67,14 @@ public:
 //    bool contains(const QPointF &point) const override;
 //    bool isObscuredBy(const QGraphicsItem *item) const override;
 //    QPainterPath opaqueArea() const override;
+    void setRect(const QRectF &rect)
+    {
+        if (m_shapeRect == rect)
+            return;
+        prepareGeometryChange();
+        m_shapeRect = rect;
+        update();
+    }
 
     private:
     QRectF m_shapeRect;
@@ -84,6 +93,7 @@ private slots:
     void init();
     void pen();
     void brush();
+    void isObscuredBy();
     void itemChange();
     void cleanup();
 
@@ -116,6 +126,36 @@ void tst_AbstractShape::brush()
     QCOMPARE(p_abstractShapeTester->brush(), QBrush(Qt::red, Qt::CrossPattern));
     p_abstractShapeTester->setBrush(QBrush(Qt::white, Qt::NoBrush));
     QCOMPARE(p_abstractShapeTester->brush(), QBrush(Qt::white, Qt::NoBrush));
+}
+
+void tst_AbstractShape::isObscuredBy()
+{
+    QGraphicsScene scene;
+
+    AbstractShapeTester * p_abstractShapeTester2 = new AbstractShapeTester();
+    p_abstractShapeTester->setRect(QRectF(50, 50, 40, 200));
+    p_abstractShapeTester->setTransform(QTransform().rotate(67), true);
+    p_abstractShapeTester->setBrush(Qt::blue);
+    p_abstractShapeTester2->setRect(QRectF(25, 25, 20, 20));
+    p_abstractShapeTester2->setZValue(-1.0);
+    p_abstractShapeTester2->setBrush(Qt::red);
+    scene.addItem(p_abstractShapeTester);
+    scene.addItem(p_abstractShapeTester2);
+
+    QVERIFY(!p_abstractShapeTester2->isObscuredBy(p_abstractShapeTester));
+    QVERIFY(!p_abstractShapeTester->isObscuredBy(p_abstractShapeTester2));
+
+    p_abstractShapeTester2->setRect(QRectF(-50, 85, 20, 20));
+    QVERIFY(p_abstractShapeTester2->isObscuredBy(p_abstractShapeTester));
+    QVERIFY(!p_abstractShapeTester->isObscuredBy(p_abstractShapeTester2));
+
+    p_abstractShapeTester2->setRect(QRectF(-30, 70, 20, 20));
+    QVERIFY(!p_abstractShapeTester2->isObscuredBy(p_abstractShapeTester));
+    QVERIFY(!p_abstractShapeTester->isObscuredBy(p_abstractShapeTester2));
+
+    scene.removeItem(p_abstractShapeTester);
+    scene.removeItem(p_abstractShapeTester2);
+    delete p_abstractShapeTester2;
 }
 
 void tst_AbstractShape::itemChange()
