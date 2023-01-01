@@ -145,13 +145,13 @@ public:
     }
 private slots:
     void init();
-    void pen();
-    void brush();
+    void pen_setPen();
+    void brush_setBrush();
     void isObscuredBy();
     void opaqueArea();
     void scaleShape();
-    void menu();
-    void addActions();
+    void menu_setMenu();
+    void add_removeActions();
     void mouseDoubleClickEvent();
     void mouseMoveEvent();
     void mousePressEvent();
@@ -169,7 +169,7 @@ void tst_AbstractShape::init()
     p_abstractShapeTester = new AbstractShapeTester();
 }
 
-void tst_AbstractShape::pen()
+void tst_AbstractShape::pen_setPen()
 {
     p_abstractShapeTester->setPen(QPen(Qt::black));
     QCOMPARE(p_abstractShapeTester->pen(), QPen(Qt::black));
@@ -179,7 +179,7 @@ void tst_AbstractShape::pen()
     QCOMPARE(p_abstractShapeTester->pen(), QPen(Qt::white));
 }
 
-void tst_AbstractShape::brush()
+void tst_AbstractShape::brush_setBrush()
 {
     p_abstractShapeTester->setBrush(QBrush(Qt::black));
     QCOMPARE(p_abstractShapeTester->brush(), QBrush(Qt::black));
@@ -260,12 +260,22 @@ void tst_AbstractShape::scaleShape()
     //TODO реализовать!
 }
 
-void tst_AbstractShape::menu()
+void tst_AbstractShape::menu_setMenu()
 {
-    //TODO подумать о реализации.
+    QMenu *p_contextMenu = new QMenu();
+    QAction *p_action1 = new QAction("Item 1");
+    p_contextMenu->addAction(p_action1);
+    QAction *p_action2 = new QAction("Item 2");
+    p_contextMenu->addAction(p_action2);
+    p_abstractShapeTester->setMenu(p_contextMenu);
+    QCOMPARE(p_abstractShapeTester->menu()->actions().at(0), p_action1);
+    QCOMPARE(p_abstractShapeTester->menu()->actions().at(1), p_action2);
+    delete p_contextMenu;
+    delete p_action1;
+    delete p_action2;
 }
 
-void tst_AbstractShape::addActions()
+void tst_AbstractShape::add_removeActions()
 {
     QMenu contextMenu;
     p_abstractShapeTester->setMenu(&contextMenu);
@@ -276,7 +286,13 @@ void tst_AbstractShape::addActions()
     QList<QAction *> actions;
     actions << p_action1 << p_action2 << p_action3;
     p_abstractShapeTester->addActions(actions);
-    QCOMPARE(p_abstractShapeTester->menu()->actions().count(), 4); // +Separator
+    QCOMPARE(p_abstractShapeTester->menu()->actions().count(), 4);
+    p_abstractShapeTester->removeActions(actions);
+    QCOMPARE(p_abstractShapeTester->menu()->actions().count(), 0);
+    p_abstractShapeTester->addActions(actions);
+    QCOMPARE(p_abstractShapeTester->menu()->actions().count(), 4);
+    p_abstractShapeTester->removeActions(actions);
+    QCOMPARE(p_abstractShapeTester->menu()->actions().count(), 0);
 }
 
 void tst_AbstractShape::mouseDoubleClickEvent()

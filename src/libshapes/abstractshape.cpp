@@ -109,7 +109,8 @@ void AbstractShape::addActions(const QList<QAction *> &actions)
 void AbstractShape::removeActions(const QList<QAction *> &actions)
 {
     for (int i = 0; i < actions.size(); i++)
-    m_contextMenu->removeAction(actions.at(i));
+        m_contextMenu->removeAction(actions.at(i));
+    m_contextMenu->removeAction(m_contextMenu->actions().constLast()); //Remove Separator
 }
 
 void AbstractShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
