@@ -25,7 +25,7 @@
 #include <QGraphicsScene>
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
-#include <QGraphicsView> //Проверить необходимость
+#include <QGraphicsView>
 
 static void sendMousePress(QGraphicsScene *scene, const QPointF &point
                            , Qt::MouseButton button = Qt::LeftButton
@@ -65,13 +65,13 @@ static void sendMouseMove(QGraphicsScene *scene, const QPointF &point,
 //    sendMouseRelease(scene, point);
 //}
 
-//static void sendMouseWheel(QGraphicsScene *scene, const QPointF &point, int delta)
-//{
-//    QGraphicsSceneWheelEvent wheelEvent(QEvent::GraphicsSceneWheel);
-//    wheelEvent.setScenePos(point);
-//    wheelEvent.setDelta(delta);
-//    QApplication::sendEvent(scene, &wheelEvent);
-//}
+static void sendMouseWheel(QGraphicsScene *scene, const QPointF &point, int delta)
+{
+    QGraphicsSceneWheelEvent wheelEvent(QEvent::GraphicsSceneWheel);
+    wheelEvent.setScenePos(point);
+    wheelEvent.setDelta(delta);
+    QApplication::sendEvent(scene, &wheelEvent);
+}
 
 
 class AbstractShapeTester : public AbstractShape
@@ -145,6 +145,7 @@ public:
     }
 private slots:
     void init();
+    void cleanup();
     void pen_setPen();
     void brush_setBrush();
     void isObscuredBy();
@@ -155,8 +156,8 @@ private slots:
     void mouseDoubleClickEvent();
     void mouseMoveEvent();
     void mousePressEvent();
+    void whellEvent();
     void itemChange();
-    void cleanup();
 
 private:
     AbstractShapeTester *p_abstractShapeTester;
@@ -167,6 +168,11 @@ private:
 void tst_AbstractShape::init()
 {
     p_abstractShapeTester = new AbstractShapeTester();
+}
+
+void tst_AbstractShape::cleanup()
+{
+    delete p_abstractShapeTester;
 }
 
 void tst_AbstractShape::pen_setPen()
@@ -429,6 +435,69 @@ void tst_AbstractShape::mousePressEvent()
     delete p_contextMenu;
 }
 
+void tst_AbstractShape::whellEvent()
+{
+    QGraphicsScene scene;
+    QGraphicsView view(&scene);
+    view.show();
+    view.fitInView(scene.sceneRect());
+    QVERIFY(QTest::qWaitForWindowActive(&view));
+
+    p_abstractShapeTester->setRect(QRectF(-20.0, -20.0, 40.0, 40.0));
+    scene.addItem(p_abstractShapeTester);
+
+    QGraphicsSceneWheelEvent wheelEvent(QEvent::GraphicsSceneWheel);
+    wheelEvent.setScenePos(p_abstractShapeTester->scenePos());
+    wheelEvent.setDelta(1);
+    QApplication::sendEvent(&scene, &wheelEvent);
+    QVERIFY(!wheelEvent.isAccepted());
+
+    p_abstractShapeTester->setSelected(true);
+    p_abstractShapeTester->resetTransform();
+
+    qreal m11Actual = p_abstractShapeTester->transform().m11();
+    qreal m11Expected = 1.0;
+    bool m11Compare = qFuzzyCompare(m11Actual, m11Expected);
+    QVERIFY(m11Compare);
+
+    qreal m22Actual = p_abstractShapeTester->transform().m22();
+    qreal m22Expected = 1.0;
+    bool m22Compare = qFuzzyCompare(m22Actual, m22Expected);
+    QVERIFY(m22Compare);
+
+    QTest::mouseMove(view.viewport(), p_abstractShapeTester->scenePos().toPoint());
+
+    for (int i = 0; i < 40; i++) {
+        sendMouseWheel(&scene, p_abstractShapeTester->scenePos(), 1);
+
+        m11Actual = p_abstractShapeTester->transform().m11();
+        m11Expected *= 1.03;
+        m11Compare = qFuzzyCompare(m11Actual, m11Expected);
+        QVERIFY(m11Compare);
+
+        m22Actual = p_abstractShapeTester->transform().m22();
+        m22Expected *= 1.03;
+        m22Compare = qFuzzyCompare(m22Actual, m22Expected);
+        QVERIFY(m22Compare);
+    }
+
+    for (int i = 0; i < 40; i++) {
+        sendMouseWheel(&scene, p_abstractShapeTester->scenePos(), -1);
+
+        m11Actual = p_abstractShapeTester->transform().m11();
+        m11Expected *= 0.97;
+        m11Compare = qFuzzyCompare(m11Actual, m11Expected);
+        QVERIFY(m11Compare);
+
+        m22Actual = p_abstractShapeTester->transform().m22();
+        m22Expected *= 0.97;
+        m22Compare = qFuzzyCompare(m22Actual, m22Expected);
+        QVERIFY(m22Compare);
+    }
+
+    scene.removeItem(p_abstractShapeTester);
+}
+
 void tst_AbstractShape::itemChange()
 {
     QGraphicsScene scene;
@@ -440,11 +509,6 @@ void tst_AbstractShape::itemChange()
     p_abstractShapeTester->setSelected(false);
     QCOMPARE(p_abstractShapeTester->childItems().count(), 0);
     scene.removeItem(p_abstractShapeTester);
-}
-
-void tst_AbstractShape::cleanup()
-{
-    delete p_abstractShapeTester;
 }
 
 QTEST_MAIN(tst_AbstractShape)
