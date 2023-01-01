@@ -154,6 +154,7 @@ private slots:
     void addActions();
     void mouseDoubleClickEvent();
     void mouseMoveEvent();
+    void mousePressEvent();
     void itemChange();
     void cleanup();
 
@@ -266,6 +267,8 @@ void tst_AbstractShape::menu()
 
 void tst_AbstractShape::addActions()
 {
+    QMenu contextMenu;
+    p_abstractShapeTester->setMenu(&contextMenu);
     QCOMPARE(p_abstractShapeTester->menu()->actions().count(), 0);
     QAction *p_action1 = new QAction();
     QAction *p_action2 = new QAction();
@@ -273,7 +276,7 @@ void tst_AbstractShape::addActions()
     QList<QAction *> actions;
     actions << p_action1 << p_action2 << p_action3;
     p_abstractShapeTester->addActions(actions);
-    QCOMPARE(p_abstractShapeTester->menu()->actions().count(), 3);
+    QCOMPARE(p_abstractShapeTester->menu()->actions().count(), 4); // +Separator
 }
 
 void tst_AbstractShape::mouseDoubleClickEvent()
@@ -351,6 +354,63 @@ void tst_AbstractShape::mouseMoveEvent()
     scene.removeItem(p_abstractShapeTester);
     scene.removeItem(p_abstractShapeTester2);
     delete p_abstractShapeTester2;
+}
+
+class ContextMenuTester : public QMenu
+{
+    Q_OBJECT
+public:
+    ContextMenuTester() : QMenu("Menu-Title"), m_timerId(-1)
+    {
+        addAction("Item 1");
+    }
+
+protected:
+    void showEvent(QShowEvent *shEvent) override
+    {
+        m_timerId = startTimer(50);
+        QMenu::showEvent(shEvent);
+    }
+    void timerEvent(QTimerEvent *tEvent) override
+    {
+        if (tEvent->timerId() == m_timerId)
+            close();
+    }
+
+private:
+    int m_timerId;
+};
+
+void tst_AbstractShape::mousePressEvent()
+{
+    QGraphicsScene scene;
+    QGraphicsView view(&scene);
+    view.show();
+    view.fitInView(scene.sceneRect());
+    QVERIFY(QTest::qWaitForWindowActive(&view));
+    ContextMenuTester *p_contextMenu = new ContextMenuTester();
+
+    p_abstractShapeTester->setRect(QRectF(-20.0, -20.0, 40.0, 40.0));
+    p_abstractShapeTester->setMenu(p_contextMenu);
+    scene.addItem(p_abstractShapeTester);
+
+    QGraphicsSceneMouseEvent mousePressEvent(QEvent::GraphicsSceneMouseMove);
+    mousePressEvent.setScenePos(p_abstractShapeTester->pos());
+    mousePressEvent.setButton(Qt::LeftButton);
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_abstractShapeTester->setSelected(true);
+    QSignalSpy contextMenuSpy(p_abstractShapeTester->menu(), &QMenu::aboutToShow);
+    QCOMPARE(contextMenuSpy.count(), 0);
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_abstractShapeTester->boundingRect().center()));
+    QCOMPARE(contextMenuSpy.count(), 1);
+
+    scene.removeItem(p_abstractShapeTester);
+
+    delete p_contextMenu;
 }
 
 void tst_AbstractShape::itemChange()
