@@ -41,6 +41,7 @@ public:
     void setMenu(QMenu *contextMenu);
     QMenu* menu() const;
     void addActions(const QList<QAction *> &actions);
+    void removeActions(const QList<QAction *> &actions);
 
 protected:
     explicit AbstractShape(QGraphicsItem *parent = nullptr);

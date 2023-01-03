@@ -31,7 +31,7 @@ public:
     explicit RectShape(QGraphicsItem *parent = nullptr);
     explicit RectShape(const QRectF &rect, QGraphicsItem *parent = nullptr);
     explicit RectShape(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent = nullptr);
-     ~RectShape() = default;
+    ~RectShape() = default;
 
     inline int type() const override { return Type;}
     QRectF boundingRect() const override;
