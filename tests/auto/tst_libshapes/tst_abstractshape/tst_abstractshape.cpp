@@ -21,6 +21,7 @@
 #include "../../../../src/include/abstractshape.h"
 
 #include <QtTest>
+
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QStyleOptionGraphicsItem>
@@ -263,7 +264,44 @@ void tst_AbstractShape::opaqueArea()
 
 void tst_AbstractShape::scaleShape()
 {
-    //TODO реализовать!
+    qreal m11Actual = p_abstractShapeTester->transform().m11();
+    qreal m11Expected = 1.0;
+    bool m11Compare = qFuzzyCompare(m11Actual, m11Expected);
+    QVERIFY(m11Compare);
+    qreal m22Actual = p_abstractShapeTester->transform().m22();
+    qreal m22Expected = 1.0;
+    bool m22Compare = qFuzzyCompare(m22Actual, m22Expected);
+    QVERIFY(m22Compare);
+
+    p_abstractShapeTester->scaleShape(QRectF(-22.0, -22.0, 42.0, 42.0));
+    m11Actual = p_abstractShapeTester->transform().m11();
+    m11Expected = 1.018;
+    m11Compare = qFuzzyCompare(m11Actual, m11Expected);
+    QVERIFY(m11Compare);
+    m22Actual = p_abstractShapeTester->transform().m22();
+    m22Expected = 1.018;
+    m22Compare = qFuzzyCompare(m22Actual, m22Expected);
+    QVERIFY(m22Compare);
+
+    p_abstractShapeTester->resetTransform();
+    m11Actual = p_abstractShapeTester->transform().m11();
+    m11Expected = 1.0;
+    m11Compare = qFuzzyCompare(m11Actual, m11Expected);
+    QVERIFY(m11Compare);
+    m22Actual = p_abstractShapeTester->transform().m22();
+    m22Expected = 1.0;
+    m22Compare = qFuzzyCompare(m22Actual, m22Expected);
+    QVERIFY(m22Compare);
+
+    p_abstractShapeTester->scaleShape(QRectF(-18.0, -18.0, 38.0, 38.0));
+    m11Actual = p_abstractShapeTester->transform().m11();
+    m11Expected = 0.988;
+    m11Compare = qFuzzyCompare(m11Actual, m11Expected);
+    QVERIFY(m11Compare);
+    m22Actual = p_abstractShapeTester->transform().m22();
+    m22Expected = 0.988;
+    m22Compare = qFuzzyCompare(m22Actual, m22Expected);
+    QVERIFY(m22Compare);
 }
 
 void tst_AbstractShape::menu_setMenu()
