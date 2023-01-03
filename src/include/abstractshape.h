@@ -21,19 +21,27 @@
 #ifndef ABSTRACTSHAPE_H
 #define ABSTRACTSHAPE_H
 
-#include <QAbstractGraphicsShapeItem>
+#include <QGraphicsItem>
 #include <QMenu>
+#include <QPen>
 
 class SizeGripShape;
 
-class AbstractShape : public QAbstractGraphicsShapeItem //TODO добавить brush и pen, и унаследоваться от QGraphicsItem
+class AbstractShape : public QGraphicsItem
 {
 public:
+    QPen pen() const;
+    void setPen(const QPen &pen);
+    QBrush brush() const;
+    void setBrush(const QBrush &brush);
+    bool isObscuredBy(const QGraphicsItem *item) const override;
+    QPainterPath opaqueArea() const override;
 
     void scaleShape(const QRectF &newRect);
     void setMenu(QMenu *contextMenu);
     QMenu* menu() const;
     void addActions(const QList<QAction *> &actions);
+    void removeActions(const QList<QAction *> &actions);
 
 protected:
     explicit AbstractShape(QGraphicsItem *parent = nullptr);
@@ -49,10 +57,12 @@ protected:
     QPainterPath shapeFromPath(const QPainterPath &path) const;
 
 private:
-     Q_DISABLE_COPY(AbstractShape)
+    Q_DISABLE_COPY(AbstractShape)
 
-    SizeGripShape *m_sizeGripItem;
-    QMenu *m_contextMenu;
+    SizeGripShape   *m_sizeGripItem;
+    QMenu   *m_contextMenu;
+    QBrush  m_brush;
+    QPen    m_pen;
 };
 
 #endif // ABSTRACTSHAPE_H

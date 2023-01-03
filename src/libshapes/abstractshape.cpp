@@ -28,15 +28,54 @@
 #include <QStyleOptionGraphicsItem>
 
 AbstractShape::AbstractShape(QGraphicsItem *parent)
-    : QAbstractGraphicsShapeItem(parent)
+    : QGraphicsItem(parent)
     , m_sizeGripItem{nullptr}
-    , m_contextMenu{new QMenu()}
+    , m_contextMenu{nullptr}
 {
 }
 
 AbstractShape::~AbstractShape()
 {
-    m_contextMenu->deleteLater();
+}
+
+QPen AbstractShape::pen() const
+{
+    return m_pen;
+}
+
+void AbstractShape::setPen(const QPen &pen)
+{
+    if (m_pen == pen)
+        return;
+    prepareGeometryChange();
+    m_pen = pen;
+    update();
+}
+
+QBrush AbstractShape::brush() const
+{
+    return m_brush;
+}
+
+void AbstractShape::setBrush(const QBrush &brush)
+{
+    if (m_brush == brush)
+        return;
+    prepareGeometryChange();
+    m_brush = brush;
+    update();
+}
+
+bool AbstractShape::isObscuredBy(const QGraphicsItem *item) const
+{
+    return QGraphicsItem::isObscuredBy(item);
+}
+
+QPainterPath AbstractShape::opaqueArea() const
+{
+    if (m_brush.isOpaque())
+            return isClipped() ? clipPath() : shape();
+        return QGraphicsItem::opaqueArea();
 }
 
 void AbstractShape::scaleShape(const QRectF &newRect)
@@ -51,13 +90,9 @@ void AbstractShape::scaleShape(const QRectF &newRect)
     update();
 }
 
-void AbstractShape::setMenu(QMenu *contextMenu) //TODO удалить после рефакторинга libshapes
+void AbstractShape::setMenu(QMenu *contextMenu)
 {
-    QList<QAction *> actionList{contextMenu->actions()};
-    if (!m_contextMenu->isEmpty())
-        m_contextMenu->addSeparator();
-    for (int i = 0; i < actionList.size(); i++)
-        m_contextMenu->addAction(actionList.at(i));
+    m_contextMenu = contextMenu;
 }
 
 QMenu* AbstractShape::menu() const
@@ -67,8 +102,15 @@ QMenu* AbstractShape::menu() const
 
 void AbstractShape::addActions(const QList<QAction *> &actions)
 {
+    m_contextMenu->addSeparator();
+    m_contextMenu->addActions(actions);
+}
+
+void AbstractShape::removeActions(const QList<QAction *> &actions)
+{
     for (int i = 0; i < actions.size(); i++)
-        m_contextMenu->addAction(actions.at(i));
+        m_contextMenu->removeAction(actions.at(i));
+    m_contextMenu->removeAction(m_contextMenu->actions().constLast()); //Remove Separator
 }
 
 void AbstractShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)

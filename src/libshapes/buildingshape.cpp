@@ -390,10 +390,18 @@ void DoorShape::setLeafPosition(LeafPosition leafPosition)
 
 void DoorShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (mouseEvent->buttons() == Qt::LeftButton) {
+    switch (mouseEvent->buttons()) {
+    case Qt::LeftButton:
         m_leftButtonPressed = true;
-    } else {
+        break;
+    case Qt::RightButton:
+        addActions(m_actionList);
+        menu()->exec();
+        removeActions(m_actionList);
+        break;
+    default:
         AbstractShape::mousePressEvent(mouseEvent);
+        break;
     }
 }
 
@@ -516,8 +524,6 @@ void DoorShape::createAction()
     m_doorStateActionGroup->addAction(m_doorAjarAction.get());
     m_doorStateActionGroup->addAction(m_doorCloseAction.get());
     m_doorOpenAction->setChecked(true);
-
-    addActions(m_actionList);
 }
 
 
