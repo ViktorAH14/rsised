@@ -26,7 +26,7 @@
 class TechnicsShape : public AbstractShape
 {
 public:
-    enum { Type = UserType + 20 };
+    enum { Type = UserType + 200 };
     enum ShapeType { Base
                      , Tanker
                      , AutoPump
@@ -70,21 +70,34 @@ public:
                      , Ambulance
                      , Police };
 
-    explicit TechnicsShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
+    struct TechnicsShapeDeleter
+    {
+        TechnicsShapeDeleter() = delete;
+        static inline void cleanup(TechnicsShape *technicsShape) {technicsShape->deleter();}
+    };
 
-    QRectF boundingRect() const override;
-    int type() const override { return Type;}
+    static TechnicsShape *createTechnicsShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
-    QPixmap image();
-    ShapeType shapeType() const;
+    inline int type() const override { return Type;}
+//    QRectF boundingRect() const override;
+    virtual QPixmap image() = 0;
+    virtual ShapeType shapeType() const = 0;
+    virtual void setRect(const QRectF &rect) = 0;
+    virtual QRectF rect() const = 0;
+    virtual void setHeight(const qreal &height) = 0;
+    virtual qreal height() const = 0;
 
 protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    explicit TechnicsShape(QGraphicsItem *parent = nullptr);
+    virtual ~TechnicsShape() = 0;
+    virtual void deleter();
+//    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 private:
-    void drawShape(QPainter *painter);
+    Q_DISABLE_COPY(TechnicsShape)
+//    void drawShape(QPainter *painter);
 
-    ShapeType m_shapeType;
+//    ShapeType m_shapeType;
 };
 
 #endif // TECHNICSSHAPE_H

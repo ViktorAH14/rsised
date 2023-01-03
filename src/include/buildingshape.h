@@ -21,7 +21,7 @@
 #ifndef BUILDINGSHAPE_H
 #define BUILDINGSHAPE_H
 
-#include "../include/abstractshape.h"
+#include "abstractshape.h"
 
 #include <QBrush>
 #include <QPen>
