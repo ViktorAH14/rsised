@@ -119,9 +119,6 @@ public:
 
         return shapeFromPath(path);
     }
-//    bool contains(const QPointF &point) const override;
-//    bool isObscuredBy(const QGraphicsItem *item) const override;
-//    QPainterPath opaqueArea() const override;
     void setRect(const QRectF &rect)
     {
         if (m_shapeRect == rect)
