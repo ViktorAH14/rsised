@@ -61,9 +61,9 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             pixmapShape->scalePixmap(value.toRectF());
         break;
     }
-    case TechnicsShape::Type: {
-        if (TechnicsShape *technicsShape = dynamic_cast<TechnicsShape *>(item))
-            technicsShape->scaleShape(value.toRectF());
+    case TankerShape::Type: {
+        if (TankerShape *tankerShape = dynamic_cast<TankerShape *>(item))
+            tankerShape->setRect(value.toRectF());
         break;
     }
     case DeviceShape::Type: {

@@ -555,6 +555,10 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
             if (rseItemReader.name() == "technics_shape") {
                 qreal x {0.0};
                 qreal y {0.0};
+                qreal itemLeft {0.0};
+                qreal itemTop {0.0};
+                qreal width {0.0};
+                qreal height {0.0};
                 TechnicsShape::ShapeType shapeType = TechnicsShape::Base;
                 qreal zValue {0.0};
                 qreal m11 {0.0};
@@ -573,6 +577,18 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     }
                     if (attr.name() == "y") {
                         y = attr.value().toFloat();
+                    }
+                    if (attr.name() == "item_left") {
+                        itemLeft = attr.value().toFloat();
+                    }
+                    if (attr.name() == "item_top") {
+                        itemTop = attr.value().toFloat();
+                    }
+                    if (attr.name() == "width") {
+                        width = attr.value().toFloat();
+                    }
+                    if (attr.name() == "height") {
+                        height = attr.value().toFloat();
                     }
                     if (attr.name() == "shape_type") {
                         shapeType = TechnicsShape::ShapeType(attr.value().toInt());
@@ -594,9 +610,10 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     }
                 }
 
-                TechnicsShape *technicsShape = new TechnicsShape(shapeType);
+                TechnicsShape *technicsShape = TechnicsShape::createTechnicsShape(shapeType);
                 technicsShape->setMenu(m_itemMenu);
                 technicsShape->setPos(QPointF(x, y));
+                technicsShape->setRect(QRectF(itemLeft, itemTop, width, height));
                 technicsShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
                 technicsShape->setTransform(trans);

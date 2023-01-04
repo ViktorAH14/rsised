@@ -298,7 +298,7 @@ SizeGripShape::SizeGripShape(Resizer *resizer, QGraphicsItem *parent)
     , m_spanPoint{QPointF()}
 {
     if ((parent->type() == RectShape::Type) || (parent->type() == PixmapShape::Type)
-            || (parent->type() == TechnicsShape::Type) || (parent->type() == DeviceShape::Type)
+            || (parent->type() == TankerShape::Type) || (parent->type() == DeviceShape::Type)
             || (parent->type() == StairwellShape::Type) || (parent->type() == StairsShape::Type)) {
         m_parentItemRect = parentItem()->boundingRect();
         setItemType(Rect);

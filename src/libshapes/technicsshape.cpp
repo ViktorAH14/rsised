@@ -21,6 +21,7 @@
 #include "../include/technicsshape.h"
 
 #include <QPainter>
+#include <QStyleOptionGraphicsItem>
 
 TechnicsShape::TechnicsShape(QGraphicsItem *parent)
     : AbstractShape(parent)
@@ -467,18 +468,141 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
 //    }
 //}
 
-QPixmap TechnicsShape::image()
-{
-    QPixmap pixmap(boundingRect().width(), boundingRect().height());
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    painter.translate(boundingRect().width() / 2.0, boundingRect().height() / 2.0);
+//QPixmap TechnicsShape::image()
+//{
+//    QPixmap pixmap(boundingRect().width(), boundingRect().height());
+//    pixmap.fill(Qt::transparent);
+//    QPainter painter(&pixmap);
+//    painter.translate(boundingRect().width() / 2.0, boundingRect().height() / 2.0);
 //    drawShape(&painter);
 
-    return pixmap;
-}
+//    return pixmap;
+//}
 
 //TechnicsShape::ShapeType TechnicsShape::shapeType() const
 //{
 //    return m_shapeType;
 //}
+
+TankerShape::TankerShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_tankerType{Tanker}
+    , m_tankerRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void TankerShape::drawTankerShape(QPainter *painter)
+{
+    qreal frontTab{m_tankerRect.height() / 3};
+    qreal roundRadius{m_tankerRect.width() / 6}; // 5.0
+    QPointF roundTopLeft{m_tankerRect.left() + roundRadius, m_tankerRect.top() + frontTab}; // -10.0, -12.5
+    QPointF roundBottomRight{m_tankerRect.right() - roundRadius
+                , m_tankerRect.bottom() - roundRadius};
+
+    painter->drawPolygon(basePolygon());
+    painter->drawRoundedRect(QRectF(roundTopLeft, roundBottomRight), roundRadius, roundRadius);
+}
+
+QPolygonF TankerShape::basePolygon() const
+{
+    qreal frontTab{m_tankerRect.height() / 3};
+    QPointF frontCenter{m_tankerRect.center().x(), m_tankerRect.top()}; // 0.0, -37.5
+    QPointF frontRight{m_tankerRect.right(), m_tankerRect.top() + frontTab}; // 15.0, -12.5
+    QPointF frontLeft{m_tankerRect.left(), m_tankerRect.top() + frontTab}; // -15.0, -12.5
+    QPointF bottomRight{m_tankerRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeft{m_tankerRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF basePolygon;
+    basePolygon << frontCenter << frontRight << bottomRight << bottomLeft << frontLeft << frontCenter;
+    return basePolygon;
+}
+
+void TankerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawTankerShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF TankerShape::boundingRect() const
+{
+    QRectF boundingRect{m_tankerRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath TankerShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon());
+
+    return shapeFromPath(path);
+}
+
+QPixmap TankerShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawTankerShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType TankerShape::shapeType() const
+{
+    return m_tankerType;
+}
+
+void TankerShape::setRect(const QRectF &rect)
+{
+    if (m_tankerRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_tankerRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    update();
+}
+
+QRectF TankerShape::rect() const
+{
+    return m_tankerRect;
+}
+
+void TankerShape::setHeight(const qreal &height)
+{
+    if (m_tankerRect.height() == height)
+        return;
+
+    qreal oldHeight{m_tankerRect.height()};
+    prepareGeometryChange();
+    m_tankerRect.setHeight(height);
+    qreal dy{(m_tankerRect.height() - oldHeight) / 2};
+    m_tankerRect.moveTo(QPointF(m_tankerRect.x(), m_tankerRect.y() - dy));
+    update();
+}
+
+qreal TankerShape::height() const
+{
+    return m_tankerRect.height();
+}

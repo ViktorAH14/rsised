@@ -26,8 +26,8 @@
         <location filename="../mainwindow.ui" line="14"/>
         <location filename="../mainwindow.cpp" line="95"/>
         <location filename="../mainwindow.cpp" line="111"/>
-        <location filename="../mainwindow.cpp" line="1178"/>
-        <location filename="../mainwindow.cpp" line="1217"/>
+        <location filename="../mainwindow.cpp" line="1181"/>
+        <location filename="../mainwindow.cpp" line="1220"/>
         <source>RSiSed</source>
         <translatorcomment>Абревиатура расстановка сил и средств (РСиС)</translatorcomment>
         <translation>РСиС</translation>
@@ -84,7 +84,7 @@
     </message>
     <message>
         <location filename="../mainwindow.ui" line="191"/>
-        <location filename="../mainwindow.cpp" line="349"/>
+        <location filename="../mainwindow.cpp" line="350"/>
         <source>Open SVG</source>
         <translation>Открыть SVG</translation>
     </message>
@@ -110,7 +110,7 @@
     </message>
     <message>
         <location filename="../mainwindow.ui" line="214"/>
-        <location filename="../mainwindow.cpp" line="391"/>
+        <location filename="../mainwindow.cpp" line="392"/>
         <source>Save SVG</source>
         <translation>Сохранить SVG</translation>
     </message>
@@ -333,13 +333,13 @@
     </message>
     <message>
         <location filename="../mainwindow.ui" line="458"/>
-        <location filename="../mainwindow.cpp" line="424"/>
+        <location filename="../mainwindow.cpp" line="425"/>
         <source>Insert image</source>
         <translation>Вставить рисунок</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="461"/>
-        <location filename="../mainwindow.cpp" line="920"/>
+        <location filename="../mainwindow.cpp" line="922"/>
         <source>Ctrl+I</source>
         <translation>Ctrl+I</translation>
     </message>
@@ -390,7 +390,7 @@
     </message>
     <message>
         <location filename="../mainwindow.ui" line="515"/>
-        <location filename="../mainwindow.cpp" line="631"/>
+        <location filename="../mainwindow.cpp" line="633"/>
         <source>About Qt</source>
         <translation>О Qt</translation>
     </message>
@@ -447,567 +447,526 @@
         <translation>Файлы РСиС (*.rse)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="350"/>
-        <location filename="../mainwindow.cpp" line="392"/>
+        <location filename="../mainwindow.cpp" line="351"/>
+        <location filename="../mainwindow.cpp" line="393"/>
         <source>SVG files (*.svg)</source>
         <translation>Файлы SVG (*.svg)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="401"/>
+        <location filename="../mainwindow.cpp" line="402"/>
         <source>SVG RSiSed</source>
         <translation>SVG РСиС</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="402"/>
+        <location filename="../mainwindow.cpp" line="403"/>
         <source>File created by RSiSed</source>
         <translation>Файл создан РСиС</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="425"/>
+        <location filename="../mainwindow.cpp" line="426"/>
         <source>Images (*.bmp *.gif *.jpg *.jpeg *.png *.pbm *.pgm *.ppm *.xbm *.xpm)</source>
         <translation>Файлы изображений (*.bmp *.gif *.jpg *.jpeg *.png *.pbm *.pgm *.ppm *.xbm *.xpm)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="606"/>
+        <location filename="../mainwindow.cpp" line="608"/>
         <source>&lt;p align=&quot;center&quot;&gt;&lt;b&gt; RSiSed 0.1&lt;/b&gt;&lt;/p&gt;</source>
         <translation>&lt;p align=&quot;center&quot;&gt;&lt;b&gt; РСиС 0.1&lt;/b&gt;&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="607"/>
+        <location filename="../mainwindow.cpp" line="609"/>
         <source>&lt;p&gt;This application is designed for the alignment of forces and means in case of fire. (&lt;b&gt;RSiSed&lt;/b&gt;)&lt;/p&gt;</source>
         <translation>&lt;p&gt;Приложение предназначено для составления схем расстановки сил и средст, при пожаре. (&lt;b&gt;RSiSed&lt;/b&gt;)&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="626"/>
+        <location filename="../mainwindow.cpp" line="628"/>
         <source>About RSiSed</source>
         <translation>О РСиС</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="704"/>
         <source>Car</source>
         <translatorcomment>Автомобиль пожарный, общее обозначение.</translatorcomment>
-        <translation>Авто</translation>
+        <translation type="vanished">Авто</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="705"/>
+        <location filename="../mainwindow.cpp" line="707"/>
         <source>Tanker</source>
         <translatorcomment>Автоцистерна</translatorcomment>
         <translation>АЦ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="707"/>
         <source>Auto pump</source>
         <translatorcomment>Автомобиль насосно-рукавный.</translatorcomment>
-        <translation>АНР</translation>
+        <translation type="vanished">АНР</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="713"/>
         <source>Auto ladder</source>
         <translatorcomment>Автолестница</translatorcomment>
-        <translation>АЛ</translation>
+        <translation type="vanished">АЛ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="715"/>
         <source>Crank lift</source>
         <translatorcomment>Автоподъёмник</translatorcomment>
-        <translation>АПК</translation>
+        <translation type="vanished">АПК</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="717"/>
         <source>Telescopic lift</source>
         <translatorcomment>Автоподъёмник телескопический.</translatorcomment>
-        <translation>ТПЛ</translation>
+        <translation type="vanished">ТПЛ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="745"/>
         <source>Tracked</source>
         <translatorcomment>Машина на гусеничном ходу</translatorcomment>
-        <translation>ГПМ</translation>
+        <translation type="vanished">ГПМ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="777"/>
         <source>Adapted</source>
         <translatorcomment>Автомобиль приспособленный для целей пожаротушения</translatorcomment>
-        <translation>АРС</translation>
+        <translation type="vanished">АРС</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="781"/>
         <source>Ambulance</source>
         <translatorcomment>Машина скорой медицинской помощи</translatorcomment>
-        <translation>МП</translation>
+        <translation type="vanished">МП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="783"/>
         <source>Police</source>
         <translatorcomment>Полицейская машина</translatorcomment>
-        <translation>МВД</translation>
+        <translation type="vanished">МВД</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="763"/>
         <source>Train</source>
         <translatorcomment>Пожарный поезд</translatorcomment>
-        <translation>ПП</translation>
+        <translation type="vanished">ПП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="779"/>
         <source>Other adapted</source>
         <translatorcomment>Другая приспособленная техника для целей пожаротушения.</translatorcomment>
-        <translation>Пр</translation>
+        <translation type="vanished">Пр</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="812"/>
+        <location filename="../mainwindow.cpp" line="814"/>
         <source>Branch 2</source>
         <translatorcomment>Разветвление двухходовое</translatorcomment>
         <translation>РД</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="814"/>
+        <location filename="../mainwindow.cpp" line="816"/>
         <source>Branch 3</source>
         <translatorcomment>Разветвление трёхходовое</translatorcomment>
         <translation>РТ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="816"/>
+        <location filename="../mainwindow.cpp" line="818"/>
         <source>Branch 4</source>
         <translatorcomment>Разветвление четырёхходовое.</translatorcomment>
         <translation>РЧ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="822"/>
+        <location filename="../mainwindow.cpp" line="824"/>
         <source>Reel_mob</source>
         <translatorcomment>Рукавная катушка передвижная</translatorcomment>
         <translation>РКП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="825"/>
+        <location filename="../mainwindow.cpp" line="827"/>
         <source>HydElev</source>
         <translatorcomment>Гидроэлеватор</translatorcomment>
         <translation>Г-600</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="827"/>
+        <location filename="../mainwindow.cpp" line="829"/>
         <source>FoamMix</source>
         <translatorcomment>Пеносмеситель</translatorcomment>
         <translation>ПС</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="829"/>
+        <location filename="../mainwindow.cpp" line="831"/>
         <source>Collect</source>
         <translatorcomment>Водосборник</translatorcomment>
         <translation>ВС</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="831"/>
+        <location filename="../mainwindow.cpp" line="833"/>
         <source>Bridge</source>
         <translatorcomment>Мостик рукавный</translatorcomment>
         <translation>Мостик</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="795"/>
+        <location filename="../mainwindow.cpp" line="797"/>
         <source>Barrel 0</source>
         <translatorcomment>Ручной ствол базовое обозначение</translatorcomment>
         <translation>РС</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="796"/>
+        <location filename="../mainwindow.cpp" line="798"/>
         <source>Barrel 1</source>
         <translation>РС-50</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="797"/>
+        <location filename="../mainwindow.cpp" line="799"/>
         <source>Barrel 2</source>
         <translation>РС-70</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="799"/>
+        <location filename="../mainwindow.cpp" line="801"/>
         <source>Barrel 4</source>
         <translation>СВП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="800"/>
+        <location filename="../mainwindow.cpp" line="802"/>
         <source>Barrel 5</source>
         <translation>ГПС</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="798"/>
+        <location filename="../mainwindow.cpp" line="800"/>
         <source>Barrel 3</source>
         <translatorcomment>Ствол высокого давления</translatorcomment>
         <translation>СРВД</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="821"/>
+        <location filename="../mainwindow.cpp" line="823"/>
         <source>Reel</source>
         <translatorcomment>Рукавная катушка</translatorcomment>
         <translation>РК</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="824"/>
+        <location filename="../mainwindow.cpp" line="826"/>
         <source>Column</source>
         <translatorcomment>Колонка пожарная</translatorcomment>
         <translation>КПА</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="801"/>
+        <location filename="../mainwindow.cpp" line="803"/>
         <source>Barrel 6</source>
         <translatorcomment>Водяная струя с добавками</translatorcomment>
         <translation>РС_д</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="709"/>
         <source>First aid</source>
         <translatorcomment>Автомобиль первой помощи.</translatorcomment>
-        <translation>АПП</translation>
+        <translation type="vanished">АПП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="711"/>
         <source>Emergency</source>
         <translatorcomment>Аварийно-спасательный автомобиль</translatorcomment>
-        <translation>АСА</translation>
+        <translation type="vanished">АСА</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="719"/>
         <source>Hose_car</source>
         <translatorcomment>Автомобиль рукавный</translatorcomment>
-        <translation>АР</translation>
+        <translation type="vanished">АР</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="720"/>
         <source>Comm</source>
         <translatorcomment>Автомобиль связи и освещения</translatorcomment>
-        <translation>АСО</translation>
+        <translation type="vanished">АСО</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="721"/>
         <source>Tech_serv</source>
         <translatorcomment>Автомобиль технической службы</translatorcomment>
-        <translation>АПТС</translation>
+        <translation type="vanished">АПТС</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="723"/>
         <source>Smok_rem</source>
         <translatorcomment>Автомобиль дымоудаления.</translatorcomment>
-        <translation>АД</translation>
+        <translation type="vanished">АД</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="725"/>
         <source>AutoPumpS</source>
         <translatorcomment>Насосная станция</translatorcomment>
-        <translation>ПНС</translation>
+        <translation type="vanished">ПНС</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="727"/>
         <source>CarriageCar_1</source>
         <translatorcomment>Автомобиль со стационарным лафетным стволом.</translatorcomment>
-        <translation>АЛСС</translation>
+        <translation type="vanished">АЛСС</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="729"/>
         <source>CarriageCar_2</source>
         <translatorcomment>Автомобиль передвижной лафетный ствол.</translatorcomment>
-        <translation>АЛСП</translation>
+        <translation type="vanished">АЛСП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="731"/>
         <source>Aerodrom</source>
         <translatorcomment>Автомобиль аэродромный</translatorcomment>
-        <translation>АА</translation>
+        <translation type="vanished">АА</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="733"/>
         <source>Foam</source>
         <translatorcomment>Автомобиль пенного тушения.</translatorcomment>
-        <translation>АПТ</translation>
+        <translation type="vanished">АПТ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="735"/>
         <source>Combo</source>
         <translatorcomment>Автомобиль комбинированного тушения.</translatorcomment>
-        <translation>АКТ</translation>
+        <translation type="vanished">АКТ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="737"/>
         <source>Aerosol</source>
         <translatorcomment>Автомобиль водоаэрозольного тушения.</translatorcomment>
-        <translation>АВД</translation>
+        <translation type="vanished">АВД</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="739"/>
         <source>Powder</source>
         <translatorcomment>Автомобиль порошкового тушения.</translatorcomment>
-        <translation>АП</translation>
+        <translation type="vanished">АП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="741"/>
         <source>Carbon</source>
         <translatorcomment>Автомобиль газового тушения (СО2).</translatorcomment>
-        <translation>АГТ</translation>
+        <translation type="vanished">АГТ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="743"/>
         <source>GazWater</source>
         <translatorcomment>Автомобиль газо-водяного тушения.</translatorcomment>
-        <translation>АГВТ</translation>
+        <translation type="vanished">АГВТ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="747"/>
         <source>Tank</source>
         <translatorcomment>Пожарный танк.</translatorcomment>
-        <translation>Танк</translation>
+        <translation type="vanished">Танк</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="749"/>
         <source>GDZS</source>
         <translatorcomment>Автомобиль газодымозащитной службы.</translatorcomment>
-        <translation>АГ</translation>
+        <translation type="vanished">АГ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="751"/>
         <source>Waterproof</source>
         <translatorcomment>Автомобиль водозащитный.</translatorcomment>
-        <translation>АВЗ</translation>
+        <translation type="vanished">АВЗ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="753"/>
         <source>Laboratory</source>
         <translatorcomment>Пожарная автолаборатория.</translatorcomment>
-        <translation>АЛП</translation>
+        <translation type="vanished">АЛП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="755"/>
         <source>StaffCar</source>
         <translatorcomment>Пожарный штабной автомобиль.</translatorcomment>
-        <translation>АШ</translation>
+        <translation type="vanished">АШ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="757"/>
         <source>Trailer</source>
         <translatorcomment>Прицеп пожарный.</translatorcomment>
-        <translation>ПЦ</translation>
+        <translation type="vanished">ПЦ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="759"/>
         <source>Vessel</source>
         <translatorcomment>Судно пожарное</translatorcomment>
-        <translation>СП</translation>
+        <translation type="vanished">СП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="761"/>
         <source>Boat</source>
         <translatorcomment>Катер пожарный</translatorcomment>
-        <translation>КП</translation>
+        <translation type="vanished">КП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="765"/>
         <source>Plane</source>
         <translatorcomment>Самолёт пожарный</translatorcomment>
-        <translation>Ил</translation>
+        <translation type="vanished">Ил</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="767"/>
         <source>Seaplane</source>
         <translatorcomment>Гидросамолёт пожарный</translatorcomment>
-        <translation>БЕ</translation>
+        <translation type="vanished">БЕ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="769"/>
         <source>Helicopter</source>
         <translatorcomment>Вертолёт пожарный</translatorcomment>
-        <translation>БК</translation>
+        <translation type="vanished">БК</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="771"/>
         <source>MotoPump 1</source>
         <translatorcomment>Мотопомпа пожарная переносная</translatorcomment>
-        <translation>МП</translation>
+        <translation type="vanished">МП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="773"/>
         <source>MotoPump 2</source>
         <translatorcomment>Мотопомпа пожарная прицепная.</translatorcomment>
-        <translation>МПЦ</translation>
+        <translation type="vanished">МПЦ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="775"/>
         <source>TrailerPowder</source>
         <translatorcomment>Прицеп пожарный порошковый.</translatorcomment>
-        <translation>ППЦ</translation>
+        <translation type="vanished">ППЦ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="802"/>
+        <location filename="../mainwindow.cpp" line="804"/>
         <source>Carriage 1</source>
         <translatorcomment>Переносной лафетный ствол</translatorcomment>
         <translation>ПЛС</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="804"/>
+        <location filename="../mainwindow.cpp" line="806"/>
         <source>Carriage 2</source>
         <translatorcomment>Лафетный ствол стационарный водяной</translatorcomment>
         <translation>ЛС-С</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="806"/>
+        <location filename="../mainwindow.cpp" line="808"/>
         <source>Carriage 3</source>
         <translatorcomment>Ствол лафетный стационарный порошковый</translatorcomment>
         <translation>ЛС-СП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="808"/>
+        <location filename="../mainwindow.cpp" line="810"/>
         <source>Carriage 4</source>
         <translatorcomment>Лафетный ствол пенный стационарный</translatorcomment>
         <translation>ЛСП-С</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="810"/>
+        <location filename="../mainwindow.cpp" line="812"/>
         <source>Carriage 5</source>
         <translatorcomment>Лафетный ствол возимый</translatorcomment>
         <translation>ЛС-В</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="818"/>
+        <location filename="../mainwindow.cpp" line="820"/>
         <source>Ladder 1</source>
         <translatorcomment>Лестница палка</translatorcomment>
         <translation>ЛП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="819"/>
+        <location filename="../mainwindow.cpp" line="821"/>
         <source>Ladder 2</source>
         <translatorcomment>Лестница штурмовка</translatorcomment>
         <translation>ЛШ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="820"/>
+        <location filename="../mainwindow.cpp" line="822"/>
         <source>Ladder 3</source>
         <translatorcomment>Трёхколенная лестница</translatorcomment>
         <translation>ВПЛ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="832"/>
+        <location filename="../mainwindow.cpp" line="834"/>
         <source>Smok 1</source>
         <translatorcomment>Дымосос переносной</translatorcomment>
         <translation>ДП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="833"/>
+        <location filename="../mainwindow.cpp" line="835"/>
         <source>Smok 2</source>
         <translatorcomment>Дымосос прицепной</translatorcomment>
         <translation>ПД</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="834"/>
+        <location filename="../mainwindow.cpp" line="836"/>
         <source>Hose</source>
         <translatorcomment>Рукав всасывающий</translatorcomment>
         <translation>ВР</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="835"/>
+        <location filename="../mainwindow.cpp" line="837"/>
         <source>FLift 1</source>
         <translatorcomment>Подёмник пенный пенослив</translatorcomment>
         <translation>ПО</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="836"/>
+        <location filename="../mainwindow.cpp" line="838"/>
         <source>FLift 2</source>
         <translatorcomment>Пеноподъёмник с гребёнкой ГПС</translatorcomment>
         <translation>ПП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="848"/>
+        <location filename="../mainwindow.cpp" line="850"/>
         <source>Wall</source>
         <translation>Стена</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="850"/>
+        <location filename="../mainwindow.cpp" line="852"/>
         <source>Window</source>
         <translation>Окно</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="852"/>
+        <location filename="../mainwindow.cpp" line="854"/>
         <source>Door</source>
         <translation>Дверь</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="854"/>
+        <location filename="../mainwindow.cpp" line="856"/>
         <source>Opening</source>
         <translation>Проём</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="856"/>
+        <location filename="../mainwindow.cpp" line="858"/>
         <source>Stairwell</source>
         <translatorcomment>Лестничная клетка</translatorcomment>
         <translation>ЛК</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="858"/>
+        <location filename="../mainwindow.cpp" line="860"/>
         <source>Stairs</source>
         <translation>Лестница</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="866"/>
+        <location filename="../mainwindow.cpp" line="868"/>
         <source>Building structures</source>
         <translation>Строительные конструкции</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="867"/>
+        <location filename="../mainwindow.cpp" line="869"/>
         <source>Technics</source>
         <translation>Техника</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="868"/>
+        <location filename="../mainwindow.cpp" line="870"/>
         <source>Device</source>
         <translation>ПТВ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="899"/>
+        <location filename="../mainwindow.cpp" line="901"/>
         <source>Zoom out</source>
         <translation>Уменьшить</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="900"/>
+        <location filename="../mainwindow.cpp" line="902"/>
         <source>Ctrl+-</source>
         <translation>Ctrl+-</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="902"/>
+        <location filename="../mainwindow.cpp" line="904"/>
         <source>Zoom out the scene by 10%</source>
         <translation>Уменьшить масштаб схемы на 10%</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="906"/>
+        <location filename="../mainwindow.cpp" line="908"/>
         <source>Zoom in</source>
         <translation>Увеличить</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="908"/>
+        <location filename="../mainwindow.cpp" line="910"/>
         <source>Ctrl++</source>
         <translation>Ctrl++</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="909"/>
+        <location filename="../mainwindow.cpp" line="911"/>
         <source>Zoom in on the scene by 10%</source>
         <translation>Увеличить масштаб схемы на 10%</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="913"/>
+        <location filename="../mainwindow.cpp" line="915"/>
         <source>Bold</source>
         <translation>Жирный</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="915"/>
+        <location filename="../mainwindow.cpp" line="917"/>
         <source>Ctrl+B</source>
         <translation>Ctrl+B</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="918"/>
+        <location filename="../mainwindow.cpp" line="920"/>
         <source>Italic</source>
         <translation>Курсив</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="923"/>
+        <location filename="../mainwindow.cpp" line="925"/>
         <source>Underline</source>
         <translation>Подчеркнутый</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="925"/>
+        <location filename="../mainwindow.cpp" line="927"/>
         <source>Ctrl+U</source>
         <translation>Ctrl+U</translation>
     </message>
@@ -1032,251 +991,251 @@
         <translation type="vanished">Закрытая дверь</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="951"/>
+        <location filename="../mainwindow.cpp" line="953"/>
         <source>NoPen</source>
         <translation>Без контура</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="952"/>
-        <location filename="../mainwindow.cpp" line="991"/>
+        <location filename="../mainwindow.cpp" line="954"/>
+        <location filename="../mainwindow.cpp" line="993"/>
         <source>Solid</source>
         <translation>Сплошная</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="953"/>
+        <location filename="../mainwindow.cpp" line="955"/>
         <source>Dash</source>
         <translation>Штрих</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="954"/>
+        <location filename="../mainwindow.cpp" line="956"/>
         <source>Dot</source>
         <translation>Пунктир</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="955"/>
+        <location filename="../mainwindow.cpp" line="957"/>
         <source>DashDot</source>
         <translation>Штрих-пунктир</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="956"/>
+        <location filename="../mainwindow.cpp" line="958"/>
         <source>DashDotDot</source>
         <translation>Штрих пунктир 2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="958"/>
+        <location filename="../mainwindow.cpp" line="960"/>
         <source>Changing the pen style</source>
         <translation>Изменить стиль линии</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="968"/>
+        <location filename="../mainwindow.cpp" line="970"/>
         <source>Changing the pen thickness</source>
         <translation>Изменить толщину линии</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="979"/>
+        <location filename="../mainwindow.cpp" line="981"/>
         <source>Changing the color of the pen</source>
         <translation>Изменить цвет линии</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="990"/>
+        <location filename="../mainwindow.cpp" line="992"/>
         <source>No brush</source>
         <translation>Без заливки</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="992"/>
+        <location filename="../mainwindow.cpp" line="994"/>
         <source>Horizontal</source>
         <translation>Горизонтальная</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="993"/>
+        <location filename="../mainwindow.cpp" line="995"/>
         <source>Vertical</source>
         <translation>Вертикальная</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="994"/>
+        <location filename="../mainwindow.cpp" line="996"/>
         <source>Cross</source>
         <translation>Клетка</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="995"/>
+        <location filename="../mainwindow.cpp" line="997"/>
         <source>BDiag</source>
         <translation>Диагональ 1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="996"/>
+        <location filename="../mainwindow.cpp" line="998"/>
         <source>FDiag</source>
         <translation>Диагональ 2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="997"/>
+        <location filename="../mainwindow.cpp" line="999"/>
         <source>DiagCross</source>
         <translation>Диагональная сетка</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="998"/>
+        <location filename="../mainwindow.cpp" line="1000"/>
         <source>Dense 1</source>
         <translation>Заполнение 1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="999"/>
+        <location filename="../mainwindow.cpp" line="1001"/>
         <source>Dense 2</source>
         <translation>Заполнение 2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1000"/>
+        <location filename="../mainwindow.cpp" line="1002"/>
         <source>Dense 3</source>
         <translation>Заполнение 3</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1001"/>
+        <location filename="../mainwindow.cpp" line="1003"/>
         <source>Dense 4</source>
         <translation>Заполнение 4</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1002"/>
+        <location filename="../mainwindow.cpp" line="1004"/>
         <source>Dense 5</source>
         <translation>Заполнение 5</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1003"/>
+        <location filename="../mainwindow.cpp" line="1005"/>
         <source>Dense 6</source>
         <translation>Заполнение 6</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1004"/>
+        <location filename="../mainwindow.cpp" line="1006"/>
         <source>Dense 7</source>
         <translation>Заполнение 7</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1006"/>
+        <location filename="../mainwindow.cpp" line="1008"/>
         <source>Changing the fill style</source>
         <translation>Изменить стиль заливки</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1017"/>
+        <location filename="../mainwindow.cpp" line="1019"/>
         <source>Changing the fill color</source>
         <translation>Изменить цвет заливки</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1027"/>
+        <location filename="../mainwindow.cpp" line="1029"/>
         <source>Item style</source>
         <translation>Стиль элемента</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1040"/>
+        <location filename="../mainwindow.cpp" line="1042"/>
         <source>Change the font of the text</source>
         <translation>Изменить шрифт</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1050"/>
+        <location filename="../mainwindow.cpp" line="1052"/>
         <source>Change the font size of the text</source>
         <translation>Изменить размер шрифта</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1056"/>
+        <location filename="../mainwindow.cpp" line="1058"/>
         <source>Changing the color of the text</source>
         <translation>Изменить цвет текста</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1059"/>
+        <location filename="../mainwindow.cpp" line="1061"/>
         <source>Font style</source>
         <translation>Стиль шрифта</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1086"/>
+        <location filename="../mainwindow.cpp" line="1088"/>
         <source>25%</source>
         <translation>25%</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1086"/>
+        <location filename="../mainwindow.cpp" line="1088"/>
         <source>50%</source>
         <translation>50%</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1086"/>
+        <location filename="../mainwindow.cpp" line="1088"/>
         <source>75%</source>
         <translation>75%</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1086"/>
+        <location filename="../mainwindow.cpp" line="1088"/>
         <source>100%</source>
         <translation>100%</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1086"/>
+        <location filename="../mainwindow.cpp" line="1088"/>
         <source>125%</source>
         <translation>125%</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1087"/>
+        <location filename="../mainwindow.cpp" line="1089"/>
         <source>150%</source>
         <translation>150%</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1087"/>
+        <location filename="../mainwindow.cpp" line="1089"/>
         <source>200%</source>
         <translation>200%</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1087"/>
+        <location filename="../mainwindow.cpp" line="1089"/>
         <source>300%</source>
         <translation>300%</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1087"/>
+        <location filename="../mainwindow.cpp" line="1089"/>
         <source>500%</source>
         <translation>500%</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1091"/>
+        <location filename="../mainwindow.cpp" line="1093"/>
         <source>Changing the scene scale</source>
         <translation>Изменить масштаб схемы</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1095"/>
+        <location filename="../mainwindow.cpp" line="1097"/>
         <source>Scene scale</source>
         <translation>Масштаб</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1179"/>
+        <location filename="../mainwindow.cpp" line="1182"/>
         <source>The document has been modified.
 Do you want to save your changes?</source>
         <translation>Документ был изменен.
 Вы хотите сохранить свои изменения?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1207"/>
+        <location filename="../mainwindow.cpp" line="1210"/>
         <source>Cannot write file %1:
 %2.</source>
         <translation>Не удается записать файл %1:
 %2.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1211"/>
+        <location filename="../mainwindow.cpp" line="1214"/>
         <source>Cannot open file %1 for writing:
 %2.</source>
         <translation>Не удается открыть файл %1 для записи:
 %2.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1221"/>
+        <location filename="../mainwindow.cpp" line="1224"/>
         <source>File saved</source>
         <translation>Файл сохранён</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1232"/>
+        <location filename="../mainwindow.cpp" line="1235"/>
         <source>untitled.rse</source>
         <translation>Без имени.rse</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1234"/>
+        <location filename="../mainwindow.cpp" line="1237"/>
         <source> - RSiSed</source>
         <translation> - РСиС</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1265"/>
-        <location filename="../mainwindow.cpp" line="1271"/>
-        <location filename="../mainwindow.cpp" line="1278"/>
+        <location filename="../mainwindow.cpp" line="1268"/>
+        <location filename="../mainwindow.cpp" line="1274"/>
+        <location filename="../mainwindow.cpp" line="1281"/>
         <source>%</source>
         <translation>%</translation>
     </message>

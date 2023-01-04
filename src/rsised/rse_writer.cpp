@@ -231,11 +231,14 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> &items, Q
             rseWriter.writeCharacters(strPixmap);
             rseWriter.writeEndElement(); // pixmapitems
         }
-        if (item->type() == TechnicsShape::Type) {
-            TechnicsShape *technicsShape = qgraphicsitem_cast<TechnicsShape *>(item);
+        if (TechnicsShape *technicsShape = dynamic_cast<TechnicsShape *>(item)) {
             rseWriter.writeStartElement("technics_shape");
             rseWriter.writeAttribute("x", QString::number(technicsShape->scenePos().x()));
             rseWriter.writeAttribute("y", QString::number(technicsShape->scenePos().y()));
+            rseWriter.writeAttribute("item_left", QString::number(technicsShape->rect().left()));
+            rseWriter.writeAttribute("item_top", QString::number(technicsShape->rect().top()));
+            rseWriter.writeAttribute("width", QString::number(technicsShape->rect().width()));
+            rseWriter.writeAttribute("height", QString::number(technicsShape->rect().height()));
             TechnicsShape::ShapeType shapeType = technicsShape->shapeType();
             rseWriter.writeAttribute("shape_type", QString::number(shapeType));
             rseWriter.writeAttribute("z", QString::number(technicsShape->zValue()));

@@ -281,8 +281,9 @@ void MainWindow::copy()
         if (TechnicsShape *p_oldTechnicsShape = dynamic_cast<TechnicsShape *>(p_shape)) {
             TechnicsShape::ShapeType shapeType = p_oldTechnicsShape->shapeType();
             QTransform shapeTransform = p_oldTechnicsShape->transform();
-            TechnicsShape *p_newTechnicsShape = new TechnicsShape(shapeType);
+            TechnicsShape *p_newTechnicsShape{TechnicsShape::createTechnicsShape(shapeType)};
             p_newTechnicsShape->setMenu(m_contextMenu);
+            p_newTechnicsShape->setRect(p_oldTechnicsShape->rect());
             p_newTechnicsShape->setPos(QPointF(p_oldTechnicsShape->x() + 10
                                              , p_oldTechnicsShape->y() + 10));
             p_newTechnicsShape->setZValue(p_oldTechnicsShape->zValue());
@@ -504,8 +505,9 @@ void MainWindow::insertTechnicsShape(QAbstractButton *button)
     }
     const int idButton = m_technicsButtonGroup->id(button);
     TechnicsShape::ShapeType shapeType {TechnicsShape::ShapeType(idButton)};
-    TechnicsShape technicsShape(shapeType);
-    ui->mainGraphicsView->setCursor(QCursor(technicsShape.image()));
+    QScopedPointer<TechnicsShape, TechnicsShape::TechnicsShapeDeleter>
+            sc_technicsShape{TechnicsShape::createTechnicsShape(shapeType)};
+    ui->mainGraphicsView->setCursor(QCursor(sc_technicsShape->image()));
     ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     m_scene->setMode(DiagramScene::InsertTechnicsShape);
     m_scene->setTechnicsShapeType(TechnicsShape::ShapeType(idButton));
@@ -701,87 +703,87 @@ void MainWindow::createShapeToolBox()
     connect(m_technicsButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked)
             , this, &MainWindow::insertTechnicsShape);
     QGridLayout *p_technicsLayout = new QGridLayout(this);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Car"), TechnicsShape::Base), 0, 0);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Car"), TechnicsShape::Base), 0, 0);
     p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Tanker")
                                                        , TechnicsShape::Tanker), 0, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Auto pump")
-                                                       , TechnicsShape::AutoPump), 0, 2);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("First aid")
-                                                       , TechnicsShape::FirstAid), 1, 0);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Emergency")
-                                                       , TechnicsShape::Emergency), 1, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Auto ladder")
-                                                       , TechnicsShape::AutoLadder), 1, 2);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Crank lift")
-                                                       , TechnicsShape::CrankLift), 2, 0);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Telescopic lift")
-                                                       , TechnicsShape::TelescopicLift), 2, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Hose_car"), TechnicsShape::Hose), 2, 2);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Comm"), TechnicsShape::Comm), 3, 0);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Tech_serv")
-                                                       , TechnicsShape::Tech_serv), 3, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Smok_rem")
-                                                       , TechnicsShape::Smok_rem), 3, 2);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("AutoPumpS")
-                                                       , TechnicsShape::AutoPumpS), 4, 0);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("CarriageCar_1")
-                                                       , TechnicsShape::CarriageCar_1), 4, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("CarriageCar_2")
-                                                       , TechnicsShape::CarriageCar_2), 4, 2);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Aerodrom")
-                                                       , TechnicsShape::Aerodrome), 5, 0);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Foam")
-                                                       , TechnicsShape::Foam), 5, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Combo")
-                                                       , TechnicsShape::Combo), 5, 2);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Aerosol")
-                                                       , TechnicsShape::Aerosol), 6, 0);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Powder")
-                                                       , TechnicsShape::Powder), 6, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Carbon")
-                                                       , TechnicsShape::Carbon), 6, 2);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("GazWater")
-                                                       , TechnicsShape::GazWater), 7, 0);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Tracked")
-                                                       , TechnicsShape::Tracked), 7, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Tank")
-                                                       , TechnicsShape::Tank), 7, 2);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("GDZS")
-                                                       , TechnicsShape::GDZS), 8, 0);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Waterproof")
-                                                       , TechnicsShape::Waterproof), 8, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Laboratory")
-                                                       , TechnicsShape::Laboratory), 8, 2);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("StaffCar")
-                                                       , TechnicsShape::StaffCar), 9, 0);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Trailer")
-                                                       , TechnicsShape::Trailer), 9, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Vessel")
-                                                       , TechnicsShape::Vessel), 9, 2);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Boat")
-                                                       , TechnicsShape::Boat), 10, 0);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Train")
-                                                       , TechnicsShape::Train), 10, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Plane")
-                                                           , TechnicsShape::Plane), 10, 2);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Seaplane")
-                                                           , TechnicsShape::Seaplane), 11, 0);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Helicopter")
-                                                           , TechnicsShape::Helicopter), 11, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("MotoPump 1")
-                                                           , TechnicsShape::MotoPump_1), 11, 2);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("MotoPump 2")
-                                                           , TechnicsShape::MotoPump_2), 12, 0);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("TrailerPowder")
-                                                           , TechnicsShape::TrailerPowder), 12, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Adapted")
-                                                       , TechnicsShape::Adapted), 12, 2);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Other adapted")
-                                                       , TechnicsShape::OtherAdapted), 13, 0);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Ambulance")
-                                                       , TechnicsShape::Ambulance), 13, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Police")
-                                                       , TechnicsShape::Police), 13, 2);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Auto pump")
+//                                                       , TechnicsShape::AutoPump), 0, 2);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("First aid")
+//                                                       , TechnicsShape::FirstAid), 1, 0);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Emergency")
+//                                                       , TechnicsShape::Emergency), 1, 1);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Auto ladder")
+//                                                       , TechnicsShape::AutoLadder), 1, 2);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Crank lift")
+//                                                       , TechnicsShape::CrankLift), 2, 0);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Telescopic lift")
+//                                                       , TechnicsShape::TelescopicLift), 2, 1);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Hose_car"), TechnicsShape::Hose), 2, 2);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Comm"), TechnicsShape::Comm), 3, 0);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Tech_serv")
+//                                                       , TechnicsShape::Tech_serv), 3, 1);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Smok_rem")
+//                                                       , TechnicsShape::Smok_rem), 3, 2);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("AutoPumpS")
+//                                                       , TechnicsShape::AutoPumpS), 4, 0);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("CarriageCar_1")
+//                                                       , TechnicsShape::CarriageCar_1), 4, 1);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("CarriageCar_2")
+//                                                       , TechnicsShape::CarriageCar_2), 4, 2);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Aerodrom")
+//                                                       , TechnicsShape::Aerodrome), 5, 0);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Foam")
+//                                                       , TechnicsShape::Foam), 5, 1);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Combo")
+//                                                       , TechnicsShape::Combo), 5, 2);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Aerosol")
+//                                                       , TechnicsShape::Aerosol), 6, 0);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Powder")
+//                                                       , TechnicsShape::Powder), 6, 1);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Carbon")
+//                                                       , TechnicsShape::Carbon), 6, 2);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("GazWater")
+//                                                       , TechnicsShape::GazWater), 7, 0);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Tracked")
+//                                                       , TechnicsShape::Tracked), 7, 1);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Tank")
+//                                                       , TechnicsShape::Tank), 7, 2);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("GDZS")
+//                                                       , TechnicsShape::GDZS), 8, 0);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Waterproof")
+//                                                       , TechnicsShape::Waterproof), 8, 1);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Laboratory")
+//                                                       , TechnicsShape::Laboratory), 8, 2);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("StaffCar")
+//                                                       , TechnicsShape::StaffCar), 9, 0);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Trailer")
+//                                                       , TechnicsShape::Trailer), 9, 1);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Vessel")
+//                                                       , TechnicsShape::Vessel), 9, 2);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Boat")
+//                                                       , TechnicsShape::Boat), 10, 0);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Train")
+//                                                       , TechnicsShape::Train), 10, 1);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Plane")
+//                                                           , TechnicsShape::Plane), 10, 2);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Seaplane")
+//                                                           , TechnicsShape::Seaplane), 11, 0);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Helicopter")
+//                                                           , TechnicsShape::Helicopter), 11, 1);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("MotoPump 1")
+//                                                           , TechnicsShape::MotoPump_1), 11, 2);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("MotoPump 2")
+//                                                           , TechnicsShape::MotoPump_2), 12, 0);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("TrailerPowder")
+//                                                           , TechnicsShape::TrailerPowder), 12, 1);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Adapted")
+//                                                       , TechnicsShape::Adapted), 12, 2);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Other adapted")
+//                                                       , TechnicsShape::OtherAdapted), 13, 0);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Ambulance")
+//                                                       , TechnicsShape::Ambulance), 13, 1);
+//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Police")
+//                                                       , TechnicsShape::Police), 13, 2);
     p_technicsLayout->setRowStretch(14, 10);
     p_technicsLayout->setColumnStretch(3, 10);
     QWidget *p_technicsWidget = new QWidget(this);
@@ -1100,10 +1102,11 @@ void MainWindow::createSceneScaleToolBar()
 
 QWidget *MainWindow::createTechnicsCellWidget(const QString &text, TechnicsShape::ShapeType type)
 {
-    TechnicsShape technicsShape(type);
-    QIcon icon(technicsShape.image());
-    qreal iconWidth{technicsShape.boundingRect().width() / 2.0};
-    qreal iconHeight{technicsShape.boundingRect().height() / 2.0};
+    QScopedPointer<TechnicsShape, TechnicsShape::TechnicsShapeDeleter>
+            sc_technicsShape{TechnicsShape::createTechnicsShape(type)};
+    QIcon icon(sc_technicsShape->image());
+    qreal iconWidth{sc_technicsShape->boundingRect().width() / 2.0};
+    qreal iconHeight{sc_technicsShape->boundingRect().height() / 2.0};
 
     QToolButton *p_technicsButton = new QToolButton(this);
     p_technicsButton->setIcon(icon);
