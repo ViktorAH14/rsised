@@ -23,6 +23,10 @@
 
 #include "abstractshape.h"
 
+QT_BEGIN_NAMESPACE
+class QAction;
+QT_END_NAMESPACE
+
 class TechnicsShape : public AbstractShape
 {
 public:
@@ -79,7 +83,6 @@ public:
     static TechnicsShape *createTechnicsShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
     inline int type() const override { return Type;}
-//    QRectF boundingRect() const override;
     virtual QPixmap image() = 0;
     virtual ShapeType shapeType() const = 0;
     virtual void setRect(const QRectF &rect) = 0;
@@ -91,13 +94,9 @@ protected:
     explicit TechnicsShape(QGraphicsItem *parent = nullptr);
     virtual ~TechnicsShape() = 0;
     virtual void deleter();
-//    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 private:
     Q_DISABLE_COPY(TechnicsShape)
-//    void drawShape(QPainter *painter);
-
-//    ShapeType m_shapeType;
 };
 
 class TankerShape : public TechnicsShape
@@ -119,15 +118,32 @@ public:
     void setHeight(const qreal &height) override;
     qreal height() const override;
 
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
 protected:
     ~TankerShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
 
 private:
     Q_DISABLE_COPY(TankerShape)
 
     void drawTankerShape(QPainter *painter);
     QPolygonF basePolygon() const;
+    void createAction();
+
     const ShapeType m_tankerType;
     QRectF m_tankerRect;
+    bool m_showPipes;
+    bool m_showCollector;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QList<QAction *> m_tankerActionList;
+    void drawPipes(qreal roundRadius, QPainter *painter);
+    void drawCollector(QPainter *painter, qreal roundRadius);
 };
 #endif // TECHNICSSHAPE_H

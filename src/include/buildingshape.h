@@ -108,7 +108,6 @@ private:
     bool m_leftButtonPressed;
 };
 
-
 class DoorShape :public BuildingShape
 {
 public:

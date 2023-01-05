@@ -297,9 +297,17 @@ SizeGripShape::SizeGripShape(Resizer *resizer, QGraphicsItem *parent)
     , m_startPoint{QPointF()}
     , m_spanPoint{QPointF()}
 {
-    if ((parent->type() == RectShape::Type) || (parent->type() == PixmapShape::Type)
-            || (parent->type() == TankerShape::Type) || (parent->type() == DeviceShape::Type)
-            || (parent->type() == StairwellShape::Type) || (parent->type() == StairsShape::Type)) {
+    QList<int> rectTypeList;
+    rectTypeList << RectShape::Type << PixmapShape::Type << TankerShape::Type
+                 << DeviceShape::Type << StairwellShape::Type <<StairsShape::Type;
+    bool rectType{false};
+    for (const int itemType : rectTypeList) {
+        if (parent->type() == itemType) {
+                rectType = true;
+        }
+    }
+
+    if (rectType) {
         m_parentItemRect = parentItem()->boundingRect();
         setItemType(Rect);
         int handleNum {-1};
@@ -434,8 +442,7 @@ void SizeGripShape::doResize()
     {
         if ((m_itemType == Rect) || (m_itemType == Pie)) {
             (*m_itemResizer)(parentItem(), m_parentItemRect);
-            if (parentItem()->type() == PixmapShape::Type ||        //TODO изменить, неадекватное масштабирование нижеперечисленных шейпов
-                    parentItem()->type() == TechnicsShape::Type) {
+            if (parentItem()->type() == PixmapShape::Type) { //TODO изменить, неадекватное масштабирование нижеперечисленных шейпов
                 m_parentItemRect = parentItem()->boundingRect();
             }
             updateHandleItemPositions();

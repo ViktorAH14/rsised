@@ -23,6 +23,7 @@
 
 #include <QtMath>
 #include <QPainter>
+#include <QMenu>
 #include <QActionGroup>
 #include <QGraphicsSceneEvent>
 #include <QStyleOptionGraphicsItem>
@@ -396,7 +397,7 @@ void DoorShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         break;
     case Qt::RightButton:
         addActions(m_actionList);
-        menu()->exec();
+        menu()->exec(mouseEvent->screenPos());
         removeActions(m_actionList);
         break;
     default:
@@ -412,7 +413,7 @@ void DoorShape::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         m_leftButtonPressed = false;
     }
 
-    QGraphicsItem::mouseReleaseEvent(mouseEvent);
+    AbstractShape::mouseReleaseEvent(mouseEvent);
 }
 
 void DoorShape::drawDoor(QPainter *painter)
