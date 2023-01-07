@@ -445,12 +445,12 @@ void SizeGripShape::doResize()
             if (parentItem()->type() == PixmapShape::Type) { //TODO изменить, неадекватное масштабирование нижеперечисленных шейпов
                 m_parentItemRect = parentItem()->boundingRect();
             }
-            updateHandleItemPositions();
+//            updateHandleItemPositions();
         }
         if (m_itemType == Path) {
             (*m_itemResizer)(parentItem(), QVariant::fromValue(m_parentPath));
-            updateHandleItemPositions();
         }
+        updateHandleItemPositions();
     }
 }
 

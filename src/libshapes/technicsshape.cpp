@@ -497,7 +497,6 @@ TankerShape::TankerShape(QGraphicsItem *parent)
     setAcceptHoverEvents(true);
     setPen(QPen(Qt::red, 1));
     setBrush(QBrush(Qt::white));
-    createAction();
 }
 
 void TankerShape::drawPipes(qreal roundRadius, QPainter *painter)
@@ -579,13 +578,17 @@ QPolygonF TankerShape::basePolygon() const
 
 void TankerShape::createAction()
 {
-    m_showPipeAction.reset(new QAction(QObject::tr("Show pipes")));
+    QString pipeActionText{m_showPipes == true ? QObject::tr("Hide pipes")
+                                               : QObject::tr("Show pipes")};
+    m_showPipeAction.reset(new QAction(pipeActionText));
     m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
     QObject::connect(m_showPipeAction.get(), &QAction::triggered
-                     , [this](){m_showPipes == true ? setPipes(false) : setPipes(true);});
+                     , [this]() {m_showPipes == true ? setPipes(false) : setPipes(true);});
     m_tankerActionList.append(m_showPipeAction.get());
 
-    m_showCollectorAction.reset(new QAction(QObject::tr("Show collector")));
+    QString collectorActionText{ m_showCollector == true ? QObject::tr("Hide collector")
+                                                         : QObject::tr("Show collector")};
+    m_showCollectorAction.reset(new QAction(collectorActionText));
     m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
     QObject::connect(m_showCollectorAction.get(), &QAction::triggered
                      , [this](){m_showCollector == true ? setCollector(false) : setCollector(true);});
@@ -610,11 +613,13 @@ void TankerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 QRectF TankerShape::boundingRect() const
 {
     QRectF boundingRect{m_tankerRect};
-    if (m_showPipes) { // FIXME прыгает размер при трансформации
+    if (m_showPipes) {
         qreal pipeLength{m_tankerRect.width() / 6};
-//        qreal topLeftX{m_tankerRect.left() - pipeLength};
-//        qreal bottomRightX{m_tankerRect.right() + pipeLength};
         boundingRect.adjust(-pipeLength, 0.0, pipeLength, 0.0);
+    }
+    if (m_showCollector) {
+        qreal collectorLength{m_tankerRect.width() / 3};
+        boundingRect.adjust(0.0, 0.0, 0.0, collectorLength);
     }
     qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
     if (halfpw > 0.0)
@@ -659,6 +664,14 @@ void TankerShape::setRect(const QRectF &rect)
 
     prepareGeometryChange();
     m_tankerRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_showPipes) {
+        qreal pipeLength{m_tankerRect.width() / 6};
+        m_tankerRect.adjust(pipeLength, 0.0, -pipeLength, 0.0);
+    }
+    if (m_showCollector) {
+        qreal collectorLength{m_tankerRect.width() / 3};
+        m_tankerRect.adjust(0.0, 0.0, 0.0, -collectorLength);
+    }
     update();
 }
 
@@ -692,6 +705,8 @@ void TankerShape::setPipes(bool showPipes)
 
     prepareGeometryChange();
     m_showPipes = showPipes;
+    setSelected(false);
+    setSelected(true);
     update();
 }
 
@@ -707,6 +722,8 @@ void TankerShape::setCollector(bool showCollector)
 
     prepareGeometryChange();
     m_showCollector = showCollector;
+    setSelected(false);
+    setSelected(true);
     update();
 }
 
@@ -715,12 +732,20 @@ bool TankerShape::collector()
     return m_showCollector;
 }
 
+TankerShape::~TankerShape()
+{
+}
+
 void TankerShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
         addActions(m_tankerActionList);
         menu()->exec(mouseEvent->screenPos());
-        removeActions(m_tankerActionList);
+        if (m_tankerActionList.isDetached()) {
+            removeActions(m_tankerActionList);
+            m_tankerActionList.clear();
+        }
     } else {
         AbstractShape::mousePressEvent(mouseEvent);
     }

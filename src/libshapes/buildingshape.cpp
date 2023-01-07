@@ -280,7 +280,6 @@ DoorShape::DoorShape(QGraphicsItem *parent)
     setDoor();
     setPen(QPen(Qt::black, 1));
     setBrush(QBrush(Qt::white));
-    createAction();
 }
 
 void DoorShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -396,9 +395,13 @@ void DoorShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         m_leftButtonPressed = true;
         break;
     case Qt::RightButton:
-        addActions(m_actionList);
+        createAction();
+        addActions(m_doorActionList);
         menu()->exec(mouseEvent->screenPos());
-        removeActions(m_actionList);
+        if (m_doorActionList.isDetached()) {
+            removeActions(m_doorActionList);
+            m_doorActionList.clear();
+        }
         break;
     default:
         AbstractShape::mousePressEvent(mouseEvent);
@@ -500,25 +503,25 @@ void DoorShape::createAction()
     QObject::connect(m_doorLeafPosAction.get(), &QAction::triggered
                      , [this](){m_leafPosition == Left ? setLeafPosition(Right)
                                                        : setLeafPosition(Left);});
-    m_actionList.append(m_doorLeafPosAction.get());
+    m_doorActionList.append(m_doorLeafPosAction.get());
 
     m_doorOpenAction.reset(new QAction(QObject::tr("Open door")));
     m_doorOpenAction->setToolTip(QObject::tr("Change the state of the door"));
     m_doorOpenAction->setCheckable(true);
     QObject::connect(m_doorOpenAction.get(), &QAction::triggered, [this](){setDoorState(Open);});
-    m_actionList.append(m_doorOpenAction.get());
+    m_doorActionList.append(m_doorOpenAction.get());
 
     m_doorAjarAction.reset(new QAction(QObject::tr("Ajar door")));
     m_doorAjarAction->setToolTip(QObject::tr("Change the state of the door"));
     m_doorAjarAction->setCheckable(true);
     QObject::connect(m_doorAjarAction.get(), &QAction::triggered, [this](){setDoorState(Ajar);});
-    m_actionList.append(m_doorAjarAction.get());
+    m_doorActionList.append(m_doorAjarAction.get());
 
     m_doorCloseAction.reset(new QAction(QObject::tr("Close door")));
     m_doorCloseAction->setToolTip(QObject::tr("Change the state of the door"));
     m_doorCloseAction->setCheckable(true);
     QObject::connect(m_doorCloseAction.get(), &QAction::triggered, [this](){setDoorState(Close);});
-    m_actionList.append(m_doorCloseAction.get());
+    m_doorActionList.append(m_doorCloseAction.get());
 
     m_doorStateActionGroup.reset(new QActionGroup(nullptr));
     m_doorStateActionGroup->addAction(m_doorOpenAction.get());

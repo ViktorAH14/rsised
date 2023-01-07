@@ -168,7 +168,7 @@ private:
     QScopedPointer<QAction> m_doorAjarAction;
     QScopedPointer<QAction> m_doorCloseAction;
     QScopedPointer<QActionGroup> m_doorStateActionGroup;
-    QList<QAction *> m_actionList;
+    QList<QAction *> m_doorActionList;
 };
 
 class WindowShape : public BuildingShape

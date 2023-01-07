@@ -124,7 +124,7 @@ public:
     bool collector();
 
 protected:
-    ~TankerShape() = default;
+    ~TankerShape();
 
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
 
