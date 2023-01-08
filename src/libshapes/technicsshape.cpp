@@ -22,7 +22,7 @@
 
 #include <QPainter>
 #include <QMenu>
-#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneEvent>
 #include <QStyleOptionGraphicsItem>
 
 TechnicsShape::TechnicsShape(QGraphicsItem *parent)
@@ -49,22 +49,6 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     }
     return p_technicsShape;
 }
-
-//void TechnicsShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
-//                          , QWidget *widget)
-//{
-//    Q_UNUSED(option);
-//    Q_UNUSED(widget);
-
-//    drawShape(painter);
-//}
-
-//QRectF TechnicsShape::boundingRect() const
-//{
-//    qreal penWidth {1.0};
-//    return QRectF(-32.0 - penWidth / 2.0, -37.5 - penWidth / 2.0
-//                  , 64.0 + penWidth, 75.0 + penWidth);
-//}
 
 //void TechnicsShape::drawShape(QPainter *painter)
 //{
@@ -470,28 +454,14 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
 //    }
 //}
 
-//QPixmap TechnicsShape::image()
-//{
-//    QPixmap pixmap(boundingRect().width(), boundingRect().height());
-//    pixmap.fill(Qt::transparent);
-//    QPainter painter(&pixmap);
-//    painter.translate(boundingRect().width() / 2.0, boundingRect().height() / 2.0);
-//    drawShape(&painter);
-
-//    return pixmap;
-//}
-
-//TechnicsShape::ShapeType TechnicsShape::shapeType() const
-//{
-//    return m_shapeType;
-//}
-
 TankerShape::TankerShape(QGraphicsItem *parent)
     : TechnicsShape(parent)
     , m_tankerType{Tanker}
+    , m_itemText{nullptr}
     , m_tankerRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
     , m_showPipes{false}
     , m_showCollector{false}
+    , m_showText{false}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
@@ -578,21 +548,27 @@ QPolygonF TankerShape::basePolygon() const
 
 void TankerShape::createAction()
 {
-    QString pipeActionText{m_showPipes == true ? QObject::tr("Hide pipes")
-                                               : QObject::tr("Show pipes")};
+    QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
     m_showPipeAction.reset(new QAction(pipeActionText));
     m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
     QObject::connect(m_showPipeAction.get(), &QAction::triggered
-                     , [this]() {m_showPipes == true ? setPipes(false) : setPipes(true);});
+                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
     m_tankerActionList.append(m_showPipeAction.get());
 
-    QString collectorActionText{ m_showCollector == true ? QObject::tr("Hide collector")
-                                                         : QObject::tr("Show collector")};
-    m_showCollectorAction.reset(new QAction(collectorActionText));
+    QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
+                                              : QObject::tr("Show collector")};
+    m_showCollectorAction.reset(new QAction(collectActionText));
     m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
     QObject::connect(m_showCollectorAction.get(), &QAction::triggered
-                     , [this](){m_showCollector == true ? setCollector(false) : setCollector(true);});
+                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
     m_tankerActionList.append(m_showCollectorAction.get());
+
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_tankerActionList.append(m_addTextAction.get());
 }
 
 void TankerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -664,6 +640,8 @@ void TankerShape::setRect(const QRectF &rect)
 
     prepareGeometryChange();
     m_tankerRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_itemText != nullptr)
+        m_itemText->setPos(m_tankerRect.right(), m_tankerRect.bottom() - m_tankerRect.width() / 6);
     if (m_showPipes) {
         qreal pipeLength{m_tankerRect.width() / 6};
         m_tankerRect.adjust(pipeLength, 0.0, -pipeLength, 0.0);
@@ -696,6 +674,25 @@ void TankerShape::setHeight(const qreal &height)
 qreal TankerShape::height() const
 {
     return m_tankerRect.height();
+}
+
+void TankerShape::setText(const QString &text)
+{
+    if (m_itemText == nullptr) {
+        m_itemText=new QGraphicsTextItem(this);
+        m_itemText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_itemText->setPos(m_tankerRect.right(), m_tankerRect.bottom() - m_tankerRect.width() / 6);
+        m_itemText->setRotation(-90);
+    }
+    m_itemText->setPlainText(text);
+}
+
+QString TankerShape::text() const
+{
+    if (m_itemText == nullptr) {
+        return "";
+    }
+    return m_itemText->toPlainText();
 }
 
 void TankerShape::setPipes(bool showPipes)
@@ -732,8 +729,22 @@ bool TankerShape::collector()
     return m_showCollector;
 }
 
-TankerShape::~TankerShape()
+void TankerShape::textShow(bool showText)
 {
+    if (showText) {
+        if (m_itemText == nullptr) {
+            m_itemText=new QGraphicsTextItem(this);
+            m_itemText->setPlainText("АЦ-");
+            m_itemText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_itemText->setPos(m_tankerRect.right(), m_tankerRect.bottom() - m_tankerRect.width() / 6);
+            m_itemText->setRotation(-90);
+        }
+        m_itemText->show();
+        m_showText = true;
+    } else {
+        m_itemText->hide();
+        m_showText = false;
+    }
 }
 
 void TankerShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -741,8 +752,12 @@ void TankerShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     if (mouseEvent->buttons() == Qt::RightButton) {
         createAction();
         addActions(m_tankerActionList);
-        menu()->exec(mouseEvent->screenPos());
-        if (m_tankerActionList.isDetached()) {
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
             removeActions(m_tankerActionList);
             m_tankerActionList.clear();
         }

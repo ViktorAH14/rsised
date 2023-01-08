@@ -394,14 +394,19 @@ void DoorShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     case Qt::LeftButton:
         m_leftButtonPressed = true;
         break;
-    case Qt::RightButton:
+    case Qt::RightButton: {
         createAction();
         addActions(m_doorActionList);
-        menu()->exec(mouseEvent->screenPos());
-        if (m_doorActionList.isDetached()) {
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
             removeActions(m_doorActionList);
             m_doorActionList.clear();
         }
+    }
         break;
     default:
         AbstractShape::mousePressEvent(mouseEvent);

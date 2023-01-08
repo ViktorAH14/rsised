@@ -570,6 +570,9 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 qreal m31 {0.0};
                 qreal m32 {0.0};
                 qreal m33 {0.0};
+                QString shapeText;
+                bool pipes{false};
+                bool collector{false};
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
                 for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
                     if (attr.name() == "x") {
@@ -608,17 +611,34 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         m32 = transList.at(7).toFloat();
                         m33 = transList.at(8).toFloat();
                     }
+                    if (attr.name() == "text") {
+                        shapeText.append(attr.value());
+                    }
+                    if (shapeType == TechnicsShape::Tanker) {
+                        if (attr.name() == "pipes") {
+                            pipes = attr.value().toInt();
+                        }
+                        if (attr.name() == "collector") {
+                            collector = attr.value().toInt();
+                        }
+                    }
                 }
 
-                TechnicsShape *technicsShape = TechnicsShape::createTechnicsShape(shapeType);
-                technicsShape->setMenu(m_itemMenu);
-                technicsShape->setPos(QPointF(x, y));
-                technicsShape->setRect(QRectF(itemLeft, itemTop, width, height));
-                technicsShape->setZValue(zValue);
+                TechnicsShape *p_technicsShape = TechnicsShape::createTechnicsShape(shapeType);
+                p_technicsShape->setMenu(m_itemMenu);
+                p_technicsShape->setPos(QPointF(x, y));
+                p_technicsShape->setRect(QRectF(itemLeft, itemTop, width, height));
+                p_technicsShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
-                technicsShape->setTransform(trans);
+                p_technicsShape->setTransform(trans);
+                if (!shapeText.isEmpty())
+                    p_technicsShape->setText(shapeText);
+                if (TankerShape *p_tankershape = dynamic_cast<TankerShape *>(p_technicsShape)) {
+                    p_tankershape->setPipes(pipes);
+                    p_tankershape->setCollector(collector);
+                }
 
-                itemList.append(technicsShape);
+                itemList.append(p_technicsShape);
             }
             if (rseItemReader.name() == "device_shape") {
                 qreal x {0.0};

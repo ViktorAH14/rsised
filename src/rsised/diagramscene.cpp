@@ -323,7 +323,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         }
     }
 
-        QGraphicsScene::mousePressEvent(mouseEvent);
+    QGraphicsScene::mousePressEvent(mouseEvent);
 }
 
 void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)

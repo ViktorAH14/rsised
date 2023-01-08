@@ -89,6 +89,8 @@ public:
     virtual QRectF rect() const = 0;
     virtual void setHeight(const qreal &height) = 0;
     virtual qreal height() const = 0;
+    virtual void setText(const QString &text) = 0;
+    virtual QString text() const = 0;
 
 protected:
     explicit TechnicsShape(QGraphicsItem *parent = nullptr);
@@ -97,6 +99,7 @@ protected:
 
 private:
     Q_DISABLE_COPY(TechnicsShape)
+
 };
 
 class TankerShape : public TechnicsShape
@@ -117,6 +120,8 @@ public:
     QRectF rect() const override;
     void setHeight(const qreal &height) override;
     qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
 
     void setPipes(bool showPipes);
     bool pipes() const;
@@ -124,26 +129,31 @@ public:
     bool collector();
 
 protected:
-    ~TankerShape();
+    ~TankerShape() = default;
 
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
 
 private:
     Q_DISABLE_COPY(TankerShape)
 
-    void drawTankerShape(QPainter *painter);
     QPolygonF basePolygon() const;
     void createAction();
+    void textShow(bool showText);
+    void drawTankerShape(QPainter *painter);
+    void drawPipes(qreal roundRadius, QPainter *painter);
+    void drawCollector(QPainter *painter, qreal roundRadius);
 
     const ShapeType m_tankerType;
+    QGraphicsTextItem *m_itemText;
     QRectF m_tankerRect;
     bool m_showPipes;
     bool m_showCollector;
+    bool m_showText;
+//    QString m_text;
 
     QScopedPointer<QAction> m_showPipeAction;
     QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_tankerActionList;
-    void drawPipes(qreal roundRadius, QPainter *painter);
-    void drawCollector(QPainter *painter, qreal roundRadius);
 };
 #endif // TECHNICSSHAPE_H

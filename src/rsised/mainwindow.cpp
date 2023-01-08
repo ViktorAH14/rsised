@@ -281,6 +281,7 @@ void MainWindow::copy()
         if (TechnicsShape *p_oldTechnicsShape = dynamic_cast<TechnicsShape *>(p_shape)) {
             TechnicsShape::ShapeType shapeType = p_oldTechnicsShape->shapeType();
             QTransform shapeTransform = p_oldTechnicsShape->transform();
+            QString shapeText{p_oldTechnicsShape->text()};
             TechnicsShape *p_newTechnicsShape{TechnicsShape::createTechnicsShape(shapeType)};
             p_newTechnicsShape->setMenu(m_contextMenu);
             p_newTechnicsShape->setRect(p_oldTechnicsShape->rect());
@@ -288,6 +289,8 @@ void MainWindow::copy()
                                              , p_oldTechnicsShape->y() + 10));
             p_newTechnicsShape->setZValue(p_oldTechnicsShape->zValue());
             p_newTechnicsShape->setTransform(shapeTransform);
+            if (!shapeText.isEmpty())
+                p_newTechnicsShape->setText(shapeText);
             m_copyList.append(p_newTechnicsShape);
         }
         if (DeviceShape *p_oldDeviceShape = dynamic_cast<DeviceShape *>(p_shape)) {
