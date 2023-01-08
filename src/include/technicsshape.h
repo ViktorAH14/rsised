@@ -105,7 +105,7 @@ private:
 class TankerShape : public TechnicsShape
 {
 public:
-    enum {Type = UserType + 201};
+    enum {Type = UserType + 202};
 
     explicit TankerShape(QGraphicsItem *parent = nullptr);
 

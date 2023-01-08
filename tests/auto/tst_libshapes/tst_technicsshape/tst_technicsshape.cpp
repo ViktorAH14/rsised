@@ -18,7 +18,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../../../src/include/buildingshape.h"
+#include "../../../../src/include/technicsshape.h"
 
 #include <QtTest>
 
@@ -27,8 +27,41 @@ class tst_TechnicShape : public QObject
     Q_OBJECT
 
 private slots:
-
+    void constructor();
+    void boundingRect();
 };
+
+
+
+void tst_TechnicShape::constructor()
+{
+    // TankerShape
+    TechnicsShape *p_tankerShape = nullptr;
+    p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
+    QVERIFY2(p_tankerShape, "tankerShape nullptr");
+    QCOMPARE(int(p_tankerShape->type()), int(QGraphicsItem::UserType + 202));
+    QCOMPARE(p_tankerShape->shapeType(), TechnicsShape::Tanker);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+}
+
+void tst_TechnicShape::boundingRect()
+{
+    // TankerShape
+    TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
+    QCOMPARE(p_tankerShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TankerShape *p_tanker = dynamic_cast<TankerShape *>(p_tankerShape);
+    p_tanker->setPipes(true);
+    QCOMPARE(p_tankerShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 76.0));
+    p_tanker->setCollector(true);
+    QCOMPARE(p_tankerShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 86.0));
+    p_tanker->setText("Text");
+    QCOMPARE(p_tankerShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 86.0));
+    p_tanker->setPipes(false);
+    QCOMPARE(p_tankerShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 86.0));
+    p_tanker->setCollector(false);
+    QCOMPARE(p_tankerShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+}
 
 QTEST_MAIN(tst_TechnicShape)
 
