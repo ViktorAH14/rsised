@@ -31,6 +31,8 @@ private slots:
     void boundingRect();
     void shape();
     void image();
+    void setRect_data();
+    void setRect();
 };
 
 
@@ -162,6 +164,37 @@ void tst_TechnicShape::image()
     QVERIFY2(!tankerImage.isNull(), "TankerShape::image() returned a null pixmap");
     QCOMPARE(tankerImage.width(), p_tankerShape->boundingRect().width());
     QCOMPARE(tankerImage.height(), p_tankerShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+}
+
+void tst_TechnicShape::setRect_data()
+{
+    QTest::addColumn<QRectF>("rect");
+    QTest::newRow("rect_0") << QRectF(0.0, 0.0, 0.0, 0.0);
+    QTest::newRow("rect_1") << QRectF(0.1, 0.0, 0.0, 0.0);
+    QTest::newRow("rect_2") << QRectF(0.1, 0.1, 0.0, 0.0);
+    QTest::newRow("rect_3") << QRectF(0.1, 0.1, 0.1, 0.0);
+    QTest::newRow("rect_4") << QRectF(0.1, 0.1, 0.1, 0.1);
+    QTest::newRow("rect_5") << QRectF(-0.1, 0.0, 0.0, 0.0);
+    QTest::newRow("rect_6") << QRectF(-0.1, -0.1, 0.0, 0.0);
+    QTest::newRow("rect_7") << QRectF(-0.1, -0.1, -0.1, 0.0);
+    QTest::newRow("rect_8") << QRectF(-0.1, -0.1, -0.1, -0.1);
+    QTest::newRow("rect_9") << QRectF(-0.1, 0.1, -0.1, 0.1);
+    QTest::newRow("rect_10") << QRectF(0.1, -0.1, 0.1, -0.1);
+    QTest::newRow("rect_11") << QRectF(-20.0, -20.0, 40.0, 40.0);
+    QTest::newRow("rect_12") << QRectF(-100.1, -100.2, 200.9, 200.9);
+    QTest::newRow("rect_12") << QRectF(-999999999.9, -999999999.9, 999999999.9, 999999999.9);
+    QTest::newRow("rect_13") << QRectF(999999999.9, 999999999.9, 999999999.9, 999999999.9);
+}
+
+void tst_TechnicShape::setRect()
+{
+    QFETCH(QRectF, rect);
+
+    // TankerShape
+    TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
+    p_tankerShape->setRect(rect);
+    QCOMPARE(p_tankerShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
 }
 
