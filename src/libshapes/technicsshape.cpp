@@ -542,7 +542,8 @@ QPolygonF TankerShape::basePolygon() const
     QPointF bottomRight{m_tankerRect.bottomRight()}; // 15.0, 37.5
     QPointF bottomLeft{m_tankerRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF basePolygon;
-    basePolygon << frontCenter << frontRight << bottomRight << bottomLeft << frontLeft << frontCenter;
+    basePolygon << frontCenter << frontRight << bottomRight << bottomLeft << frontLeft
+                            << frontCenter;
     return basePolygon;
 }
 
@@ -608,6 +609,63 @@ QPainterPath TankerShape::shape() const
 {
     QPainterPath path;
     path.addPolygon(basePolygon());
+
+    qreal roundRadius{m_tankerRect.width() / 6}; // 5.0
+    if (m_showPipes) {
+        qreal pipeY{m_tankerRect.bottom() - roundRadius};
+        QPointF rightPipeP1{m_tankerRect.right(), pipeY};
+        QPointF rightPipeP2{m_tankerRect.right() + roundRadius, pipeY};
+        // Right pipe
+        path.moveTo(rightPipeP1);
+        path.lineTo(rightPipeP2);
+
+        QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + roundRadius / 2};
+        QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - roundRadius / 2};
+        // Right pipe connection
+        path.moveTo(rightConnectP1);
+        path.lineTo(rightConnectP2);
+
+        QPointF leftPipeP1{m_tankerRect.left(), pipeY};
+        QPointF leftPipeP2{m_tankerRect.left() - roundRadius, pipeY};
+        // Left pipe
+        path.moveTo(leftPipeP1);
+        path.lineTo(leftPipeP2);
+
+        QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + roundRadius / 2};
+        QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - roundRadius / 2};
+        // Right pipe connection
+        path.moveTo(leftConnectP1);
+        path.lineTo(leftConnectP2);
+    }
+
+    if (m_showCollector) {
+        qreal collectorX{m_tankerRect.center().x()};
+        qreal collectorY{m_tankerRect.bottom() + roundRadius * 2};
+        qreal leftPipeX{collectorX - roundRadius};
+        QPointF leftRightPipeP1{collectorX, m_tankerRect.bottom()};
+        QPointF leftPipeP2{leftPipeX, collectorY};
+        //Left collector pipe
+        path.moveTo(leftRightPipeP1);
+        path.lineTo(leftPipeP2);
+
+        qreal rightPipeX{collectorX + roundRadius};
+        QPointF rightPipeP2{rightPipeX, collectorY};
+        //Right collector pipe
+        path.moveTo(leftRightPipeP1);
+        path.lineTo(rightPipeP2);
+
+        QPointF leftConnectP1{leftPipeX - roundRadius / 2, collectorY};
+        QPointF leftConnectP2{leftPipeX + roundRadius / 2, collectorY};
+        //Left connector
+        path.moveTo(leftConnectP1);
+        path.lineTo(leftConnectP2);
+
+        QPointF rightConnectP1{rightPipeX - roundRadius / 2, collectorY};
+        QPointF rightConnectP2{rightPipeX + roundRadius / 2, collectorY};
+        //Right connector
+        path.moveTo(rightConnectP1);
+        path.lineTo(rightConnectP2);
+    }
 
     return shapeFromPath(path);
 }

@@ -29,6 +29,7 @@ class tst_TechnicShape : public QObject
 private slots:
     void constructor();
     void boundingRect();
+    void shape();
 };
 
 
@@ -60,6 +61,95 @@ void tst_TechnicShape::boundingRect()
     QCOMPARE(p_tankerShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 86.0));
     p_tanker->setCollector(false);
     QCOMPARE(p_tankerShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+}
+
+void tst_TechnicShape::shape()
+{
+    // TankerShape
+    TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
+    QPainterPathStroker ps_tankerShape;
+    ps_tankerShape.setWidth(p_tankerShape->pen().widthF());
+    QRectF tankerRect{p_tankerShape->rect()};
+    qreal frontTab{tankerRect.height() / 3};
+    QPointF frontCenter{tankerRect.center().x(), tankerRect.top()}; // 0.0, -37.5
+    QPointF frontRight{tankerRect.right(), tankerRect.top() + frontTab}; // 15.0, -12.5
+    QPointF frontLeft{tankerRect.left(), tankerRect.top() + frontTab}; // -15.0, -12.5
+    QPointF bottomRight{tankerRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeft{tankerRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF basePolygon;
+    basePolygon << frontCenter << frontRight << bottomRight << bottomLeft << frontLeft << frontCenter;
+    QPainterPath tankerPath;
+    tankerPath.addPolygon(basePolygon);
+    QPainterPath strokeTankerPath = ps_tankerShape.createStroke(tankerPath);
+    strokeTankerPath.addPath(tankerPath);
+    QCOMPARE(p_tankerShape->shape(), strokeTankerPath);
+
+    // TankerShape show pipes
+    TankerShape *p_tanker = dynamic_cast<TankerShape *>(p_tankerShape);
+    tankerPath.clear();
+    strokeTankerPath.clear();
+    p_tanker->setPipes(true);
+    tankerPath.addPolygon(basePolygon);
+    qreal roundRadius{tankerRect.width() / 6}; // 5.0
+    qreal pipeY{tankerRect.bottom() - roundRadius};
+    QPointF rightPipeP1{tankerRect.right(), pipeY};
+    QPointF rightPipeP2{tankerRect.right() + roundRadius, pipeY};
+    // Right pipe
+    tankerPath.moveTo(rightPipeP1);
+    tankerPath.lineTo(rightPipeP2);
+    QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + roundRadius / 2};
+    QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - roundRadius / 2};
+    // Right pipe connection
+    tankerPath.moveTo(rightConnectP1);
+    tankerPath.lineTo(rightConnectP2);
+    QPointF leftPipeP1{tankerRect.left(), pipeY};
+    QPointF leftPipeP2{tankerRect.left() - roundRadius, pipeY};
+    // Left pipe
+    tankerPath.moveTo(leftPipeP1);
+    tankerPath.lineTo(leftPipeP2);
+    QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + roundRadius / 2};
+    QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - roundRadius / 2};
+    // Right pipe connection
+    tankerPath.moveTo(leftConnectP1);
+    tankerPath.lineTo(leftConnectP2);
+    strokeTankerPath = ps_tankerShape.createStroke(tankerPath);
+    strokeTankerPath.addPath(tankerPath);
+    QCOMPARE(p_tanker->shape(), strokeTankerPath);
+
+    // TankerShape show collector
+    tankerPath.clear();
+    strokeTankerPath.clear();
+    p_tanker->setPipes(false);
+    p_tanker->setCollector(true);
+    tankerPath.addPolygon(basePolygon);
+    qreal collectorX{tankerRect.center().x()};
+    qreal collectorY{tankerRect.bottom() + roundRadius * 2};
+    qreal leftCollectorPipeX{collectorX - roundRadius};
+    QPointF leftRightCollectorPipeP1{collectorX, tankerRect.bottom()};
+    QPointF leftCollectorPipeP2{leftCollectorPipeX, collectorY};
+    //Left collector pipe
+    tankerPath.moveTo(leftRightCollectorPipeP1);
+    tankerPath.lineTo(leftCollectorPipeP2);
+    qreal rightCollectorPipeX{collectorX + roundRadius};
+    QPointF rightCollectorPipeP2{rightCollectorPipeX, collectorY};
+    //Right collector pipe
+    tankerPath.moveTo(leftRightCollectorPipeP1);
+    tankerPath.lineTo(rightCollectorPipeP2);
+    QPointF leftCollectorConnectP1{leftCollectorPipeX - roundRadius / 2, collectorY};
+    QPointF leftCollectorConnectP2{leftCollectorPipeX + roundRadius / 2, collectorY};
+    //Left connector
+    tankerPath.moveTo(leftCollectorConnectP1);
+    tankerPath.lineTo(leftCollectorConnectP2);
+    QPointF rightCollectorConnectP1{rightCollectorPipeX - roundRadius / 2, collectorY};
+    QPointF rightCollectorConnectP2{rightCollectorPipeX + roundRadius / 2, collectorY};
+    //Right connector
+    tankerPath.moveTo(rightCollectorConnectP1);
+    tankerPath.lineTo(rightCollectorConnectP2);
+    strokeTankerPath = ps_tankerShape.createStroke(tankerPath);
+    strokeTankerPath.addPath(tankerPath);
+    QCOMPARE(p_tanker->shape(), strokeTankerPath);
+
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
 }
 
