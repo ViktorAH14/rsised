@@ -30,6 +30,7 @@ private slots:
     void constructor();
     void boundingRect();
     void shape();
+    void image();
 };
 
 
@@ -150,6 +151,17 @@ void tst_TechnicShape::shape()
     strokeTankerPath.addPath(tankerPath);
     QCOMPARE(p_tanker->shape(), strokeTankerPath);
 
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+}
+
+void tst_TechnicShape::image()
+{
+    // TankerShape
+    TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
+    QPixmap tankerImage{p_tankerShape->image()};
+    QVERIFY2(!tankerImage.isNull(), "TankerShape::image() returned a null pixmap");
+    QCOMPARE(tankerImage.width(), p_tankerShape->boundingRect().width());
+    QCOMPARE(tankerImage.height(), p_tankerShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
 }
 
