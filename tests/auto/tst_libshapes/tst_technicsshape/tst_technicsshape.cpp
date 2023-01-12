@@ -31,8 +31,12 @@ private slots:
     void boundingRect();
     void shape();
     void image();
-    void setRect_data();
-    void setRect();
+    void rect_setRect_data();
+    void rect_setRect();
+    void height_setHeight_data();
+    void height_setHeight();
+    void text_setText_data();
+    void text_setText();
 };
 
 
@@ -167,7 +171,7 @@ void tst_TechnicShape::image()
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
 }
 
-void tst_TechnicShape::setRect_data()
+void tst_TechnicShape::rect_setRect_data()
 {
     QTest::addColumn<QRectF>("rect");
     QTest::newRow("rect_0") << QRectF(0.0, 0.0, 0.0, 0.0);
@@ -187,7 +191,7 @@ void tst_TechnicShape::setRect_data()
     QTest::newRow("rect_13") << QRectF(999999999.9, 999999999.9, 999999999.9, 999999999.9);
 }
 
-void tst_TechnicShape::setRect()
+void tst_TechnicShape::rect_setRect()
 {
     QFETCH(QRectF, rect);
 
@@ -195,6 +199,53 @@ void tst_TechnicShape::setRect()
     TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
     p_tankerShape->setRect(rect);
     QCOMPARE(p_tankerShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+}
+
+void tst_TechnicShape::height_setHeight_data()
+{
+    QTest::addColumn<qreal>("height");
+    QTest::newRow("height_0") << 0.0;
+    QTest::newRow("height_01") << 0.1;
+    QTest::newRow("height_-01") << -0.1;
+    QTest::newRow("height_-6") << -6.0;
+    QTest::newRow("height_6") << 6.0;
+    QTest::newRow("height_30") << 30.0;
+    QTest::newRow("height_50") << 50.0;
+    QTest::newRow("height_9999") << 9999.0;
+}
+
+void tst_TechnicShape::height_setHeight()
+{
+    QFETCH(qreal, height);
+    TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
+    p_tankerShape->setHeight(height);
+    QCOMPARE(p_tankerShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+}
+
+void tst_TechnicShape::text_setText_data()
+{
+    QTest::addColumn<QString>("text");
+    QTest::newRow("null") << QString();
+    QTest::newRow("empty") << QString("");
+    QTest::newRow("special") << QString("/~`!@#$%^&*()_+|;:'<,>.?{[}]");
+    QTest::newRow("number") << QString("13027");
+    QTest::newRow("appercase") << QString("TANKER");
+    QTest::newRow("lowercase") << QString("tanker");
+    QTest::newRow("appercase_lowercase") << QString("TaNkEr tAnKeR");
+    QTest::newRow("long_string") << QString("`1234456678900-=fqwuieop ruiewopyopr[]eu dufgoiuzxc"
+                                            "wyreutiwofjhvgmc;mln;g lsdfkuhjeoi ncvmsfguwygpdg");
+    QTest::newRow("long_string_ru") << QString("ФАукпарш амфгшнек ывалдоварФАКУКаыпомщ магврВРПР"
+                                               "врагфшы вапшгГЕГНШОР РШГЕГП 164732834 сырогэдфё");
+}
+
+void tst_TechnicShape::text_setText()
+{
+    QFETCH(QString, text);
+    TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
+    p_tankerShape->setText(text);
+    QCOMPARE(p_tankerShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
 }
 

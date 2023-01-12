@@ -39,13 +39,13 @@ private slots:
     void shape();
     void contains();
     void isObscuredBy();
-    void setRect_data();
-    void setRect();
+    void rect_setRect_data();
+    void rect_setRect();
     void opaqueArea();
-    void setStartAngle_data();
-    void setStartAngle();
-    void setSpanAngle_data();
-    void setSpanAngle();
+    void startAngle_setStartAngle_data();
+    void startAngle_setStartAngle();
+    void spanAngle_setSpanAngle_data();
+    void spanAngle_setSpanAngle();
     void pieMouseDoubleClickEvent();
 };
 
@@ -244,7 +244,7 @@ void tst_EllipseShape::isObscuredBy()
     QVERIFY(!ellipseShape2.isObscuredBy(&ellipseShape1));
 }
 
-void tst_EllipseShape::setRect_data()
+void tst_EllipseShape::rect_setRect_data()
 {
     QTest::addColumn<QRectF>("rect");
     QTest::newRow("rect_0") << QRectF(0.0, 0.0, 0.0, 0.0);
@@ -265,7 +265,7 @@ void tst_EllipseShape::setRect_data()
     QTest::newRow("rect_14") << QRectF();
 }
 
-void tst_EllipseShape::setRect()
+void tst_EllipseShape::rect_setRect()
 {
     QFETCH(QRectF, rect);
 
@@ -309,7 +309,7 @@ void tst_EllipseShape::opaqueArea()
     delete p_ellipseShape;
 }
 
-void tst_EllipseShape::setStartAngle_data()
+void tst_EllipseShape::startAngle_setStartAngle_data()
 {
     QTest::addColumn<int>("startAngle");
     QTest::newRow("angle 0") << 0;
@@ -331,7 +331,7 @@ void tst_EllipseShape::setStartAngle_data()
     QTest::newRow("angle 999") << 9999;
 }
 
-void tst_EllipseShape::setStartAngle()
+void tst_EllipseShape::startAngle_setStartAngle()
 {
     QFETCH(int, startAngle);
 
@@ -342,7 +342,7 @@ void tst_EllipseShape::setStartAngle()
     QCOMPARE(startAngle, ellipseShape.startAngle());
 }
 
-void tst_EllipseShape::setSpanAngle_data()
+void tst_EllipseShape::spanAngle_setSpanAngle_data()
 {
     QTest::addColumn<int>("spanAngle");
     QTest::newRow("angle 0") << 0;
@@ -364,7 +364,7 @@ void tst_EllipseShape::setSpanAngle_data()
     QTest::newRow("angle 999") << 9999;
 }
 
-void tst_EllipseShape::setSpanAngle()
+void tst_EllipseShape::spanAngle_setSpanAngle()
 {
     QFETCH(int, spanAngle);
     EllipseShape ellipseShape;

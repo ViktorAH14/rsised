@@ -149,7 +149,6 @@ private:
     bool m_showPipes;
     bool m_showCollector;
     bool m_showText;
-//    QString m_text;
 
     QScopedPointer<QAction> m_showPipeAction;
     QScopedPointer<QAction> m_showCollectorAction;

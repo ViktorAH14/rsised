@@ -34,11 +34,11 @@ private slots:
     void boundingRect();
     void shape();
     void image();
-    void setRect_data();
-    void setRect();
+    void rect_setRect_data();
+    void rect_setRect();
     void bindingWall();
-    void setHeight_data();
-    void setHeight();
+    void height_setHeight_data();
+    void height_setHeight();
 
     // WallShape
     void collidingWall();
@@ -304,7 +304,7 @@ void tst_BuildingShape::image()
     BuildingShape::BuildingShapeDeleter::cleanup(p_stairsShape);
 }
 
-void tst_BuildingShape::setRect_data()
+void tst_BuildingShape::rect_setRect_data()
 {
     QTest::addColumn<QRectF>("rect");
     QTest::newRow("rect_0") << QRectF(0.0, 0.0, 0.0, 0.0);
@@ -324,7 +324,7 @@ void tst_BuildingShape::setRect_data()
     QTest::newRow("rect_13") << QRectF(999999999.9, 999999999.9, 999999999.9, 999999999.9);
 }
 
-void tst_BuildingShape::setRect()
+void tst_BuildingShape::rect_setRect()
 {
     QFETCH(QRectF, rect);
 
@@ -446,7 +446,7 @@ void tst_BuildingShape::bindingWall()
     BuildingShape::BuildingShapeDeleter::cleanup(p_wallShape3);
 }
 
-void tst_BuildingShape::setHeight_data()
+void tst_BuildingShape::height_setHeight_data()
 {
     QTest::addColumn<qreal>("height");
     QTest::newRow("height_0") << 0.0;
@@ -466,7 +466,7 @@ void tst_BuildingShape::setHeight_data()
     QTest::newRow("height_26") << 26.0;
 }
 
-void tst_BuildingShape::setHeight()
+void tst_BuildingShape::height_setHeight()
 {
     QFETCH(qreal, height);
 
