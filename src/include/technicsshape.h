@@ -102,6 +102,11 @@ private:
 
 };
 
+class BaseShape : public TechnicsShape
+{
+
+};
+
 class TankerShape : public TechnicsShape
 {
 public:
