@@ -97,6 +97,8 @@ protected:
     virtual ~TechnicsShape() = 0;
     virtual void deleter();
 
+    QPolygonF basePolygon(const QRectF &rect) const;
+
 private:
     Q_DISABLE_COPY(TechnicsShape)
 
@@ -141,7 +143,6 @@ protected:
 private:
     Q_DISABLE_COPY(TankerShape)
 
-    QPolygonF basePolygon() const;
     void createAction();
     void textShow(bool showText);
     void drawTankerShape(QPainter *painter);

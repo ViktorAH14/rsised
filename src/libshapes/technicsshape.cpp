@@ -37,6 +37,20 @@ void TechnicsShape::deleter()
     delete this;
 }
 
+QPolygonF TechnicsShape::basePolygon(const QRectF &rect) const
+{
+    qreal frontTab{rect.height() / 3};
+    QPointF frontCenter{rect.center().x(), rect.top()}; // 0.0, -37.5
+    QPointF frontRight{rect.right(), rect.top() + frontTab}; // 15.0, -12.5
+    QPointF frontLeft{rect.left(), rect.top() + frontTab}; // -15.0, -12.5
+    QPointF bottomRight{rect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeft{rect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF basePolygon;
+    basePolygon << frontCenter << frontRight << bottomRight << bottomLeft << frontLeft
+                            << frontCenter;
+    return basePolygon;
+}
+
 TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphicsItem *parent)
 {
     TechnicsShape *p_technicsShape{nullptr};
@@ -521,7 +535,7 @@ void TankerShape::drawTankerShape(QPainter *painter)
     QPointF roundBottomRight{m_tankerRect.right() - roundRadius
                 , m_tankerRect.bottom() - roundRadius};
 
-    painter->drawPolygon(basePolygon());
+    painter->drawPolygon(basePolygon(rect()));
     painter->drawRoundedRect(QRectF(roundTopLeft, roundBottomRight), roundRadius, roundRadius);
 
     if (m_showPipes) {
@@ -531,20 +545,6 @@ void TankerShape::drawTankerShape(QPainter *painter)
     if (m_showCollector) {
         drawCollector(painter, roundRadius);
     }
-}
-
-QPolygonF TankerShape::basePolygon() const
-{
-    qreal frontTab{m_tankerRect.height() / 3};
-    QPointF frontCenter{m_tankerRect.center().x(), m_tankerRect.top()}; // 0.0, -37.5
-    QPointF frontRight{m_tankerRect.right(), m_tankerRect.top() + frontTab}; // 15.0, -12.5
-    QPointF frontLeft{m_tankerRect.left(), m_tankerRect.top() + frontTab}; // -15.0, -12.5
-    QPointF bottomRight{m_tankerRect.bottomRight()}; // 15.0, 37.5
-    QPointF bottomLeft{m_tankerRect.bottomLeft()}; // -15.0, 37.5
-    QPolygonF basePolygon;
-    basePolygon << frontCenter << frontRight << bottomRight << bottomLeft << frontLeft
-                            << frontCenter;
-    return basePolygon;
 }
 
 void TankerShape::createAction()
@@ -608,7 +608,7 @@ QRectF TankerShape::boundingRect() const
 QPainterPath TankerShape::shape() const
 {
     QPainterPath path;
-    path.addPolygon(basePolygon());
+    path.addPolygon(basePolygon(rect()));
 
     qreal roundRadius{m_tankerRect.width() / 6}; // 5.0
     if (m_showPipes) {
