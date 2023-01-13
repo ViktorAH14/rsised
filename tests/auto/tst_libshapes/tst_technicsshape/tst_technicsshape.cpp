@@ -37,6 +37,11 @@ private slots:
     void height_setHeight();
     void text_setText_data();
     void text_setText();
+
+    //TankerShape
+    void pipes_setPipes();
+    void collector_setCollector();
+//    void mousePressEvent();
 };
 
 
@@ -157,6 +162,7 @@ void tst_TechnicShape::shape()
     strokeTankerPath.addPath(tankerPath);
     QCOMPARE(p_tanker->shape(), strokeTankerPath);
 
+    p_tanker= nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
 }
 
@@ -217,6 +223,7 @@ void tst_TechnicShape::height_setHeight_data()
 
 void tst_TechnicShape::height_setHeight()
 {
+    // TankerShape
     QFETCH(qreal, height);
     TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
     p_tankerShape->setHeight(height);
@@ -242,10 +249,39 @@ void tst_TechnicShape::text_setText_data()
 
 void tst_TechnicShape::text_setText()
 {
+    // TankerShape
     QFETCH(QString, text);
     TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
     p_tankerShape->setText(text);
     QCOMPARE(p_tankerShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+}
+
+void tst_TechnicShape::pipes_setPipes()
+{
+    //TankerShape
+    TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
+    TankerShape *p_tanker = dynamic_cast<TankerShape *>(p_tankerShape);
+    QCOMPARE(p_tanker->pipes(), false);
+    p_tanker->setPipes(true);
+    QCOMPARE(p_tanker->pipes(), true);
+    p_tanker->setPipes(false);
+    QCOMPARE(p_tanker->pipes(), false);
+    p_tanker = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+}
+
+void tst_TechnicShape::collector_setCollector()
+{
+    //TankerShape
+    TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
+    TankerShape *p_tanker = dynamic_cast<TankerShape *>(p_tankerShape);
+    QCOMPARE(p_tanker->collector(), false);
+    p_tanker->setCollector(true);
+    QCOMPARE(p_tanker->collector(), true);
+    p_tanker->setCollector(false);
+    QCOMPARE(p_tanker->collector(), false);
+    p_tanker = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
 }
 
