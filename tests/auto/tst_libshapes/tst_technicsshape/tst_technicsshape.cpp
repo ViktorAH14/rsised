@@ -313,9 +313,9 @@ private:
     int m_timerId;
 };
 
-
 void tst_TechnicShape::mousePressEvent()
 {
+    // Tankershape
     QGraphicsScene scene;
     QGraphicsView view(&scene);
     view.show();

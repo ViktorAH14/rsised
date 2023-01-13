@@ -24,6 +24,7 @@
 #include <QPen>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QGraphicsSceneMouseEvent>
 
 class tst_BuildingShape : public QObject
 {
