@@ -849,3 +849,13 @@ void BaseShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     if (option->state & QStyle::State_Selected)
         highlightSelected(painter, option);
 }
+
+QRectF BaseShape::boundingRect() const
+{
+    QRectF boundingRect{m_baseRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
