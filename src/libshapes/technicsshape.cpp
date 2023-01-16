@@ -883,3 +883,8 @@ QPixmap BaseShape::image()
 
     return pixmap;
 }
+
+TechnicsShape::ShapeType BaseShape::shapeType() const
+{
+    return m_baseType;
+}
