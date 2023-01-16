@@ -106,7 +106,33 @@ private:
 
 class BaseShape : public TechnicsShape
 {
+public:
+    enum {Type = UserType + 201};
 
+    explicit BaseShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~BaseShape() = default;
+
+private:
+    Q_DISABLE_COPY(BaseShape)
+
+    const ShapeType m_baseType;
+    QRectF m_baseRect;
 };
 
 class TankerShape : public TechnicsShape

@@ -823,3 +823,29 @@ void TankerShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         AbstractShape::mousePressEvent(mouseEvent);
     }
 }
+
+BaseShape::BaseShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_baseType{Base}
+    , m_baseRect{QRectF(-15.0, -37.7, 30.0, 75.0)}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void BaseShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    painter->drawPolygon(basePolygon(rect()));
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
