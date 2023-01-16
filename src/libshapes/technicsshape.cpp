@@ -859,3 +859,11 @@ QRectF BaseShape::boundingRect() const
 
     return boundingRect;
 }
+
+QPainterPath BaseShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
