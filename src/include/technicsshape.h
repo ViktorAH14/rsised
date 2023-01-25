@@ -133,6 +133,8 @@ private:
 
     const ShapeType m_baseType;
     QRectF m_baseRect;
+    QGraphicsTextItem *m_baseText;
+    bool m_showText;
 };
 
 class TankerShape : public TechnicsShape
@@ -176,7 +178,7 @@ private:
     void drawCollector(QPainter *painter, qreal roundRadius);
 
     const ShapeType m_tankerType;
-    QGraphicsTextItem *m_itemText;
+    QGraphicsTextItem *m_tankerText;
     QRectF m_tankerRect;
     bool m_showPipes;
     bool m_showCollector;

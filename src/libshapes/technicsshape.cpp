@@ -471,7 +471,7 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
 TankerShape::TankerShape(QGraphicsItem *parent)
     : TechnicsShape(parent)
     , m_tankerType{Tanker}
-    , m_itemText{nullptr}
+    , m_tankerText{nullptr}
     , m_tankerRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
     , m_showPipes{false}
     , m_showCollector{false}
@@ -698,8 +698,8 @@ void TankerShape::setRect(const QRectF &rect)
 
     prepareGeometryChange();
     m_tankerRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
-    if (m_itemText != nullptr)
-        m_itemText->setPos(m_tankerRect.right(), m_tankerRect.bottom() - m_tankerRect.width() / 6);
+    if (m_tankerText != nullptr)
+        m_tankerText->setPos(m_tankerRect.right(), m_tankerRect.bottom() - m_tankerRect.width() / 6);
     if (m_showPipes) {
         qreal pipeLength{m_tankerRect.width() / 6};
         m_tankerRect.adjust(pipeLength, 0.0, -pipeLength, 0.0);
@@ -736,21 +736,21 @@ qreal TankerShape::height() const
 
 void TankerShape::setText(const QString &text)
 {
-    if (m_itemText == nullptr) {
-        m_itemText=new QGraphicsTextItem(this);
-        m_itemText->setTextInteractionFlags(Qt::TextEditorInteraction);
-        m_itemText->setPos(m_tankerRect.right(), m_tankerRect.bottom() - m_tankerRect.width() / 6);
-        m_itemText->setRotation(-90);
+    if (m_tankerText == nullptr) {
+        m_tankerText=new QGraphicsTextItem(this);
+        m_tankerText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_tankerText->setPos(m_tankerRect.right(), m_tankerRect.bottom() - m_tankerRect.width() / 6);
+        m_tankerText->setRotation(-90);
     }
-    m_itemText->setPlainText(text);
+    m_tankerText->setPlainText(text);
 }
 
 QString TankerShape::text() const
 {
-    if (m_itemText == nullptr) {
+    if (m_tankerText == nullptr)
         return "";
-    }
-    return m_itemText->toPlainText();
+
+    return m_tankerText->toPlainText();
 }
 
 void TankerShape::setPipes(bool showPipes)
@@ -790,17 +790,17 @@ bool TankerShape::collector()
 void TankerShape::textShow(bool showText)
 {
     if (showText) {
-        if (m_itemText == nullptr) {
-            m_itemText=new QGraphicsTextItem(this);
-            m_itemText->setPlainText("АЦ-");
-            m_itemText->setTextInteractionFlags(Qt::TextEditorInteraction);
-            m_itemText->setPos(m_tankerRect.right(), m_tankerRect.bottom() - m_tankerRect.width() / 6);
-            m_itemText->setRotation(-90);
+        if (m_tankerText == nullptr) {
+            m_tankerText=new QGraphicsTextItem(this);
+            m_tankerText->setPlainText("АЦ-");
+            m_tankerText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_tankerText->setPos(m_tankerRect.right(), m_tankerRect.bottom() - m_tankerRect.width() / 6);
+            m_tankerText->setRotation(-90);
         }
-        m_itemText->show();
+        m_tankerText->show();
         m_showText = true;
     } else {
-        m_itemText->hide();
+        m_tankerText->hide();
         m_showText = false;
     }
 }
@@ -828,6 +828,8 @@ BaseShape::BaseShape(QGraphicsItem *parent)
     : TechnicsShape(parent)
     , m_baseType{Base}
     , m_baseRect{QRectF(-15.0, -37.7, 30.0, 75.0)}
+    , m_baseText{nullptr}
+    , m_showText{false}
 {
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
@@ -887,4 +889,38 @@ QPixmap BaseShape::image()
 TechnicsShape::ShapeType BaseShape::shapeType() const
 {
     return m_baseType;
+}
+
+void BaseShape::setRect(const QRectF &rect)
+{
+    if (m_baseRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_baseRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_baseText != nullptr)
+        m_baseText->setPos(m_baseRect.right(), m_baseRect.bottom() - m_baseRect.width() / 6);
+}
+
+QRectF BaseShape::rect() const
+{
+    return m_baseRect;
+}
+
+void BaseShape::setHeight(const qreal &height)
+{
+    if (m_baseRect.height() == height)
+        return;
+
+    qreal oldHeight{m_baseRect.height()};
+    prepareGeometryChange();
+    m_baseRect.setHeight(height);
+    qreal dy{(m_baseRect.height() - oldHeight) / 2};
+    m_baseRect.moveTo(QPointF(m_baseRect.x(), m_baseRect.y() - dy));
+    update();
+}
+
+qreal BaseShape::height() const
+{
+    return m_baseRect.height();
 }
