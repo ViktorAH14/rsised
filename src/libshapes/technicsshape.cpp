@@ -946,6 +946,16 @@ QString BaseShape::text() const
     return m_baseText->toPlainText();
 }
 
+void BaseShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_tankerActionList.append(m_addTextAction.get());
+}
+
 void BaseShape::textShow(bool showText)
 {
     if (showText) {
