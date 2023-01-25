@@ -483,9 +483,10 @@
         <translation>О РСиС</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="709"/>
         <source>Car</source>
         <translatorcomment>Автомобиль пожарный, общее обозначение.</translatorcomment>
-        <translation type="vanished">Авто</translation>
+        <translation>Авто</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="710"/>

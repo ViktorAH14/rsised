@@ -58,6 +58,8 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Tanker:
         p_technicsShape = new TankerShape(parent);
         break;
+    case Base:
+        p_technicsShape = new BaseShape(parent);
     default:
         break;
     }
@@ -923,4 +925,41 @@ void BaseShape::setHeight(const qreal &height)
 qreal BaseShape::height() const
 {
     return m_baseRect.height();
+}
+
+void BaseShape::setText(const QString &text)
+{
+    if (m_baseText == nullptr) {
+        m_baseText=new QGraphicsTextItem(this);
+        m_baseText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_baseText->setPos(m_baseRect.right(), m_baseRect.bottom() - m_baseRect.width() / 6);
+        m_baseText->setRotation(-90);
+    }
+    m_baseText->setPlainText(text);
+}
+
+QString BaseShape::text() const
+{
+    if (m_baseText == nullptr)
+        return "";
+
+    return m_baseText->toPlainText();
+}
+
+void BaseShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_baseText == nullptr) {
+            m_baseText=new QGraphicsTextItem(this);
+//            m_tankerText->setPlainText("АЦ-");
+            m_baseText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_baseText->setPos(m_baseRect.right(), m_baseRect.bottom() - m_baseRect.width() / 6);
+            m_baseText->setRotation(-90);
+        }
+        m_baseText->show();
+        m_showText = true;
+    } else {
+        m_baseText->hide();
+        m_showText = false;
+    }
 }

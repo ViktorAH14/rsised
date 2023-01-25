@@ -128,13 +128,21 @@ public:
 protected:
     ~BaseShape() = default;
 
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
 private:
     Q_DISABLE_COPY(BaseShape)
+
+    void createAction();
+    void textShow(bool showText);
 
     const ShapeType m_baseType;
     QRectF m_baseRect;
     QGraphicsTextItem *m_baseText;
     bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_tankerActionList;
 };
 
 class TankerShape : public TechnicsShape
