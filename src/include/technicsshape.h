@@ -142,7 +142,7 @@ private:
     bool m_showText;
 
     QScopedPointer<QAction> m_addTextAction;
-    QList<QAction *> m_tankerActionList;
+    QList<QAction *> m_baseActionList;
 };
 
 class TankerShape : public TechnicsShape

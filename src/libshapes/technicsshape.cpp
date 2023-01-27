@@ -946,6 +946,25 @@ QString BaseShape::text() const
     return m_baseText->toPlainText();
 }
 
+void BaseShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_baseActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_baseActionList);
+            m_baseActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
 void BaseShape::createAction()
 {
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
@@ -953,7 +972,7 @@ void BaseShape::createAction()
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
     QObject::connect(m_addTextAction.get(), &QAction::triggered
                      , [this](){m_showText ? textShow(false) : textShow(true);});
-    m_tankerActionList.append(m_addTextAction.get());
+    m_baseActionList.append(m_addTextAction.get());
 }
 
 void BaseShape::textShow(bool showText)
@@ -961,7 +980,7 @@ void BaseShape::textShow(bool showText)
     if (showText) {
         if (m_baseText == nullptr) {
             m_baseText=new QGraphicsTextItem(this);
-//            m_tankerText->setPlainText("АЦ-");
+            m_baseText->setPlainText("А"); // FIXME буква вставлена для появления текста на экране.
             m_baseText->setTextInteractionFlags(Qt::TextEditorInteraction);
             m_baseText->setPos(m_baseRect.right(), m_baseRect.bottom() - m_baseRect.width() / 6);
             m_baseText->setRotation(-90);

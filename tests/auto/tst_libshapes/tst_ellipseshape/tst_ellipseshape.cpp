@@ -137,9 +137,9 @@ void tst_EllipseShape::paint()
     QApplication::processEvents();
 #ifdef Q_OS_WIN32
     //we try to switch the desktop: if it fails, we skip the test
-    if (::SwitchDesktop( ::GetThreadDesktop( ::GetCurrentThreadId() ) ) == 0) {
-        QSKIP("The Graphics View doesn't get the paint events");
-    }
+//    if (::SwitchDesktop( ::GetThreadDesktop( ::GetCurrentThreadId() ) ) == 0) {
+//        QSKIP("The Graphics View doesn't get the paint events");
+//    }
 #endif
     QTRY_COMPARE(paintTester.m_widget, view.viewport());
     view.hide();

@@ -1,4 +1,4 @@
-QT       += core gui svg xml printsupport
+QT += core gui svg xml printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

@@ -68,16 +68,19 @@
     </message>
     <message>
         <location filename="../../libshapes/technicsshape.cpp" line="569"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="970"/>
         <source>Show text</source>
         <translation>Показать текст</translation>
     </message>
     <message>
         <location filename="../../libshapes/technicsshape.cpp" line="569"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="970"/>
         <source>Hide text</source>
         <translation>Скрыть текст</translation>
     </message>
     <message>
         <location filename="../../libshapes/technicsshape.cpp" line="571"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="972"/>
         <source>Show or hide text</source>
         <translation>Показать или скрыть текст</translation>
     </message>
