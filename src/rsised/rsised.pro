@@ -4,7 +4,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 QT += KWidgetsAddons
 
-CONFIG += c++11
+CONFIG += c++17
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -31,6 +31,12 @@ FORMS += \
     mainwindow.ui \
     wallsetting.ui
 
+RESOURCES += \
+    resource.qrc
+
+DISTFILES += \
+    ../../doc/dev/shape_model.qmodel
+
 TRANSLATIONS += \
     i18n/rsised_ru.ts
 
@@ -43,15 +49,26 @@ QMAKE_EXTRA_TARGETS += tr
 include( ../../common.pri )
 include( ../../app.pri )
 
+LIBS += -lshapes$${LIB_SUFFIX}
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-RESOURCES += \
-    resource.qrc
+QT_DIR = $$[QT_HOST_BINS]
+win32:QMAKE_BIN = $${QT_DIR}/qmake.exe
+win32: contains(QT_ARCH, i386) {
+            deploy.commands = cqtdeployer -bin $${DESTDIR}$${TARGET} -qmake $${QMAKE_BIN} qif
+        } else {
+            deploy.commands = cqtdeployer -bin $${DESTDIR}$${TARGET} -qmake $${QMAKE_BIN} qif
+        }
+linux-g++:{
+    QMAKE_BIN = $${QT_DIR}/qmake
+    deploy.commands = cqtdeployer -bin $${DESTDIR}$${TARGET} \
+    -targetDir $${PROJECT_ROOT_PATH}/distr/$${OS_SUFFIX} \
+    -platform linux_x86_64 -verbose 3 clear
+}
+QMAKE_EXTRA_TARGETS += deploy
 
-DISTFILES += \
-    ../../doc/dev/shape_model.qmodel
-
-LIBS += -lshapes$${LIB_SUFFIX}
+#message($${DESTDIR}$${TARGET})

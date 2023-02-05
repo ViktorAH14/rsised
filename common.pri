@@ -1,4 +1,4 @@
-PROJECT_ROOT_PATH = $${PWD}/
+PROJECT_ROOT_PATH = $${PWD}
 
 #win32: OS_SUFFIX = win32
 #win64-x-g++: OS_SUFFIX = win64

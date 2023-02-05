@@ -208,6 +208,7 @@ $RECYCLE.BIN/
 # Project directory
 bin/
 build/
+distr/
 lib.*/
 import/
 doc/
