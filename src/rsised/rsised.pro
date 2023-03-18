@@ -40,7 +40,7 @@ DISTFILES += \
 TRANSLATIONS += \
     i18n/rsised_ru.ts
 
-system(lrelease "$$_PRO_FILE_")
+#system(lrelease "$$_PRO_FILE_")
 
 tr.commands = lupdate "$$_PRO_FILE_" && lrelease "$$_PRO_FILE_"
 PRE_TARGETDEPS += tr
@@ -56,19 +56,30 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-QT_DIR = $$[QT_HOST_BINS]
-win32:QMAKE_BIN = $${QT_DIR}/qmake.exe
-win32: contains(QT_ARCH, i386) {
-            deploy.commands = cqtdeployer -bin $${DESTDIR}$${TARGET} -qmake $${QMAKE_BIN} qif
+equals(BUILD_FLAG, release) {
+#    QT_DIR = $$[QT_HOST_BINS]
+#    win32:QMAKE_BIN = $${QT_DIR}/qmake.exe
+    win32: contains(QT_ARCH, i386) {
+            DEPLOY_CONFIG = win32
+            #deploy.commands = cqtdeployer -bin $${DESTDIR}$${TARGET}.exe -qmake $${QMAKE_BIN} \
+            #-targetDir $${PROJECT_ROOT_PATH}/distr/$${OS_SUFFIX} clear
         } else {
-            deploy.commands = cqtdeployer -bin $${DESTDIR}$${TARGET} -qmake $${QMAKE_BIN} qif
+            DEPLOY_CONFIG = win64
+            #deploy.commands = cqtdeployer -bin $${DESTDIR}$${TARGET}.exe -qmake $${QMAKE_BIN} \
+            #-targetDir $${PROJECT_ROOT_PATH}/distr/$${OS_SUFFIX} \
+            #-extraLibs zlib1,libssp-0,libpng16-16,libpcre2,libKF5WidgetsAddons,libintl-8,libiconv-2,libharfbuzz-0,libgraphite2,libglib-2.0-0,libfreetype-6,libbz2-1,libbrotlidec,libbrotlicommon \
+            #clear
         }
-linux-g++:{
-    QMAKE_BIN = $${QT_DIR}/qmake
-    deploy.commands = cqtdeployer -bin $${DESTDIR}$${TARGET} \
-    -targetDir $${PROJECT_ROOT_PATH}/distr/$${OS_SUFFIX} \
-    -platform linux_x86_64 -verbose 3 clear
+    linux-g++:{
+#        QMAKE_BIN = $${QT_DIR}/qmake
+        DEPLOY_CONFIG = linux
+        #deploy.commands = cqtdeployer -bin $${DESTDIR}$${TARGET} \
+        #-targetDir $${PROJECT_ROOT_PATH}/distr/$${OS_SUFFIX} clear
+    }
+QMAKE_POST_LINK += /home/viktor/develop/Qt/RSiSed/deploy/deploy.sh $${DEPLOY_CONFIG}
 }
-QMAKE_EXTRA_TARGETS += deploy
 
+#message($${QMAKE_EXTRA_TARGETS})
+#message($${PRE_TARGETDEPS})
 #message($${DESTDIR}$${TARGET})
+#message($${PROJECT_ROOT_PATH}/deploy/$${OS_SUFFIX}/cqt_win64_deploy.json)
