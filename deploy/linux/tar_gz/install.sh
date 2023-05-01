@@ -4,17 +4,6 @@
 #########
 set -e # stop on error
 
-#Check user
-if [[ $EUID -ne 0 ]]; then
-    echo "This script must be run as root"
-    exit 1
-fi
-
-#Remove old version
-if [ -d $installPath ]; then
-    $installPath'/uninstall.sh' > /dev/null
-fi
-
 #Variable
 APP=rsised
 EXT=rse
@@ -25,6 +14,17 @@ ICONS_PATH="/usr/share/icons/hicolor"
 DESKTOP_PATH="/usr/share/applications"
 INSTALL_PATH="/opt/rsised"
 LINK_PATH="/usr/bin/rsised"
+
+#Check user
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root"
+    exit 1
+fi
+
+#Remove old version
+if [ -d $INSTALL_PATH ]; then
+    $INSTALL_PATH'/uninstall.sh' > /dev/null
+fi
 
 xdg-icon-resource install --context mimetypes --size 48 $LOGO application-x-$APP
 
@@ -41,24 +41,24 @@ xdg-mime install $APP-mime.xml
 rm $APP-mime.xml
 update-mime-database $HOME/.local/share/mime
 
-echo "[Desktop Entry]
-Name=$APP
-Name[ru_RU]=РСиСед
-GenericName=Vector editor for firefighters
-GenericName[ru_RU]=Векторный редактор для пожарных
-Exec=$EXEC %U
-MimeType=application/x-$APP
-Icon=application-x-$APP
-Terminal=false
-Type=Application
-Categories=Graphics;Qt
-Comment=$COMMENT
-Comment[ru_RU]=Составление схем расстановки сил и средств при пожаре
-Path=/home/
-StartupNotify=true
-Version=0.1.0
-X-KDE-SubstituteUID=false
-"> $APP.desktop
+#echo "[Desktop Entry]
+#Name=$APP
+#Name[ru_RU]=РСиСед
+#GenericName=Vector editor for firefighters
+#GenericName[ru_RU]=Векторный редактор для пожарных
+#Exec=$EXEC %U
+#MimeType=application/x-$APP
+#Icon=application-x-$APP
+#Terminal=false
+#Type=Application
+#Categories=Graphics;Qt
+#Comment=$COMMENT
+#Comment[ru_RU]=Составление схем расстановки сил и средств при пожаре
+#Path=/home/
+#StartupNotify=true
+#Version=0.1.0
+#X-KDE-SubstituteUID=false
+#"> $APP.desktop
 desktop-file-install --dir=$DESKTOP_PATH $APP.desktop
 rm $APP.desktop
 #update-desktop-database $HOME/.local/share/applications

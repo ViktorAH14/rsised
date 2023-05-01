@@ -3,5 +3,6 @@
 
 #define RSISED_VERSION '"$$VERSION"'
 #define EMAIL '"ermolovva@gmail.com"'
+#define APPLICATION_NAME '"$$APPLICATION_NAME"'
 
 #endif //CONFIG_H

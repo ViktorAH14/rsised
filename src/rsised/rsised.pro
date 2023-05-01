@@ -10,10 +10,13 @@ CONFIG += c++17
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+APPLICATION_NAME = RSiSed
 VERSION = 0.1.0
 TARGET  = rsised_$${VERSION}
 
 QMAKE_SUBSTITUTES += config.h.in
+QMAKE_SUBSTITUTES += rsised.desktop.in
+system(mv -v ./rsised.desktop ../../deploy/linux/tar_gz/rsised.desktop)
 
 SOURCES += \
     diagramscene.cpp \
@@ -41,7 +44,8 @@ RESOURCES += \
 
 DISTFILES += \
     ../../doc/dev/shape_model.qmodel \
-    config.h.in
+    config.h.in \
+    rsised.desktop.in
 
 TRANSLATIONS += \
     i18n/rsised_ru.ts
