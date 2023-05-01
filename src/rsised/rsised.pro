@@ -10,6 +10,11 @@ CONFIG += c++17
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+VERSION = 0.1.0
+TARGET  = rsised_$${VERSION}
+
+QMAKE_SUBSTITUTES += config.h.in
+
 SOURCES += \
     diagramscene.cpp \
     main.cpp \
@@ -35,7 +40,8 @@ RESOURCES += \
     resource.qrc
 
 DISTFILES += \
-    ../../doc/dev/shape_model.qmodel
+    ../../doc/dev/shape_model.qmodel \
+    config.h.in
 
 TRANSLATIONS += \
     i18n/rsised_ru.ts
@@ -78,8 +84,4 @@ equals(BUILD_FLAG, release) {
     }
 QMAKE_POST_LINK += /home/viktor/develop/Qt/RSiSed/deploy/deploy.sh $${DEPLOY_CONFIG}
 }
-
-#message($${QMAKE_EXTRA_TARGETS})
-#message($${PRE_TARGETDEPS})
-#message($${DESTDIR}$${TARGET})
-#message($${PROJECT_ROOT_PATH}/deploy/$${OS_SUFFIX}/cqt_win64_deploy.json)
+#message($${TARGET})

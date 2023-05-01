@@ -20,6 +20,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "config.h"
 #include "../include/rectshape.h"
 #include "../include/ellipseshape.h"
 #include "../include/polylineshape.h"
@@ -608,11 +609,11 @@ void MainWindow::sendToBack()
 
 void MainWindow::about()
 {
-    QString header = tr("<p align=\"center\"><b> RSiSed 0.1</b></p>");
+    QString header = tr("<p align=\"center\"><b> RSiSed </b>") + RSISED_VERSION + "</p>";
     QString app = tr("<p>This application is designed for the alignment of forces "
                      "and means in case of fire. (<b>RSiSed</b>)</p>");
     QString license = "<p>Copyright (c) 2022 by Viktor Ermolov <br>"
-                         "Email: ermolovva@gmail.com.</p>"
+                         "Email: " EMAIL "</p>"
 
                          "<p><b>RSiSed</b> is free software: you can redistribute it and/or modify "
                          "it under the terms of the GNU General Public License as published by "

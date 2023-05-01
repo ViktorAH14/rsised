@@ -1,0 +1,7 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#define RSISED_VERSION '"$$VERSION"'
+#define EMAIL '"ermolovva@gmail.com"'
+
+#endif //CONFIG_H
