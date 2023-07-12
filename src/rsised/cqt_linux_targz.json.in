@@ -16,10 +16,10 @@
     '"qif"': false,
     '"noCheckRPATH"': false,
     '"noCheckPATH"': false,
-    '"name"': '"RSiSed"',
-    '"description"': '"The application is designed to draw up schemes for the alignment of forces and means, in case of fire"',
-    '"deployVersion"': '"0.1.0"',
-    '"releaseDate"': '"2023-02-13"',
-    '"icon"': '"../../deploy/icons/hicolor/32x32/rsised.png"',
-    '"publisher"': '"ErmolovVA"'
+    '"name"': '"$$APPLICATION_NAME"',
+    '"description"': '"$$DESCRIPTION"',
+    '"deployVersion"': '"$$VERSION"',
+    '"releaseDate"': '"$$DATE"',
+    '"icon"': '"../../icons/hicolor/32x32/rsised.png"',
+    '"publisher"': '"$$PUBLISHER"'
 }

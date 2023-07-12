@@ -6,6 +6,7 @@ include(../../version.pri)
 APPLICATION_NAME = RSiSed
 DESCRIPTION = Drawing up schemes for the arrangement of forces and means in case of fire
 EMAIL = ermolovva@gmail.com
+PUBLISHER = ErmolovVA
 
 # [QT CONFIG]
 QT += core gui svg xml printsupport
