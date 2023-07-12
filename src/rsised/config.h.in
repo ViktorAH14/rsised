@@ -1,11 +1,13 @@
 /*
  * File: config.h.in
  *
- * Description:
+ * Description: The config.h.in file is used in the rsised.pro file to
+ * automatically generate the config.h file. The config.h file defines the
+ * main global variables used when building the project.
  *
- * Created:
+ * Created: July 12, 2023
  *
- * Copyright (c) 2022 by Viktor Ermolov <ermolovva@gmail.com>.
+ * Copyright: (c) 2022 by Viktor Ermolov <ermolovva@gmail.com>.
  *
  * This file is part of the RSiSed project, a editor of the alignment of forces
  * and means in extinguishing a fire. (RSiSed)
@@ -29,7 +31,7 @@
 
 #define VERSION '"$$VERSION"'
 #define DATE '"$$DATE"'
-#define EMAIL '"ermolovva@gmail.com"'
+#define EMAIL '"$$EMAIL"'
 #define APPLICATION_NAME '"$$APPLICATION_NAME"'
 
 #endif //CONFIG_H
