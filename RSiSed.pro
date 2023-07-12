@@ -29,6 +29,4 @@ OTHER_FILES = \
     README.md \
     deploy/deploy.sh \
     deploy/linux/tar_gz/cqt_linux_targz.json \
-    deploy/linux/tar_gz/install.sh \
-    deploy/linux/tar_gz/rsised.desktop \
     deploy/linux/tar_gz/uninstall.sh

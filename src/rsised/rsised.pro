@@ -1,3 +1,13 @@
+include( ../../common.pri )
+include( ../../app.pri )
+include(../../version.pri)
+
+# [VARIABLE]
+APPLICATION_NAME = RSiSed
+DESCRIPTION = Drawing up schemes for the arrangement of forces and means in case of fire
+EMAIL = ermolovva@gmail.com
+
+# [QT CONFIG]
 QT += core gui svg xml printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -6,18 +16,7 @@ QT += KWidgetsAddons
 
 CONFIG += c++17
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
-APPLICATION_NAME = RSiSed
-VERSION = 0.1.0
-TARGET  = rsised_$${VERSION}
-
-QMAKE_SUBSTITUTES += config.h.in
-QMAKE_SUBSTITUTES += rsised.desktop.in
-system(mv -v ./rsised.desktop ../../deploy/linux/tar_gz/rsised.desktop)
-
+# [FILES]
 SOURCES += \
     diagramscene.cpp \
     main.cpp \
@@ -43,29 +42,29 @@ RESOURCES += \
     resource.qrc
 
 DISTFILES += \
-    ../../doc/dev/shape_model.qmodel \
     config.h.in \
-    rsised.desktop.in
+    deploy.sh \
+    cqt_linux_targz.json.in \
+    install.sh.in \
+    uninstall.sh.in \
+    rsised.desktop.in \
+    README.in \
+    ../../doc/dev/shape_model.qmodel
 
+# [TRANSLATIONS]
 TRANSLATIONS += \
     i18n/rsised_ru.ts
-
 #system(lrelease "$$_PRO_FILE_")
-
 tr.commands = lupdate "$$_PRO_FILE_" && lrelease "$$_PRO_FILE_"
 PRE_TARGETDEPS += tr
 QMAKE_EXTRA_TARGETS += tr
 
-include( ../../common.pri )
-include( ../../app.pri )
-
+# [LIBRARY]
 LIBS += -lshapes$${LIB_SUFFIX}
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+QMAKE_SUBSTITUTES += config.h.in
 
+# [DEPLOY]
 equals(BUILD_FLAG, release) {
 #    QT_DIR = $$[QT_HOST_BINS]
 #    win32:QMAKE_BIN = $${QT_DIR}/qmake.exe
@@ -81,11 +80,14 @@ equals(BUILD_FLAG, release) {
             #clear
         }
     linux-g++:{
-#        QMAKE_BIN = $${QT_DIR}/qmake
         DEPLOY_CONFIG = linux
-        #deploy.commands = cqtdeployer -bin $${DESTDIR}$${TARGET} \
-        #-targetDir $${PROJECT_ROOT_PATH}/distr/$${OS_SUFFIX} clear
+        QMAKE_SUBSTITUTES += install.sh.in
+        QMAKE_SUBSTITUTES += uninstall.sh.in
+        QMAKE_SUBSTITUTES += rsised.desktop.in
+        QMAKE_SUBSTITUTES += cqt_linux_targz.json.in
+        QMAKE_SUBSTITUTES += README.in
     }
-QMAKE_POST_LINK += /home/viktor/develop/Qt/RSiSed/deploy/deploy.sh $${DEPLOY_CONFIG}
+QMAKE_POST_LINK += ${PWD}/deploy.sh $${DEPLOY_CONFIG} $${VERSION}
 }
-#message($${TARGET})
+
+#message($${VERSION})
