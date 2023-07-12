@@ -609,7 +609,7 @@ void MainWindow::sendToBack()
 
 void MainWindow::about()
 {
-    QString header = tr("<p align=\"center\"><b> RSiSed </b>") + RSISED_VERSION + "</p>";
+    QString header = tr("<p align=\"center\"><b> RSiSed </b>") + VERSION + " (" + DATE +")""</p>";
     QString app = tr("<p>This application is designed for the alignment of forces "
                      "and means in case of fire. (<b>RSiSed</b>)</p>");
     QString license = "<p>Copyright (c) 2022 by Viktor Ermolov <br>"

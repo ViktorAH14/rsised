@@ -474,7 +474,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="613"/>
         <source>&lt;p&gt;This application is designed for the alignment of forces and means in case of fire. (&lt;b&gt;RSiSed&lt;/b&gt;)&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Приложение предназначено для составления схем расстановки сил и средст, при пожаре. (&lt;b&gt;RSiSed&lt;/b&gt;)&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Приложение предназначено для составления схем расстановки сил и средств, при пожаре. (&lt;b&gt;RSiSed&lt;/b&gt;)&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="632"/>
