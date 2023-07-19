@@ -36,7 +36,7 @@ set -Eeuo pipefile # stop on error
 #echo "SCRIPT_DIR = "${SCRIPT_DIR}
 APP='$$APPLICATION_NAME'
 #ICONS_PATH=/usr/share/icons/hicolor
-DESKTOP_PATH=/usr/share/applications
+DESKTOP_PATH=${HOME}/.local/share/applications
 INSTALL_PATH=/opt/${APP}
 LINK_PATH=/usr/bin/${APP}
 
