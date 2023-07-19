@@ -1,11 +1,12 @@
 #!/bin/bash
 
 #########################################################################################
-# File: install.sh                                                                      #
+# File: install.sh.in                                                                   #
 #                                                                                       #
-# Description: #
+# Description: This file is used to automatically generate (rsised.pro section [DEPOY]) #
+# an application installation script (install.sh) from the linux_targz distribution.    #
 #                                                                                       #
-# Created:                                                                  #
+# Created: July 8 2023                                                                  #
 #                                                                                       #
 # Copyright: (c) 2022 by Viktor Ermolov <ermolovva@gmail.com>.                          #
 #                                                                                       #
@@ -31,25 +32,30 @@
 set -Eeuo pipefile # stop on error
 
 # [VARIABLE]
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
-echo "SCRIPT_DIR = "${SCRIPT_DIR}
-APP='"$$APPLICATION_NAME"'
-VERSION='"$$VERSION"'
+#VERSION='"$$VERSION"'
+APP='$$APPLICATION_NAME'
 EXT=rse
+#EXEC=/usr/bin/${APP}
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
+#echo "SCRIPT_DIR = "${SCRIPT_DIR}
+LOGO_PATH=${SCRIPT_DIR}/icons
+#ICONS_PATH=/usr/share/icons/hicolor
+DESKTOP_PATH=$HOME/.local/share/applications
+INSTALL_PATH=/opt/${APP}
+LINK_PATH=/usr/bin/${APP}
 COMMENT='"$$DESCRIPTION"'
-EXEC=/usr/bin/$APP
-LOGO=./icons/hicolor/48x48/rsised.png
-ICONS_PATH="/usr/share/icons/hicolor"
-DESKTOP_PATH="/usr/share/applications"
-INSTALL_PATH="/opt/rsised"
-LINK_PATH="/usr/bin/rsised"
 
-# cleanup() {
-#}
+ cleanup() {
+ if [ -d ${INSTALL_PATH} ]; then
+    echo '"Installation crash"'
+    echo '"Cleaning in progress"'
+     ${SCRIPT_DIR}/uninstall.sh > /dev/null
+ fi
+ }
 
-# trap cleanup SIGINT SIGTERM ERR # Clearing when signals are received
+trap cleanup SIGINT SIGTERM ERR # Clearing when signals are received
 
-echo '"rsised install..."'
+echo '"Installation of the ${APP} application has begun"'
 
 # [CHECK USER]
 if [[ $EUID -ne 0 ]]; then
@@ -58,48 +64,60 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # [REMOVE OLD VERSION]
-if [ -d $INSTALL_PATH ]; then
-    $INSTALL_PATH'/uninstall.sh' > /dev/null
+if [ -d ${INSTALL_PATH} ]; then
+    echo '"Remove old version ${APP}"'
+    ${INSTALL_PATH}/uninstall.sh > /dev/null
 fi
 
-xdg-icon-resource install --context mimetypes --size 48 $LOGO application-x-$APP
+# [CREATE APP DIR]
+mkdir -v ${INSTALL_PATH}
+cp -v ${SCRIPT_DIR}/rsised.sh ${INSTALL_PATH}
+chmod u+x ${SCRIPT_DIR}/uninstall.sh
+cp -v ${SCRIPT_DIR}/uninstall.sh ${INSTALL_PATH}
+cp -rv ${SCRIPT_DIR}/plugins ${INSTALL_PATH}
+cp -rv ${SCRIPT_DIR}/lib ${INSTALL_PATH}
+cp -rv ${SCRIPT_DIR}/bin ${INSTALL_PATH}
+ln -sv ${INSTALL_PATH}/rsised.sh ${LINK_PATH}
+chmod a+x ${LINK_PATH}
+echo '"Copying files to the ${INSTALL_PATH} directory completed"'
 
+# [ICONS]
+#cp -v ${SCRIPT_DIR}/icons/32x32/rsised.png ${ICONS_PATH}/32x32/apps
+#cp -v ${SCRIPT_DIR}/icons/48x48/rsised.png ${ICONS_PATH}/48x48/apps
+#cp -v ${SCRIPT_DIR}/icons/64x64/rsised.png ${ICONS_PATH}/64x64/apps
+#cp -v ${SCRIPT_DIR}/icons/128x128/rsised.png ${ICONS_PATH}/128x128/apps
+#cp -v ${SCRIPT_DIR}/icons/256x256/rsised.png ${ICONS_PATH}/256x256/apps
+#cp -v ${SCRIPT_DIR}/icons/scalable/rsised.svg ${ICONS_PATH}/scalable/apps
+xdg-icon-resource install --context mimetypes --size 32 ${LOGO_PATH}/32x32/${APP}.png application-x-${APP}
+xdg-icon-resource install --context mimetypes --size 48 ${LOGO_PATH}/48x48/${APP}.png application-x-${APP}
+xdg-icon-resource install --context mimetypes --size 64 ${LOGO_PATH}/64x64/${APP}.png application-x-${APP}
+xdg-icon-resource install --context mimetypes --size 128 ${LOGO_PATH}/128x128/${APP}.png application-x-${APP}
+xdg-icon-resource install --context mimetypes --size 256 ${LOGO_PATH}/256x256/${APP}.png application-x-${APP}
+echo '"Registration of application icons completed"'
+
+# [MIME]
 echo '"<?xml version=\"1.0\" encoding=\"UTF-8\"?>'
-<mime-info xmlns=\"http://www.freedesktop.org/standards/shared-mime-info\">
-    <mime-type type=\"application/x-$APP\">
-        <comment>$COMMENT</comment>
-        <icon name=\"application-x-$APP\"/>
-        <glob pattern=\"*.$EXT\"/>
-    </mime-type>
-'</mime-info>"' > $APP-mime.xml
+'<mime-info xmlns=\"http://www.freedesktop.org/standards/shared-mime-info\">'
+    '<mime-type type=\"application/x-${APP}\">'
+        '<comment>${COMMENT}</comment>'
+        '<icon name=\"application-x-${APP}\"/>'
+        '<glob pattern=\"*.${EXT}\"/>'
+    '</mime-type>'
+'</mime-info>"' > ${APP}-mime.xml
 
-xdg-mime install $APP-mime.xml
-rm $APP-mime.xml
+xdg-mime install ${APP}-mime.xml
+rm ${APP}-mime.xml
 update-mime-database $HOME/.local/share/mime
+echo '"The ${APP}-mime.xml file is installed, mime database is update"'
 
-mkdir -v $INSTALL_PATH
-cp -v rsised.sh $INSTALL_PATH
-chmod u+x uninstall.sh
-cp -v uninstall.sh $INSTALL_PATH
-cp -rv plugins $INSTALL_PATH
-cp -rv lib $INSTALL_PATH
-cp -rv bin $INSTALL_PATH
-cp -v rsised.desktop $DESKTOP_PATH
-ln -sv $INSTALL_PATH'/rsised.sh' $LINK_PATH
-chmod a+x $LINK_PATH
-echo '"---"'
-cp -v icons/hicolor/32x32/rsised.png $ICONS_PATH'/32x32/apps'
-cp -v icons/hicolor/48x48/rsised.png $ICONS_PATH'/48x48/apps'
-cp -v icons/hicolor/64x64/rsised.png $ICONS_PATH'/64x64/apps'
-cp -v icons/hicolor/72x72/rsised.png $ICONS_PATH'/72x72/apps'
-cp -v icons/hicolor/96x96/rsised.png $ICONS_PATH'/96x96/apps'
-cp -v icons/hicolor/128x128/rsised.png $ICONS_PATH'/128x128/apps'
-cp -v icons/hicolor/256x256/rsised.png $ICONS_PATH'/256x256/apps'
-cp -v icons/hicolor/512x512/rsised.png $ICONS_PATH'/512x512/apps'
-cp -v icons/hicolor/scalable/rsised.svg $ICONS_PATH'/scalable/apps'
+# [DESKTOP]
+#cp -v rsised.desktop ${DESKTOP_PATH}
+desktop-file-install --dir=${DESKTOP_PATH} ${SCRIPT_DIR}/${APP}.desktop
+update-desktop-database ${DESKTOP_PATH}
+echo '"The ${APP}.desktop file is installed, desktop database is update"'
 
-gtk-update-icon-cache $ICONS_PATH
-update-desktop-database $DESKTOP_PATH
-xdg-mime default $APP.desktop application/x-$APP
+xdg-mime default ${APP}.desktop application/x-${APP}
 
-echo '"...finished!"'
+#gtk-update-icon-cache ${ICONS_PATH}
+
+echo '"Application installation completed successfully!"'
