@@ -35,21 +35,21 @@ VER_BRANCH ~= s/^fix_\w+/fix
 VER_BRANCH ~= s/^release_\d+\.\d+\.\d+/release
 
 # Set the version format depending on the git branch
-VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT}-a$${VER_BUILD}$${BRANCH}
+VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT}-a.$${VER_BUILD}-$${BRANCH}
 equals(VER_BRANCH, master) {
     VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT}
 }
 equals(VER_BRANCH, develop) {
-    VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT}-b$${VER_BUILD}
+    VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT}-b.$${VER_BUILD}
 }
 equals(VER_BRANCH, release) {
-    VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT}-r$${VER_BUILD}
+    VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT}-r.$${VER_BUILD}
 }
 equals(VER_BRANCH, fix) {
-    VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT}-r$${VER_BUILD}
+    VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT}-r.$${VER_BUILD}
 }
 equals(VER_BRANCH, feature) {
-    VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT}-a$${VER_BUILD}_$${BRANCH}
+    VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT}-a.$${VER_BUILD}-$${BRANCH}
 }
 
 #Trying to get the last commit date
