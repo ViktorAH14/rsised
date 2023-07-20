@@ -210,7 +210,8 @@ bin/
 build/
 lib.*/
 import/
-doc/
+doc/dev/dox/html/
+doc/dev/dox/latex/
 .qtc_clangd/
 
 # Images
