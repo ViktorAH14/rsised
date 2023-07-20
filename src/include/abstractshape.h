@@ -1,8 +1,8 @@
 /*
  * Copyright (c) 2022 by Viktor Ermolov <ermolovva@gmail.com>.
  *
- * This file is part of the RSiSed project, a editor of the alignment of forces
- * and means in extinguishing a fire. (RSiSed)
+ * This file is part of the RSiSed project, an editor of the alignment of
+ * forces and means in extinguishing a fire. (RSiSed)
  *
  * RSiSed is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*!
+ * \file
+ * \brief The abstractshape.h is a header file that contains a description of
+ * the AbstractShape class.
+ *
+ * The file contains a description of the common methods of the libshapes
+ * library. This file is part of the RSiSed project, an editor of the
+ * alignment of forces and means in extinguishing a fire. (RSiSed)
+ *
+ * \copyright (C) 2022 by Viktor Ermolov <ermolovva@gmail.com>.
+ * You can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
+ * \date Jun 9 2022
+ * \author Ermolov V.A.
+ */
+\
+/*!
+ * \defgroup libshapes Shapes library
+ * \brief This module is a library of shapes for the RSiSed application
+ *
+ * It includes basic elements for constructing lines, curves, rectangles,
+ * ellipses, sectors, texts, elements of building structures and fire equipment.
+ * This module also includes classes for transforming the above elements.
+ */
+///@{
+
 #ifndef ABSTRACTSHAPE_H
 #define ABSTRACTSHAPE_H
 
@@ -27,6 +54,12 @@
 
 class SizeGripShape;
 
+/*!
+ * \brief The AbstractShape class is the base class for the libshapes library.
+ *
+ * The abstract base class contains common methods for working with elements
+ * of the libshapes library.
+ */
 class AbstractShape : public QGraphicsItem
 {
 public:
@@ -57,7 +90,7 @@ protected:
     QPainterPath shapeFromPath(const QPainterPath &path) const;
 
 private:
-    Q_DISABLE_COPY(AbstractShape)
+    Q_DISABLE_COPY(AbstractShape) // Defined in the qglobal.h file
 
     SizeGripShape   *m_sizeGripItem;
     QMenu   *m_contextMenu;
@@ -66,3 +99,4 @@ private:
 };
 
 #endif // ABSTRACTSHAPE_H
+///@}
