@@ -37,18 +37,13 @@ set -Eeuo pipefail # stop on error
 
 # [VARIABLE]
 DEPLOY_CONFIG="$1"
-echo "Deploy config = ${DEPLOY_CONFIG}"
 VERSION="$2"
-echo "VERSION = ${VERSION}"
+APP="$3"
 NC='\033[0m' # No Color
 RED='\033[0;31m'
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
-echo "SCRIPT_DIR = "${SCRIPT_DIR}
 TARGZ_DIR=../../distr/linux
-echo "TARGZ_DIR = "${TARGZ_DIR}
 ICONS_DIR=../../icons/hicolor
-echo "ICONS_DIR = "${ICONS_DIR}
-echo "PWD = $(pwd)"
 
 cleanup () {
     case "${DEPLOY_CONFIG}" in
@@ -60,28 +55,33 @@ cleanup () {
 #            ;;
         linux )
         #[CLEAN_LINUX_TARGZ]
-        if [ -d "${TARGZ_DIR}/tar_gz" ]; then
-            rm -rfv "${TARGZ_DIR}/tar_gz"
+        if [ -d ${TARGZ_DIR}/${APP}-${VERSION} ]; then
+            rm -rfv ${TARGZ_DIR}/${APP}-${VERSION}
         fi
 
-        if [ -f "${SCRIPT_DIR}/cqt_linux_targz.json" ]; then
-            rm -fv "${SCRIPT_DIR}/cqt_linux_targz.json"
+        if [ -f ${SCRIPT_DIR}/cqt_linux_targz.json ]; then
+            rm -fv ${SCRIPT_DIR}/cqt_linux_targz.json
         fi
 
-        if [ -f "${SCRIPT_DIR}/install.sh" ]; then
-            rm -fv "${SCRIPT_DIR}/install.sh"
+        if [ -f ${SCRIPT_DIR}/install.sh ]; then
+            rm -fv ${SCRIPT_DIR}/install.sh
         fi
 
-        if [ -f "${SCRIPT_DIR}/uninstall.sh" ]; then
-            rm -fv "${SCRIPT_DIR}/uninstall.sh"
+        if [ -f ${SCRIPT_DIR}/uninstall.sh ]; then
+            rm -fv ${SCRIPT_DIR}/uninstall.sh
         fi
 
-        if [ -f "${SCRIPT_DIR}/rsised.desktop" ]; then
-            rm -fv "${SCRIPT_DIR}/rsised.desktop"
+        if [ -f ${SCRIPT_DIR}/rsised.desktop ]; then
+            rm -fv ${SCRIPT_DIR}/rsised.desktop
         fi
 
-        if [ -f "${SCRIPT_DIR}/README" ]; then
-            rm -fv "${SCRIPT_DIR}/README"
+        if [ -f ${SCRIPT_DIR}/README ]; then
+            rm -fv ${SCRIPT_DIR}/README
+        fi
+        if [ -f ${TARGZ_DIR}/rsised-${VERSION}.tar.gz ]; then
+            echo "The build of the ${APP}-${VERSION}.tar.gz distribution completed successfully"
+        else
+            echo -e "${RED} ${APP}-${VERSION}.tar.gz distribution build failed${NC}"
         fi
         #[CLEAN_LINUX_DEB]
         #[CLEAN_LINUX_QIF]
@@ -101,23 +101,16 @@ case "${DEPLOY_CONFIG}" in
 #        cqtdeployer -confFile ./win64_deploy.json;;
     linux )
         #[BUILD_LINUX_TARGZ]
-        echo "The assembly of the rsised_${VERSION}.tar.gz distribution kit for Linux has begun"
+        echo "The assembly of the ${APP}-${VERSION}.tar.gz distribution kit for Linux has begun"
         cqtdeployer -confFile ${SCRIPT_DIR}/cqt_linux_targz.json
-        mv -v install.sh ${TARGZ_DIR}/tar_gz
-        mv -v uninstall.sh ${TARGZ_DIR}/tar_gz
-        mv -v rsised.desktop ${TARGZ_DIR}/tar_gz
-        mv -v README ${TARGZ_DIR}/tar_gz
-        cp -v -r ${ICONS_DIR} ${TARGZ_DIR}/tar_gz/icons
+        mv -v install.sh ${TARGZ_DIR}/${APP}-${VERSION}
+        mv -v uninstall.sh ${TARGZ_DIR}/${APP}-${VERSION}
+        mv -v ${APP}.desktop ${TARGZ_DIR}/${APP}-${VERSION}
+        mv -v README ${TARGZ_DIR}/${APP}-${VERSION}
+        cp -v -r ${ICONS_DIR} ${TARGZ_DIR}/${APP}-${VERSION}/icons
         cd ${TARGZ_DIR}
-        echo "PWD = $(pwd)"
-        tar -zvcf rsised_${VERSION}.tar.gz tar_gz/
+        tar -zvcf ${APP}-${VERSION}.tar.gz ${APP}-${VERSION}/
         cd ${SCRIPT_DIR}
-        echo "PWD = $(pwd)"
-        if [ -f "${TARGZ_DIR}/rsised_${VERSION}.tar.gz" ]; then
-            echo "rsised_${VERSION}.tar.gz distribution completed successfully"
-        else
-            echo -e "${RED}rsised_${VERSION}.tar.gz distribution build failed${NC}"
-        fi
 
         #[BUILD_LINUX_DEB]
 #        cqtdeployer -confFile ./linux_deb.json

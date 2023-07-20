@@ -3,18 +3,16 @@ include( ../../app.pri )
 include(../../version.pri)
 
 # [VARIABLE]
-APPLICATION_NAME = RSiSed
+APPLICATION_NAME = rsised
+TARGET = $${APPLICATION_NAME}
 DESCRIPTION = Drawing up schemes for the arrangement of forces and means in case of fire
 EMAIL = ermolovva@gmail.com
 PUBLISHER = ErmolovVA
 
 # [QT CONFIG]
 QT += core gui svg xml printsupport
-
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
 QT += KWidgetsAddons
-
 CONFIG += c++17
 
 # [FILES]
@@ -88,7 +86,7 @@ equals(BUILD_FLAG, release) {
         QMAKE_SUBSTITUTES += cqt_linux_targz.json.in
         QMAKE_SUBSTITUTES += README.in
     }
-QMAKE_POST_LINK += ${PWD}/deploy.sh $${DEPLOY_CONFIG} $${VERSION}
+QMAKE_POST_LINK += ${PWD}/deploy.sh $${DEPLOY_CONFIG} $${VERSION} $${APPLICATION_NAME}
 }
 
 #message($${VERSION})

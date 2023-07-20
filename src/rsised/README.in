@@ -35,7 +35,7 @@ Follow the instructions below to install the application.
 1. Unzip the archive.
     $ tar -xzvf '$$APPLICATION_NAME'-'$$VERSION'.tar.gz
 2. Move to the tar_gz directory.
-    $ cd tar_gz
+    $ cd '$$APPLICATION_NAME'-'$$VERSION'
 3. Make the install.sh script executable.
     $ chmod a+x install.sh
 4. Run the install.sh script as root.
@@ -55,7 +55,7 @@ RU_ru
 1. Распакуйте архив.
     $ tar -xzvf '$$APPLICATION_NAME'_'$$VERSION'.tar.gz
 2. Переместитесь в директорию tar_gz.
-    $ cd tar_gz
+    $ cd '$$APPLICATION_NAME'-'$$VERSION'
 3. Сделайте скрипт install.sh исполняемым.
     $ chmod a+x install.sh
 4. Запустите скрипт install.sh с правами суперпользователя.

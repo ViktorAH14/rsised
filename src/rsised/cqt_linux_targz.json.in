@@ -8,7 +8,7 @@
     '"force-clear"': false,
     '"recursiveDepth"': 3,
     '"extraLibs"': '""',
-    '"targetDir"': '"../../distr/linux/tar_gz/"',
+    '"targetDir"': '"../../distr/linux/$$APPLICATION_NAME-$$VERSION/"',
     '"noStrip"': false,
     '"extractPlugins"': false,
     '"noTranslations"': true,
