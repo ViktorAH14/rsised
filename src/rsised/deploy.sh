@@ -63,21 +63,6 @@ cleanup () {
             rm -fv ${SCRIPT_DIR}/cqt_linux_targz.json
         fi
 
-        if [ -f ${SCRIPT_DIR}/install.sh ]; then
-            rm -fv ${SCRIPT_DIR}/install.sh
-        fi
-
-        if [ -f ${SCRIPT_DIR}/uninstall.sh ]; then
-            rm -fv ${SCRIPT_DIR}/uninstall.sh
-        fi
-
-        if [ -f ${SCRIPT_DIR}/rsised.desktop ]; then
-            rm -fv ${SCRIPT_DIR}/rsised.desktop
-        fi
-
-        if [ -f ${SCRIPT_DIR}/README ]; then
-            rm -fv ${SCRIPT_DIR}/README
-        fi
         if [ -f ${TARGZ_DIR}/rsised-${VERSION}.tar.gz ]; then
             echo "The build of the ${APP}-${VERSION}.tar.gz distribution completed successfully"
         else
@@ -102,10 +87,12 @@ case "${DEPLOY_CONFIG}" in
     linux )
         #[BUILD_LINUX_TARGZ]
         echo "The assembly of the ${APP}-${VERSION}.tar.gz distribution kit for Linux has begun"
+        mkdir ${TARGZ_DIR}/${APP}-${VERSION}
         cqtdeployer -confFile ${SCRIPT_DIR}/cqt_linux_targz.json
         mv -v install.sh ${TARGZ_DIR}/${APP}-${VERSION}
         mv -v uninstall.sh ${TARGZ_DIR}/${APP}-${VERSION}
         mv -v ${APP}.desktop ${TARGZ_DIR}/${APP}-${VERSION}
+        mv -v ${APP}-mime.xml ${TARGZ_DIR}/${APP}-${VERSION}
         mv -v README ${TARGZ_DIR}/${APP}-${VERSION}
         cp -v -r ${ICONS_DIR} ${TARGZ_DIR}/${APP}-${VERSION}/icons
         cd ${TARGZ_DIR}

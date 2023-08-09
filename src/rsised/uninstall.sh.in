@@ -29,14 +29,11 @@
 # Email: <ermolovva@gmail.com>                                                          #
 #########################################################################################
 
-set -Eeuo pipefile # stop on error
+set -Eeuo pipefail # stop on error
 
 # [VARIABLE]
-#SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
-#echo "SCRIPT_DIR = "${SCRIPT_DIR}
 APP='$$APPLICATION_NAME'
-#ICONS_PATH=/usr/share/icons/hicolor
-DESKTOP_PATH=${HOME}/.local/share/applications
+DESKTOP_PATH=/usr/share/applications
 INSTALL_PATH=/opt/${APP}
 LINK_PATH=/usr/bin/${APP}
 
@@ -49,22 +46,19 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # [REMOVE ICONS]
-#rm -v ${ICONS_PATH}/32x32/apps/rsised.png
-#rm -v ${ICONS_PATH}/48x48/apps/rsised.png
-#rm -v ${ICONS_PATH}/64x64/apps/rsised.png
-#rm -v ${ICONS_PATH}/128x128/apps/rsised.png
-#rm -v ${ICONS_PATH}/256x256/apps/rsised.png
-#rm -v ${ICONS_PATH}/scalable/apps/rsised.png
 xdg-icon-resource uninstall --context mimetypes --size 32 application-x-${APP}
 xdg-icon-resource uninstall --context mimetypes --size 48 application-x-${APP}
 xdg-icon-resource uninstall --context mimetypes --size 64 application-x-${APP}
 xdg-icon-resource uninstall --context mimetypes --size 128 application-x-${APP}
 xdg-icon-resource uninstall --context mimetypes --size 256 application-x-${APP}
 echo '"App icons removed"'
+echo '"Please wait"'
 
 # [MIME]
-xdg-mime uninstall ${APP}-mime.xml
-echo '"File ${APP}-mime.xml removed"'
+if [ -f ${INSTALL_PATH}/${APP}-mime.xml ]; then
+    xdg-mime uninstall ${INSTALL_PATH}/${APP}-mime.xml
+    echo '"Removes the file type descriptions provided in ${APP}-mime.xml"'
+fi
 
 # [DESKTOP]
 if [ -f ${DESKTOP_PATH}/${APP}.desktop ]; then

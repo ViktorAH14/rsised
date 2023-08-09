@@ -45,6 +45,7 @@ DISTFILES += \
     deploy.sh \
     cqt_linux_targz.json.in \
     install.sh.in \
+    rsised-mime.xml.in \
     uninstall.sh.in \
     rsised.desktop.in \
     README.in \
@@ -80,13 +81,14 @@ equals(BUILD_FLAG, release) {
         }
     linux-g++:{
         DEPLOY_CONFIG = linux
+        QMAKE_SUBSTITUTES += cqt_linux_targz.json.in
         QMAKE_SUBSTITUTES += install.sh.in
         QMAKE_SUBSTITUTES += uninstall.sh.in
         QMAKE_SUBSTITUTES += rsised.desktop.in
-        QMAKE_SUBSTITUTES += cqt_linux_targz.json.in
+        QMAKE_SUBSTITUTES += rsised-mime.xml.in
         QMAKE_SUBSTITUTES += README.in
     }
 QMAKE_POST_LINK += ${PWD}/deploy.sh $${DEPLOY_CONFIG} $${VERSION} $${APPLICATION_NAME}
 }
 
-#message($${VERSION})
+#message($LD_LIBRARY_PATH)

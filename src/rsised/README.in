@@ -34,7 +34,7 @@ and means in extinguishing a fire. (RSiSed)
 Follow the instructions below to install the application.
 1. Unzip the archive.
     $ tar -xzvf '$$APPLICATION_NAME'-'$$VERSION'.tar.gz
-2. Move to the tar_gz directory.
+2. Move to the '$$APPLICATION_NAME'-'$$VERSION' directory.
     $ cd '$$APPLICATION_NAME'-'$$VERSION'
 3. Make the install.sh script executable.
     $ chmod a+x install.sh
@@ -54,7 +54,7 @@ RU_ru
 Для установки приложения следуте следующим инструкциям.
 1. Распакуйте архив.
     $ tar -xzvf '$$APPLICATION_NAME'_'$$VERSION'.tar.gz
-2. Переместитесь в директорию tar_gz.
+2. Переместитесь в директорию '$$APPLICATION_NAME'-'$$VERSION'.
     $ cd '$$APPLICATION_NAME'-'$$VERSION'
 3. Сделайте скрипт install.sh исполняемым.
     $ chmod a+x install.sh
