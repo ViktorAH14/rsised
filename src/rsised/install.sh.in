@@ -1,0 +1,101 @@
+#!/bin/bash
+
+#########################################################################################
+# File: install.sh.in                                                                   #
+#                                                                                       #
+# Description: This file is used to automatically generate (rsised.pro section [DEPOY]) #
+# an application installation script (install.sh) from the linux_targz distribution.    #
+#                                                                                       #
+# Created: July 8 2023                                                                  #
+#                                                                                       #
+# Copyright: (c) 2022 by Viktor Ermolov <ermolovva@gmail.com>.                          #
+#                                                                                       #
+# This file is part of the RSiSed project, a editor of the alignment of forces          #
+# and means in extinguishing a fire. (RSiSed)                                           #
+#                                                                                       #
+# RSiSed is free software: you can redistribute it and/or modify                        #
+# it under the terms of the GNU General Public License as published by                  #
+# the Free Software Foundation, either version 3 of the License, or                     #
+# (at your option) any later version.                                                   #
+#                                                                                       #
+# RSiSed is distributed in the hope that it will be useful,                             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of                        #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                          #
+# GNU General Public License for more details.                                          #
+#                                                                                       #
+# You should have received a copy of the GNU General Public License                     #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.                #
+#                                                                                       #
+# Email: <ermolovva@gmail.com>                                                          #
+#########################################################################################
+
+set -Eeuo pipefail # stop on error
+
+# [VARIABLE]
+APP='$$APPLICATION_NAME'
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
+LOGO_PATH=${SCRIPT_DIR}/icons
+DESKTOP_PATH=/usr/share/applications
+INSTALL_PATH=/opt/${APP}
+LINK_PATH=/usr/bin/${APP}
+
+ cleanup() {
+ if [ -d ${INSTALL_PATH} ]; then
+    echo '"Installation crash"'
+    echo '"Cleaning in progress"'
+     ${SCRIPT_DIR}/uninstall.sh > /dev/null
+ fi
+ }
+
+trap cleanup SIGINT SIGTERM ERR # Clearing when signals are received
+
+echo '"Installation of the ${APP} application has begun"'
+
+# [CHECK USER]
+if [[ $EUID -ne 0 ]]; then
+    echo '"This script must be run as root"'
+    exit 1
+fi
+
+# [REMOVE OLD VERSION]
+if [ -d ${INSTALL_PATH} ]; then
+    echo '"Remove old version ${APP}"'
+    ${INSTALL_PATH}/uninstall.sh > /dev/null
+fi
+
+# [CREATE APP DIR]
+mkdir -v ${INSTALL_PATH}
+cp -v ${SCRIPT_DIR}/rsised.sh ${INSTALL_PATH}
+chmod u+x ${SCRIPT_DIR}/uninstall.sh
+cp -v ${SCRIPT_DIR}/uninstall.sh ${INSTALL_PATH}
+cp -v ${SCRIPT_DIR}/${APP}-mime.xml ${INSTALL_PATH}
+cp -v ${SCRIPT_DIR}/README ${INSTALL_PATH}
+cp -rv ${SCRIPT_DIR}/plugins ${INSTALL_PATH}
+cp -rv ${SCRIPT_DIR}/lib ${INSTALL_PATH}
+cp -rv ${SCRIPT_DIR}/bin ${INSTALL_PATH}
+ln -sv ${INSTALL_PATH}/rsised.sh ${LINK_PATH}
+chmod a+x ${LINK_PATH}
+echo '"Copying files to the ${INSTALL_PATH} directory completed"'
+
+# [ICONS]
+xdg-icon-resource install --context mimetypes --size 32 ${LOGO_PATH}/32x32/${APP}.png application-x-${APP}
+xdg-icon-resource install --context mimetypes --size 48 ${LOGO_PATH}/48x48/${APP}.png application-x-${APP}
+xdg-icon-resource install --context mimetypes --size 64 ${LOGO_PATH}/64x64/${APP}.png application-x-${APP}
+xdg-icon-resource install --context mimetypes --size 128 ${LOGO_PATH}/128x128/${APP}.png application-x-${APP}
+xdg-icon-resource install --context mimetypes --size 256 ${LOGO_PATH}/256x256/${APP}.png application-x-${APP}
+echo '"Registration of application icons completed"'
+echo '"Please wait"'
+
+# [MIME]
+xdg-mime install ${APP}-mime.xml
+update-mime-database /usr/share/mime
+echo '"The ${APP}-mime.xml file is installed, mime database is update"'
+
+# [DESKTOP]
+desktop-file-install --dir=${DESKTOP_PATH} ${SCRIPT_DIR}/${APP}.desktop
+update-desktop-database ${DESKTOP_PATH}
+echo '"The ${APP}.desktop file is installed, desktop database is update"'
+
+xdg-mime default ${APP}.desktop application/x-${APP}
+
+echo '"Application installation completed successfully!"'
