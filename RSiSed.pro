@@ -27,6 +27,3 @@ tst_technicsshape.depends = libshapes
 OTHER_FILES = \
     COPYING \
     README.md \
-    deploy/deploy.sh \
-    deploy/linux/tar_gz/cqt_linux_targz.json \
-    deploy/linux/tar_gz/uninstall.sh
