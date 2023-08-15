@@ -37,8 +37,6 @@
 *.exe
 *.out
 *.app
-# rsised*
-tst_*
 
 ### CMake ###
 CMakeLists.txt.user
