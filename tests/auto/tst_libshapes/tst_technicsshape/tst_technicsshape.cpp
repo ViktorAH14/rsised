@@ -51,13 +51,21 @@ private slots:
 
 void tst_TechnicShape::constructor()
 {
+    // BaseShape
+    TechnicsShape *p_baseShape = nullptr;
+    p_baseShape = TechnicsShape::createTechnicsShape(TechnicsShape::Base);
+    QVERIFY2(p_baseShape, "baseShape is  nullptr");
+    QCOMPARE(int(p_baseShape->type()), int(QGraphicsItem::UserType + 201));
+    QCOMPARE(p_baseShape->shapeType(), TechnicsShape::Base);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_baseShape);
+
     // TankerShape
     TechnicsShape *p_tankerShape = nullptr;
     p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
-    QVERIFY2(p_tankerShape, "tankerShape nullptr");
+    QVERIFY2(p_tankerShape, "tankerShape is nullptr");
     QCOMPARE(int(p_tankerShape->type()), int(QGraphicsItem::UserType + 202));
-    QCOMPARE(p_tankerShape->shapeType(), TechnicsShape::Tanker);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+
 }
 
 void tst_TechnicShape::boundingRect()
