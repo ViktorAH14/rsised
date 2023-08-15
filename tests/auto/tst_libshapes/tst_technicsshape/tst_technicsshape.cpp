@@ -273,8 +273,15 @@ void tst_TechnicShape::height_setHeight_data()
 
 void tst_TechnicShape::height_setHeight()
 {
-    // TankerShape
     QFETCH(qreal, height);
+
+    // BaseShape
+    TechnicsShape *p_baseShape = TechnicsShape::createTechnicsShape(TechnicsShape::Base);
+    p_baseShape->setHeight(height);
+    QCOMPARE(p_baseShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_baseShape);
+
+    // TankerShape
     TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
     p_tankerShape->setHeight(height);
     QCOMPARE(p_tankerShape->height(), height);
