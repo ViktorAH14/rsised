@@ -92,21 +92,43 @@ void tst_TechnicShape::boundingRect()
 
 void tst_TechnicShape::shape()
 {
+    // BaseShape
+    TechnicsShape *p_baseShape = TechnicsShape::createTechnicsShape(TechnicsShape::Base);
+    QPainterPathStroker ps_baseShape;
+    ps_baseShape.setWidth(p_baseShape->pen().widthF());
+    QRectF baseRect{p_baseShape->rect()};
+    qreal frontTabBase{baseRect.height() / 3};
+    QPointF frontCenterBase{baseRect.center().x(), baseRect.top()}; // 0.0, -37.5
+    QPointF frontRightBase{baseRect.right(), baseRect.top() + frontTabBase}; // 15.0, -12.5
+    QPointF frontLeftBase{baseRect.left(), baseRect.top() + frontTabBase}; // -15.0, -12.5
+    QPointF bottomRightBase{baseRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftBase{baseRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF basePolygon;
+    basePolygon << frontCenterBase << frontRightBase << bottomRightBase << bottomLeftBase
+                << frontLeftBase << frontCenterBase;
+    QPainterPath basePath;
+    basePath.addPolygon(basePolygon);
+    QPainterPath strokeBasePath = ps_baseShape.createStroke(basePath);
+    strokeBasePath.addPath(basePath);
+    QCOMPARE(p_baseShape->shape(), strokeBasePath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_baseShape);
+
     // TankerShape
     TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
     QPainterPathStroker ps_tankerShape;
     ps_tankerShape.setWidth(p_tankerShape->pen().widthF());
     QRectF tankerRect{p_tankerShape->rect()};
-    qreal frontTab{tankerRect.height() / 3};
-    QPointF frontCenter{tankerRect.center().x(), tankerRect.top()}; // 0.0, -37.5
-    QPointF frontRight{tankerRect.right(), tankerRect.top() + frontTab}; // 15.0, -12.5
-    QPointF frontLeft{tankerRect.left(), tankerRect.top() + frontTab}; // -15.0, -12.5
-    QPointF bottomRight{tankerRect.bottomRight()}; // 15.0, 37.5
-    QPointF bottomLeft{tankerRect.bottomLeft()}; // -15.0, 37.5
-    QPolygonF basePolygon;
-    basePolygon << frontCenter << frontRight << bottomRight << bottomLeft << frontLeft << frontCenter;
+    qreal frontTabTanker{tankerRect.height() / 3};
+    QPointF frontCenterTanker{tankerRect.center().x(), tankerRect.top()}; // 0.0, -37.5
+    QPointF frontRightTanker{tankerRect.right(), tankerRect.top() + frontTabTanker}; // 15.0, -12.5
+    QPointF frontLeftTanker{tankerRect.left(), tankerRect.top() + frontTabTanker}; // -15.0, -12.5
+    QPointF bottomRightTanker{tankerRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftTanker{tankerRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF tankerPolygon;
+    tankerPolygon << frontCenterTanker << frontRightTanker << bottomRightTanker
+                << bottomLeftTanker << frontLeftTanker << frontCenterTanker;
     QPainterPath tankerPath;
-    tankerPath.addPolygon(basePolygon);
+    tankerPath.addPolygon(tankerPolygon);
     QPainterPath strokeTankerPath = ps_tankerShape.createStroke(tankerPath);
     strokeTankerPath.addPath(tankerPath);
     QCOMPARE(p_tankerShape->shape(), strokeTankerPath);
@@ -116,7 +138,7 @@ void tst_TechnicShape::shape()
     tankerPath.clear();
     strokeTankerPath.clear();
     p_tanker->setPipes(true);
-    tankerPath.addPolygon(basePolygon);
+    tankerPath.addPolygon(tankerPolygon);
     qreal roundRadius{tankerRect.width() / 6}; // 5.0
     qreal pipeY{tankerRect.bottom() - roundRadius};
     QPointF rightPipeP1{tankerRect.right(), pipeY};
@@ -148,7 +170,7 @@ void tst_TechnicShape::shape()
     strokeTankerPath.clear();
     p_tanker->setPipes(false);
     p_tanker->setCollector(true);
-    tankerPath.addPolygon(basePolygon);
+    tankerPath.addPolygon(tankerPolygon);
     qreal collectorX{tankerRect.center().x()};
     qreal collectorY{tankerRect.bottom() + roundRadius * 2};
     qreal leftCollectorPipeX{collectorX - roundRadius};
