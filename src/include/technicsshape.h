@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2022 by Viktor Ermolov <ermolovva@gmail.com>.
  *
- * This file is part of the RSiSed project, a editor of the alignment of forces
+ * This file is part of the RSiSed project, an editor of the alignment of forces
  * and means in extinguishing a fire. (RSiSed)
  *
  * RSiSed is free software: you can redistribute it and/or modify
