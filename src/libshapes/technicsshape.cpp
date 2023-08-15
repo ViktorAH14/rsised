@@ -470,6 +470,173 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
 //    }
 //}
 
+BaseShape::BaseShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_baseType{Base}
+    , m_baseRect{QRectF(-15.0, -37.7, 30.0, 75.0)}
+    , m_baseText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void BaseShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    painter->drawPolygon(basePolygon(rect()));
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF BaseShape::boundingRect() const
+{
+    QRectF boundingRect{m_baseRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath BaseShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap BaseShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    painter.drawPolygon(basePolygon(rect()));
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType BaseShape::shapeType() const
+{
+    return m_baseType;
+}
+
+void BaseShape::setRect(const QRectF &rect)
+{
+    if (m_baseRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_baseRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_baseText != nullptr)
+        m_baseText->setPos(m_baseRect.right(), m_baseRect.bottom() - m_baseRect.width() / 6);
+}
+
+QRectF BaseShape::rect() const
+{
+    return m_baseRect;
+}
+
+void BaseShape::setHeight(const qreal &height)
+{
+    if (m_baseRect.height() == height)
+        return;
+
+    qreal oldHeight{m_baseRect.height()};
+    prepareGeometryChange();
+    m_baseRect.setHeight(height);
+    qreal dy{(m_baseRect.height() - oldHeight) / 2};
+    m_baseRect.moveTo(QPointF(m_baseRect.x(), m_baseRect.y() - dy));
+    update();
+}
+
+qreal BaseShape::height() const
+{
+    return m_baseRect.height();
+}
+
+void BaseShape::setText(const QString &text)
+{
+    if (m_baseText == nullptr) {
+        m_baseText=new QGraphicsTextItem(this);
+        m_baseText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_baseText->setPos(m_baseRect.right(), m_baseRect.bottom() - m_baseRect.width() / 6);
+        m_baseText->setRotation(-90);
+    }
+    m_baseText->setPlainText(text);
+}
+
+QString BaseShape::text() const
+{
+    if (m_baseText == nullptr)
+        return "";
+
+    return m_baseText->toPlainText();
+}
+
+void BaseShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_baseActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_baseActionList);
+            m_baseActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void BaseShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_baseActionList.append(m_addTextAction.get());
+}
+
+void BaseShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_baseText == nullptr) {
+            m_baseText=new QGraphicsTextItem(this);
+            m_baseText->setPlainText(QObject::tr("Insert text"));
+            m_baseText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_baseText->setPos(m_baseRect.right(), m_baseRect.bottom() - m_baseRect.width() / 6);
+            m_baseText->setRotation(-90);
+        }
+        m_baseText->show();
+        m_showText = true;
+    } else {
+        m_baseText->hide();
+        m_showText = false;
+    }
+}
+
 TankerShape::TankerShape(QGraphicsItem *parent)
     : TechnicsShape(parent)
     , m_tankerType{Tanker}
@@ -823,172 +990,5 @@ void TankerShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         }
     } else {
         AbstractShape::mousePressEvent(mouseEvent);
-    }
-}
-
-BaseShape::BaseShape(QGraphicsItem *parent)
-    : TechnicsShape(parent)
-    , m_baseType{Base}
-    , m_baseRect{QRectF(-15.0, -37.7, 30.0, 75.0)}
-    , m_baseText{nullptr}
-    , m_showText{false}
-{
-    setFlag(ItemSendsGeometryChanges, true);
-    setAcceptHoverEvents(true);
-    setPen(QPen(Qt::red, 1));
-    setBrush(QBrush(Qt::white));
-}
-
-void BaseShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    Q_UNUSED(widget);
-
-    painter->setRenderHint(QPainter::Antialiasing);
-    painter->setRenderHint(QPainter::SmoothPixmapTransform);
-    painter->setPen(pen());
-    painter->setBrush(brush());
-
-    painter->drawPolygon(basePolygon(rect()));
-
-    if (option->state & QStyle::State_Selected)
-        highlightSelected(painter, option);
-}
-
-QRectF BaseShape::boundingRect() const
-{
-    QRectF boundingRect{m_baseRect};
-    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
-    if (halfpw > 0.0)
-        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
-
-    return boundingRect;
-}
-
-QPainterPath BaseShape::shape() const
-{
-    QPainterPath path;
-    path.addPolygon(basePolygon(rect()));
-
-    return shapeFromPath(path);
-}
-
-QPixmap BaseShape::image()
-{
-    qreal pixmapWidth{boundingRect().width()};
-    qreal pixmapHeight{boundingRect().height()};
-    QPixmap pixmap(pixmapWidth, pixmapHeight);
-    pixmap.fill(Qt::transparent);
-
-    QPainter painter(&pixmap);
-    painter.setPen(pen());
-    painter.setBrush(brush());
-    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
-    painter.drawPolygon(basePolygon(rect()));
-
-    return pixmap;
-}
-
-TechnicsShape::ShapeType BaseShape::shapeType() const
-{
-    return m_baseType;
-}
-
-void BaseShape::setRect(const QRectF &rect)
-{
-    if (m_baseRect == rect)
-        return;
-
-    prepareGeometryChange();
-    m_baseRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
-    if (m_baseText != nullptr)
-        m_baseText->setPos(m_baseRect.right(), m_baseRect.bottom() - m_baseRect.width() / 6);
-}
-
-QRectF BaseShape::rect() const
-{
-    return m_baseRect;
-}
-
-void BaseShape::setHeight(const qreal &height)
-{
-    if (m_baseRect.height() == height)
-        return;
-
-    qreal oldHeight{m_baseRect.height()};
-    prepareGeometryChange();
-    m_baseRect.setHeight(height);
-    qreal dy{(m_baseRect.height() - oldHeight) / 2};
-    m_baseRect.moveTo(QPointF(m_baseRect.x(), m_baseRect.y() - dy));
-    update();
-}
-
-qreal BaseShape::height() const
-{
-    return m_baseRect.height();
-}
-
-void BaseShape::setText(const QString &text)
-{
-    if (m_baseText == nullptr) {
-        m_baseText=new QGraphicsTextItem(this);
-        m_baseText->setTextInteractionFlags(Qt::TextEditorInteraction);
-        m_baseText->setPos(m_baseRect.right(), m_baseRect.bottom() - m_baseRect.width() / 6);
-        m_baseText->setRotation(-90);
-    }
-    m_baseText->setPlainText(text);
-}
-
-QString BaseShape::text() const
-{
-    if (m_baseText == nullptr)
-        return "";
-
-    return m_baseText->toPlainText();
-}
-
-void BaseShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    if (mouseEvent->buttons() == Qt::RightButton) {
-        createAction();
-        addActions(m_baseActionList);
-        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
-        QString menuActionText;
-        if (menuAction.parent()) {
-            menuActionText = menuAction.parent()->objectName();
-        }
-        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
-            removeActions(m_baseActionList);
-            m_baseActionList.clear();
-        }
-    } else {
-        AbstractShape::mousePressEvent(mouseEvent);
-    }
-}
-
-void BaseShape::createAction()
-{
-    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
-    m_addTextAction.reset(new QAction(addText));
-    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
-    m_baseActionList.append(m_addTextAction.get());
-}
-
-void BaseShape::textShow(bool showText)
-{
-    if (showText) {
-        if (m_baseText == nullptr) {
-            m_baseText=new QGraphicsTextItem(this);
-            m_baseText->setPlainText("А"); // FIXME буква вставлена для появления текста на экране.
-            m_baseText->setTextInteractionFlags(Qt::TextEditorInteraction);
-            m_baseText->setPos(m_baseRect.right(), m_baseRect.bottom() - m_baseRect.width() / 6);
-            m_baseText->setRotation(-90);
-        }
-        m_baseText->show();
-        m_showText = true;
-    } else {
-        m_baseText->hide();
-        m_showText = false;
     }
 }
