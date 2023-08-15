@@ -245,6 +245,12 @@ void tst_TechnicShape::rect_setRect()
 {
     QFETCH(QRectF, rect);
 
+    // BaseShape
+    TechnicsShape *p_baseShape = TechnicsShape::createTechnicsShape(TechnicsShape::Base);
+    p_baseShape->setRect(rect);
+    QCOMPARE(p_baseShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_baseShape);
+
     // TankerShape
     TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
     p_tankerShape->setRect(rect);
