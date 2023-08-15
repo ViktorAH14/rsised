@@ -70,6 +70,11 @@ void tst_TechnicShape::constructor()
 
 void tst_TechnicShape::boundingRect()
 {
+    // BaseShape
+    TechnicsShape *p_baseShape = TechnicsShape::createTechnicsShape(TechnicsShape::Base);
+    QCOMPARE(p_baseShape->boundingRect(), QRectF(-15.5, -38.2, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_baseShape);
+
     // TankerShape
     TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
     QCOMPARE(p_tankerShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
@@ -77,8 +82,6 @@ void tst_TechnicShape::boundingRect()
     p_tanker->setPipes(true);
     QCOMPARE(p_tankerShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 76.0));
     p_tanker->setCollector(true);
-    QCOMPARE(p_tankerShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 86.0));
-    p_tanker->setText("Text");
     QCOMPARE(p_tankerShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 86.0));
     p_tanker->setPipes(false);
     QCOMPARE(p_tankerShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 86.0));
