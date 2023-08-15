@@ -204,6 +204,14 @@ void tst_TechnicShape::shape()
 
 void tst_TechnicShape::image()
 {
+    // BaseShape
+    TechnicsShape *p_baseShape = TechnicsShape::createTechnicsShape(TechnicsShape::Base);
+    QPixmap baseImage{p_baseShape->image()};
+    QVERIFY2(!baseImage.isNull(), "BaseShape::image() returned a null pixmap");
+    QCOMPARE(baseImage.width(), p_baseShape->boundingRect().width());
+    QCOMPARE(baseImage.height(), p_baseShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_baseShape);
+
     // TankerShape
     TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
     QPixmap tankerImage{p_tankerShape->image()};
