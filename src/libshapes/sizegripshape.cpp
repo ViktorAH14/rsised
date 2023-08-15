@@ -298,7 +298,7 @@ SizeGripShape::SizeGripShape(Resizer *resizer, QGraphicsItem *parent)
     , m_spanPoint{QPointF()}
 {
     QList<int> rectTypeList;
-    rectTypeList << RectShape::Type << PixmapShape::Type << TankerShape::Type
+    rectTypeList << RectShape::Type << PixmapShape::Type << BaseShape::Type << TankerShape::Type
                  << DeviceShape::Type << StairwellShape::Type <<StairsShape::Type;
     bool rectType{false};
     for (const int itemType : rectTypeList) {
