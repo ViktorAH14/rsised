@@ -306,8 +306,15 @@ void tst_TechnicShape::text_setText_data()
 
 void tst_TechnicShape::text_setText()
 {
-    // TankerShape
     QFETCH(QString, text);
+
+    // BaseShape
+    TechnicsShape *p_baseShape = TechnicsShape::createTechnicsShape(TechnicsShape::Base);
+    p_baseShape->setText(text);
+    QCOMPARE(p_baseShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_baseShape);
+
+    // TankerShape
     TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
     p_tankerShape->setText(text);
     QCOMPARE(p_tankerShape->text(), text);
