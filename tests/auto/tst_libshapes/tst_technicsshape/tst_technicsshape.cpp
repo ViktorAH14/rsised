@@ -376,41 +376,71 @@ private:
 
 void tst_TechnicShape::mousePressEvent()
 {
-    // Tankershape
     QGraphicsScene scene;
     QGraphicsView view(&scene);
     view.show();
     view.fitInView(scene.sceneRect());
     QVERIFY(QTest::qWaitForWindowActive(&view));
-    ContextMenuTester *p_contextMenu = new ContextMenuTester();
-
-    TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
-    p_tankerShape->setMenu(p_contextMenu);
-    scene.addItem(p_tankerShape);
 
     QGraphicsSceneMouseEvent mousePressEvent(QEvent::GraphicsSceneMouseMove);
-    mousePressEvent.setScenePos(p_tankerShape->pos());
     mousePressEvent.setButton(Qt::LeftButton);
+
+    // BaseShape
+    ContextMenuTester *p_baseContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_baseShape = TechnicsShape::createTechnicsShape(TechnicsShape::Base);
+    p_baseShape->setMenu(p_baseContextMenu);
+    scene.addItem(p_baseShape);
+
+    mousePressEvent.setScenePos(p_baseShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_baseShape->setSelected(true);
+    QSignalSpy baseContextMenuSpy(p_baseShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(baseContextMenuSpy.count(), 0);
+
+    QList<QAction *> baseMenuActions{p_baseShape->menu()->actions()};
+    QCOMPARE(baseMenuActions.size(), 1);
+    baseMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_baseShape->boundingRect().center()));
+    baseMenuActions = p_baseShape->menu()->actions();
+    QCOMPARE(baseMenuActions.size(), 1);
+    QCOMPARE(baseContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_baseShape);
+    delete p_baseContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_baseShape);
+
+    // Tankershape
+    ContextMenuTester *p_tankerContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
+    p_tankerShape->setMenu(p_tankerContextMenu);
+    scene.addItem(p_tankerShape);
+
+    mousePressEvent.setScenePos(p_tankerShape->pos());
     QApplication::sendEvent(&scene, &mousePressEvent);
     QVERIFY(mousePressEvent.isAccepted());
 
     p_tankerShape->setSelected(true);
-    QSignalSpy contextMenuSpy(p_tankerShape->menu(), &QMenu::aboutToShow);
-    QCOMPARE(contextMenuSpy.count(), 0);
+    QSignalSpy tankerContextMenuSpy(p_tankerShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(tankerContextMenuSpy.count(), 0);
 
-    QList<QAction *> menuActions{p_tankerShape->menu()->actions()};
-    QCOMPARE(menuActions.size(), 1);
-    menuActions.clear();
+    QList<QAction *> tankerMenuActions{p_tankerShape->menu()->actions()};
+    QCOMPARE(tankerMenuActions.size(), 1);
+    tankerMenuActions.clear();
 
     QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
                       , view.mapFromScene(p_tankerShape->boundingRect().center()));
-    menuActions = p_tankerShape->menu()->actions();
-    QCOMPARE(menuActions.size(), 1);
-    QCOMPARE(contextMenuSpy.count(), 1);
+    tankerMenuActions = p_tankerShape->menu()->actions();
+    QCOMPARE(tankerMenuActions.size(), 1);
+    QCOMPARE(tankerContextMenuSpy.count(), 1);
 
     scene.removeItem(p_tankerShape);
-
-    delete p_contextMenu;
+    delete p_tankerContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
 }
 
