@@ -258,6 +258,10 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> &items, Q
                 rseWriter.writeAttribute("pipes", QString::number(p_tankerShape->pipes()));
                 rseWriter.writeAttribute("collector", QString::number(p_tankerShape->collector()));
             }
+            if (PumpHoseShape *p_autopumpShape = dynamic_cast<PumpHoseShape *>(p_technicsShape)) {
+                rseWriter.writeAttribute("pipes", QString::number(p_autopumpShape->pipes()));
+                rseWriter.writeAttribute("collector", QString::number(p_autopumpShape->collector()));
+            }
             rseWriter.writeEndElement(); // technicsShapeItem
         }
         if (item->type() == DeviceShape::Type) {

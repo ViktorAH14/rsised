@@ -33,7 +33,7 @@ public:
     enum { Type = UserType + 200 };
     enum ShapeType { Base
                      , Tanker
-                     , AutoPump
+                     , PumpHose
                      , FirstAid
                      , Emergency
                      , AutoLadder
@@ -182,8 +182,8 @@ private:
     void createAction();
     void textShow(bool showText);
     void drawTankerShape(QPainter *painter);
-    void drawPipes(qreal roundRadius, QPainter *painter);
-    void drawCollector(QPainter *painter, qreal roundRadius);
+    void drawPipes(QPainter *painter, qreal sixtWidth);
+    void drawCollector(QPainter *painter, qreal sixtWidth);
 
     const ShapeType m_tankerType;
     QGraphicsTextItem *m_tankerText;
@@ -196,5 +196,58 @@ private:
     QScopedPointer<QAction> m_showCollectorAction;
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_tankerActionList;
+};
+
+class PumpHoseShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 203};
+
+    explicit PumpHoseShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~PumpHoseShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(PumpHoseShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawAutopumpShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixtWidth);
+    void drawCollector(QPainter *painter, qreal sixtWidth);
+
+    const ShapeType m_autopumpType;
+    QGraphicsTextItem *m_autopumpText;
+    QRectF m_autopumpRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_autopumpActionList;
 };
 #endif // TECHNICSSHAPE_H

@@ -71,6 +71,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             baseShape->setRect(value.toRectF());
         break;
     }
+    case PumpHoseShape::Type: {
+        if (PumpHoseShape *autopumpShape = dynamic_cast<PumpHoseShape *>(item))
+            autopumpShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());

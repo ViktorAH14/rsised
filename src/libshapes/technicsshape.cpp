@@ -55,11 +55,14 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
 {
     TechnicsShape *p_technicsShape{nullptr};
     switch (shapeType) {
+    case Base:
+        p_technicsShape = new BaseShape(parent);
+        break;
     case Tanker:
         p_technicsShape = new TankerShape(parent);
         break;
-    case Base:
-        p_technicsShape = new BaseShape(parent);
+    case PumpHose:
+        p_technicsShape = new PumpHoseShape(parent);
     default:
         break;
     }
@@ -652,67 +655,67 @@ TankerShape::TankerShape(QGraphicsItem *parent)
     setBrush(QBrush(Qt::white));
 }
 
-void TankerShape::drawPipes(qreal roundRadius, QPainter *painter)
+void TankerShape::drawPipes(QPainter *painter, qreal sixtWidth)
 {
     painter->setPen(QPen(Qt::black, 1));
-    qreal pipeY{m_tankerRect.bottom() - roundRadius};
+    qreal pipeY{m_tankerRect.bottom() - sixtWidth};
     QPointF rightPipeP1{m_tankerRect.right(), pipeY};
-    QPointF rightPipeP2{m_tankerRect.right() + roundRadius, pipeY};
+    QPointF rightPipeP2{m_tankerRect.right() + sixtWidth, pipeY};
     painter->drawLine(rightPipeP1, rightPipeP2); // Right pipe
 
-    QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + roundRadius / 2};
-    QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - roundRadius / 2};
+    QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + sixtWidth / 2};
+    QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - sixtWidth / 2};
     painter->drawLine(rightConnectP1, rightConnectP2); // Right pipe connection
 
     QPointF leftPipeP1{m_tankerRect.left(), pipeY};
-    QPointF leftPipeP2{m_tankerRect.left() - roundRadius, pipeY};
+    QPointF leftPipeP2{m_tankerRect.left() - sixtWidth, pipeY};
     painter->drawLine(leftPipeP1, leftPipeP2); // Left pipe
 
-    QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + roundRadius / 2};
-    QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - roundRadius / 2};
+    QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + sixtWidth / 2};
+    QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - sixtWidth / 2};
     painter->drawLine(leftConnectP1, leftConnectP2); // Right pipe connection
 }
 
-void TankerShape::drawCollector(QPainter *painter, qreal roundRadius)
+void TankerShape::drawCollector(QPainter *painter, qreal sixtWidth)
 {
     painter->setPen(QPen(Qt::black, 1));
     qreal collectorX{m_tankerRect.center().x()};
-    qreal collectorY{m_tankerRect.bottom() + roundRadius * 2};
-    qreal leftPipeX{collectorX - roundRadius};
+    qreal collectorY{m_tankerRect.bottom() + sixtWidth * 2};
+    qreal leftPipeX{collectorX - sixtWidth};
     QPointF leftRightPipeP1{collectorX, m_tankerRect.bottom()};
     QPointF leftPipeP2{leftPipeX, collectorY};
     painter->drawLine(leftRightPipeP1, leftPipeP2); //Left collector pipe
 
-    qreal rightPipeX{collectorX + roundRadius};
+    qreal rightPipeX{collectorX + sixtWidth};
     QPointF rightPipeP2{rightPipeX, collectorY};
     painter->drawLine(leftRightPipeP1, rightPipeP2); //Right collector pipe
 
-    QPointF leftConnectP1{leftPipeX - roundRadius / 2, collectorY};
-    QPointF leftConnectP2{leftPipeX + roundRadius / 2, collectorY};
+    QPointF leftConnectP1{leftPipeX - sixtWidth / 2, collectorY};
+    QPointF leftConnectP2{leftPipeX + sixtWidth / 2, collectorY};
     painter->drawLine(leftConnectP1, leftConnectP2); //Left connector
 
-    QPointF rightConnectP1{rightPipeX - roundRadius / 2, collectorY};
-    QPointF rightConnectP2{rightPipeX + roundRadius / 2, collectorY};
+    QPointF rightConnectP1{rightPipeX - sixtWidth / 2, collectorY};
+    QPointF rightConnectP2{rightPipeX + sixtWidth / 2, collectorY};
     painter->drawLine(rightConnectP1, rightConnectP2);  //Right connector
 }
 
 void TankerShape::drawTankerShape(QPainter *painter)
 {
-    qreal frontTab{m_tankerRect.height() / 3};
-    qreal roundRadius{m_tankerRect.width() / 6}; // 5.0
-    QPointF roundTopLeft{m_tankerRect.left() + roundRadius, m_tankerRect.top() + frontTab}; // -10.0, -12.5
-    QPointF roundBottomRight{m_tankerRect.right() - roundRadius
-                , m_tankerRect.bottom() - roundRadius};
-
     painter->drawPolygon(basePolygon(rect()));
-    painter->drawRoundedRect(QRectF(roundTopLeft, roundBottomRight), roundRadius, roundRadius);
+
+    qreal sixtWidth{m_tankerRect.width() / 6}; // 5.0
+    qreal thirdHeight{m_tankerRect.height() / 3};
+    QPointF roundTopLeft{m_tankerRect.left() + sixtWidth, m_tankerRect.top() + thirdHeight}; // -10.0, -12.5
+    QPointF roundBottomRight{m_tankerRect.right() - sixtWidth
+                , m_tankerRect.bottom() - sixtWidth};
+    painter->drawRoundedRect(QRectF(roundTopLeft, roundBottomRight), sixtWidth, sixtWidth);
 
     if (m_showPipes) {
-        drawPipes(roundRadius, painter);
+        drawPipes(painter, sixtWidth);
     }
 
     if (m_showCollector) {
-        drawCollector(painter, roundRadius);
+        drawCollector(painter, sixtWidth);
     }
 }
 
@@ -868,7 +871,8 @@ void TankerShape::setRect(const QRectF &rect)
     prepareGeometryChange();
     m_tankerRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
     if (m_tankerText != nullptr)
-        m_tankerText->setPos(m_tankerRect.right(), m_tankerRect.bottom() - m_tankerRect.width() / 6);
+        m_tankerText->setPos(m_tankerRect.right(), m_tankerRect.bottom()
+                                                       - m_tankerRect.width() / 6);
     if (m_showPipes) {
         qreal pipeLength{m_tankerRect.width() / 6};
         m_tankerRect.adjust(pipeLength, 0.0, -pipeLength, 0.0);
@@ -908,7 +912,8 @@ void TankerShape::setText(const QString &text)
     if (m_tankerText == nullptr) {
         m_tankerText=new QGraphicsTextItem(this);
         m_tankerText->setTextInteractionFlags(Qt::TextEditorInteraction);
-        m_tankerText->setPos(m_tankerRect.right(), m_tankerRect.bottom() - m_tankerRect.width() / 6);
+        m_tankerText->setPos(m_tankerRect.right(), m_tankerRect.bottom()
+                                                       - m_tankerRect.width() / 6);
         m_tankerText->setRotation(-90);
     }
     m_tankerText->setPlainText(text);
@@ -991,4 +996,367 @@ void TankerShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     } else {
         AbstractShape::mousePressEvent(mouseEvent);
     }
+}
+
+PumpHoseShape::PumpHoseShape(QGraphicsItem *parent)
+    :TechnicsShape(parent)
+    , m_autopumpType{PumpHose}
+    , m_autopumpText{nullptr}
+    , m_autopumpRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
+    , m_showPipes{false}
+    , m_showCollector{false}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void PumpHoseShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawAutopumpShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF PumpHoseShape::boundingRect() const
+{
+    QRectF boundingRect{m_autopumpRect};
+    if (m_showPipes) {
+        qreal pipeLength{m_autopumpRect.width() / 6};
+        boundingRect.adjust(-pipeLength, 0.0, pipeLength, 0.0);
+    }
+    if (m_showCollector) {
+        qreal collectorLength{m_autopumpRect.width() / 3};
+        boundingRect.adjust(0.0, 0.0, 0.0, collectorLength);
+    }
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath PumpHoseShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    qreal sixthWidth{m_autopumpRect.width() / 6}; // 5.0
+    if (m_showPipes) {
+        qreal pipeY{m_autopumpRect.bottom() - sixthWidth};
+        QPointF rightPipeP1{m_autopumpRect.right(), pipeY};
+        QPointF rightPipeP2{m_autopumpRect.right() + sixthWidth, pipeY};
+        // Right pipe
+        path.moveTo(rightPipeP1);
+        path.lineTo(rightPipeP2);
+
+        QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + sixthWidth / 2};
+        QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - sixthWidth / 2};
+        // Right pipe connection
+        path.moveTo(rightConnectP1);
+        path.lineTo(rightConnectP2);
+
+        QPointF leftPipeP1{m_autopumpRect.left(), pipeY};
+        QPointF leftPipeP2{m_autopumpRect.left() - sixthWidth, pipeY};
+        // Left pipe
+        path.moveTo(leftPipeP1);
+        path.lineTo(leftPipeP2);
+
+        QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + sixthWidth / 2};
+        QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - sixthWidth / 2};
+        // Right pipe connection
+        path.moveTo(leftConnectP1);
+        path.lineTo(leftConnectP2);
+    }
+
+    if (m_showCollector) {
+        qreal collectorX{m_autopumpRect.center().x()};
+        qreal collectorY{m_autopumpRect.bottom() + sixthWidth * 2};
+        qreal leftPipeX{collectorX - sixthWidth};
+        QPointF leftRightPipeP1{collectorX, m_autopumpRect.bottom()};
+        QPointF leftPipeP2{leftPipeX, collectorY};
+        //Left collector pipe
+        path.moveTo(leftRightPipeP1);
+        path.lineTo(leftPipeP2);
+
+        qreal rightPipeX{collectorX + sixthWidth};
+        QPointF rightPipeP2{rightPipeX, collectorY};
+        //Right collector pipe
+        path.moveTo(leftRightPipeP1);
+        path.lineTo(rightPipeP2);
+
+        QPointF leftConnectP1{leftPipeX - sixthWidth / 2, collectorY};
+        QPointF leftConnectP2{leftPipeX + sixthWidth / 2, collectorY};
+        //Left connector
+        path.moveTo(leftConnectP1);
+        path.lineTo(leftConnectP2);
+
+        QPointF rightConnectP1{rightPipeX - sixthWidth / 2, collectorY};
+        QPointF rightConnectP2{rightPipeX + sixthWidth / 2, collectorY};
+        //Right connector
+        path.moveTo(rightConnectP1);
+        path.lineTo(rightConnectP2);
+    }
+
+    return shapeFromPath(path);
+}
+
+QPixmap PumpHoseShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawAutopumpShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType PumpHoseShape::shapeType() const
+{
+    return m_autopumpType;
+}
+
+void PumpHoseShape::setRect(const QRectF &rect)
+{
+    if (m_autopumpRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_autopumpRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_autopumpText != nullptr)
+        m_autopumpText->setPos(m_autopumpRect.right(), m_autopumpRect.bottom()
+                                                           - m_autopumpRect.width() / 6);
+    if (m_showPipes) {
+        qreal pipeLength{m_autopumpRect.width() / 6};
+        m_autopumpRect.adjust(pipeLength, 0.0, -pipeLength, 0.0);
+    }
+    if (m_showCollector) {
+        qreal collectorLength{m_autopumpRect.width() / 3};
+        m_autopumpRect.adjust(0.0, 0.0, 0.0, -collectorLength);
+    }
+    update();
+}
+
+QRectF PumpHoseShape::rect() const
+{
+    return m_autopumpRect;
+}
+
+void PumpHoseShape::setHeight(const qreal &height)
+{
+    if (m_autopumpRect.height() == height)
+        return;
+
+    qreal oldHeight{m_autopumpRect.height()};
+    prepareGeometryChange();
+    m_autopumpRect.setHeight(height);
+    qreal dy{(m_autopumpRect.height() - oldHeight) / 2};
+    m_autopumpRect.moveTo(QPointF(m_autopumpRect.x(), m_autopumpRect.y() - dy));
+    update();
+}
+
+qreal PumpHoseShape::height() const
+{
+    return m_autopumpRect.height();
+}
+
+void PumpHoseShape::setText(const QString &text)
+{
+    if (m_autopumpText == nullptr) {
+        m_autopumpText = new QGraphicsTextItem(this);
+        m_autopumpText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_autopumpText->setPos(m_autopumpRect.right(), m_autopumpRect.bottom()
+                                                           - m_autopumpRect.width() / 6);
+        m_autopumpText->setRotation(-90);
+    }
+    m_autopumpText->setPlainText(text);
+}
+
+QString PumpHoseShape::text() const
+{
+    if (m_autopumpText == nullptr)
+        return "";
+
+    return m_autopumpText->toPlainText();
+}
+
+void PumpHoseShape::setPipes(bool showPipes)
+{
+    if (m_showPipes == showPipes)
+        return;
+
+    prepareGeometryChange();
+    m_showPipes = showPipes;
+    setSelected(false);
+    setSelected(true);
+    update();
+}
+
+bool PumpHoseShape::pipes() const
+{
+    return m_showPipes;
+}
+
+void PumpHoseShape::setCollector(bool showCollector)
+{
+    if (m_showCollector == showCollector)
+        return;
+
+    prepareGeometryChange();
+    m_showCollector = showCollector;
+    setSelected(false);
+    setSelected(true);
+    update();
+}
+
+bool PumpHoseShape::collector()
+{
+    return m_showCollector;
+}
+
+void PumpHoseShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_autopumpActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_autopumpActionList);
+            m_autopumpActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void PumpHoseShape::createAction()
+{
+    QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
+    m_showPipeAction.reset(new QAction(pipeActionText));
+    m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
+    QObject::connect(m_showPipeAction.get(), &QAction::triggered
+                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
+    m_autopumpActionList.append(m_showPipeAction.get());
+
+    QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
+                                              : QObject::tr("Show collector")};
+    m_showCollectorAction.reset(new QAction(collectActionText));
+    m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
+    QObject::connect(m_showCollectorAction.get(), &QAction::triggered
+                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
+    m_autopumpActionList.append(m_showCollectorAction.get());
+
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_autopumpActionList.append(m_addTextAction.get());
+}
+
+void PumpHoseShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_autopumpText == nullptr) {
+            m_autopumpText=new QGraphicsTextItem(this);
+            m_autopumpText->setPlainText("АНР-");
+            m_autopumpText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_autopumpText->setPos(m_autopumpRect.right(), m_autopumpRect.bottom()
+                                                               - m_autopumpRect.width() / 6);
+            m_autopumpText->setRotation(-90);
+        }
+        m_autopumpText->show();
+        m_showText = true;
+    } else {
+        m_autopumpText->hide();
+        m_showText = false;
+    }
+}
+
+void PumpHoseShape::drawAutopumpShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+
+    qreal sixthWidth{m_autopumpRect.width() / 6}; // 5.0
+    qreal sixthHeight{m_autopumpRect.height() / 6}; //12.5
+    qreal pumpLeft{m_autopumpRect.left() + sixthWidth};
+    qreal pumpRight{m_autopumpRect.right() - sixthWidth};
+    qreal pumpTop{m_autopumpRect.bottom() - sixthHeight};
+    qreal pumpBottom{m_autopumpRect.bottom()};
+    QPolygonF pump;
+    pump << QPointF(pumpLeft, pumpBottom) << QPointF(pumpLeft, pumpTop)
+         << QPointF(pumpRight, pumpTop) << QPointF(pumpRight, pumpBottom);
+    painter->drawPolygon(pump);
+
+    if (m_showPipes) {
+        drawPipes(painter, sixthWidth);
+    }
+
+    if (m_showCollector) {
+        drawCollector(painter, sixthWidth);
+    }
+}
+
+void PumpHoseShape::drawPipes(QPainter *painter, qreal sixtWidth)
+{
+    painter->setPen(QPen(Qt::black, 1));
+    qreal pipeY{m_autopumpRect.bottom() - sixtWidth};
+    QPointF rightPipeP1{m_autopumpRect.right(), pipeY};
+    QPointF rightPipeP2{m_autopumpRect.right() + sixtWidth, pipeY};
+    painter->drawLine(rightPipeP1, rightPipeP2); // Right pipe
+
+    QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + sixtWidth / 2};
+    QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - sixtWidth / 2};
+    painter->drawLine(rightConnectP1, rightConnectP2); // Right pipe connection
+
+    QPointF leftPipeP1{m_autopumpRect.left(), pipeY};
+    QPointF leftPipeP2{m_autopumpRect.left() - sixtWidth, pipeY};
+    painter->drawLine(leftPipeP1, leftPipeP2); // Left pipe
+
+    QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + sixtWidth / 2};
+    QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - sixtWidth / 2};
+    painter->drawLine(leftConnectP1, leftConnectP2); // Right pipe connection
+}
+
+void PumpHoseShape::drawCollector(QPainter *painter, qreal sixtWidth)
+{
+    painter->setPen(QPen(Qt::black, 1));
+    qreal collectorX{m_autopumpRect.center().x()};
+    qreal collectorY{m_autopumpRect.bottom() + sixtWidth * 2};
+    qreal leftPipeX{collectorX - sixtWidth};
+    QPointF leftRightPipeP1{collectorX, m_autopumpRect.bottom()};
+    QPointF leftPipeP2{leftPipeX, collectorY};
+    painter->drawLine(leftRightPipeP1, leftPipeP2); //Left collector pipe
+
+    qreal rightPipeX{collectorX + sixtWidth};
+    QPointF rightPipeP2{rightPipeX, collectorY};
+    painter->drawLine(leftRightPipeP1, rightPipeP2); //Right collector pipe
+
+    QPointF leftConnectP1{leftPipeX - sixtWidth / 2, collectorY};
+    QPointF leftConnectP2{leftPipeX + sixtWidth / 2, collectorY};
+    painter->drawLine(leftConnectP1, leftConnectP2); //Left connector
+
+    QPointF rightConnectP1{rightPipeX - sixtWidth / 2, collectorY};
+    QPointF rightConnectP2{rightPipeX + sixtWidth / 2, collectorY};
+    painter->drawLine(rightConnectP1, rightConnectP2);  //Right connector
 }

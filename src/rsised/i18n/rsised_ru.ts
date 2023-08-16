@@ -494,9 +494,10 @@
         <translation>АЦ</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="713"/>
         <source>Auto pump</source>
         <translatorcomment>Автомобиль насосно-рукавный.</translatorcomment>
-        <translation type="vanished">АНР</translation>
+        <translation>АНР</translation>
     </message>
     <message>
         <source>Auto ladder</source>
