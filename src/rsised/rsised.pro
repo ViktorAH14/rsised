@@ -65,7 +65,7 @@ LIBS += -lshapes$${LIB_SUFFIX}
 QMAKE_SUBSTITUTES += config.h.in
 
 # [DEPLOY]
-CONFIG(app_bundle){
+#CONFIG(app_bundle){
     equals(BUILD_FLAG, release) {
 #       QT_DIR = $$[QT_HOST_BINS]
 #       win32:QMAKE_BIN = $${QT_DIR}/qmake.exe
@@ -91,6 +91,6 @@ CONFIG(app_bundle){
         }
     QMAKE_POST_LINK += ${PWD}/deploy.sh $${DEPLOY_CONFIG} $${VERSION} $${APPLICATION_NAME}
     }
-}
+#}
 
 #message($LD_LIBRARY_PATH)
