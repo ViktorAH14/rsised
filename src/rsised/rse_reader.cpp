@@ -638,9 +638,13 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     p_tankershape->setPipes(pipes);
                     p_tankershape->setCollector(collector);
                 }
-                if (PumpHoseShape *p_autopumpShape = dynamic_cast<PumpHoseShape *>(p_technicsShape)) {
-                    p_autopumpShape->setPipes(pipes);
-                    p_autopumpShape->setCollector(collector);
+                if (PumpHoseShape *p_pumpHoseShape = dynamic_cast<PumpHoseShape *>(p_technicsShape)) {
+                    p_pumpHoseShape->setPipes(pipes);
+                    p_pumpHoseShape->setCollector(collector);
+                }
+                if (FirstAidShape *p_firstAidShape = dynamic_cast<FirstAidShape *>(p_technicsShape)) {
+                    p_firstAidShape->setPipes(pipes);
+                    p_firstAidShape->setCollector(collector);
                 }
 
                 itemList.append(p_technicsShape);

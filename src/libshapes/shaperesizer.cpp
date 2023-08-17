@@ -72,8 +72,13 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
         break;
     }
     case PumpHoseShape::Type: {
-        if (PumpHoseShape *autopumpShape = dynamic_cast<PumpHoseShape *>(item))
-            autopumpShape->setRect(value.toRectF());
+        if (PumpHoseShape *pumpHoseShape = dynamic_cast<PumpHoseShape *>(item))
+            pumpHoseShape->setRect(value.toRectF());
+        break;
+    }
+    case FirstAidShape::Type: {
+        if (FirstAidShape *firstAidShape = dynamic_cast<FirstAidShape *>(item))
+            firstAidShape->setRect(value.toRectF());
         break;
     }
     case DeviceShape::Type: {

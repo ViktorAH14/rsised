@@ -32,10 +32,10 @@ class TechnicsShape : public AbstractShape
 public:
     enum { Type = UserType + 200 };
     enum ShapeType { Base
-                     , Tanker
-                     , PumpHose
-                     , FirstAid
-                     , Emergency
+                     , Tanker //АЦ
+                     , PumpHose //АНР
+                     , FirstAid //АПП
+                     , Emergency //АСА
                      , AutoLadder
                      , CrankLift
                      , TelescopicLift
@@ -234,13 +234,13 @@ private:
 
     void createAction();
     void textShow(bool showText);
-    void drawAutopumpShape(QPainter *painter);
+    void drawPumpHoseShape(QPainter *painter);
     void drawPipes(QPainter *painter, qreal sixtWidth);
     void drawCollector(QPainter *painter, qreal sixtWidth);
 
-    const ShapeType m_autopumpType;
-    QGraphicsTextItem *m_autopumpText;
-    QRectF m_autopumpRect;
+    const ShapeType m_pumpHoseType;
+    QGraphicsTextItem *m_pumpHoseText;
+    QRectF m_pumpHoseRect;
     bool m_showPipes;
     bool m_showCollector;
     bool m_showText;
@@ -248,6 +248,59 @@ private:
     QScopedPointer<QAction> m_showPipeAction;
     QScopedPointer<QAction> m_showCollectorAction;
     QScopedPointer<QAction> m_addTextAction;
-    QList<QAction *> m_autopumpActionList;
+    QList<QAction *> m_pumpHoseActionList;
+};
+
+class FirstAidShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 204};
+
+    explicit FirstAidShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~FirstAidShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(FirstAidShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawFirstAidShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixtWidth);
+    void drawCollector(QPainter *painter, qreal sixtWidth);
+
+    const ShapeType m_firstAidType;
+    QGraphicsTextItem *m_firstAidText;
+    QRectF m_firstAidRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_firstAidActionList;
 };
 #endif // TECHNICSSHAPE_H

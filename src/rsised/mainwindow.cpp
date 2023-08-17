@@ -712,8 +712,8 @@ void MainWindow::createShapeToolBox()
                                                        , TechnicsShape::Tanker), 0, 1);
     p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Auto pump")
                                                        , TechnicsShape::PumpHose), 0, 2);
-//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("First aid")
-//                                                       , TechnicsShape::FirstAid), 1, 0);
+    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("First aid")
+                                                       , TechnicsShape::FirstAid), 0, 3);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Emergency")
 //                                                       , TechnicsShape::Emergency), 1, 1);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Auto ladder")

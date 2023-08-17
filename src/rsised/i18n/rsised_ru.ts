@@ -648,9 +648,10 @@
         <translation>РС_д</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="715"/>
         <source>First aid</source>
         <translatorcomment>Автомобиль первой помощи.</translatorcomment>
-        <translation type="vanished">АПП</translation>
+        <translation>АПП</translation>
     </message>
     <message>
         <source>Emergency</source>
