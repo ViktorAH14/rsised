@@ -41,7 +41,7 @@ private slots:
     void text_setText_data();
     void text_setText();
 
-    //TankerShape
+    //TankerShape, PumpHoseShape
     void pipes_setPipes();
     void collector_setCollector();
     void mousePressEvent();
@@ -66,6 +66,13 @@ void tst_TechnicShape::constructor()
     QCOMPARE(int(p_tankerShape->type()), int(QGraphicsItem::UserType + 202));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
 
+    // PumpHoseShape
+    TechnicsShape *p_pumpHoseShape = nullptr;
+    p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
+    QVERIFY2(p_pumpHoseShape, "pumpHoseShape is nullptr");
+    QCOMPARE(int(p_pumpHoseShape->type()), int(QGraphicsItem::UserType + 203));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
+
 }
 
 void tst_TechnicShape::boundingRect()
@@ -88,6 +95,20 @@ void tst_TechnicShape::boundingRect()
     p_tanker->setCollector(false);
     QCOMPARE(p_tankerShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+
+    // PumpHoseShape
+    TechnicsShape *p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
+    QCOMPARE(p_pumpHoseShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    PumpHoseShape *p_pumpHose = dynamic_cast<PumpHoseShape *>(p_pumpHoseShape);
+    p_pumpHose->setPipes(true);
+    QCOMPARE(p_pumpHoseShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 76.0));
+    p_pumpHose->setCollector(true);
+    QCOMPARE(p_pumpHoseShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 86.0));
+    p_pumpHose->setPipes(false);
+    QCOMPARE(p_pumpHoseShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 86.0));
+    p_pumpHose->setCollector(false);
+    QCOMPARE(p_pumpHoseShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
 }
 
 void tst_TechnicShape::shape()
@@ -139,28 +160,32 @@ void tst_TechnicShape::shape()
     strokeTankerPath.clear();
     p_tanker->setPipes(true);
     tankerPath.addPolygon(tankerPolygon);
-    qreal roundRadius{tankerRect.width() / 6}; // 5.0
-    qreal pipeY{tankerRect.bottom() - roundRadius};
-    QPointF rightPipeP1{tankerRect.right(), pipeY};
-    QPointF rightPipeP2{tankerRect.right() + roundRadius, pipeY};
+    qreal sixthWidthTanker{tankerRect.width() / 6}; // 5.0
+    qreal pipeYTanker{tankerRect.bottom() - sixthWidthTanker};
+    QPointF rightPipeP1Tanker{tankerRect.right(), pipeYTanker};
+    QPointF rightPipeP2Tanker{tankerRect.right() + sixthWidthTanker, pipeYTanker};
     // Right pipe
-    tankerPath.moveTo(rightPipeP1);
-    tankerPath.lineTo(rightPipeP2);
-    QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + roundRadius / 2};
-    QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - roundRadius / 2};
+    tankerPath.moveTo(rightPipeP1Tanker);
+    tankerPath.lineTo(rightPipeP2Tanker);
+    QPointF rightConnectP1Tanker{rightPipeP2Tanker.x(), rightPipeP2Tanker.y()
+                                                            + sixthWidthTanker / 2};
+    QPointF rightConnectP2Tanker{rightPipeP2Tanker.x(), rightPipeP2Tanker.y()
+                                                            - sixthWidthTanker / 2};
     // Right pipe connection
-    tankerPath.moveTo(rightConnectP1);
-    tankerPath.lineTo(rightConnectP2);
-    QPointF leftPipeP1{tankerRect.left(), pipeY};
-    QPointF leftPipeP2{tankerRect.left() - roundRadius, pipeY};
+    tankerPath.moveTo(rightConnectP1Tanker);
+    tankerPath.lineTo(rightConnectP2Tanker);
+    QPointF leftPipeP1Tanker{tankerRect.left(), pipeYTanker};
+    QPointF leftPipeP2Tanker{tankerRect.left() - sixthWidthTanker, pipeYTanker};
     // Left pipe
-    tankerPath.moveTo(leftPipeP1);
-    tankerPath.lineTo(leftPipeP2);
-    QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + roundRadius / 2};
-    QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - roundRadius / 2};
+    tankerPath.moveTo(leftPipeP1Tanker);
+    tankerPath.lineTo(leftPipeP2Tanker);
+    QPointF leftConnectP1Tanker{leftPipeP2Tanker.x(), leftPipeP2Tanker.y()
+                                                          + sixthWidthTanker / 2};
+    QPointF leftConnectP2Tanker{leftPipeP2Tanker.x(), leftPipeP2Tanker.y()
+                                                          - sixthWidthTanker / 2};
     // Right pipe connection
-    tankerPath.moveTo(leftConnectP1);
-    tankerPath.lineTo(leftConnectP2);
+    tankerPath.moveTo(leftConnectP1Tanker);
+    tankerPath.lineTo(leftConnectP2Tanker);
     strokeTankerPath = ps_tankerShape.createStroke(tankerPath);
     strokeTankerPath.addPath(tankerPath);
     QCOMPARE(p_tanker->shape(), strokeTankerPath);
@@ -171,35 +196,135 @@ void tst_TechnicShape::shape()
     p_tanker->setPipes(false);
     p_tanker->setCollector(true);
     tankerPath.addPolygon(tankerPolygon);
-    qreal collectorX{tankerRect.center().x()};
-    qreal collectorY{tankerRect.bottom() + roundRadius * 2};
-    qreal leftCollectorPipeX{collectorX - roundRadius};
-    QPointF leftRightCollectorPipeP1{collectorX, tankerRect.bottom()};
-    QPointF leftCollectorPipeP2{leftCollectorPipeX, collectorY};
+    qreal collectorXTanker{tankerRect.center().x()};
+    qreal collectorYTanker{tankerRect.bottom() + sixthWidthTanker * 2};
+    qreal leftCollectorPipeXTanker{collectorXTanker - sixthWidthTanker};
+    QPointF leftRightCollectorPipeP1Tanker{collectorXTanker, tankerRect.bottom()};
+    QPointF leftCollectorPipe2Tanker{leftCollectorPipeXTanker, collectorYTanker};
     //Left collector pipe
-    tankerPath.moveTo(leftRightCollectorPipeP1);
-    tankerPath.lineTo(leftCollectorPipeP2);
-    qreal rightCollectorPipeX{collectorX + roundRadius};
-    QPointF rightCollectorPipeP2{rightCollectorPipeX, collectorY};
+    tankerPath.moveTo(leftRightCollectorPipeP1Tanker);
+    tankerPath.lineTo(leftCollectorPipe2Tanker);
+    qreal rightCollectorPipeXTanker{collectorXTanker + sixthWidthTanker};
+    QPointF rightCollectorPipeP2Tanker{rightCollectorPipeXTanker, collectorYTanker};
     //Right collector pipe
-    tankerPath.moveTo(leftRightCollectorPipeP1);
-    tankerPath.lineTo(rightCollectorPipeP2);
-    QPointF leftCollectorConnectP1{leftCollectorPipeX - roundRadius / 2, collectorY};
-    QPointF leftCollectorConnectP2{leftCollectorPipeX + roundRadius / 2, collectorY};
+    tankerPath.moveTo(leftRightCollectorPipeP1Tanker);
+    tankerPath.lineTo(rightCollectorPipeP2Tanker);
+    QPointF leftCollectorConnectP1Tanker{leftCollectorPipeXTanker - sixthWidthTanker / 2
+                                         , collectorYTanker};
+    QPointF leftCollectorConnectP2Tanker{leftCollectorPipeXTanker + sixthWidthTanker / 2
+                                         , collectorYTanker};
     //Left connector
-    tankerPath.moveTo(leftCollectorConnectP1);
-    tankerPath.lineTo(leftCollectorConnectP2);
-    QPointF rightCollectorConnectP1{rightCollectorPipeX - roundRadius / 2, collectorY};
-    QPointF rightCollectorConnectP2{rightCollectorPipeX + roundRadius / 2, collectorY};
+    tankerPath.moveTo(leftCollectorConnectP1Tanker);
+    tankerPath.lineTo(leftCollectorConnectP2Tanker);
+    QPointF rightCollectorConnectP1Tanker{rightCollectorPipeXTanker - sixthWidthTanker / 2
+                                          , collectorYTanker};
+    QPointF rightCollectorConnectP2Tanker{rightCollectorPipeXTanker + sixthWidthTanker / 2
+                                          , collectorYTanker};
     //Right connector
-    tankerPath.moveTo(rightCollectorConnectP1);
-    tankerPath.lineTo(rightCollectorConnectP2);
+    tankerPath.moveTo(rightCollectorConnectP1Tanker);
+    tankerPath.lineTo(rightCollectorConnectP2Tanker);
     strokeTankerPath = ps_tankerShape.createStroke(tankerPath);
     strokeTankerPath.addPath(tankerPath);
     QCOMPARE(p_tanker->shape(), strokeTankerPath);
 
     p_tanker= nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+
+    // PumpHoseShape
+    TechnicsShape *p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
+    QPainterPathStroker ps_pumpHoseShape;
+    ps_pumpHoseShape.setWidth(p_pumpHoseShape->pen().widthF());
+    QRectF pumpHoseRect{p_pumpHoseShape->rect()};
+    qreal frontTabPumpHose{pumpHoseRect.height() / 3};
+    QPointF frontCenterPumpHose{pumpHoseRect.center().x(), pumpHoseRect.top()}; // 0.0, -37.5
+    QPointF frontRightPumpHose{pumpHoseRect.right(), pumpHoseRect.top() + frontTabPumpHose}; // 15.0, -12.5
+    QPointF frontLeftPumpHose{pumpHoseRect.left(), pumpHoseRect.top() + frontTabPumpHose}; // -15.0, -12.5
+    QPointF bottomRightPumpHose{pumpHoseRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftPumpHose{pumpHoseRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF pumpHosePolygon;
+    pumpHosePolygon << frontCenterPumpHose << frontRightPumpHose << bottomRightPumpHose
+                  << bottomLeftPumpHose << frontLeftPumpHose << frontCenterPumpHose;
+    QPainterPath pumpHosePath;
+    pumpHosePath.addPolygon(pumpHosePolygon);
+    QPainterPath strokePumpHosePath = ps_pumpHoseShape.createStroke(pumpHosePath);
+    strokePumpHosePath.addPath(pumpHosePath);
+    QCOMPARE(p_pumpHoseShape->shape(), strokePumpHosePath);
+
+    // PumpHoseShape show pipes
+    PumpHoseShape *p_pumpHose = dynamic_cast<PumpHoseShape *>(p_pumpHoseShape);
+    pumpHosePath.clear();
+    strokePumpHosePath.clear();
+    p_pumpHose->setPipes(true);
+    pumpHosePath.addPolygon(pumpHosePolygon);
+    qreal sixtWidthPumpHose{pumpHoseRect.width() / 6}; // 5.0
+    qreal pipeYPumpHose{pumpHoseRect.bottom() - sixtWidthPumpHose};
+    QPointF rightPipeP1PumpHose{pumpHoseRect.right(), pipeYPumpHose};
+    QPointF rightPipeP2PumpHose{pumpHoseRect.right() + sixtWidthPumpHose, pipeYPumpHose};
+    // Right pipe
+    pumpHosePath.moveTo(rightPipeP1PumpHose);
+    pumpHosePath.lineTo(rightPipeP2PumpHose);
+    QPointF rightConnectP1PumpHose{rightPipeP2PumpHose.x(), rightPipeP2PumpHose.y()
+                                                                + sixtWidthPumpHose / 2};
+    QPointF rightConnectP2PumpHose{rightPipeP2PumpHose.x(), rightPipeP2PumpHose.y()
+                                                                - sixtWidthPumpHose / 2};
+    // Right pipe connection
+    pumpHosePath.moveTo(rightConnectP1PumpHose);
+    pumpHosePath.lineTo(rightConnectP2PumpHose);
+    QPointF leftPipeP1PumpHose{pumpHoseRect.left(), pipeYPumpHose};
+    QPointF leftPipeP2PumpHose{pumpHoseRect.left() - sixtWidthPumpHose, pipeYPumpHose};
+    // Left pipe
+    pumpHosePath.moveTo(leftPipeP1PumpHose);
+    pumpHosePath.lineTo(leftPipeP2PumpHose);
+    QPointF leftConnectP1PumpHose{leftPipeP2PumpHose.x(), leftPipeP2PumpHose.y()
+                                                              + sixtWidthPumpHose / 2};
+    QPointF leftConnectP2PumpHose{leftPipeP2PumpHose.x(), leftPipeP2PumpHose.y()
+                                                              - sixtWidthPumpHose / 2};
+    // Right pipe connection
+    pumpHosePath.moveTo(leftConnectP1PumpHose);
+    pumpHosePath.lineTo(leftConnectP2PumpHose);
+    strokePumpHosePath = ps_pumpHoseShape.createStroke(pumpHosePath);
+    strokePumpHosePath.addPath(pumpHosePath);
+    QCOMPARE(p_pumpHose->shape(), strokePumpHosePath);
+
+    // PumpHoseShape show collector
+    pumpHosePath.clear();
+    strokePumpHosePath.clear();
+    p_pumpHose->setPipes(false);
+    p_pumpHose->setCollector(true);
+    pumpHosePath.addPolygon(pumpHosePolygon);
+    qreal collectorXPumpHose{pumpHoseRect.center().x()};
+    qreal collectorYPumpHose{pumpHoseRect.bottom() + sixtWidthPumpHose * 2};
+    qreal leftCollectorPipeXPumpHose{collectorXPumpHose - sixtWidthPumpHose};
+    QPointF leftRightCollectorPipeP1PumpHose{collectorXPumpHose, pumpHoseRect.bottom()};
+    QPointF leftCollectorPipeP2PumpHose{leftCollectorPipeXPumpHose, collectorYPumpHose};
+    //Left collector pipe
+    pumpHosePath.moveTo(leftRightCollectorPipeP1PumpHose);
+    pumpHosePath.lineTo(leftCollectorPipeP2PumpHose);
+    qreal rightCollectorPipeXPumpHose{collectorXPumpHose + sixtWidthPumpHose};
+    QPointF rightCollectorPipeP2PumpHose{rightCollectorPipeXPumpHose, collectorYPumpHose};
+    //Right collector pipe
+    pumpHosePath.moveTo(leftRightCollectorPipeP1PumpHose);
+    pumpHosePath.lineTo(rightCollectorPipeP2PumpHose);
+    QPointF leftCollectorConnectP1PumpHose{leftCollectorPipeXPumpHose - sixtWidthPumpHose / 2
+                                           , collectorYPumpHose};
+    QPointF leftCollectorConnectP2PumpHose{leftCollectorPipeXPumpHose + sixtWidthPumpHose / 2
+                                           , collectorYPumpHose};
+    //Left connector
+    pumpHosePath.moveTo(leftCollectorConnectP1PumpHose);
+    pumpHosePath.lineTo(leftCollectorConnectP2PumpHose);
+    QPointF rightCollectorConnectP1PumpHose{rightCollectorPipeXPumpHose - sixtWidthPumpHose / 2
+                                            , collectorYPumpHose};
+    QPointF rightCollectorConnectP2PumpHOse{rightCollectorPipeXPumpHose + sixtWidthPumpHose / 2
+                                            , collectorYPumpHose};
+    //Right connector
+    pumpHosePath.moveTo(rightCollectorConnectP1PumpHose);
+    pumpHosePath.lineTo(rightCollectorConnectP2PumpHOse);
+    strokePumpHosePath = ps_pumpHoseShape.createStroke(pumpHosePath);
+    strokePumpHosePath.addPath(pumpHosePath);
+    QCOMPARE(p_pumpHose->shape(), strokePumpHosePath);
+
+    p_pumpHose= nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
 }
 
 void tst_TechnicShape::image()
@@ -219,6 +344,14 @@ void tst_TechnicShape::image()
     QCOMPARE(tankerImage.width(), p_tankerShape->boundingRect().width());
     QCOMPARE(tankerImage.height(), p_tankerShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+
+    // PumpHoseShape
+    TechnicsShape *p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
+    QPixmap pumpHoseImage{p_pumpHoseShape->image()};
+    QVERIFY2(!pumpHoseImage.isNull(), "PumpHoseShape::image() returned a null pixmap");
+    QCOMPARE(pumpHoseImage.width(), p_pumpHoseShape->boundingRect().width());
+    QCOMPARE(pumpHoseImage.height(), p_pumpHoseShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -256,6 +389,12 @@ void tst_TechnicShape::rect_setRect()
     p_tankerShape->setRect(rect);
     QCOMPARE(p_tankerShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+
+    // PumpHoseShape
+    TechnicsShape *p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
+    p_pumpHoseShape->setRect(rect);
+    QCOMPARE(p_pumpHoseShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -286,6 +425,12 @@ void tst_TechnicShape::height_setHeight()
     p_tankerShape->setHeight(height);
     QCOMPARE(p_tankerShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+
+    // PumpHoseShape
+    TechnicsShape *p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
+    p_pumpHoseShape->setHeight(height);
+    QCOMPARE(p_pumpHoseShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -319,6 +464,12 @@ void tst_TechnicShape::text_setText()
     p_tankerShape->setText(text);
     QCOMPARE(p_tankerShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+
+    // PumpHoseShape
+    TechnicsShape *p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
+    p_pumpHoseShape->setText(text);
+    QCOMPARE(p_pumpHoseShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -333,6 +484,17 @@ void tst_TechnicShape::pipes_setPipes()
     QCOMPARE(p_tanker->pipes(), false);
     p_tanker = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+
+    //PumpHoseShape
+    TechnicsShape *p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
+    PumpHoseShape *p_pumpHose = dynamic_cast<PumpHoseShape *>(p_pumpHoseShape);
+    QCOMPARE(p_pumpHose->pipes(), false);
+    p_pumpHose->setPipes(true);
+    QCOMPARE(p_pumpHose->pipes(), true);
+    p_pumpHose->setPipes(false);
+    QCOMPARE(p_pumpHose->pipes(), false);
+    p_pumpHose= nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
 }
 
 void tst_TechnicShape::collector_setCollector()
@@ -347,6 +509,17 @@ void tst_TechnicShape::collector_setCollector()
     QCOMPARE(p_tanker->collector(), false);
     p_tanker = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+
+    //PumpHoseShape
+    TechnicsShape *p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
+    PumpHoseShape *p_pumpHose= dynamic_cast<PumpHoseShape *>(p_pumpHoseShape);
+    QCOMPARE(p_pumpHose->collector(), false);
+    p_pumpHose->setCollector(true);
+    QCOMPARE(p_pumpHose->collector(), true);
+    p_pumpHose->setCollector(false);
+    QCOMPARE(p_pumpHose->collector(), false);
+    p_pumpHose = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
 }
 
 class ContextMenuTester : public QMenu
@@ -414,7 +587,7 @@ void tst_TechnicShape::mousePressEvent()
     delete p_baseContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_baseShape);
 
-    // Tankershape
+    // TankerShape
     ContextMenuTester *p_tankerContextMenu = new ContextMenuTester();
 
     TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
@@ -442,6 +615,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_tankerShape);
     delete p_tankerContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+
+    // PumpHoseShape
+    ContextMenuTester *p_pumpHoseContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
+    p_pumpHoseShape->setMenu(p_pumpHoseContextMenu);
+    scene.addItem(p_pumpHoseShape);
+
+    mousePressEvent.setScenePos(p_pumpHoseShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_pumpHoseShape->setSelected(true);
+    QSignalSpy pumpHoseContextMenuSpy(p_pumpHoseShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(pumpHoseContextMenuSpy.count(), 0);
+
+    QList<QAction *> pumpHoseMenuActions{p_pumpHoseShape->menu()->actions()};
+    QCOMPARE(pumpHoseMenuActions.size(), 1);
+    pumpHoseMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_pumpHoseShape->boundingRect().center()));
+    pumpHoseMenuActions = p_pumpHoseShape->menu()->actions();
+    QCOMPARE(pumpHoseMenuActions.size(), 1);
+    QCOMPARE(pumpHoseContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_pumpHoseShape);
+    delete p_pumpHoseContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
