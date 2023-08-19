@@ -73,6 +73,13 @@ void tst_TechnicShape::constructor()
     QCOMPARE(int(p_pumpHoseShape->type()), int(QGraphicsItem::UserType + 203));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
 
+    // FirstAidShape
+    TechnicsShape *p_firstAidShape = nullptr;
+    p_firstAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
+    QVERIFY2(p_firstAidShape, "pumpHoseShape is nullptr");
+    QCOMPARE(int(p_firstAidShape->type()), int(QGraphicsItem::UserType + 204));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
+
 }
 
 void tst_TechnicShape::boundingRect()
@@ -109,6 +116,20 @@ void tst_TechnicShape::boundingRect()
     p_pumpHose->setCollector(false);
     QCOMPARE(p_pumpHoseShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
+
+    // FirstAidShape
+    TechnicsShape *p_firsAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
+    QCOMPARE(p_firsAidShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    FirstAidShape *p_firstAid = dynamic_cast<FirstAidShape *>(p_firsAidShape);
+    p_firstAid->setPipes(true);
+    QCOMPARE(p_firsAidShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 76.0));
+    p_firstAid->setCollector(true);
+    QCOMPARE(p_firsAidShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 86.0));
+    p_firstAid->setPipes(false);
+    QCOMPARE(p_firsAidShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 86.0));
+    p_firstAid->setCollector(false);
+    QCOMPARE(p_firsAidShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_firsAidShape);
 }
 
 void tst_TechnicShape::shape()
@@ -325,6 +346,102 @@ void tst_TechnicShape::shape()
 
     p_pumpHose= nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
+
+    // FirstAidShape
+    TechnicsShape *p_firstAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
+    QPainterPathStroker ps_firstAidShape;
+    ps_firstAidShape.setWidth(p_firstAidShape->pen().widthF());
+    QRectF firstAidRect{p_firstAidShape->rect()};
+    qreal frontTabFirstAid{firstAidRect.height() / 3};
+    QPointF frontCenterFirstAid{firstAidRect.center().x(), firstAidRect.top()}; // 0.0, -37.5
+    QPointF frontRightFirstAid{firstAidRect.right(), firstAidRect.top() + frontTabFirstAid}; // 15.0, -12.5
+    QPointF frontLeftFirstAid{firstAidRect.left(), firstAidRect.top() + frontTabFirstAid}; // -15.0, -12.5
+    QPointF bottomRightFirstAid{firstAidRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftFirstAid{firstAidRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF firstAidPolygon;
+    firstAidPolygon << frontCenterFirstAid << frontRightFirstAid << bottomRightFirstAid
+                    << bottomLeftFirstAid << frontLeftFirstAid << frontCenterFirstAid;
+    QPainterPath firstAidPath;
+    firstAidPath.addPolygon(firstAidPolygon);
+    QPainterPath strokeFirstAidPath = ps_firstAidShape.createStroke(firstAidPath);
+    strokeFirstAidPath.addPath(firstAidPath);
+    QCOMPARE(p_firstAidShape->shape(), strokeFirstAidPath);
+
+    // FirstAidShape show pipes
+    FirstAidShape *p_firstAid = dynamic_cast<FirstAidShape *>(p_firstAidShape);
+    firstAidPath.clear();
+    strokeFirstAidPath.clear();
+    p_firstAid->setPipes(true);
+    firstAidPath.addPolygon(firstAidPolygon);
+    qreal sixtWidthFirstAid{firstAidRect.width() / 6}; // 5.0
+    qreal pipeYFirstAid{firstAidRect.bottom() - sixtWidthFirstAid};
+    QPointF rightPipeP1FirstAid{firstAidRect.right(), pipeYFirstAid};
+    QPointF rightPipeP2FirstAid{firstAidRect.right() + sixtWidthFirstAid, pipeYFirstAid};
+    // Right pipe
+    firstAidPath.moveTo(rightPipeP1FirstAid);
+    firstAidPath.lineTo(rightPipeP2FirstAid);
+    QPointF rightConnectP1FirstAid{rightPipeP2FirstAid.x(), rightPipeP2FirstAid.y()
+                                                                + sixtWidthFirstAid / 2};
+    QPointF rightConnectP2FirstAid{rightPipeP2FirstAid.x(), rightPipeP2FirstAid.y()
+                                                                - sixtWidthFirstAid / 2};
+    // Right pipe connection
+    firstAidPath.moveTo(rightConnectP1FirstAid);
+    firstAidPath.lineTo(rightConnectP2FirstAid);
+    QPointF leftPipeP1FirstAid{firstAidRect.left(), pipeYFirstAid};
+    QPointF leftPipeP2FirstAid{firstAidRect.left() - sixtWidthFirstAid, pipeYFirstAid};
+    // Left pipe
+    firstAidPath.moveTo(leftPipeP1FirstAid);
+    firstAidPath.lineTo(leftPipeP2FirstAid);
+    QPointF leftConnectP1FirstAid{leftPipeP2FirstAid.x(), leftPipeP2FirstAid.y()
+                                                              + sixtWidthFirstAid / 2};
+    QPointF leftConnectP2FirstAid{leftPipeP2FirstAid.x(), leftPipeP2FirstAid.y()
+                                                              - sixtWidthFirstAid / 2};
+    // Right pipe connection
+    firstAidPath.moveTo(leftConnectP1FirstAid);
+    firstAidPath.lineTo(leftConnectP2FirstAid);
+    strokeFirstAidPath = ps_firstAidShape.createStroke(firstAidPath);
+    strokeFirstAidPath.addPath(firstAidPath);
+    QCOMPARE(p_firstAid->shape(), strokeFirstAidPath);
+
+    // FirstAidShape show collector
+    firstAidPath.clear();
+    strokeFirstAidPath.clear();
+    p_firstAid->setPipes(false);
+    p_firstAid->setCollector(true);
+    firstAidPath.addPolygon(firstAidPolygon);
+    qreal collectorXFirstAid{firstAidRect.center().x()};
+    qreal collectorYFirstAid{firstAidRect.bottom() + sixtWidthFirstAid * 2};
+    qreal leftCollectorPipeXFirstAid{collectorXFirstAid - sixtWidthFirstAid};
+    QPointF leftRightCollectorPipeP1FirstAid{collectorXFirstAid, firstAidRect.bottom()};
+    QPointF leftCollectorPipeP2FirstAid{leftCollectorPipeXFirstAid, collectorYFirstAid};
+    //Left collector pipe
+    firstAidPath.moveTo(leftRightCollectorPipeP1FirstAid);
+    firstAidPath.lineTo(leftCollectorPipeP2FirstAid);
+    qreal rightCollectorPipeXFirstAid{collectorXFirstAid + sixtWidthFirstAid};
+    QPointF rightCollectorPipeP2FirstAid{rightCollectorPipeXFirstAid, collectorYFirstAid};
+    //Right collector pipe
+    firstAidPath.moveTo(leftRightCollectorPipeP1FirstAid);
+    firstAidPath.lineTo(rightCollectorPipeP2FirstAid);
+    QPointF leftCollectorConnectP1FirstAid{leftCollectorPipeXFirstAid - sixtWidthFirstAid / 2
+                                           , collectorYFirstAid};
+    QPointF leftCollectorConnectP2FirstAid{leftCollectorPipeXFirstAid + sixtWidthFirstAid / 2
+                                           , collectorYFirstAid};
+    //Left connector
+    firstAidPath.moveTo(leftCollectorConnectP1FirstAid);
+    firstAidPath.lineTo(leftCollectorConnectP2FirstAid);
+    QPointF rightCollectorConnectP1FirstAid{rightCollectorPipeXFirstAid - sixtWidthFirstAid / 2
+                                            , collectorYFirstAid};
+    QPointF rightCollectorConnectP2FirstAid{rightCollectorPipeXFirstAid + sixtWidthFirstAid / 2
+                                            , collectorYFirstAid};
+    //Right connector
+    firstAidPath.moveTo(rightCollectorConnectP1FirstAid);
+    firstAidPath.lineTo(rightCollectorConnectP2FirstAid);
+    strokeFirstAidPath = ps_firstAidShape.createStroke(firstAidPath);
+    strokeFirstAidPath.addPath(firstAidPath);
+    QCOMPARE(p_firstAid->shape(), strokeFirstAidPath);
+
+    p_firstAid = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
 }
 
 void tst_TechnicShape::image()
@@ -352,6 +469,14 @@ void tst_TechnicShape::image()
     QCOMPARE(pumpHoseImage.width(), p_pumpHoseShape->boundingRect().width());
     QCOMPARE(pumpHoseImage.height(), p_pumpHoseShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
+
+    // FirstAidShape
+    TechnicsShape *p_firstAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
+    QPixmap firstAidImage{p_firstAidShape->image()};
+    QVERIFY2(!firstAidImage.isNull(), "FirstAidShape::image() returned a null pixmap");
+    QCOMPARE(firstAidImage.width(), p_firstAidShape->boundingRect().width());
+    QCOMPARE(firstAidImage.height(), p_firstAidShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -395,6 +520,12 @@ void tst_TechnicShape::rect_setRect()
     p_pumpHoseShape->setRect(rect);
     QCOMPARE(p_pumpHoseShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
+
+    // FirstAidShape
+    TechnicsShape *p_firstAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
+    p_firstAidShape->setRect(rect);
+    QCOMPARE(p_firstAidShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -431,6 +562,12 @@ void tst_TechnicShape::height_setHeight()
     p_pumpHoseShape->setHeight(height);
     QCOMPARE(p_pumpHoseShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
+
+    // FirstAidShape
+    TechnicsShape *p_firstAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
+    p_firstAidShape->setHeight(height);
+    QCOMPARE(p_firstAidShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -470,6 +607,12 @@ void tst_TechnicShape::text_setText()
     p_pumpHoseShape->setText(text);
     QCOMPARE(p_pumpHoseShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
+
+    // FirstAidShape
+    TechnicsShape *p_firstAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
+    p_firstAidShape->setText(text);
+    QCOMPARE(p_firstAidShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -493,8 +636,19 @@ void tst_TechnicShape::pipes_setPipes()
     QCOMPARE(p_pumpHose->pipes(), true);
     p_pumpHose->setPipes(false);
     QCOMPARE(p_pumpHose->pipes(), false);
-    p_pumpHose= nullptr;
+    p_pumpHose = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
+
+    //FirstAidShape
+    TechnicsShape *p_firstAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
+    FirstAidShape *p_firstAid = dynamic_cast<FirstAidShape *>(p_firstAidShape);
+    QCOMPARE(p_firstAid->pipes(), false);
+    p_firstAid->setPipes(true);
+    QCOMPARE(p_firstAid->pipes(), true);
+    p_firstAid->setPipes(false);
+    QCOMPARE(p_firstAid->pipes(), false);
+    p_firstAid = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
 }
 
 void tst_TechnicShape::collector_setCollector()
@@ -512,7 +666,7 @@ void tst_TechnicShape::collector_setCollector()
 
     //PumpHoseShape
     TechnicsShape *p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
-    PumpHoseShape *p_pumpHose= dynamic_cast<PumpHoseShape *>(p_pumpHoseShape);
+    PumpHoseShape *p_pumpHose = dynamic_cast<PumpHoseShape *>(p_pumpHoseShape);
     QCOMPARE(p_pumpHose->collector(), false);
     p_pumpHose->setCollector(true);
     QCOMPARE(p_pumpHose->collector(), true);
@@ -520,6 +674,17 @@ void tst_TechnicShape::collector_setCollector()
     QCOMPARE(p_pumpHose->collector(), false);
     p_pumpHose = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
+
+    //FirstAidShape
+    TechnicsShape *p_firstAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
+    FirstAidShape *p_firstAid = dynamic_cast<FirstAidShape *>(p_firstAidShape);
+    QCOMPARE(p_firstAid->collector(), false);
+    p_firstAid->setCollector(true);
+    QCOMPARE(p_firstAid->collector(), true);
+    p_firstAid->setCollector(false);
+    QCOMPARE(p_firstAid->collector(), false);
+    p_firstAid = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
 }
 
 class ContextMenuTester : public QMenu
@@ -644,6 +809,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_pumpHoseShape);
     delete p_pumpHoseContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
+
+    // FirstAidShape
+    ContextMenuTester *p_firstAidContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_firstAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
+    p_firstAidShape->setMenu(p_firstAidContextMenu);
+    scene.addItem(p_firstAidShape);
+
+    mousePressEvent.setScenePos(p_firstAidShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_firstAidShape->setSelected(true);
+    QSignalSpy firstAidContextMenuSpy(p_firstAidShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(firstAidContextMenuSpy.count(), 0);
+
+    QList<QAction *> firstAidMenuActions{p_firstAidShape->menu()->actions()};
+    QCOMPARE(firstAidMenuActions.size(), 1);
+    firstAidMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_firstAidShape->boundingRect().center()));
+    firstAidMenuActions = p_firstAidShape->menu()->actions();
+    QCOMPARE(firstAidMenuActions.size(), 1);
+    QCOMPARE(firstAidContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_firstAidShape);
+    delete p_firstAidContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
