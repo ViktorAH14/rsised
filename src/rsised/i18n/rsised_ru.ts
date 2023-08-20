@@ -654,9 +654,10 @@
         <translation>АПП</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="717"/>
         <source>Emergency</source>
         <translatorcomment>Аварийно-спасательный автомобиль</translatorcomment>
-        <translation type="vanished">АСА</translation>
+        <translation>АСА</translation>
     </message>
     <message>
         <source>Hose_car</source>

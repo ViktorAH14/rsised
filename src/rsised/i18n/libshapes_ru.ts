@@ -37,73 +37,82 @@
         <translation>Закрыть дверь</translation>
     </message>
     <message>
-        <location filename="../../libshapes/technicsshape.cpp" line="638"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="642"/>
         <source>Insert text</source>
         <translation>Вставить текст</translation>
     </message>
     <message>
-        <location filename="../../libshapes/technicsshape.cpp" line="735"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1262"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1627"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="739"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1266"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1631"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1993"/>
         <source>Hide pipes</source>
         <translation>Скрыть патрубки</translation>
     </message>
     <message>
-        <location filename="../../libshapes/technicsshape.cpp" line="735"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1262"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1627"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="739"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1266"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1631"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1993"/>
         <source>Show pipes</source>
         <translation>Показать патрубки</translation>
     </message>
     <message>
-        <location filename="../../libshapes/technicsshape.cpp" line="737"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1264"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1629"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="741"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1268"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1633"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1995"/>
         <source>Show or hide the pipes</source>
         <translation>Показать или скрыть патрубки</translation>
     </message>
     <message>
-        <location filename="../../libshapes/technicsshape.cpp" line="742"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1269"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1634"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="746"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1273"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1638"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="2000"/>
         <source>Hide collector</source>
         <translation>Скрыть водосборник</translation>
     </message>
     <message>
-        <location filename="../../libshapes/technicsshape.cpp" line="743"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1270"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1635"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="747"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1274"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1639"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="2001"/>
         <source>Show collector</source>
         <translation>Показать водосборник</translation>
     </message>
     <message>
-        <location filename="../../libshapes/technicsshape.cpp" line="745"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1272"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1637"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="749"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1276"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1641"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="2003"/>
         <source>Show or hide the water collector</source>
         <translation>Показать или скрыть водосборник</translation>
     </message>
     <message>
-        <location filename="../../libshapes/technicsshape.cpp" line="625"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="750"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1277"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1642"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="629"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="754"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1281"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1646"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="2008"/>
         <source>Show text</source>
         <translation>Показать текст</translation>
     </message>
     <message>
-        <location filename="../../libshapes/technicsshape.cpp" line="625"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="750"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1277"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1642"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="629"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="754"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1281"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1646"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="2008"/>
         <source>Hide text</source>
         <translation>Скрыть текст</translation>
     </message>
     <message>
-        <location filename="../../libshapes/technicsshape.cpp" line="627"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="752"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1279"/>
-        <location filename="../../libshapes/technicsshape.cpp" line="1644"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="631"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="756"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1283"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="1648"/>
+        <location filename="../../libshapes/technicsshape.cpp" line="2010"/>
         <source>Show or hide text</source>
         <translation>Показать или скрыть текст</translation>
     </message>

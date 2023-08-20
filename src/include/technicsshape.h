@@ -303,4 +303,57 @@ private:
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_firstAidActionList;
 };
+
+class EmergencyShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 205};
+
+    explicit EmergencyShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~EmergencyShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(EmergencyShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawEmergencyShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixtWidth);
+    void drawCollector(QPainter *painter, qreal sixtWidth);
+
+    const ShapeType m_emergencyType;
+    QGraphicsTextItem *m_emergencyText;
+    QRectF m_emergencyRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_emergencyActionList;
+};
 #endif // TECHNICSSHAPE_H
