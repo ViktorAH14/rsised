@@ -80,6 +80,13 @@ void tst_TechnicShape::constructor()
     QCOMPARE(int(p_firstAidShape->type()), int(QGraphicsItem::UserType + 204));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
 
+    // EmergencyShape
+    TechnicsShape *p_emergencyShape = nullptr;
+    p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
+    QVERIFY2(p_emergencyShape, "emergencyShape is nullptr");
+    QCOMPARE(int(p_emergencyShape->type()), int(QGraphicsItem::UserType + 205));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
+
 }
 
 void tst_TechnicShape::boundingRect()
@@ -130,6 +137,20 @@ void tst_TechnicShape::boundingRect()
     p_firstAid->setCollector(false);
     QCOMPARE(p_firsAidShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_firsAidShape);
+
+    // EmergencyShape
+    TechnicsShape *p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
+    QCOMPARE(p_emergencyShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    EmergencyShape *p_emergency = dynamic_cast<EmergencyShape *>(p_emergencyShape);
+    p_emergency->setPipes(true);
+    QCOMPARE(p_emergencyShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 76.0));
+    p_emergency->setCollector(true);
+    QCOMPARE(p_emergencyShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 86.0));
+    p_emergency->setPipes(false);
+    QCOMPARE(p_emergencyShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 86.0));
+    p_emergency->setCollector(false);
+    QCOMPARE(p_emergencyShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
 }
 
 void tst_TechnicShape::shape()
@@ -442,6 +463,102 @@ void tst_TechnicShape::shape()
 
     p_firstAid = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
+
+    // EmergencyShape
+    TechnicsShape *p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
+    QPainterPathStroker ps_emergencyShape;
+    ps_emergencyShape.setWidth(p_emergencyShape->pen().widthF());
+    QRectF emergencyRect{p_emergencyShape->rect()};
+    qreal frontTabEmergency{emergencyRect.height() / 3};
+    QPointF frontCenterEmergency{emergencyRect.center().x(), emergencyRect.top()}; // 0.0, -37.5
+    QPointF frontRightEmergency{emergencyRect.right(), emergencyRect.top() + frontTabEmergency}; // 15.0, -12.5
+    QPointF frontLeftEmergency{emergencyRect.left(), emergencyRect.top() + frontTabEmergency}; // -15.0, -12.5
+    QPointF bottomRightEmergency{emergencyRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftEmergency{emergencyRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF emergencyPolygon;
+    emergencyPolygon << frontCenterEmergency << frontRightEmergency << bottomRightEmergency
+                    << bottomLeftEmergency << frontLeftEmergency << frontCenterEmergency;
+    QPainterPath emergencyPath;
+    emergencyPath.addPolygon(emergencyPolygon);
+    QPainterPath strokeEmergencyPath = ps_emergencyShape.createStroke(emergencyPath);
+    strokeEmergencyPath.addPath(emergencyPath);
+    QCOMPARE(p_emergencyShape->shape(), strokeEmergencyPath);
+
+    // EmergencyShape show pipes
+    EmergencyShape *p_emergency = dynamic_cast<EmergencyShape *>(p_emergencyShape);
+    emergencyPath.clear();
+    strokeEmergencyPath.clear();
+    p_emergency->setPipes(true);
+    emergencyPath.addPolygon(emergencyPolygon);
+    qreal sixtWidthEmergency{emergencyRect.width() / 6}; // 5.0
+    qreal pipeYEmergency{emergencyRect.bottom() - sixtWidthEmergency};
+    QPointF rightPipeP1Emergency{emergencyRect.right(), pipeYEmergency};
+    QPointF rightPipeP2Emergency{emergencyRect.right() + sixtWidthEmergency, pipeYEmergency};
+    // Right pipe
+    emergencyPath.moveTo(rightPipeP1Emergency);
+    emergencyPath.lineTo(rightPipeP2Emergency);
+    QPointF rightConnectP1Emergency{rightPipeP2Emergency.x(), rightPipeP2Emergency.y()
+                                                                + sixtWidthEmergency / 2};
+    QPointF rightConnectP2Emergency{rightPipeP2Emergency.x(), rightPipeP2Emergency.y()
+                                                                - sixtWidthEmergency / 2};
+    // Right pipe connection
+    emergencyPath.moveTo(rightConnectP1Emergency);
+    emergencyPath.lineTo(rightConnectP2Emergency);
+    QPointF leftPipeP1Emergency{emergencyRect.left(), pipeYEmergency};
+    QPointF leftPipeP2Emergency{emergencyRect.left() - sixtWidthEmergency, pipeYEmergency};
+    // Left pipe
+    emergencyPath.moveTo(leftPipeP1Emergency);
+    emergencyPath.lineTo(leftPipeP2Emergency);
+    QPointF leftConnectP1Emergency{leftPipeP2Emergency.x(), leftPipeP2Emergency.y()
+                                                              + sixtWidthEmergency / 2};
+    QPointF leftConnectP2emergency{leftPipeP2Emergency.x(), leftPipeP2Emergency.y()
+                                                              - sixtWidthEmergency / 2};
+    // Right pipe connection
+    emergencyPath.moveTo(leftConnectP1Emergency);
+    emergencyPath.lineTo(leftConnectP2emergency);
+    strokeEmergencyPath = ps_emergencyShape.createStroke(emergencyPath);
+    strokeEmergencyPath.addPath(emergencyPath);
+    QCOMPARE(p_emergency->shape(), strokeEmergencyPath);
+
+    // EmergencyShape show collector
+    emergencyPath.clear();
+    strokeEmergencyPath.clear();
+    p_emergency->setPipes(false);
+    p_emergency->setCollector(true);
+    emergencyPath.addPolygon(emergencyPolygon);
+    qreal collectorXEmergency{emergencyRect.center().x()};
+    qreal collectorYEmergency{emergencyRect.bottom() + sixtWidthEmergency * 2};
+    qreal leftCollectorPipeXEmergency{collectorXEmergency - sixtWidthEmergency};
+    QPointF leftRightCollectorPipeP1Emergency{collectorXEmergency, emergencyRect.bottom()};
+    QPointF leftCollectorPipeP2Emergency{leftCollectorPipeXEmergency, collectorYEmergency};
+    //Left collector pipe
+    emergencyPath.moveTo(leftRightCollectorPipeP1Emergency);
+    emergencyPath.lineTo(leftCollectorPipeP2Emergency);
+    qreal rightCollectorPipeXEmergency{collectorXEmergency + sixtWidthEmergency};
+    QPointF rightCollectorPipeP2Emergency{rightCollectorPipeXEmergency, collectorYEmergency};
+    //Right collector pipe
+    emergencyPath.moveTo(leftRightCollectorPipeP1Emergency);
+    emergencyPath.lineTo(rightCollectorPipeP2Emergency);
+    QPointF leftCollectorConnectP1Emergency{leftCollectorPipeXEmergency - sixtWidthEmergency / 2
+                                           , collectorYEmergency};
+    QPointF leftCollectorConnectP2Emergency{leftCollectorPipeXEmergency + sixtWidthEmergency / 2
+                                           , collectorYEmergency};
+    //Left connector
+    emergencyPath.moveTo(leftCollectorConnectP1Emergency);
+    emergencyPath.lineTo(leftCollectorConnectP2Emergency);
+    QPointF rightCollectorConnectP1Emergency{rightCollectorPipeXEmergency - sixtWidthEmergency / 2
+                                            , collectorYEmergency};
+    QPointF rightCollectorConnectP2Emergency{rightCollectorPipeXEmergency + sixtWidthEmergency / 2
+                                            , collectorYEmergency};
+    //Right connector
+    emergencyPath.moveTo(rightCollectorConnectP1Emergency);
+    emergencyPath.lineTo(rightCollectorConnectP2Emergency);
+    strokeEmergencyPath = ps_emergencyShape.createStroke(emergencyPath);
+    strokeEmergencyPath.addPath(emergencyPath);
+    QCOMPARE(p_emergency->shape(), strokeEmergencyPath);
+
+    p_emergency = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
 }
 
 void tst_TechnicShape::image()
@@ -477,6 +594,14 @@ void tst_TechnicShape::image()
     QCOMPARE(firstAidImage.width(), p_firstAidShape->boundingRect().width());
     QCOMPARE(firstAidImage.height(), p_firstAidShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
+
+    // EmergencyShape
+    TechnicsShape *p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
+    QPixmap emergencyImage{p_emergencyShape->image()};
+    QVERIFY2(!emergencyImage.isNull(), "emergencyShape::image() returned a null pixmap");
+    QCOMPARE(emergencyImage.width(), p_emergencyShape->boundingRect().width());
+    QCOMPARE(emergencyImage.height(), p_emergencyShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -526,6 +651,12 @@ void tst_TechnicShape::rect_setRect()
     p_firstAidShape->setRect(rect);
     QCOMPARE(p_firstAidShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
+
+    // EmergencyShape
+    TechnicsShape *p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
+    p_emergencyShape->setRect(rect);
+    QCOMPARE(p_emergencyShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -568,6 +699,12 @@ void tst_TechnicShape::height_setHeight()
     p_firstAidShape->setHeight(height);
     QCOMPARE(p_firstAidShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
+
+    // EmergencyShape
+    TechnicsShape *p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
+    p_emergencyShape->setHeight(height);
+    QCOMPARE(p_emergencyShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -613,6 +750,12 @@ void tst_TechnicShape::text_setText()
     p_firstAidShape->setText(text);
     QCOMPARE(p_firstAidShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
+
+    // EmergencyShape
+    TechnicsShape *p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
+    p_emergencyShape->setText(text);
+    QCOMPARE(p_emergencyShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -649,6 +792,17 @@ void tst_TechnicShape::pipes_setPipes()
     QCOMPARE(p_firstAid->pipes(), false);
     p_firstAid = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
+
+    //EmergencyShape
+    TechnicsShape *p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
+    EmergencyShape *p_emergency = dynamic_cast<EmergencyShape *>(p_emergencyShape);
+    QCOMPARE(p_emergency->pipes(), false);
+    p_emergency->setPipes(true);
+    QCOMPARE(p_emergency->pipes(), true);
+    p_emergency->setPipes(false);
+    QCOMPARE(p_emergency->pipes(), false);
+    p_emergency = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
 }
 
 void tst_TechnicShape::collector_setCollector()
@@ -685,6 +839,17 @@ void tst_TechnicShape::collector_setCollector()
     QCOMPARE(p_firstAid->collector(), false);
     p_firstAid = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
+
+    //EmergencyShape
+    TechnicsShape *p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
+    EmergencyShape *p_emergency = dynamic_cast<EmergencyShape *>(p_emergencyShape);
+    QCOMPARE(p_emergency->collector(), false);
+    p_emergency->setCollector(true);
+    QCOMPARE(p_emergency->collector(), true);
+    p_emergency->setCollector(false);
+    QCOMPARE(p_emergency->collector(), false);
+    p_emergency = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
 }
 
 class ContextMenuTester : public QMenu
@@ -838,6 +1003,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_firstAidShape);
     delete p_firstAidContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
+
+    // EmergencyShape
+    ContextMenuTester *p_emergencyContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
+    p_emergencyShape->setMenu(p_emergencyContextMenu);
+    scene.addItem(p_emergencyShape);
+
+    mousePressEvent.setScenePos(p_emergencyShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_emergencyShape->setSelected(true);
+    QSignalSpy emergencyContextMenuSpy(p_emergencyShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(emergencyContextMenuSpy.count(), 0);
+
+    QList<QAction *> emergencyMenuActions{p_emergencyShape->menu()->actions()};
+    QCOMPARE(emergencyMenuActions.size(), 1);
+    emergencyMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_emergencyShape->boundingRect().center()));
+    emergencyMenuActions = p_emergencyShape->menu()->actions();
+    QCOMPARE(emergencyMenuActions.size(), 1);
+    QCOMPARE(emergencyContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_emergencyShape);
+    delete p_emergencyContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
