@@ -70,6 +70,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Emergency:
         p_technicsShape = new EmergencyShape(parent);
         break;
+    case AutoLadder:
+        p_technicsShape = new AutoLadderShape(parent);
+        break;
     default:
         break;
     }
@@ -2059,44 +2062,249 @@ void EmergencyShape::drawEmergencyShape(QPainter *painter)
 
 void EmergencyShape::drawPipes(QPainter *painter, qreal sixtWidth)
 {
-        painter->setPen(QPen(Qt::black, 1));
-        qreal pipeY{m_emergencyRect.bottom() - sixtWidth};
-        QPointF rightPipeP1{m_emergencyRect.right(), pipeY};
-        QPointF rightPipeP2{m_emergencyRect.right() + sixtWidth, pipeY};
-        painter->drawLine(rightPipeP1, rightPipeP2); // Right pipe
+    painter->setPen(QPen(Qt::black, 1));
+    qreal pipeY{m_emergencyRect.bottom() - sixtWidth};
+    QPointF rightPipeP1{m_emergencyRect.right(), pipeY};
+    QPointF rightPipeP2{m_emergencyRect.right() + sixtWidth, pipeY};
+    painter->drawLine(rightPipeP1, rightPipeP2); // Right pipe
 
-        QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + sixtWidth / 2};
-        QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - sixtWidth / 2};
-        painter->drawLine(rightConnectP1, rightConnectP2); // Right pipe connection
+    QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + sixtWidth / 2};
+    QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - sixtWidth / 2};
+    painter->drawLine(rightConnectP1, rightConnectP2); // Right pipe connection
 
-        QPointF leftPipeP1{m_emergencyRect.left(), pipeY};
-        QPointF leftPipeP2{m_emergencyRect.left() - sixtWidth, pipeY};
-        painter->drawLine(leftPipeP1, leftPipeP2); // Left pipe
+    QPointF leftPipeP1{m_emergencyRect.left(), pipeY};
+    QPointF leftPipeP2{m_emergencyRect.left() - sixtWidth, pipeY};
+    painter->drawLine(leftPipeP1, leftPipeP2); // Left pipe
 
-        QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + sixtWidth / 2};
-        QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - sixtWidth / 2};
-        painter->drawLine(leftConnectP1, leftConnectP2); // Right pipe connection
+    QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + sixtWidth / 2};
+    QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - sixtWidth / 2};
+    painter->drawLine(leftConnectP1, leftConnectP2); // Right pipe connection
 }
 
 void EmergencyShape::drawCollector(QPainter *painter, qreal sixtWidth)
 {
-        painter->setPen(QPen(Qt::black, 1));
-        qreal collectorX{m_emergencyRect.center().x()};
-        qreal collectorY{m_emergencyRect.bottom() + sixtWidth * 2};
-        qreal leftPipeX{collectorX - sixtWidth};
-        QPointF leftRightPipeP1{collectorX, m_emergencyRect.bottom()};
-        QPointF leftPipeP2{leftPipeX, collectorY};
-        painter->drawLine(leftRightPipeP1, leftPipeP2); //Left collector pipe
+    painter->setPen(QPen(Qt::black, 1));
+    qreal collectorX{m_emergencyRect.center().x()};
+    qreal collectorY{m_emergencyRect.bottom() + sixtWidth * 2};
+    qreal leftPipeX{collectorX - sixtWidth};
+    QPointF leftRightPipeP1{collectorX, m_emergencyRect.bottom()};
+    QPointF leftPipeP2{leftPipeX, collectorY};
+    painter->drawLine(leftRightPipeP1, leftPipeP2); //Left collector pipe
 
-        qreal rightPipeX{collectorX + sixtWidth};
-        QPointF rightPipeP2{rightPipeX, collectorY};
-        painter->drawLine(leftRightPipeP1, rightPipeP2); //Right collector pipe
+    qreal rightPipeX{collectorX + sixtWidth};
+    QPointF rightPipeP2{rightPipeX, collectorY};
+    painter->drawLine(leftRightPipeP1, rightPipeP2); //Right collector pipe
 
-        QPointF leftConnectP1{leftPipeX - sixtWidth / 2, collectorY};
-        QPointF leftConnectP2{leftPipeX + sixtWidth / 2, collectorY};
-        painter->drawLine(leftConnectP1, leftConnectP2); //Left connector
+    QPointF leftConnectP1{leftPipeX - sixtWidth / 2, collectorY};
+    QPointF leftConnectP2{leftPipeX + sixtWidth / 2, collectorY};
+    painter->drawLine(leftConnectP1, leftConnectP2); //Left connector
 
-        QPointF rightConnectP1{rightPipeX - sixtWidth / 2, collectorY};
-        QPointF rightConnectP2{rightPipeX + sixtWidth / 2, collectorY};
-        painter->drawLine(rightConnectP1, rightConnectP2);  //Right connector
+    QPointF rightConnectP1{rightPipeX - sixtWidth / 2, collectorY};
+    QPointF rightConnectP2{rightPipeX + sixtWidth / 2, collectorY};
+    painter->drawLine(rightConnectP1, rightConnectP2);  //Right connector
+}
+
+AutoLadderShape::AutoLadderShape(QGraphicsItem *parent)
+    :TechnicsShape(parent)
+    , m_autoLadderType{AutoLadder}
+    , m_autoLadderRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
+    , m_autoLadderText{nullptr}
+    , m_showText{false}
+{
+        setFlag(ItemSendsGeometryChanges, true);
+        setAcceptHoverEvents(true);
+        setPen(QPen(Qt::red, 1));
+        setBrush(QBrush(Qt::white));
+}
+
+void AutoLadderShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawAutoLadderShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF AutoLadderShape::boundingRect() const
+{
+    QRectF boundingRect{m_autoLadderRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    return boundingRect;
+}
+
+QPainterPath AutoLadderShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap AutoLadderShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawAutoLadderShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType AutoLadderShape::shapeType() const
+{
+    return m_autoLadderType;
+}
+
+void AutoLadderShape::setRect(const QRectF &rect)
+{
+    if (m_autoLadderRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_autoLadderRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_autoLadderText != nullptr)
+        m_autoLadderText->setPos(m_autoLadderRect.right(), m_autoLadderRect.bottom()
+                                                         - m_autoLadderRect.width() / 6);
+    update();
+}
+
+QRectF AutoLadderShape::rect() const
+{
+    return m_autoLadderRect;
+}
+
+void AutoLadderShape::setHeight(const qreal &height)
+{
+    if (m_autoLadderRect.height() == height)
+        return;
+
+    qreal oldHeight{m_autoLadderRect.height()};
+    prepareGeometryChange();
+    m_autoLadderRect.setHeight(height);
+    qreal dy{(m_autoLadderRect.height() - oldHeight) / 2};
+    m_autoLadderRect.moveTo(QPointF(m_autoLadderRect.x(), m_autoLadderRect.y() - dy));
+    update();
+}
+
+qreal AutoLadderShape::height() const
+{
+    return m_autoLadderRect.height();
+}
+
+void AutoLadderShape::setText(const QString &text)
+{
+    if (m_autoLadderText == nullptr) {
+        m_autoLadderText = new QGraphicsTextItem(this);
+        m_autoLadderText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_autoLadderText->setRotation(-90);
+    }
+    m_autoLadderText->setPlainText(text);
+    m_showText = true;
+}
+
+QString AutoLadderShape::text() const
+{
+    if (m_autoLadderText == nullptr)
+        return "";
+
+    return m_autoLadderText->toPlainText();
+}
+
+void AutoLadderShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_autoLadderActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_autoLadderActionList);
+            m_autoLadderActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void AutoLadderShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_autoLadderActionList.append(m_addTextAction.get());
+}
+
+void AutoLadderShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_autoLadderText == nullptr) {
+            m_autoLadderText=new QGraphicsTextItem(this);
+            m_autoLadderText->setPlainText("АЛ-");
+            m_autoLadderText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_autoLadderText->setRotation(-90);
+        }
+        m_autoLadderText->show();
+        m_showText = true;
+    } else {
+        m_autoLadderText->hide();
+        m_showText = false;
+    }
+}
+
+void AutoLadderShape::drawAutoLadderShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+
+    //Draw ladder
+    qreal ladderIndent{m_autoLadderRect.width() / 5};
+    qreal sixthHeight{m_autoLadderRect.height() / 6};
+    QPointF leftBottomBowstring{m_autoLadderRect.left() + ladderIndent
+                                , m_autoLadderRect.bottom() - ladderIndent};
+    QPointF leftTopBowstring{m_autoLadderRect.left() + ladderIndent
+                             , m_autoLadderRect.center().y() - sixthHeight};
+    QLineF leftBowstring{leftTopBowstring, leftBottomBowstring};
+    painter->drawLine(leftBowstring); //Left bowstring
+
+    QPointF rightBottomBowstrin{m_autoLadderRect.right() - ladderIndent
+                                , m_autoLadderRect.bottom() - ladderIndent};
+    QPointF rightTopBowstring{m_autoLadderRect.right() - ladderIndent
+                              , m_autoLadderRect.center().y() - sixthHeight};
+    QLineF rightBowstring{rightTopBowstring, rightBottomBowstrin};
+    painter->drawLine(rightBowstring); //Right bowstring
+
+    qreal stepDistanse{leftBowstring.length() / 11.0};
+    qreal stepY{leftBottomBowstring.y() - stepDistanse};
+    for (int i = 0; i < 10; ++i) {
+        QPointF leftStep{leftBottomBowstring.x(), stepY};
+        QPointF rightStep{rightBottomBowstrin.x(), stepY};
+        painter->drawLine(leftStep, rightStep); //Step
+        stepY -= stepDistanse;
+    }
+
+    qreal sixthWidth{m_autoLadderRect.width() / 6}; // 5.0
+
+    if (m_showText) {
+        m_autoLadderText->setPos(m_autoLadderRect.right(), m_autoLadderRect.bottom()
+                                                               - sixthWidth * 2);
+        }
 }

@@ -500,9 +500,10 @@
         <translation>АНР</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="719"/>
         <source>Auto ladder</source>
         <translatorcomment>Автолестница</translatorcomment>
-        <translation type="vanished">АЛ</translation>
+        <translation>АЛ</translation>
     </message>
     <message>
         <source>Crank lift</source>

@@ -36,7 +36,7 @@ public:
                      , PumpHose //АНР
                      , FirstAid //АПП
                      , Emergency //АСА
-                     , AutoLadder
+                     , AutoLadder //АЛ
                      , CrankLift
                      , TelescopicLift
                      , Hose
@@ -355,5 +355,47 @@ private:
     QScopedPointer<QAction> m_showCollectorAction;
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_emergencyActionList;
+};
+
+class AutoLadderShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 206};
+
+    explicit AutoLadderShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~AutoLadderShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(AutoLadderShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawAutoLadderShape(QPainter *painter);
+
+    const ShapeType m_autoLadderType;
+    QRectF m_autoLadderRect;
+    QGraphicsTextItem *m_autoLadderText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_autoLadderActionList;
 };
 #endif // TECHNICSSHAPE_H
