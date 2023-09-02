@@ -41,7 +41,7 @@ private slots:
     void text_setText_data();
     void text_setText();
 
-    //TankerShape, PumpHoseShape
+    //TankerShape, PumpHoseShape, FirstAidShape, EmergencyShape
     void pipes_setPipes();
     void collector_setCollector();
     void mousePressEvent();
@@ -87,13 +87,20 @@ void tst_TechnicShape::constructor()
     QCOMPARE(int(p_emergencyShape->type()), int(QGraphicsItem::UserType + 205));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
 
+    // AutoLadderShape
+    TechnicsShape *p_autoLadderShape = nullptr;
+    p_autoLadderShape = TechnicsShape::createTechnicsShape(TechnicsShape::AutoLadder);
+    QVERIFY2(p_autoLadderShape, "autoLadderShape is nullptr");
+    QCOMPARE(int(p_autoLadderShape->type()), int(QGraphicsItem::UserType + 206));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
+
 }
 
 void tst_TechnicShape::boundingRect()
 {
     // BaseShape
     TechnicsShape *p_baseShape = TechnicsShape::createTechnicsShape(TechnicsShape::Base);
-    QCOMPARE(p_baseShape->boundingRect(), QRectF(-15.5, -38.2, 31.0, 76.0));
+    QCOMPARE(p_baseShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_baseShape);
 
     // TankerShape
@@ -151,6 +158,11 @@ void tst_TechnicShape::boundingRect()
     p_emergency->setCollector(false);
     QCOMPARE(p_emergencyShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
+
+    // AutoLadderShape
+    TechnicsShape *p_autoLadderShape = TechnicsShape::createTechnicsShape(TechnicsShape::AutoLadder);
+    QCOMPARE(p_autoLadderShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
 }
 
 void tst_TechnicShape::shape()
@@ -559,6 +571,27 @@ void tst_TechnicShape::shape()
 
     p_emergency = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
+
+    // AutoLadderShape
+    TechnicsShape *p_autoLadderShape = TechnicsShape::createTechnicsShape(TechnicsShape::AutoLadder);
+    QPainterPathStroker ps_autoLadderShape;
+    ps_autoLadderShape.setWidth(p_autoLadderShape->pen().widthF());
+    QRectF autoLadderRect{p_autoLadderShape->rect()};
+    qreal frontTabAutoLadder{autoLadderRect.height() / 3};
+    QPointF frontCenterAutoLadder{autoLadderRect.center().x(), autoLadderRect.top()}; // 0.0, -37.5
+    QPointF frontRightAutoLadder{autoLadderRect.right(), autoLadderRect.top() + frontTabAutoLadder}; // 15.0, -12.5
+    QPointF frontLeftAutoLadder{autoLadderRect.left(), autoLadderRect.top() + frontTabAutoLadder}; // -15.0, -12.5
+    QPointF bottomRightAutoLadder{autoLadderRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftAutoLadder{autoLadderRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF autoLadderPolygon;
+    autoLadderPolygon << frontCenterAutoLadder << frontRightAutoLadder << bottomRightAutoLadder
+                      << bottomLeftAutoLadder << frontLeftAutoLadder << frontCenterAutoLadder;
+    QPainterPath autoLadderPath;
+    autoLadderPath.addPolygon(autoLadderPolygon);
+    QPainterPath strokeAutoLadderPath = ps_autoLadderShape.createStroke(autoLadderPath);
+    strokeAutoLadderPath.addPath(autoLadderPath);
+    QCOMPARE(p_autoLadderShape->shape(), strokeAutoLadderPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
 }
 
 void tst_TechnicShape::image()
@@ -602,6 +635,14 @@ void tst_TechnicShape::image()
     QCOMPARE(emergencyImage.width(), p_emergencyShape->boundingRect().width());
     QCOMPARE(emergencyImage.height(), p_emergencyShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
+
+    // AutoLadderShape
+    TechnicsShape *p_autoLadderShape = TechnicsShape::createTechnicsShape(TechnicsShape::AutoLadder);
+    QPixmap autoLadderImage{p_autoLadderShape->image()};
+    QVERIFY2(!autoLadderImage.isNull(), "autoLadderShape::image() returned a null pixmap");
+    QCOMPARE(autoLadderImage.width(), p_autoLadderShape->boundingRect().width());
+    QCOMPARE(autoLadderImage.height(), p_autoLadderShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -657,6 +698,12 @@ void tst_TechnicShape::rect_setRect()
     p_emergencyShape->setRect(rect);
     QCOMPARE(p_emergencyShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
+
+    // AutoLadderShape
+    TechnicsShape *p_autoLadderShape = TechnicsShape::createTechnicsShape(TechnicsShape::AutoLadder);
+    p_autoLadderShape->setRect(rect);
+    QCOMPARE(p_autoLadderShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -705,6 +752,12 @@ void tst_TechnicShape::height_setHeight()
     p_emergencyShape->setHeight(height);
     QCOMPARE(p_emergencyShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
+
+    // AutoLadderShape
+    TechnicsShape *p_autoLadderShape = TechnicsShape::createTechnicsShape(TechnicsShape::AutoLadder);
+    p_autoLadderShape->setHeight(height);
+    QCOMPARE(p_autoLadderShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -756,6 +809,12 @@ void tst_TechnicShape::text_setText()
     p_emergencyShape->setText(text);
     QCOMPARE(p_emergencyShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
+
+    // AutoLadderShape
+    TechnicsShape *p_autoLadderShape = TechnicsShape::createTechnicsShape(TechnicsShape::AutoLadder);
+    p_autoLadderShape->setText(text);
+    QCOMPARE(p_autoLadderShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -1032,6 +1091,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_emergencyShape);
     delete p_emergencyContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
+
+    // AutoLadderShape
+    ContextMenuTester *p_autoLadderContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_autoLadderShape = TechnicsShape::createTechnicsShape(TechnicsShape::AutoLadder);
+    p_autoLadderShape->setMenu(p_autoLadderContextMenu);
+    scene.addItem(p_autoLadderShape);
+
+    mousePressEvent.setScenePos(p_autoLadderShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_autoLadderShape->setSelected(true);
+    QSignalSpy autoLadderContextMenuSpy(p_autoLadderShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(autoLadderContextMenuSpy.count(), 0);
+
+    QList<QAction *> autoLadderMenuActions{p_autoLadderShape->menu()->actions()};
+    QCOMPARE(autoLadderMenuActions.size(), 1);
+    autoLadderMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_autoLadderShape->boundingRect().center()));
+    autoLadderMenuActions = p_autoLadderShape->menu()->actions();
+    QCOMPARE(autoLadderMenuActions.size(), 1);
+    QCOMPARE(autoLadderContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_autoLadderShape);
+    delete p_autoLadderContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)

@@ -486,7 +486,7 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
 BaseShape::BaseShape(QGraphicsItem *parent)
     : TechnicsShape(parent)
     , m_baseType{Base}
-    , m_baseRect{QRectF(-15.0, -37.7, 30.0, 75.0)}
+    , m_baseRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
     , m_baseText{nullptr}
     , m_showText{false}
 {
