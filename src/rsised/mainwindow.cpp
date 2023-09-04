@@ -720,8 +720,8 @@ void MainWindow::createShapeToolBox()
                                                        , TechnicsShape::AutoLadder), 1, 1);
     p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Crank lift")
                                                        , TechnicsShape::CrankLift), 1, 2);
-//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Telescopic lift")
-//                                                       , TechnicsShape::TelescopicLift), 2, 1);
+    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Telescopic lift")
+                                                       , TechnicsShape::TelescopicLift), 1, 3);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Hose_car"), TechnicsShape::Hose), 2, 2);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Comm"), TechnicsShape::Comm), 3, 0);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Tech_serv")

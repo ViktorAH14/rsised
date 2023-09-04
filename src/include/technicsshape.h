@@ -38,7 +38,7 @@ public:
                      , Emergency    //АСА
                      , AutoLadder   //АЛ
                      , CrankLift    //АПК
-                     , TelescopicLift
+                     , TelescopicLift   //ТПЛ
                      , Hose
                      , Comm
                      , Tech_serv
@@ -439,5 +439,47 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_crankLiftActionList;
+};
+
+class TelescopicLiftShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 208};
+
+    explicit TelescopicLiftShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~TelescopicLiftShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(TelescopicLiftShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawTelescopicLiftShape(QPainter *painter);
+
+    const ShapeType m_telescopicLiftType;
+    QRectF m_telescopicLiftRect;
+    QGraphicsTextItem *m_telescopicLiftText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_telescopicLiftActionList;
 };
 #endif // TECHNICSSHAPE_H

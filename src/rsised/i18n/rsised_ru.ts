@@ -512,9 +512,10 @@
         <translation>АПК</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="723"/>
         <source>Telescopic lift</source>
         <translatorcomment>Автоподъёмник телескопический.</translatorcomment>
-        <translation type="vanished">ТПЛ</translation>
+        <translation>ТПЛ</translation>
     </message>
     <message>
         <source>Tracked</source>

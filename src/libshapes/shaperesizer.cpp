@@ -96,6 +96,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             crankLiftShape->setRect(value.toRectF());
         break;
     }
+    case TelescopicLiftShape::Type: {
+        if (TelescopicLiftShape *telescopicLiftShape = dynamic_cast<TelescopicLiftShape *>(item))
+            telescopicLiftShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());

@@ -76,6 +76,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case CrankLift:
         p_technicsShape = new CrankLiftShape(parent);
         break;
+    case TelescopicLift:
+        p_technicsShape = new TelescopicLiftShape(parent);
+        break;
     default:
         break;
     }
@@ -2508,5 +2511,209 @@ void CrankLiftShape::drawCrankLiftShape(QPainter *painter)
     if (m_showText) {
         m_crankLiftText->setPos(m_crankLiftRect.right(), m_crankLiftRect.bottom()
                                                                - sixthWidth * 2);
+    }
+}
+
+TelescopicLiftShape::TelescopicLiftShape(QGraphicsItem *parent)
+    :TechnicsShape(parent)
+    , m_telescopicLiftType{TelescopicLift}
+    , m_telescopicLiftRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
+    , m_telescopicLiftText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void TelescopicLiftShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawTelescopicLiftShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF TelescopicLiftShape::boundingRect() const
+{
+    QRectF boundingRect{m_telescopicLiftRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    return boundingRect;
+}
+
+QPainterPath TelescopicLiftShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap TelescopicLiftShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawTelescopicLiftShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType TelescopicLiftShape::shapeType() const
+{
+    return m_telescopicLiftType;
+}
+
+void TelescopicLiftShape::setRect(const QRectF &rect)
+{
+    if (m_telescopicLiftRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_telescopicLiftRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width()
+                                 , rect.height());
+    if (m_telescopicLiftText != nullptr)
+        m_telescopicLiftText->setPos(m_telescopicLiftRect.right(), m_telescopicLiftRect.bottom()
+                                                             - m_telescopicLiftRect.width() / 6);
+    update();
+}
+
+QRectF TelescopicLiftShape::rect() const
+{
+    return m_telescopicLiftRect;
+}
+
+void TelescopicLiftShape::setHeight(const qreal &height)
+{
+    if (m_telescopicLiftRect.height() == height)
+        return;
+
+    qreal oldHeight{m_telescopicLiftRect.height()};
+    prepareGeometryChange();
+    m_telescopicLiftRect.setHeight(height);
+    qreal dy{(m_telescopicLiftRect.height() - oldHeight) / 2};
+    m_telescopicLiftRect.moveTo(QPointF(m_telescopicLiftRect.x(), m_telescopicLiftRect.y() - dy));
+    update();
+}
+
+qreal TelescopicLiftShape::height() const
+{
+    return m_telescopicLiftRect.height();
+}
+
+void TelescopicLiftShape::setText(const QString &text)
+{
+    if (m_telescopicLiftText == nullptr) {
+        m_telescopicLiftText = new QGraphicsTextItem(this);
+        m_telescopicLiftText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_telescopicLiftText->setRotation(-90);
+    }
+    m_telescopicLiftText->setPlainText(text);
+    m_showText = true;
+}
+
+QString TelescopicLiftShape::text() const
+{
+    if (m_telescopicLiftText == nullptr)
+        return "";
+
+    return m_telescopicLiftText->toPlainText();
+}
+
+void TelescopicLiftShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_telescopicLiftActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_telescopicLiftActionList);
+            m_telescopicLiftActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void TelescopicLiftShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_telescopicLiftActionList.append(m_addTextAction.get());
+}
+
+void TelescopicLiftShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_telescopicLiftText == nullptr) {
+            m_telescopicLiftText=new QGraphicsTextItem(this);
+            m_telescopicLiftText->setPlainText("ТПЛ-");
+            m_telescopicLiftText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_telescopicLiftText->setRotation(-90);
+        }
+        m_telescopicLiftText->show();
+        m_showText = true;
+    } else {
+        m_telescopicLiftText->hide();
+        m_showText = false;
+    }
+}
+
+void TelescopicLiftShape::drawTelescopicLiftShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+
+    //Draw ladder
+    qreal sixthWidth{m_telescopicLiftRect.width() / 6}; // 5.0
+    qreal sixthHeight{m_telescopicLiftRect.height() / 6};
+    qreal telescopicIndent{m_telescopicLiftRect.width() / 5};
+    QPointF leftBottomBowstring{m_telescopicLiftRect.left() + telescopicIndent
+                                , m_telescopicLiftRect.bottom() - telescopicIndent};
+    QPointF leftTopBowstring{m_telescopicLiftRect.left() + telescopicIndent
+                             , m_telescopicLiftRect.center().y() - sixthHeight};
+    QLineF leftBowstring{leftTopBowstring, leftBottomBowstring};
+    painter->drawLine(leftBowstring); //Left bowstring
+
+    QPointF rightBottomBowstrin{m_telescopicLiftRect.right() - telescopicIndent
+                                , m_telescopicLiftRect.bottom() - telescopicIndent};
+    QPointF rightTopBowstring{m_telescopicLiftRect.right() - telescopicIndent
+                              , m_telescopicLiftRect.center().y() - sixthHeight};
+    QLineF rightBowstring{rightTopBowstring, rightBottomBowstrin};
+    painter->drawLine(rightBowstring); //Right bowstring
+
+    QPointF centerTopBowstring{m_telescopicLiftRect.center().x()
+                               , m_telescopicLiftRect.top() + sixthHeight};
+    QPointF centerBottomBowstring{m_telescopicLiftRect.center().x()
+                                  , centerTopBowstring.y() + leftBowstring.length()};
+    QLineF centerBowstring{centerBottomBowstring, centerTopBowstring};
+    painter->drawLine(centerBowstring); //Center bowstring
+
+
+    if (m_showText) {
+        m_telescopicLiftText->setPos(m_telescopicLiftRect.right(), m_telescopicLiftRect.bottom()
+                                                                       - sixthWidth * 2);
     }
 }
