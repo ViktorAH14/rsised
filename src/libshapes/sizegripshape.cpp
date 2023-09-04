@@ -300,8 +300,8 @@ SizeGripShape::SizeGripShape(Resizer *resizer, QGraphicsItem *parent)
     QList<int> rectTypeList;
     rectTypeList << RectShape::Type << PixmapShape::Type << BaseShape::Type << TankerShape::Type
                  << PumpHoseShape::Type << FirstAidShape::Type << EmergencyShape::Type
-                 << AutoLadderShape::Type << DeviceShape::Type << StairwellShape::Type
-                 << StairsShape::Type;
+                 << AutoLadderShape::Type << CrankLiftShape::Type << DeviceShape::Type
+                 << StairwellShape::Type << StairsShape::Type;
     bool rectType{false};
     for (const int itemType : rectTypeList) {
         if (parent->type() == itemType) {

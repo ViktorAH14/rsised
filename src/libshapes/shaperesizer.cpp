@@ -91,6 +91,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             autoLadderShape->setRect(value.toRectF());
         break;
     }
+    case CrankLiftShape::Type: {
+        if (CrankLiftShape *crankLiftShape = dynamic_cast<CrankLiftShape *>(item))
+            crankLiftShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());

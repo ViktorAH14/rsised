@@ -73,6 +73,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case AutoLadder:
         p_technicsShape = new AutoLadderShape(parent);
         break;
+    case CrankLift:
+        p_technicsShape = new CrankLiftShape(parent);
+        break;
     default:
         break;
     }
@@ -2307,4 +2310,203 @@ void AutoLadderShape::drawAutoLadderShape(QPainter *painter)
         m_autoLadderText->setPos(m_autoLadderRect.right(), m_autoLadderRect.bottom()
                                                                - sixthWidth * 2);
         }
+}
+
+CrankLiftShape::CrankLiftShape(QGraphicsItem *parent)
+    :TechnicsShape(parent)
+    , m_crankLiftType{CrankLift}
+    , m_crankLiftRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
+    , m_crankLiftText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void CrankLiftShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawCrankLiftShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF CrankLiftShape::boundingRect() const
+{
+    QRectF boundingRect{m_crankLiftRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    return boundingRect;
+}
+
+QPainterPath CrankLiftShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap CrankLiftShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawCrankLiftShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType CrankLiftShape::shapeType() const
+{
+    return m_crankLiftType;
+}
+
+void CrankLiftShape::setRect(const QRectF &rect)
+{
+    if (m_crankLiftRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_crankLiftRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_crankLiftText != nullptr)
+        m_crankLiftText->setPos(m_crankLiftRect.right(), m_crankLiftRect.bottom()
+                                                             - m_crankLiftRect.width() / 6);
+    update();
+}
+
+QRectF CrankLiftShape::rect() const
+{
+    return m_crankLiftRect;
+}
+
+void CrankLiftShape::setHeight(const qreal &height)
+{
+    if (m_crankLiftRect.height() == height)
+        return;
+
+    qreal oldHeight{m_crankLiftRect.height()};
+    prepareGeometryChange();
+    m_crankLiftRect.setHeight(height);
+    qreal dy{(m_crankLiftRect.height() - oldHeight) / 2};
+    m_crankLiftRect.moveTo(QPointF(m_crankLiftRect.x(), m_crankLiftRect.y() - dy));
+    update();
+}
+
+qreal CrankLiftShape::height() const
+{
+    return m_crankLiftRect.height();
+}
+
+void CrankLiftShape::setText(const QString &text)
+{
+    if (m_crankLiftText == nullptr) {
+        m_crankLiftText = new QGraphicsTextItem(this);
+        m_crankLiftText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_crankLiftText->setRotation(-90);
+    }
+    m_crankLiftText->setPlainText(text);
+    m_showText = true;
+}
+
+QString CrankLiftShape::text() const
+{
+    if (m_crankLiftText == nullptr)
+        return "";
+
+    return m_crankLiftText->toPlainText();
+}
+
+void CrankLiftShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_crankLiftActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_crankLiftActionList);
+            m_crankLiftActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void CrankLiftShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_crankLiftActionList.append(m_addTextAction.get());
+}
+
+void CrankLiftShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_crankLiftText == nullptr) {
+            m_crankLiftText=new QGraphicsTextItem(this);
+            m_crankLiftText->setPlainText("АПК-");
+            m_crankLiftText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_crankLiftText->setRotation(-90);
+        }
+        m_crankLiftText->show();
+        m_showText = true;
+    } else {
+        m_crankLiftText->hide();
+        m_showText = false;
+    }
+}
+
+void CrankLiftShape::drawCrankLiftShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+
+    //Draw ladder
+    qreal sixthWidth{m_crankLiftRect.width() / 6}; // 5.0
+    qreal sixthHeight{m_crankLiftRect.height() / 6};
+    qreal crankIndent{m_crankLiftRect.width() / 5};
+    QPointF leftBottomBowstring{m_crankLiftRect.left() + crankIndent
+                                , m_crankLiftRect.bottom() - crankIndent};
+    QPointF leftTopBowstring{m_crankLiftRect.left() + crankIndent
+                             , m_crankLiftRect.center().y() - sixthHeight};
+    QLineF leftBowstring{leftTopBowstring, leftBottomBowstring};
+    painter->drawLine(leftBowstring); //Left bowstring
+
+    QPointF rightBottomBowstrin{m_crankLiftRect.right() - crankIndent
+                                , m_crankLiftRect.bottom() - crankIndent};
+    QPointF rightTopBowstring{m_crankLiftRect.right() - crankIndent
+                              , m_crankLiftRect.center().y() - sixthHeight};
+    QLineF rightBowstring{rightTopBowstring, rightBottomBowstrin};
+    painter->drawLine(rightBowstring); //Right bowstring
+
+    QLineF centerBowstring{leftBottomBowstring, rightTopBowstring};
+    painter->drawLine(centerBowstring); //Center bowstring
+
+
+    if (m_showText) {
+        m_crankLiftText->setPos(m_crankLiftRect.right(), m_crankLiftRect.bottom()
+                                                               - sixthWidth * 2);
+    }
 }

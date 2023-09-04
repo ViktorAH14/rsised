@@ -32,12 +32,12 @@ class TechnicsShape : public AbstractShape
 public:
     enum { Type = UserType + 200 };
     enum ShapeType { Base
-                     , Tanker //АЦ
-                     , PumpHose //АНР
-                     , FirstAid //АПП
-                     , Emergency //АСА
-                     , AutoLadder //АЛ
-                     , CrankLift
+                     , Tanker       //АЦ
+                     , PumpHose     //АНР
+                     , FirstAid     //АПП
+                     , Emergency    //АСА
+                     , AutoLadder   //АЛ
+                     , CrankLift    //АПК
                      , TelescopicLift
                      , Hose
                      , Comm
@@ -397,5 +397,47 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_autoLadderActionList;
+};
+
+class CrankLiftShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 207};
+
+    explicit CrankLiftShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~CrankLiftShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(CrankLiftShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawCrankLiftShape(QPainter *painter);
+
+    const ShapeType m_crankLiftType;
+    QRectF m_crankLiftRect;
+    QGraphicsTextItem *m_crankLiftText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_crankLiftActionList;
 };
 #endif // TECHNICSSHAPE_H

@@ -506,9 +506,10 @@
         <translation>АЛ</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="721"/>
         <source>Crank lift</source>
         <translatorcomment>Автоподъёмник</translatorcomment>
-        <translation type="vanished">АПК</translation>
+        <translation>АПК</translation>
     </message>
     <message>
         <source>Telescopic lift</source>
