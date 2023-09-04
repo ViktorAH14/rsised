@@ -100,6 +100,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_crankLiftShape, "crankLiftShape is nullptr");
     QCOMPARE(int(p_crankLiftShape->type()), int(QGraphicsItem::UserType + 207));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
+
+    // TelescopicLiftShape
+    TechnicsShape *p_telescopicLiftShape = nullptr;
+    p_telescopicLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::TelescopicLift);
+    QVERIFY2(p_telescopicLiftShape, "telescopicLiftShape is nullptr");
+    QCOMPARE(int(p_telescopicLiftShape->type()), int(QGraphicsItem::UserType + 208));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_telescopicLiftShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -174,6 +181,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_crankLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::CrankLift);
     QCOMPARE(p_crankLiftShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
+
+    // TelescopicLiftShape
+    TechnicsShape *p_telescopicLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::TelescopicLift);
+    QCOMPARE(p_telescopicLiftShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_telescopicLiftShape);
 }
 
 void tst_TechnicShape::shape()
@@ -624,6 +636,30 @@ void tst_TechnicShape::shape()
     strokeCrankLiftPath.addPath(crankLiftPath);
     QCOMPARE(p_crankLiftShape->shape(), strokeCrankLiftPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
+
+    // TelescopicLiftShape
+    TechnicsShape *p_telescopicLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::TelescopicLift);
+    QPainterPathStroker ps_telescopicLiftShape;
+    ps_telescopicLiftShape.setWidth(p_telescopicLiftShape->pen().widthF());
+    QRectF telescopicLiftRect{p_telescopicLiftShape->rect()};
+    qreal frontTabTelescopicLift{telescopicLiftRect.height() / 3};
+    QPointF frontCenterTelescopicLift{telescopicLiftRect.center().x(), telescopicLiftRect.top()}; // 0.0, -37.5
+    QPointF frontRightTelescopicLift{telescopicLiftRect.right(), telescopicLiftRect.top()
+                                                                     + frontTabTelescopicLift}; // 15.0, -12.5
+    QPointF frontLeftTelescopicLift{telescopicLiftRect.left(), telescopicLiftRect.top()
+                                                                   + frontTabTelescopicLift}; // -15.0, -12.5
+    QPointF bottomRightTelescopicLift{telescopicLiftRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftTelescopicLift{telescopicLiftRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF telescopicLiftPolygon;
+    telescopicLiftPolygon << frontCenterTelescopicLift << frontRightTelescopicLift
+                          << bottomRightTelescopicLift << bottomLeftTelescopicLift
+                          << frontLeftTelescopicLift << frontCenterTelescopicLift;
+    QPainterPath telescopicLiftPath;
+    telescopicLiftPath.addPolygon(telescopicLiftPolygon);
+    QPainterPath strokeTelescopicLiftPath = ps_telescopicLiftShape.createStroke(telescopicLiftPath);
+    strokeTelescopicLiftPath.addPath(telescopicLiftPath);
+    QCOMPARE(p_telescopicLiftShape->shape(), strokeTelescopicLiftPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_telescopicLiftShape);
 }
 
 void tst_TechnicShape::image()
@@ -683,6 +719,14 @@ void tst_TechnicShape::image()
     QCOMPARE(crankLiftImage.width(), p_crankLiftShape->boundingRect().width());
     QCOMPARE(crankLiftImage.height(), p_crankLiftShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
+
+    // TelescopicLiftShape
+    TechnicsShape *p_telescopicLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::TelescopicLift);
+    QPixmap telescopicLiftImage{p_telescopicLiftShape->image()};
+    QVERIFY2(!telescopicLiftImage.isNull(), "telescopicLiftShape::image() returned a null pixmap");
+    QCOMPARE(telescopicLiftImage.width(), p_telescopicLiftShape->boundingRect().width());
+    QCOMPARE(telescopicLiftImage.height(), p_telescopicLiftShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_telescopicLiftShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -750,6 +794,12 @@ void tst_TechnicShape::rect_setRect()
     p_crankLiftShape->setRect(rect);
     QCOMPARE(p_crankLiftShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
+
+    // TelescopicLIftShape
+    TechnicsShape *p_telescopicLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::TelescopicLift);
+    p_telescopicLiftShape->setRect(rect);
+    QCOMPARE(p_telescopicLiftShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_telescopicLiftShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -810,6 +860,12 @@ void tst_TechnicShape::height_setHeight()
     p_crankLiftShape->setHeight(height);
     QCOMPARE(p_crankLiftShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
+
+    // TelescopicLiftShape
+    TechnicsShape *p_telescopicLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::TelescopicLift);
+    p_telescopicLiftShape->setHeight(height);
+    QCOMPARE(p_telescopicLiftShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_telescopicLiftShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -873,6 +929,12 @@ void tst_TechnicShape::text_setText()
     p_crankLIftShape->setText(text);
     QCOMPARE(p_crankLIftShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLIftShape);
+
+    // TelescopicLIftShape
+    TechnicsShape *p_telescopicLIftShape = TechnicsShape::createTechnicsShape(TechnicsShape::TelescopicLift);
+    p_telescopicLIftShape->setText(text);
+    QCOMPARE(p_telescopicLIftShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_telescopicLIftShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -1207,6 +1269,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_crankLiftShape);
     delete p_crankLiftContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
+
+    // TelescopicLiftShape
+    ContextMenuTester *p_telescopicLiftContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_telescopicLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::TelescopicLift);
+    p_telescopicLiftShape->setMenu(p_telescopicLiftContextMenu);
+    scene.addItem(p_telescopicLiftShape);
+
+    mousePressEvent.setScenePos(p_telescopicLiftShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_telescopicLiftShape->setSelected(true);
+    QSignalSpy telescopicLiftContextMenuSpy(p_telescopicLiftShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(telescopicLiftContextMenuSpy.count(), 0);
+
+    QList<QAction *> telescopicLiftMenuActions{p_telescopicLiftShape->menu()->actions()};
+    QCOMPARE(telescopicLiftMenuActions.size(), 1);
+    telescopicLiftMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_telescopicLiftShape->boundingRect().center()));
+    telescopicLiftMenuActions = p_telescopicLiftShape->menu()->actions();
+    QCOMPARE(telescopicLiftMenuActions.size(), 1);
+    QCOMPARE(telescopicLiftContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_telescopicLiftShape);
+    delete p_telescopicLiftContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_telescopicLiftShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
