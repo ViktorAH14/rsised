@@ -94,6 +94,12 @@ void tst_TechnicShape::constructor()
     QCOMPARE(int(p_autoLadderShape->type()), int(QGraphicsItem::UserType + 206));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
 
+    // CrancLiftShape
+    TechnicsShape *p_crankLiftShape = nullptr;
+    p_crankLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::CrankLift);
+    QVERIFY2(p_crankLiftShape, "crankLiftShape is nullptr");
+    QCOMPARE(int(p_crankLiftShape->type()), int(QGraphicsItem::UserType + 207));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -163,6 +169,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_autoLadderShape = TechnicsShape::createTechnicsShape(TechnicsShape::AutoLadder);
     QCOMPARE(p_autoLadderShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
+
+    // CrankLiftShape
+    TechnicsShape *p_crankLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::CrankLift);
+    QCOMPARE(p_crankLiftShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
 }
 
 void tst_TechnicShape::shape()
@@ -592,6 +603,27 @@ void tst_TechnicShape::shape()
     strokeAutoLadderPath.addPath(autoLadderPath);
     QCOMPARE(p_autoLadderShape->shape(), strokeAutoLadderPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
+
+    // CrankLiftShape
+    TechnicsShape *p_crankLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::CrankLift);
+    QPainterPathStroker ps_crankLiftShape;
+    ps_crankLiftShape.setWidth(p_crankLiftShape->pen().widthF());
+    QRectF crankLiftRect{p_crankLiftShape->rect()};
+    qreal frontTabCrankLift{crankLiftRect.height() / 3};
+    QPointF frontCenterCrankLift{crankLiftRect.center().x(), crankLiftRect.top()}; // 0.0, -37.5
+    QPointF frontRightCrankLift{crankLiftRect.right(), crankLiftRect.top() + frontTabCrankLift}; // 15.0, -12.5
+    QPointF frontLeftCrankLift{crankLiftRect.left(), crankLiftRect.top() + frontTabCrankLift}; // -15.0, -12.5
+    QPointF bottomRightCrankLift{crankLiftRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftCrankLift{crankLiftRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF crankLiftPolygon;
+    crankLiftPolygon << frontCenterCrankLift << frontRightCrankLift << bottomRightCrankLift
+                      << bottomLeftCrankLift << frontLeftCrankLift << frontCenterCrankLift;
+    QPainterPath crankLiftPath;
+    crankLiftPath.addPolygon(crankLiftPolygon);
+    QPainterPath strokeCrankLiftPath = ps_crankLiftShape.createStroke(crankLiftPath);
+    strokeCrankLiftPath.addPath(crankLiftPath);
+    QCOMPARE(p_crankLiftShape->shape(), strokeCrankLiftPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
 }
 
 void tst_TechnicShape::image()
@@ -643,6 +675,14 @@ void tst_TechnicShape::image()
     QCOMPARE(autoLadderImage.width(), p_autoLadderShape->boundingRect().width());
     QCOMPARE(autoLadderImage.height(), p_autoLadderShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
+
+    // CrankLiftShape
+    TechnicsShape *p_crankLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::CrankLift);
+    QPixmap crankLiftImage{p_crankLiftShape->image()};
+    QVERIFY2(!crankLiftImage.isNull(), "crankLiftShape::image() returned a null pixmap");
+    QCOMPARE(crankLiftImage.width(), p_crankLiftShape->boundingRect().width());
+    QCOMPARE(crankLiftImage.height(), p_crankLiftShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -704,6 +744,12 @@ void tst_TechnicShape::rect_setRect()
     p_autoLadderShape->setRect(rect);
     QCOMPARE(p_autoLadderShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
+
+    // CrankLIftShape
+    TechnicsShape *p_crankLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::CrankLift);
+    p_crankLiftShape->setRect(rect);
+    QCOMPARE(p_crankLiftShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -758,6 +804,12 @@ void tst_TechnicShape::height_setHeight()
     p_autoLadderShape->setHeight(height);
     QCOMPARE(p_autoLadderShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
+
+    // CrankLiftShape
+    TechnicsShape *p_crankLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::CrankLift);
+    p_crankLiftShape->setHeight(height);
+    QCOMPARE(p_crankLiftShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -815,6 +867,12 @@ void tst_TechnicShape::text_setText()
     p_autoLadderShape->setText(text);
     QCOMPARE(p_autoLadderShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
+
+    // CrankLIftShape
+    TechnicsShape *p_crankLIftShape = TechnicsShape::createTechnicsShape(TechnicsShape::CrankLift);
+    p_crankLIftShape->setText(text);
+    QCOMPARE(p_crankLIftShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLIftShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -1120,6 +1178,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_autoLadderShape);
     delete p_autoLadderContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
+
+    // CrankLiftShape
+    ContextMenuTester *p_crankLiftContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_crankLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::CrankLift);
+    p_crankLiftShape->setMenu(p_crankLiftContextMenu);
+    scene.addItem(p_crankLiftShape);
+
+    mousePressEvent.setScenePos(p_crankLiftShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_crankLiftShape->setSelected(true);
+    QSignalSpy crankLiftContextMenuSpy(p_crankLiftShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(crankLiftContextMenuSpy.count(), 0);
+
+    QList<QAction *> crankLiftMenuActions{p_crankLiftShape->menu()->actions()};
+    QCOMPARE(crankLiftMenuActions.size(), 1);
+    crankLiftMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_crankLiftShape->boundingRect().center()));
+    crankLiftMenuActions = p_crankLiftShape->menu()->actions();
+    QCOMPARE(crankLiftMenuActions.size(), 1);
+    QCOMPARE(crankLiftContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_crankLiftShape);
+    delete p_crankLiftContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
