@@ -114,6 +114,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_hoseCarShape, "hoseCarShape is nullptr");
     QCOMPARE(int(p_hoseCarShape->type()), int(QGraphicsItem::UserType + 209));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_hoseCarShape);
+
+    // CommShape
+    TechnicsShape *p_commShape = nullptr;
+    p_commShape = TechnicsShape::createTechnicsShape(TechnicsShape::Comm);
+    QVERIFY2(p_commShape, "commShape is nullptr");
+    QCOMPARE(int(p_commShape->type()), int(QGraphicsItem::UserType + 210));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -198,6 +205,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_hoseCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::HoseCar);
     QCOMPARE(p_hoseCarShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_hoseCarShape);
+
+    // CommShape
+    TechnicsShape *p_commShape = TechnicsShape::createTechnicsShape(TechnicsShape::Comm);
+    QCOMPARE(p_commShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
 }
 
 void tst_TechnicShape::shape()
@@ -693,6 +705,27 @@ void tst_TechnicShape::shape()
     strokeHoseCarPath.addPath(hoseCarPath);
     QCOMPARE(p_hoseCarShape->shape(), strokeHoseCarPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_hoseCarShape);
+
+    // CommShape
+    TechnicsShape *p_commShape = TechnicsShape::createTechnicsShape(TechnicsShape::Comm);
+    QPainterPathStroker ps_commShape;
+    ps_commShape.setWidth(p_commShape->pen().widthF());
+    QRectF commRect{p_commShape->rect()};
+    qreal frontTabComm{commRect.height() / 3};
+    QPointF frontCenterComm{commRect.center().x(), commRect.top()}; // 0.0, -37.5
+    QPointF frontRightComm{commRect.right(), commRect.top() + frontTabComm}; // 15.0, -12.5
+    QPointF frontLeftComm{commRect.left(), commRect.top() + frontTabComm}; // -15.0, -12.5
+    QPointF bottomRightComm{commRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftComm{commRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF commPolygon;
+    commPolygon << frontCenterComm << frontRightComm << bottomRightComm << bottomLeftComm
+                << frontLeftComm << frontCenterComm;
+    QPainterPath commPath;
+    commPath.addPolygon(commPolygon);
+    QPainterPath strokeCommPath = ps_commShape.createStroke(commPath);
+    strokeCommPath.addPath(commPath);
+    QCOMPARE(p_commShape->shape(), strokeCommPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
 }
 
 void tst_TechnicShape::image()
@@ -768,6 +801,14 @@ void tst_TechnicShape::image()
     QCOMPARE(hoseCarImage.width(), p_hoseCarShape->boundingRect().width());
     QCOMPARE(hoseCarImage.height(), p_hoseCarShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_hoseCarShape);
+
+    // CommShape
+    TechnicsShape *p_commShape = TechnicsShape::createTechnicsShape(TechnicsShape::Comm);
+    QPixmap commImage{p_commShape->image()};
+    QVERIFY2(!commImage.isNull(), "commShape::image() returned a null pixmap");
+    QCOMPARE(commImage.width(), p_commShape->boundingRect().width());
+    QCOMPARE(commImage.height(), p_commShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -847,6 +888,12 @@ void tst_TechnicShape::rect_setRect()
     p_hoseCarShape->setRect(rect);
     QCOMPARE(p_hoseCarShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_hoseCarShape);
+
+    // CommShape
+    TechnicsShape *p_commShape = TechnicsShape::createTechnicsShape(TechnicsShape::Comm);
+    p_commShape->setRect(rect);
+    QCOMPARE(p_commShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -919,6 +966,12 @@ void tst_TechnicShape::height_setHeight()
     p_hoseCarShape->setHeight(height);
     QCOMPARE(p_hoseCarShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_hoseCarShape);
+
+    // CommShape
+    TechnicsShape *p_commShape = TechnicsShape::createTechnicsShape(TechnicsShape::Comm);
+    p_commShape->setHeight(height);
+    QCOMPARE(p_commShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -994,6 +1047,12 @@ void tst_TechnicShape::text_setText()
     p_hoseCarShape->setText(text);
     QCOMPARE(p_hoseCarShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_hoseCarShape);
+
+    // CommShape
+    TechnicsShape *p_commShape = TechnicsShape::createTechnicsShape(TechnicsShape::Comm);
+    p_commShape->setText(text);
+    QCOMPARE(p_commShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -1386,6 +1445,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_hoseCarShape);
     delete p_hoseCarContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_hoseCarShape);
+
+    // CommShape
+    ContextMenuTester *p_commContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_commShape = TechnicsShape::createTechnicsShape(TechnicsShape::Comm);
+    p_commShape->setMenu(p_commContextMenu);
+    scene.addItem(p_commShape);
+
+    mousePressEvent.setScenePos(p_commShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_commShape->setSelected(true);
+    QSignalSpy commContextMenuSpy(p_commShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(commContextMenuSpy.count(), 0);
+
+    QList<QAction *> commMenuActions{p_commShape->menu()->actions()};
+    QCOMPARE(commMenuActions.size(), 1);
+    commMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_commShape->boundingRect().center()));
+    commMenuActions = p_commShape->menu()->actions();
+    QCOMPARE(commMenuActions.size(), 1);
+    QCOMPARE(commContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_commShape);
+    delete p_commContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
