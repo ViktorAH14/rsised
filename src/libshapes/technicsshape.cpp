@@ -82,6 +82,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case HoseCar:
         p_technicsShape = new HoseCarShape(parent);
         break;
+    case Comm:
+        p_technicsShape = new CommShape(parent);
+        break;
     default:
         break;
     }
@@ -2903,5 +2906,189 @@ void HoseCarShape::drawHoseCarShape(QPainter *painter)
 
     if (m_showText) {
         m_hoseCarText->setPos(m_hoseCarRect.right(), m_hoseCarRect.bottom() - sixthWidth * 2);
+    }
+}
+
+CommShape::CommShape(QGraphicsItem *parent)
+    :TechnicsShape(parent)
+    , m_commType{Comm}
+    , m_commRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
+    , m_commText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void CommShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawCommShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF CommShape::boundingRect() const
+{
+    QRectF boundingRect{m_commRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    return boundingRect;
+}
+
+QPainterPath CommShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap CommShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawCommShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType CommShape::shapeType() const
+{
+    return m_commType;
+}
+
+void CommShape::setRect(const QRectF &rect)
+{
+    if (m_commRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_commRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_commText != nullptr)
+        m_commText->setPos(m_commRect.right(), m_commRect.bottom() - m_commRect.width() / 6);
+    update();
+}
+
+QRectF CommShape::rect() const
+{
+    return m_commRect;
+}
+
+void CommShape::setHeight(const qreal &height)
+{
+    if (m_commRect.height() == height)
+        return;
+
+    qreal oldHeight{m_commRect.height()};
+    prepareGeometryChange();
+    m_commRect.setHeight(height);
+    qreal dy{(m_commRect.height() - oldHeight) / 2};
+    m_commRect.moveTo(QPointF(m_commRect.x(), m_commRect.y() - dy));
+    update();
+}
+
+qreal CommShape::height() const
+{
+    return m_commRect.height();
+}
+
+void CommShape::setText(const QString &text)
+{
+    if (m_commText == nullptr) {
+        m_commText = new QGraphicsTextItem(this);
+        m_commText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_commText->setRotation(-90);
+    }
+    m_commText->setPlainText(text);
+    m_showText = true;
+}
+
+QString CommShape::text() const
+{
+    if (m_commText == nullptr)
+        return "";
+
+    return m_commText->toPlainText();
+}
+
+void CommShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_commActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_commActionList);
+            m_commActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void CommShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_commActionList.append(m_addTextAction.get());
+}
+
+void CommShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_commText == nullptr) {
+            m_commText=new QGraphicsTextItem(this);
+            m_commText->setPlainText("АР-");
+            m_commText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_commText->setRotation(-90);
+        }
+        m_commText->show();
+        m_showText = true;
+    } else {
+        m_commText->hide();
+        m_showText = false;
+    }
+}
+
+void CommShape::drawCommShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+    painter->translate(m_commRect.center());
+    painter->rotate(270);
+    painter->translate(-m_commRect.center());
+    QTextOption textOption{Qt::AlignCenter};
+    painter->drawText(m_commRect, "АСО", textOption);
+    painter->translate(m_commRect.center());
+    painter->rotate(-270);
+    painter->translate(-m_commRect.center());
+    qreal sixthWidth{m_commRect.width() / 6}; // 5.0
+
+    if (m_showText) {
+        m_commText->setPos(m_commRect.right(), m_commRect.bottom() - sixthWidth * 2);
     }
 }

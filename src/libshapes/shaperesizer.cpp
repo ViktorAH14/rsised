@@ -106,6 +106,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             hoseCarShape->setRect(value.toRectF());
         break;
     }
+    case CommShape::Type: {
+        if (CommShape *commShape = dynamic_cast<CommShape *>(item))
+            commShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());

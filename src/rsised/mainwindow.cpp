@@ -724,7 +724,7 @@ void MainWindow::createShapeToolBox()
                                                        , TechnicsShape::TelescopicLift), 1, 3);
     p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Hose_car")
                                                          , TechnicsShape::HoseCar), 2, 0);
-//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Comm"), TechnicsShape::Comm), 3, 0);
+    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Comm"), TechnicsShape::Comm), 2, 1);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Tech_serv")
 //                                                       , TechnicsShape::Tech_serv), 3, 1);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Smok_rem")

@@ -669,9 +669,10 @@
         <translation>АР</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="727"/>
         <source>Comm</source>
         <translatorcomment>Автомобиль связи и освещения</translatorcomment>
-        <translation type="vanished">АСО</translation>
+        <translation>АСО</translation>
     </message>
     <message>
         <source>Tech_serv</source>
