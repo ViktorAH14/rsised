@@ -675,9 +675,10 @@
         <translation>АСО</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="728"/>
         <source>Tech_serv</source>
         <translatorcomment>Автомобиль технической службы</translatorcomment>
-        <translation type="vanished">АПТС</translation>
+        <translation>АПТС</translation>
     </message>
     <message>
         <source>Smok_rem</source>

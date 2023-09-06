@@ -85,6 +85,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Comm:
         p_technicsShape = new CommShape(parent);
         break;
+    case TechServ:
+        p_technicsShape = new TechServShape(parent);
+        break;
     default:
         break;
     }
@@ -3090,5 +3093,190 @@ void CommShape::drawCommShape(QPainter *painter)
 
     if (m_showText) {
         m_commText->setPos(m_commRect.right(), m_commRect.bottom() - sixthWidth * 2);
+    }
+}
+
+TechServShape::TechServShape(QGraphicsItem *parent)
+    :TechnicsShape(parent)
+    , m_techServType{TechServ}
+    , m_techServRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
+    , m_techServText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void TechServShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawTechServShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF TechServShape::boundingRect() const
+{
+    QRectF boundingRect{m_techServRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    return boundingRect;
+}
+
+QPainterPath TechServShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap TechServShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawTechServShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType TechServShape::shapeType() const
+{
+    return m_techServType;
+}
+
+void TechServShape::setRect(const QRectF &rect)
+{
+    if (m_techServRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_techServRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_techServText != nullptr)
+        m_techServText->setPos(m_techServRect.right(), m_techServRect.bottom()
+                                                           - m_techServRect.width() / 6);
+    update();
+}
+
+QRectF TechServShape::rect() const
+{
+    return m_techServRect;
+}
+
+void TechServShape::setHeight(const qreal &height)
+{
+    if (m_techServRect.height() == height)
+        return;
+
+    qreal oldHeight{m_techServRect.height()};
+    prepareGeometryChange();
+    m_techServRect.setHeight(height);
+    qreal dy{(m_techServRect.height() - oldHeight) / 2};
+    m_techServRect.moveTo(QPointF(m_techServRect.x(), m_techServRect.y() - dy));
+    update();
+}
+
+qreal TechServShape::height() const
+{
+    return m_techServRect.height();
+}
+
+void TechServShape::setText(const QString &text)
+{
+    if (m_techServText == nullptr) {
+        m_techServText = new QGraphicsTextItem(this);
+        m_techServText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_techServText->setRotation(-90);
+    }
+    m_techServText->setPlainText(text);
+    m_showText = true;
+}
+
+QString TechServShape::text() const
+{
+    if (m_techServText == nullptr)
+        return "";
+
+    return m_techServText->toPlainText();
+}
+
+void TechServShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_techServActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_techServActionList);
+            m_techServActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void TechServShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_techServActionList.append(m_addTextAction.get());
+}
+
+void TechServShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_techServText == nullptr) {
+            m_techServText=new QGraphicsTextItem(this);
+            m_techServText->setPlainText("АР-");
+            m_techServText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_techServText->setRotation(-90);
+        }
+        m_techServText->show();
+        m_showText = true;
+    } else {
+        m_techServText->hide();
+        m_showText = false;
+    }
+}
+
+void TechServShape::drawTechServShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+    painter->translate(m_techServRect.center());
+    painter->rotate(270);
+    painter->translate(-m_techServRect.center());
+    QTextOption textOption{Qt::AlignCenter};
+    painter->drawText(m_techServRect, "АТ", textOption);
+    painter->translate(m_techServRect.center());
+    painter->rotate(-270);
+    painter->translate(-m_techServRect.center());
+    qreal sixthWidth{m_techServRect.width() / 6}; // 5.0
+
+    if (m_showText) {
+        m_techServText->setPos(m_techServRect.right(), m_techServRect.bottom() - sixthWidth * 2);
     }
 }

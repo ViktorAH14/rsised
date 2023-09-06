@@ -41,7 +41,7 @@ public:
                      , TelescopicLift   //ТПЛ
                      , HoseCar          //АР
                      , Comm             //АСО
-                     , Tech_serv
+                     , TechServ         //АТ
                      , Smok_rem
                      , AutoPumpS
                      , CarriageCar_1
@@ -565,5 +565,47 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_commActionList;
+};
+
+class TechServShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 211};
+
+    explicit TechServShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~TechServShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(TechServShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawTechServShape(QPainter *painter);
+
+    const ShapeType m_techServType;
+    QRectF m_techServRect;
+    QGraphicsTextItem *m_techServText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_techServActionList;
 };
 #endif // TECHNICSSHAPE_H
