@@ -79,6 +79,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case TelescopicLift:
         p_technicsShape = new TelescopicLiftShape(parent);
         break;
+    case HoseCar:
+        p_technicsShape = new HoseCarShape(parent);
+        break;
     default:
         break;
     }
@@ -2047,23 +2050,23 @@ void EmergencyShape::drawEmergencyShape(QPainter *painter)
     painter->translate(-m_emergencyRect.center());
     QTextOption textOption{Qt::AlignCenter};
     painter->drawText(m_emergencyRect, "АСА", textOption);
-                                   painter->translate(m_emergencyRect.center());
-        painter->rotate(-270);
-        painter->translate(-m_emergencyRect.center());
-        qreal sixthWidth{m_emergencyRect.width() / 6}; // 5.0
+    painter->translate(m_emergencyRect.center());
+    painter->rotate(-270);
+    painter->translate(-m_emergencyRect.center());
+    qreal sixthWidth{m_emergencyRect.width() / 6}; // 5.0
 
-        if (m_showText) {
-            m_emergencyText->setPos(m_emergencyRect.right(), m_emergencyRect.bottom()
+    if (m_showText) {
+        m_emergencyText->setPos(m_emergencyRect.right(), m_emergencyRect.bottom()
                                                              - sixthWidth * 2);
-        }
+    }
 
-        if (m_showPipes) {
-            drawPipes(painter, sixthWidth);
-        }
+    if (m_showPipes) {
+        drawPipes(painter, sixthWidth);
+    }
 
-        if (m_showCollector) {
-            drawCollector(painter, sixthWidth);
-        }
+    if (m_showCollector) {
+        drawCollector(painter, sixthWidth);
+    }
 }
 
 void EmergencyShape::drawPipes(QPainter *painter, qreal sixtWidth)
@@ -2715,5 +2718,190 @@ void TelescopicLiftShape::drawTelescopicLiftShape(QPainter *painter)
     if (m_showText) {
         m_telescopicLiftText->setPos(m_telescopicLiftRect.right(), m_telescopicLiftRect.bottom()
                                                                        - sixthWidth * 2);
+    }
+}
+
+HoseCarShape::HoseCarShape(QGraphicsItem *parent)
+    :TechnicsShape(parent)
+    , m_hoseCarType{HoseCar}
+    , m_hoseCarRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
+    , m_hoseCarText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void HoseCarShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawHoseCarShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF HoseCarShape::boundingRect() const
+{
+    QRectF boundingRect{m_hoseCarRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    return boundingRect;
+}
+
+QPainterPath HoseCarShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap HoseCarShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawHoseCarShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType HoseCarShape::shapeType() const
+{
+    return m_hoseCarType;
+}
+
+void HoseCarShape::setRect(const QRectF &rect)
+{
+    if (m_hoseCarRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_hoseCarRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_hoseCarText != nullptr)
+        m_hoseCarText->setPos(m_hoseCarRect.right(), m_hoseCarRect.bottom()
+                                                         - m_hoseCarRect.width() / 6);
+    update();
+}
+
+QRectF HoseCarShape::rect() const
+{
+    return m_hoseCarRect;
+}
+
+void HoseCarShape::setHeight(const qreal &height)
+{
+    if (m_hoseCarRect.height() == height)
+        return;
+
+    qreal oldHeight{m_hoseCarRect.height()};
+    prepareGeometryChange();
+    m_hoseCarRect.setHeight(height);
+    qreal dy{(m_hoseCarRect.height() - oldHeight) / 2};
+    m_hoseCarRect.moveTo(QPointF(m_hoseCarRect.x(), m_hoseCarRect.y() - dy));
+    update();
+}
+
+qreal HoseCarShape::height() const
+{
+    return m_hoseCarRect.height();
+}
+
+void HoseCarShape::setText(const QString &text)
+{
+    if (m_hoseCarText == nullptr) {
+        m_hoseCarText = new QGraphicsTextItem(this);
+        m_hoseCarText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_hoseCarText->setRotation(-90);
+    }
+    m_hoseCarText->setPlainText(text);
+    m_showText = true;
+}
+
+QString HoseCarShape::text() const
+{
+    if (m_hoseCarText == nullptr)
+        return "";
+
+    return m_hoseCarText->toPlainText();
+}
+
+void HoseCarShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_hoseCarActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_hoseCarActionList);
+            m_hoseCarActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void HoseCarShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_hoseCarActionList.append(m_addTextAction.get());
+}
+
+void HoseCarShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_hoseCarText == nullptr) {
+            m_hoseCarText=new QGraphicsTextItem(this);
+            m_hoseCarText->setPlainText("АР-");
+            m_hoseCarText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_hoseCarText->setRotation(-90);
+        }
+        m_hoseCarText->show();
+        m_showText = true;
+    } else {
+        m_hoseCarText->hide();
+        m_showText = false;
+    }
+}
+
+void HoseCarShape::drawHoseCarShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+    painter->translate(m_hoseCarRect.center());
+    painter->rotate(270);
+    painter->translate(-m_hoseCarRect.center());
+    QTextOption textOption{Qt::AlignCenter};
+    painter->drawText(m_hoseCarRect, "АР", textOption);
+    painter->translate(m_hoseCarRect.center());
+    painter->rotate(-270);
+    painter->translate(-m_hoseCarRect.center());
+    qreal sixthWidth{m_hoseCarRect.width() / 6}; // 5.0
+
+    if (m_showText) {
+        m_hoseCarText->setPos(m_hoseCarRect.right(), m_hoseCarRect.bottom() - sixthWidth * 2);
     }
 }

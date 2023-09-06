@@ -32,14 +32,14 @@ class TechnicsShape : public AbstractShape
 public:
     enum { Type = UserType + 200 };
     enum ShapeType { Base
-                     , Tanker       //АЦ
-                     , PumpHose     //АНР
-                     , FirstAid     //АПП
-                     , Emergency    //АСА
-                     , AutoLadder   //АЛ
-                     , CrankLift    //АПК
+                     , Tanker           //АЦ
+                     , PumpHose         //АНР
+                     , FirstAid         //АПП
+                     , Emergency        //АСА
+                     , AutoLadder       //АЛ
+                     , CrankLift        //АПК
                      , TelescopicLift   //ТПЛ
-                     , Hose
+                     , HoseCar          //АР
                      , Comm
                      , Tech_serv
                      , Smok_rem
@@ -481,5 +481,47 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_telescopicLiftActionList;
+};
+
+class HoseCarShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 209};
+
+    explicit HoseCarShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~HoseCarShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(HoseCarShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawHoseCarShape(QPainter *painter);
+
+    const ShapeType m_hoseCarType;
+    QRectF m_hoseCarRect;
+    QGraphicsTextItem *m_hoseCarText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_hoseCarActionList;
 };
 #endif // TECHNICSSHAPE_H
