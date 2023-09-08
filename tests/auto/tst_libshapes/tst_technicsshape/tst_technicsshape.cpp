@@ -128,6 +128,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_techServShape, "techServShape is nullptr");
     QCOMPARE(int(p_techServShape->type()), int(QGraphicsItem::UserType + 211));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_techServShape);
+
+    // SmokRemShape
+    TechnicsShape *p_smokRemShape = nullptr;
+    p_smokRemShape = TechnicsShape::createTechnicsShape(TechnicsShape::SmokRem);
+    QVERIFY2(p_smokRemShape, "smokRemShape is nullptr");
+    QCOMPARE(int(p_smokRemShape->type()), int(QGraphicsItem::UserType + 212));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_smokRemShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -222,6 +229,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_techServShape = TechnicsShape::createTechnicsShape(TechnicsShape::TechServ);
     QCOMPARE(p_techServShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_techServShape);
+
+    // SmokRemShape
+    TechnicsShape *p_smokRemShape = TechnicsShape::createTechnicsShape(TechnicsShape::SmokRem);
+    QCOMPARE(p_smokRemShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_smokRemShape);
 }
 
 void tst_TechnicShape::shape()
@@ -740,10 +752,10 @@ void tst_TechnicShape::shape()
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
 
     // TechServShape
-    TechnicsShape *p_techSevShape = TechnicsShape::createTechnicsShape(TechnicsShape::TechServ);
+    TechnicsShape *p_techServShape = TechnicsShape::createTechnicsShape(TechnicsShape::TechServ);
     QPainterPathStroker ps_techServShape;
-    ps_techServShape.setWidth(p_techSevShape->pen().widthF());
-    QRectF techServRect{p_techSevShape->rect()};
+    ps_techServShape.setWidth(p_techServShape->pen().widthF());
+    QRectF techServRect{p_techServShape->rect()};
     qreal frontTabTechServ{techServRect.height() / 3};
     QPointF frontCenterTechServ{techServRect.center().x(), techServRect.top()}; // 0.0, -37.5
     QPointF frontRightTechServ{techServRect.right(), techServRect.top() + frontTabTechServ}; // 15.0, -12.5
@@ -757,8 +769,29 @@ void tst_TechnicShape::shape()
     techServPath.addPolygon(techServPolygon);
     QPainterPath strokeTechServPath = ps_techServShape.createStroke(techServPath);
     strokeTechServPath.addPath(techServPath);
-    QCOMPARE(p_techSevShape->shape(), strokeTechServPath);
-    TechnicsShape::TechnicsShapeDeleter::cleanup(p_techSevShape);
+    QCOMPARE(p_techServShape->shape(), strokeTechServPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_techServShape);
+
+    // SmokRemShape
+    TechnicsShape *p_smokRemShape = TechnicsShape::createTechnicsShape(TechnicsShape::SmokRem);
+    QPainterPathStroker ps_smokRemShape;
+    ps_smokRemShape.setWidth(p_smokRemShape->pen().widthF());
+    QRectF smokRemRect{p_smokRemShape->rect()};
+    qreal frontTabSmokRem{smokRemRect.height() / 3};
+    QPointF frontCenterSmokRem{smokRemRect.center().x(), smokRemRect.top()}; // 0.0, -37.5
+    QPointF frontRightSmokRem{smokRemRect.right(), smokRemRect.top() + frontTabSmokRem}; // 15.0, -12.5
+    QPointF frontLeftSmokRem{smokRemRect.left(), smokRemRect.top() + frontTabSmokRem}; // -15.0, -12.5
+    QPointF bottomRightSmokRem{smokRemRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftSmokRem{smokRemRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF smokRemPolygon;
+    smokRemPolygon << frontCenterSmokRem << frontRightSmokRem << bottomRightSmokRem
+                    << bottomLeftSmokRem << frontLeftSmokRem << frontCenterSmokRem;
+    QPainterPath smokRemPath;
+    smokRemPath.addPolygon(smokRemPolygon);
+    QPainterPath strokeSmokRemPath = ps_smokRemShape.createStroke(smokRemPath);
+    strokeSmokRemPath.addPath(smokRemPath);
+    QCOMPARE(p_smokRemShape->shape(), strokeSmokRemPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_smokRemShape);
 }
 
 void tst_TechnicShape::image()
@@ -850,6 +883,14 @@ void tst_TechnicShape::image()
     QCOMPARE(techServImage.width(), p_techServShape->boundingRect().width());
     QCOMPARE(techServImage.height(), p_techServShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_techServShape);
+
+    // SmokRemShape
+    TechnicsShape *p_smokRemShape = TechnicsShape::createTechnicsShape(TechnicsShape::SmokRem);
+    QPixmap smokRemImage{p_smokRemShape->image()};
+    QVERIFY2(!smokRemImage.isNull(), "smokRemShape::image() returned a null pixmap");
+    QCOMPARE(smokRemImage.width(), p_smokRemShape->boundingRect().width());
+    QCOMPARE(smokRemImage.height(), p_smokRemShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_smokRemShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -941,6 +982,12 @@ void tst_TechnicShape::rect_setRect()
     p_techServShape->setRect(rect);
     QCOMPARE(p_techServShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_techServShape);
+
+    // SmokRemShape
+    TechnicsShape *p_smokRemShape = TechnicsShape::createTechnicsShape(TechnicsShape::SmokRem);
+    p_smokRemShape->setRect(rect);
+    QCOMPARE(p_smokRemShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_smokRemShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -1020,11 +1067,11 @@ void tst_TechnicShape::height_setHeight()
     QCOMPARE(p_commShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
 
-    // TechServShape
-    TechnicsShape *p_techServShape = TechnicsShape::createTechnicsShape(TechnicsShape::TechServ);
-    p_techServShape->setHeight(height);
-    QCOMPARE(p_techServShape->height(), height);
-    TechnicsShape::TechnicsShapeDeleter::cleanup(p_techServShape);
+    // SmokRemShape
+    TechnicsShape *p_smokRemShape = TechnicsShape::createTechnicsShape(TechnicsShape::SmokRem);
+    p_smokRemShape->setHeight(height);
+    QCOMPARE(p_smokRemShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_smokRemShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -1112,6 +1159,12 @@ void tst_TechnicShape::text_setText()
     p_techServShape->setText(text);
     QCOMPARE(p_techServShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_techServShape);
+
+    // SmokRemShape
+    TechnicsShape *p_smokRemShape = TechnicsShape::createTechnicsShape(TechnicsShape::SmokRem);
+    p_smokRemShape->setText(text);
+    QCOMPARE(p_smokRemShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_smokRemShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -1562,6 +1615,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_techServShape);
     delete p_techServContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_techServShape);
+
+    // SmokRemShape
+    ContextMenuTester *p_smokRemContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_smokRemShape = TechnicsShape::createTechnicsShape(TechnicsShape::SmokRem);
+    p_smokRemShape->setMenu(p_smokRemContextMenu);
+    scene.addItem(p_smokRemShape);
+
+    mousePressEvent.setScenePos(p_smokRemShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_smokRemShape->setSelected(true);
+    QSignalSpy smokRemContextMenuSpy(p_smokRemShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(smokRemContextMenuSpy.count(), 0);
+
+    QList<QAction *> smokRemMenuActions{p_smokRemShape->menu()->actions()};
+    QCOMPARE(smokRemMenuActions.size(), 1);
+    smokRemMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_smokRemShape->boundingRect().center()));
+    smokRemMenuActions = p_smokRemShape->menu()->actions();
+    QCOMPARE(smokRemMenuActions.size(), 1);
+    QCOMPARE(smokRemContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_smokRemShape);
+    delete p_smokRemContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_smokRemShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
