@@ -677,13 +677,14 @@
     <message>
         <location filename="../mainwindow.cpp" line="728"/>
         <source>Tech_serv</source>
-        <translatorcomment>Автомобиль технической службы</translatorcomment>
-        <translation>АПТС</translation>
+        <translatorcomment>Пожарно-технический автомобиль</translatorcomment>
+        <translation>АТ</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="730"/>
         <source>Smok_rem</source>
         <translatorcomment>Автомобиль дымоудаления.</translatorcomment>
-        <translation type="vanished">АД</translation>
+        <translation>АД</translation>
     </message>
     <message>
         <source>AutoPumpS</source>

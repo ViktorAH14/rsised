@@ -116,6 +116,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             techServShape->setRect(value.toRectF());
         break;
     }
+    case SmokRemShape::Type: {
+        if (SmokRemShape *smokRemShape = dynamic_cast<SmokRemShape *>(item))
+            smokRemShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());

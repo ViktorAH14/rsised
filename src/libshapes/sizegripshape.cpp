@@ -37,7 +37,7 @@
 
 Q_DECLARE_METATYPE(QPainterPath)
 
-static const double PI {3.14159265358979323846264338327950288419717};
+static const double PI {3.14159265358979323846264338327950288419717}; //TODO put in a separate header (global.h)
 static double TWO_PI {2.0 * PI};
 
 static qreal normalizeAngle(qreal angle)
@@ -302,6 +302,7 @@ SizeGripShape::SizeGripShape(Resizer *resizer, QGraphicsItem *parent)
                  << PumpHoseShape::Type << FirstAidShape::Type << EmergencyShape::Type
                  << AutoLadderShape::Type << CrankLiftShape::Type << TelescopicLiftShape::Type
                  << HoseCarShape::Type << CommShape::Type << TechServShape::Type
+                 << SmokRemShape::Type
                  << DeviceShape::Type << StairwellShape::Type << StairsShape::Type;
     bool rectType{false};
     for (const int itemType : rectTypeList) {

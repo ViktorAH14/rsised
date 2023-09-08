@@ -42,7 +42,7 @@ public:
                      , HoseCar          //АР
                      , Comm             //АСО
                      , TechServ         //АТ
-                     , Smok_rem
+                     , SmokRem         //АД
                      , AutoPumpS
                      , CarriageCar_1
                      , CarriageCar_2
@@ -607,5 +607,47 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_techServActionList;
+};
+
+class SmokRemShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 212};
+
+    explicit SmokRemShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~SmokRemShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(SmokRemShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawSmokRemShape(QPainter *painter);
+
+    const ShapeType m_smokRemType;
+    QRectF m_smokRemRect;
+    QGraphicsTextItem *m_smokRemText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_smokRemActionList;
 };
 #endif // TECHNICSSHAPE_H

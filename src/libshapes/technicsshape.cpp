@@ -24,6 +24,7 @@
 #include <QMenu>
 #include <QGraphicsSceneEvent>
 #include <QStyleOptionGraphicsItem>
+#include <QtMath>
 
 TechnicsShape::TechnicsShape(QGraphicsItem *parent)
     : AbstractShape(parent)
@@ -88,6 +89,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case TechServ:
         p_technicsShape = new TechServShape(parent);
         break;
+    case SmokRem:
+        p_technicsShape = new SmokRemShape(parent);
+            break;
     default:
         break;
     }
@@ -3066,7 +3070,7 @@ void CommShape::textShow(bool showText)
     if (showText) {
         if (m_commText == nullptr) {
             m_commText=new QGraphicsTextItem(this);
-            m_commText->setPlainText("АР-");
+            m_commText->setPlainText("АСО-");
             m_commText->setTextInteractionFlags(Qt::TextEditorInteraction);
             m_commText->setRotation(-90);
         }
@@ -3251,7 +3255,7 @@ void TechServShape::textShow(bool showText)
     if (showText) {
         if (m_techServText == nullptr) {
             m_techServText=new QGraphicsTextItem(this);
-            m_techServText->setPlainText("АР-");
+            m_techServText->setPlainText("АТ-");
             m_techServText->setTextInteractionFlags(Qt::TextEditorInteraction);
             m_techServText->setRotation(-90);
         }
@@ -3278,5 +3282,203 @@ void TechServShape::drawTechServShape(QPainter *painter)
 
     if (m_showText) {
         m_techServText->setPos(m_techServRect.right(), m_techServRect.bottom() - sixthWidth * 2);
+    }
+}
+
+SmokRemShape::SmokRemShape(QGraphicsItem *parent)
+    :TechnicsShape(parent)
+    , m_smokRemType{SmokRem}
+    , m_smokRemRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
+    , m_smokRemText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void SmokRemShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawSmokRemShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF SmokRemShape::boundingRect() const
+{
+    QRectF boundingRect{m_smokRemRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    return boundingRect;
+}
+
+QPainterPath SmokRemShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap SmokRemShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawSmokRemShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType SmokRemShape::shapeType() const
+{
+    return m_smokRemType;
+}
+
+void SmokRemShape::setRect(const QRectF &rect)
+{
+    if (m_smokRemRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_smokRemRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_smokRemText != nullptr)
+        m_smokRemText->setPos(m_smokRemRect.right(), m_smokRemRect.bottom()
+                                                         - m_smokRemRect.width() / 6);
+    update();
+}
+
+QRectF SmokRemShape::rect() const
+{
+    return m_smokRemRect;
+}
+
+void SmokRemShape::setHeight(const qreal &height)
+{
+    if (m_smokRemRect.height() == height)
+        return;
+
+    qreal oldHeight{m_smokRemRect.height()};
+    prepareGeometryChange();
+    m_smokRemRect.setHeight(height);
+    qreal dy{(m_smokRemRect.height() - oldHeight) / 2};
+    m_smokRemRect.moveTo(QPointF(m_smokRemRect.x(), m_smokRemRect.y() - dy));
+    update();
+}
+
+qreal SmokRemShape::height() const
+{
+    return m_smokRemRect.height();
+}
+
+void SmokRemShape::setText(const QString &text)
+{
+    if (m_smokRemText == nullptr) {
+        m_smokRemText = new QGraphicsTextItem(this);
+        m_smokRemText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_smokRemText->setRotation(-90);
+    }
+    m_smokRemText->setPlainText(text);
+    m_showText = true;
+}
+
+QString SmokRemShape::text() const
+{
+    if (m_smokRemText == nullptr)
+        return "";
+
+    return m_smokRemText->toPlainText();
+}
+
+void SmokRemShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_smokRemActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_smokRemActionList);
+            m_smokRemActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void SmokRemShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_smokRemActionList.append(m_addTextAction.get());
+}
+
+void SmokRemShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_smokRemText == nullptr) {
+            m_smokRemText=new QGraphicsTextItem(this);
+            m_smokRemText->setPlainText("АД-");
+            m_smokRemText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_smokRemText->setRotation(-90);
+        }
+        m_smokRemText->show();
+        m_showText = true;
+    } else {
+        m_smokRemText->hide();
+        m_showText = false;
+    }
+}
+
+void SmokRemShape::drawSmokRemShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+
+    //Draw exhauster
+    qreal thirdWidth{m_smokRemRect.width() / 3}; // 10.0
+    qreal fifthHeight{m_smokRemRect.height() / 5}; // 15.0
+    qreal ellipseCenterX{m_smokRemRect.center().x()};
+    qreal ellipseCenterY{m_smokRemRect.center().y() + fifthHeight}; // (0.0, 15.0)
+    QPointF ellipseCenter{ellipseCenterX, ellipseCenterY};
+    // Point on a circle. x = x0 + r * cos(a); y = y0 + r * sin(a)
+    // Starts at 3 o'clock, direction clockwise.
+    QPointF leftTop{ellipseCenterX + thirdWidth * qCos(qDegreesToRadians(250.0)),
+                    ellipseCenterY + thirdWidth * qSin(qDegreesToRadians(250.0))};
+    QPointF rightTop{ellipseCenterX + thirdWidth * qCos(qDegreesToRadians(20.0)),
+                     ellipseCenterY + thirdWidth * qSin(qDegreesToRadians(20.0))};
+    QPointF leftBottom{ellipseCenterX + thirdWidth * qCos(qDegreesToRadians(200.0)),
+                       ellipseCenterY + thirdWidth * qSin(qDegreesToRadians(200.0))};
+    QPointF rightBottom{ellipseCenterX + thirdWidth * qCos(qDegreesToRadians(70.0)),
+                        ellipseCenterY + thirdWidth * qSin(qDegreesToRadians(70.0))};
+    painter->drawEllipse(ellipseCenter, thirdWidth, thirdWidth);
+    painter->drawLine(leftTop, rightBottom);
+    painter->drawLine(leftBottom, rightTop);
+    painter->drawLine(leftBottom, leftTop);
+    painter->drawLine(rightBottom, rightTop);
+
+    if (m_showText) {
+        m_smokRemText->setPos(m_smokRemRect.right(), m_smokRemRect.bottom() - thirdWidth);
     }
 }
