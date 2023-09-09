@@ -729,8 +729,8 @@ void MainWindow::createShapeToolBox()
                                                        , TechnicsShape::TechServ), 2, 2);
     p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Smok_rem")
                                                        , TechnicsShape::SmokRem), 2, 3);
-//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("AutoPumpS")
-//                                                       , TechnicsShape::AutoPumpS), 4, 0);
+    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("AutoPumpS")
+                                                       , TechnicsShape::PumpStat), 3, 0);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("CarriageCar_1")
 //                                                       , TechnicsShape::CarriageCar_1), 4, 1);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("CarriageCar_2")

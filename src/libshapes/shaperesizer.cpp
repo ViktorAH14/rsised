@@ -121,6 +121,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             smokRemShape->setRect(value.toRectF());
         break;
     }
+    case PumpStatShape::Type: {
+        if (PumpStatShape *pumpStatShape = dynamic_cast<PumpStatShape *>(item))
+            pumpStatShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());

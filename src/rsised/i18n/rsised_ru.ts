@@ -687,9 +687,10 @@
         <translation>АД</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="732"/>
         <source>AutoPumpS</source>
         <translatorcomment>Насосная станция</translatorcomment>
-        <translation type="vanished">ПНС</translation>
+        <translation>ПНС</translation>
     </message>
     <message>
         <source>CarriageCar_1</source>
