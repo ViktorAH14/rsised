@@ -494,10 +494,9 @@
         <translation>АЦ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="713"/>
         <source>Auto pump</source>
         <translatorcomment>Автомобиль насосно-рукавный.</translatorcomment>
-        <translation>АНР</translation>
+        <translation type="vanished">АНР</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="719"/>
@@ -602,6 +601,12 @@
         <translation>РС</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="732"/>
+        <source>Pump stat</source>
+        <translatorcomment>Пожарная автонасосная станция</translatorcomment>
+        <translation>ПНС</translation>
+    </message>
+    <message>
         <location filename="../mainwindow.cpp" line="803"/>
         <source>Barrel 1</source>
         <translation>РС-50</translation>
@@ -630,7 +635,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="612"/>
         <source>&lt;p align=&quot;center&quot;&gt;&lt;b&gt; RSiSed &lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="828"/>
@@ -649,6 +654,12 @@
         <source>Barrel 6</source>
         <translatorcomment>Водяная струя с добавками</translatorcomment>
         <translation>РС_д</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="713"/>
+        <source>Pump hose</source>
+        <translatorcomment>Пожарный автомобиль насосно-рукавный</translatorcomment>
+        <translation>АНР</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="715"/>
@@ -687,10 +698,9 @@
         <translation>АД</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="732"/>
         <source>AutoPumpS</source>
         <translatorcomment>Насосная станция</translatorcomment>
-        <translation>ПНС</translation>
+        <translation type="vanished">ПНС</translation>
     </message>
     <message>
         <source>CarriageCar_1</source>

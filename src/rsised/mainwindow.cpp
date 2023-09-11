@@ -710,7 +710,7 @@ void MainWindow::createShapeToolBox()
     p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Car"), TechnicsShape::Base), 0, 0);
     p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Tanker")
                                                        , TechnicsShape::Tanker), 0, 1);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Auto pump")
+    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Pump hose")
                                                        , TechnicsShape::PumpHose), 0, 2);
     p_technicsLayout->addWidget(createTechnicsCellWidget(tr("First aid")
                                                        , TechnicsShape::FirstAid), 0, 3);
@@ -729,7 +729,7 @@ void MainWindow::createShapeToolBox()
                                                        , TechnicsShape::TechServ), 2, 2);
     p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Smok_rem")
                                                        , TechnicsShape::SmokRem), 2, 3);
-    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("AutoPumpS")
+    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Pump stat")
                                                        , TechnicsShape::PumpStat), 3, 0);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("CarriageCar_1")
 //                                                       , TechnicsShape::CarriageCar_1), 4, 1);
