@@ -44,8 +44,8 @@ public:
                      , TechServ         //АТ
                      , SmokRem          //АД
                      , PumpStat         //ПНС
-                     , CarriageCar_1
-                     , CarriageCar_2
+                     , LafetTanker      //АЛСС автомобиль пожарный со стационарным лафетным стволом
+                     , LafetCar         //АЛСП автомобиль передвижной лафетный ствол
                      , Aerodrome
                      , Foam
                      , Combo
