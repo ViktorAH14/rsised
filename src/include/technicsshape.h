@@ -31,7 +31,7 @@ class TechnicsShape : public AbstractShape
 {
 public:
     enum { Type = UserType + 200 };
-    enum ShapeType { Base
+    enum ShapeType { Base               //Автомобиль пожарный общее обозначение
                      , Tanker           //АЦ
                      , PumpHose         //АНР
                      , FirstAid         //АПП
@@ -46,7 +46,7 @@ public:
                      , PumpStat         //ПНС
                      , LafetTanker      //АЛСС автомобиль пожарный со стационарным лафетным стволом
                      , LafetCar         //АЛСП автомобиль передвижной лафетный ствол
-                     , Aerodrome
+                     , Aerodrome        //АА
                      , Foam
                      , Combo
                      , Aerosol
@@ -702,5 +702,58 @@ private:
     QScopedPointer<QAction> m_showCollectorAction;
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_pumpStatActionList;
+};
+
+class LafetTankerShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 214};
+
+    explicit LafetTankerShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~LafetTankerShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(LafetTankerShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawLafetTankerShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixthWidth);
+    void drawCollector(QPainter *painter, qreal sixthWidth);
+
+    const ShapeType m_lafetTankerType;
+    QGraphicsTextItem *m_lafetTankerText;
+    QRectF m_lafetTankerRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_lafetTankerActionList;
 };
 #endif // TECHNICSSHAPE_H

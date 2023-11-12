@@ -95,6 +95,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case PumpStat:
         p_technicsShape = new PumpStatShape(parent);
         break;
+    case LafetTanker:
+        p_technicsShape = new LafetTankerShape(parent);
+        break;
     default:
         break;
     }
@@ -3858,5 +3861,451 @@ void PumpStatShape::drawCollector(QPainter *painter, qreal sixtWidth)
 
     QPointF rightConnectP1{rightPipeX - sixtWidth / 2, collectorY};
     QPointF rightConnectP2{rightPipeX + sixtWidth / 2, collectorY};
+    painter->drawLine(rightConnectP1, rightConnectP2);  //Right connector
+}
+
+LafetTankerShape::LafetTankerShape(QGraphicsItem *parent)
+    :TechnicsShape(parent)
+    , m_lafetTankerType{LafetTanker}
+    , m_lafetTankerText{nullptr}
+    , m_lafetTankerRect{QRectF(-23.5, -37.5, 47.0, 75.0)}
+    , m_showPipes{false}
+    , m_showCollector{false}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void LafetTankerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawLafetTankerShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF LafetTankerShape::boundingRect() const
+{
+    QRectF boundingRect{m_lafetTankerRect};
+    if (m_showPipes) {
+        qreal arrowWidth{m_lafetTankerRect.width() / 23.5}; // 2.0
+        qreal baseWidth{(m_lafetTankerRect.width() - arrowWidth) / 3.0 * 2.0}; // 30.0
+        qreal pipeLength{baseWidth / 6};
+        boundingRect.adjust(0.0, 0.0, pipeLength, 0.0);
+    }
+    if (m_showCollector) {
+        qreal collectorLength{m_lafetTankerRect.height() / 7.5};
+        boundingRect.adjust(0.0, 0.0, 0.0, collectorLength);
+    }
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath LafetTankerShape::shape() const
+{
+    QPainterPath path;
+
+    // Base
+    qreal arrowWidth{m_lafetTankerRect.width() / 23.5}; // 2.0
+    qreal baseWidth{(m_lafetTankerRect.width() - arrowWidth) / 3.0 * 2.0}; // 30.0
+    qreal baseCenterX{m_lafetTankerRect.right() - baseWidth / 2.0}; // 8.5
+    qreal baseLeft{m_lafetTankerRect.right() - baseWidth}; // -6.5
+    qreal thirdHeight{m_lafetTankerRect.height() / 3.0}; // 25.0
+    QPointF frontCenter{baseCenterX, m_lafetTankerRect.top()}; // 8.5, -37.5
+    QPointF frontRight{m_lafetTankerRect.right(), m_lafetTankerRect.top() + thirdHeight}; // 23.5, -12.5
+    QPointF frontLeft{baseLeft, m_lafetTankerRect.top() + thirdHeight}; // 8.5, -12.5
+    QPointF bottomRight{m_lafetTankerRect.bottomRight()}; // 23.5, 37.5
+    QPointF bottomLeft{baseLeft, m_lafetTankerRect.bottom()}; // -6.5, 37.5
+    QPolygonF base;
+    base << frontCenter << frontRight << bottomRight << bottomLeft << frontLeft << frontCenter;
+    path.addPolygon(base);
+
+    // Lafet
+    // Barrel
+    QPointF barrelP1{m_lafetTankerRect.left() + arrowWidth
+                     , m_lafetTankerRect.top() + thirdHeight};
+    QPointF barrelP2{baseLeft, m_lafetTankerRect.bottom()};
+    QLineF barrelLine{barrelP1, barrelP2};
+    path.moveTo(barrelP1);
+    path.lineTo(barrelP2);
+    //Stand
+    QPointF standP1{barrelLine.pointAt(0.5)};
+    QPointF standP2{baseLeft, standP1.y()};
+    path.moveTo(standP1);
+    path.lineTo(standP2);
+    //Left arrow
+    QLineF leftArrow;
+    leftArrow.setP1(barrelP1);
+    QPointF leftArrowP2{m_lafetTankerRect.left()
+                        , barrelP1.y() + m_lafetTankerRect.height() / 10.0};
+    leftArrow.setP2(leftArrowP2);
+    path.moveTo(leftArrow.p1());
+    path.lineTo(leftArrowP2);
+    //Right arrow
+    QLineF rightArrow;
+    rightArrow.setP1(barrelP1);
+    rightArrow.setLength(leftArrow.length());
+    rightArrow.setAngle(barrelLine.angle() + leftArrow.angleTo(barrelLine));
+    path.moveTo(rightArrow.p1());
+    path.lineTo(rightArrow.p2());
+
+    qreal sixthWidth{m_lafetTankerRect.width() / 6}; // 5.0
+    if (m_showPipes) {
+        qreal pipeY{m_lafetTankerRect.bottom() - sixthWidth};
+        // Right pipe
+        QPointF rightPipeP1{m_lafetTankerRect.right(), pipeY};
+        QPointF rightPipeP2{m_lafetTankerRect.right() + sixthWidth, pipeY};
+        path.moveTo(rightPipeP1);
+        path.lineTo(rightPipeP2);
+        // Right pipe connection
+        QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + sixthWidth / 2};
+        QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - sixthWidth / 2};
+        path.moveTo(rightConnectP1);
+        path.lineTo(rightConnectP2);
+        // Left pipe
+        qreal arrowWidth{m_lafetTankerRect.width() / 23.5}; // 2.0
+        qreal baseWidth{(m_lafetTankerRect.width() - arrowWidth) / 3.0 * 2.0}; // 30.0
+        qreal baseLeft{m_lafetTankerRect.right() - baseWidth}; // -6.5
+        QPointF leftPipeP1{baseLeft, pipeY};
+        QPointF leftPipeP2{baseLeft - sixthWidth, pipeY};
+        path.moveTo(leftPipeP1);
+        path.lineTo(leftPipeP2);
+        // Right pipe connection
+        QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + sixthWidth / 2};
+        QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - sixthWidth / 2};
+        path.moveTo(leftConnectP1);
+        path.lineTo(leftConnectP2);
+    }
+
+    if (m_showCollector) {
+        qreal arrowWidth{m_lafetTankerRect.width() / 23.5}; // 2.0
+        qreal baseWidth{(m_lafetTankerRect.width() - arrowWidth) / 3.0 * 2.0}; // 30.0
+        qreal collectorX{m_lafetTankerRect.right() - baseWidth / 2.0}; // 8.5
+        qreal collectorY{m_lafetTankerRect.bottom() + m_lafetTankerRect.height() / 7.5}; // 10.0
+        //Left collector pipe
+        qreal leftPipeX{collectorX - sixthWidth};
+        QPointF leftRightPipeP1{collectorX, m_lafetTankerRect.bottom()};
+        QPointF leftPipeP2{leftPipeX, collectorY};
+        path.moveTo(leftRightPipeP1);
+        path.lineTo(leftPipeP2);
+        //Right collector pipe
+        qreal rightPipeX{collectorX + sixthWidth};
+        QPointF rightPipeP2{rightPipeX, collectorY};
+        path.moveTo(leftRightPipeP1);
+        path.lineTo(rightPipeP2);
+        //Left connector
+        QPointF leftConnectP1{leftPipeX - sixthWidth / 2, collectorY};
+        QPointF leftConnectP2{leftPipeX + sixthWidth / 2, collectorY};
+        path.moveTo(leftConnectP1);
+        path.lineTo(leftConnectP2);
+        //Right connector
+        QPointF rightConnectP1{rightPipeX - sixthWidth / 2, collectorY};
+        QPointF rightConnectP2{rightPipeX + sixthWidth / 2, collectorY};
+        path.moveTo(rightConnectP1);
+        path.lineTo(rightConnectP2);
+    }
+
+    return shapeFromPath(path);
+}
+
+QPixmap LafetTankerShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawLafetTankerShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType LafetTankerShape::shapeType() const
+{
+    return m_lafetTankerType;
+}
+
+void LafetTankerShape::setRect(const QRectF &rect)
+{
+    if (m_lafetTankerRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_lafetTankerRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_lafetTankerText != nullptr)
+        m_lafetTankerText->setPos(m_lafetTankerRect.right(), m_lafetTankerRect.bottom()
+                                                           - m_lafetTankerRect.width() / 6);
+    if (m_showPipes) {
+        qreal arrowWidth{m_lafetTankerRect.width() / 23.5}; // 2.0
+        qreal baseWidth{(m_lafetTankerRect.width() - arrowWidth) / 3.0 * 2.0}; // 30.0
+        qreal pipeLength{baseWidth / 6};
+        m_lafetTankerRect.adjust(0.0, 0.0, -pipeLength, 0.0);
+    }
+    if (m_showCollector) {
+        qreal collectorLength{m_lafetTankerRect.height() / 7.5};
+        m_lafetTankerRect.adjust(0.0, 0.0, 0.0, -collectorLength);
+    }
+    update();
+}
+
+QRectF LafetTankerShape::rect() const
+{
+    return m_lafetTankerRect;
+}
+
+void LafetTankerShape::setHeight(const qreal &height)
+{
+    if (m_lafetTankerRect.height() == height)
+        return;
+
+    qreal oldHeight{m_lafetTankerRect.height()};
+    prepareGeometryChange();
+    m_lafetTankerRect.setHeight(height);
+    qreal dy{(m_lafetTankerRect.height() - oldHeight) / 2};
+    m_lafetTankerRect.moveTo(QPointF(m_lafetTankerRect.x(), m_lafetTankerRect.y() - dy));
+    update();
+}
+
+qreal LafetTankerShape::height() const
+{
+    return m_lafetTankerRect.height();
+}
+
+void LafetTankerShape::setText(const QString &text)
+{
+    if (m_lafetTankerText == nullptr) {
+        m_lafetTankerText = new QGraphicsTextItem(this);
+        m_lafetTankerText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_lafetTankerText->setRotation(-90);
+    }
+    m_lafetTankerText->setPlainText(text);
+    m_showText = true;
+}
+
+QString LafetTankerShape::text() const
+{
+    if (m_lafetTankerText == nullptr)
+        return "";
+
+    return m_lafetTankerText->toPlainText();
+}
+
+void LafetTankerShape::setPipes(bool showPipes)
+{
+    if (m_showPipes == showPipes)
+        return;
+
+    prepareGeometryChange();
+    m_showPipes = showPipes;
+    setSelected(false);
+    setSelected(true);
+    update();
+}
+
+bool LafetTankerShape::pipes() const
+{
+    return m_showPipes;
+}
+
+void LafetTankerShape::setCollector(bool showCollector)
+{
+    if (m_showCollector == showCollector)
+        return;
+
+    prepareGeometryChange();
+    m_showCollector = showCollector;
+    setSelected(false);
+    setSelected(true);
+    update();
+}
+
+bool LafetTankerShape::collector()
+{
+    return m_showCollector;
+}
+
+void LafetTankerShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_lafetTankerActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_lafetTankerActionList);
+            m_lafetTankerActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void LafetTankerShape::createAction()
+{
+    QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
+    m_showPipeAction.reset(new QAction(pipeActionText));
+    m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
+    QObject::connect(m_showPipeAction.get(), &QAction::triggered
+                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
+    m_lafetTankerActionList.append(m_showPipeAction.get());
+
+    QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
+                                              : QObject::tr("Show collector")};
+    m_showCollectorAction.reset(new QAction(collectActionText));
+    m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
+    QObject::connect(m_showCollectorAction.get(), &QAction::triggered
+                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
+    m_lafetTankerActionList.append(m_showCollectorAction.get());
+
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_lafetTankerActionList.append(m_addTextAction.get());
+}
+
+void LafetTankerShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_lafetTankerText == nullptr) {
+            m_lafetTankerText=new QGraphicsTextItem(this);
+            m_lafetTankerText->setPlainText("АЛСС-");
+            m_lafetTankerText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_lafetTankerText->setRotation(-90);
+        }
+        m_lafetTankerText->show();
+        m_showText = true;
+    } else {
+        m_lafetTankerText->hide();
+        m_showText = false;
+    }
+}
+
+void LafetTankerShape::drawLafetTankerShape(QPainter *painter)
+{
+    // Draw base
+    qreal arrowWidth{m_lafetTankerRect.width() / 23.5}; // 2.0
+    qreal baseWidth{(m_lafetTankerRect.width() - arrowWidth) / 3.0 * 2.0}; // 30.0
+    qreal baseCenterX{m_lafetTankerRect.right() - baseWidth / 2.0}; // 8.5
+    qreal baseLeft{m_lafetTankerRect.right() - baseWidth}; // -6.5
+    qreal thirdHeight{m_lafetTankerRect.height() / 3.0}; // 25.0
+    QPointF frontCenter{baseCenterX, m_lafetTankerRect.top()}; // 8.5, -37.5
+    QPointF frontRight{m_lafetTankerRect.right(), m_lafetTankerRect.top() + thirdHeight}; // 23.5, -12.5
+    QPointF frontLeft{baseLeft, m_lafetTankerRect.top() + thirdHeight}; // 8.5, -12.5
+    QPointF bottomRight{m_lafetTankerRect.bottomRight()}; // 23.5, 37.5
+    QPointF bottomLeft{baseLeft, m_lafetTankerRect.bottom()}; // -6.5, 37.5
+    QPolygonF base;
+    base << frontCenter << frontRight << bottomRight << bottomLeft << frontLeft << frontCenter;
+    painter->drawPolygon(base);
+
+    // Draw tanker
+    qreal sixthWidth{baseWidth / 6}; // 5.0
+    QPointF roundTopLeft{baseLeft + sixthWidth, m_lafetTankerRect.top() + thirdHeight}; // -1.5, -12.5
+    QPointF roundBottomRight{m_lafetTankerRect.right() - sixthWidth
+                             , m_lafetTankerRect.bottom() - sixthWidth}; // 18.5, 32.5
+    painter->drawRoundedRect(QRectF(roundTopLeft, roundBottomRight), sixthWidth, sixthWidth);
+
+    // Draw lafet
+    QPointF barrelP1{m_lafetTankerRect.left() + arrowWidth
+                     , m_lafetTankerRect.top() + thirdHeight};
+    QPointF barrelP2{baseLeft, m_lafetTankerRect.bottom()};
+    QLineF barrelLine{barrelP1, barrelP2};
+    painter->drawLine(barrelLine); // Draw barrel
+    QPointF standP1{barrelLine.pointAt(0.5)};
+    QPointF standP2{baseLeft, standP1.y()};
+    painter->drawLine(QLineF(standP1, standP2));    // Draw stand
+    QLineF leftArrow;
+    leftArrow.setP1(barrelP1);
+    QPointF leftArrowP2{m_lafetTankerRect.left()
+                        , barrelP1.y() + m_lafetTankerRect.height() / 10.0};
+    leftArrow.setP2(leftArrowP2);
+    painter->drawLine(leftArrow);    // Draw left part arrow
+    QLineF rightArrow;
+    rightArrow.setP1(barrelP1);
+    rightArrow.setLength(leftArrow.length());
+    rightArrow.setAngle(barrelLine.angle() + leftArrow.angleTo(barrelLine));
+    painter->drawLine(rightArrow);    // Draw right part arrow
+
+    if (m_showText) {
+        m_lafetTankerText->setPos(m_lafetTankerRect.right(), m_lafetTankerRect.bottom()
+                                                                 - sixthWidth * 2);
+    }
+
+    if (m_showPipes) {
+        drawPipes(painter, sixthWidth);
+    }
+
+    if (m_showCollector) {
+        drawCollector(painter, sixthWidth);
+    }
+}
+
+void LafetTankerShape::drawPipes(QPainter *painter, qreal sixthWidth)
+{
+    painter->setPen(QPen(Qt::black, 1));
+    qreal pipeY{m_lafetTankerRect.bottom() - sixthWidth};
+    QPointF rightPipeP1{m_lafetTankerRect.right(), pipeY};
+    QPointF rightPipeP2{m_lafetTankerRect.right() + sixthWidth, pipeY};
+    painter->drawLine(rightPipeP1, rightPipeP2); // Right pipe
+
+    QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + sixthWidth / 2};
+    QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - sixthWidth / 2};
+    painter->drawLine(rightConnectP1, rightConnectP2); // Right pipe connection
+
+    qreal arrowWidth{m_lafetTankerRect.width() / 23.5}; // 2.0
+    qreal baseWidth{(m_lafetTankerRect.width() - arrowWidth) / 3.0 * 2.0}; // 30.0
+    qreal baseLeft{m_lafetTankerRect.right() - baseWidth}; // -6.5
+    QPointF leftPipeP1{baseLeft, pipeY};
+    QPointF leftPipeP2{baseLeft - sixthWidth, pipeY};
+    painter->drawLine(leftPipeP1, leftPipeP2); // Left pipe
+
+    QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + sixthWidth / 2};
+    QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - sixthWidth / 2};
+    painter->drawLine(leftConnectP1, leftConnectP2); // Right pipe connection
+}
+
+void LafetTankerShape::drawCollector(QPainter *painter, qreal sixthWidth)
+{
+    painter->setPen(QPen(Qt::black, 1));
+    qreal arrowWidth{m_lafetTankerRect.width() / 23.5}; // 2.0
+    qreal baseWidth{(m_lafetTankerRect.width() - arrowWidth) / 3.0 * 2.0}; // 30.0
+    qreal collectorX{m_lafetTankerRect.right() - baseWidth / 2.0}; // 8.5
+    qreal collectorY{m_lafetTankerRect.bottom() + m_lafetTankerRect.height() / 7.5}; // 10.0
+    qreal leftPipeX{collectorX - sixthWidth};
+    QPointF leftRightPipeP1{collectorX, m_lafetTankerRect.bottom()};
+    QPointF leftPipeP2{leftPipeX, collectorY};
+    painter->drawLine(leftRightPipeP1, leftPipeP2); //Left collector pipe
+
+    qreal rightPipeX{collectorX + sixthWidth};
+    QPointF rightPipeP2{rightPipeX, collectorY};
+    painter->drawLine(leftRightPipeP1, rightPipeP2); //Right collector pipe
+
+    QPointF leftConnectP1{leftPipeX - sixthWidth / 2, collectorY};
+    QPointF leftConnectP2{leftPipeX + sixthWidth / 2, collectorY};
+    painter->drawLine(leftConnectP1, leftConnectP2); //Left connector
+
+    QPointF rightConnectP1{rightPipeX - sixthWidth / 2, collectorY};
+    QPointF rightConnectP2{rightPipeX + sixthWidth / 2, collectorY};
     painter->drawLine(rightConnectP1, rightConnectP2);  //Right connector
 }
