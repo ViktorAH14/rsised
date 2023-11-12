@@ -607,6 +607,11 @@
         <translation>ПНС</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="734"/>
+        <source>Lafet tanker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../mainwindow.cpp" line="803"/>
         <source>Barrel 1</source>
         <translation>РС-50</translation>

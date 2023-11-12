@@ -126,6 +126,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             pumpStatShape->setRect(value.toRectF());
         break;
     }
+    case LafetTankerShape::Type: {
+        if (LafetTankerShape *lafetTankerShape = dynamic_cast<LafetTankerShape *>(item))
+            lafetTankerShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());
