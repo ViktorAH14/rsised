@@ -3976,9 +3976,6 @@ QPainterPath LafetTankerShape::shape() const
         path.moveTo(rightConnectP1);
         path.lineTo(rightConnectP2);
         // Left pipe
-        qreal arrowWidth{m_lafetTankerRect.width() / 23.5}; // 2.0
-        qreal baseWidth{(m_lafetTankerRect.width() - arrowWidth) / 3.0 * 2.0}; // 30.0
-        qreal baseLeft{m_lafetTankerRect.right() - baseWidth}; // -6.5
         QPointF leftPipeP1{baseLeft, pipeY};
         QPointF leftPipeP2{baseLeft - sixthWidth, pipeY};
         path.moveTo(leftPipeP1);
@@ -3991,8 +3988,6 @@ QPainterPath LafetTankerShape::shape() const
     }
 
     if (m_showCollector) {
-        qreal arrowWidth{m_lafetTankerRect.width() / 23.5}; // 2.0
-        qreal baseWidth{(m_lafetTankerRect.width() - arrowWidth) / 3.0 * 2.0}; // 30.0
         qreal collectorX{m_lafetTankerRect.right() - baseWidth / 2.0}; // 8.5
         qreal collectorY{m_lafetTankerRect.bottom() + m_lafetTankerRect.height() / 7.5}; // 10.0
         //Left collector pipe

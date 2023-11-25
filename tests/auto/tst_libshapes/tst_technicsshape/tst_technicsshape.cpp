@@ -142,6 +142,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_pumpStatShape, "pumpStatShape is nullptr");
     QCOMPARE(int(p_pumpStatShape->type()), int(QGraphicsItem::UserType + 213));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
+
+    // LafetTankerShape
+    TechnicsShape *p_lafetTankerShape = nullptr;
+    p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
+    QVERIFY2(p_lafetTankerShape, "pumpStatShape is nullptr");
+    QCOMPARE(int(p_lafetTankerShape->type()), int(QGraphicsItem::UserType + 214));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -255,6 +262,20 @@ void tst_TechnicShape::boundingRect()
     p_pumpStat->setCollector(false);
     QCOMPARE(p_pumpStatShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
+
+    // LafetTankerShape
+    TechnicsShape *p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
+    QCOMPARE(p_lafetTankerShape->boundingRect(), QRectF(-24.0, -38.0, 48.0, 76.0));
+    LafetTankerShape *p_lafetTanker = dynamic_cast<LafetTankerShape *>(p_lafetTankerShape);
+    p_lafetTanker->setPipes(true);
+    QCOMPARE(p_lafetTankerShape->boundingRect(), QRectF(-24.0, -38.0, 53.0, 76.0));
+    p_lafetTanker->setCollector(true);
+    QCOMPARE(p_lafetTankerShape->boundingRect(), QRectF(-24.0, -38.0, 53.0, 86.0));
+    p_lafetTanker->setPipes(false);
+    QCOMPARE(p_lafetTankerShape->boundingRect(), QRectF(-24.0, -38.0, 48.0, 86.0));
+    p_lafetTanker->setCollector(false);
+    QCOMPARE(p_lafetTankerShape->boundingRect(), QRectF(-24.0, -38.0, 48.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
 }
 
 void tst_TechnicShape::shape()
@@ -909,6 +930,156 @@ void tst_TechnicShape::shape()
 
     p_pumpStat= nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
+
+    // LafetTankerShape
+    TechnicsShape *p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
+    QRectF lafetTankerRect{p_lafetTankerShape->rect()};
+    qreal arrowWidth{lafetTankerRect.width() / 23.5}; // 2.0
+    qreal baseWidth{(lafetTankerRect.width() - arrowWidth) / 3.0 * 2.0}; // 30.0
+    qreal baseCenterX{lafetTankerRect.right() - baseWidth / 2.0}; // 8.5
+    qreal baseLeft{lafetTankerRect.right() - baseWidth}; // -6.5
+    qreal thirdHeight{lafetTankerRect.height() / 3.0}; // 25.0
+    // LafetTanker base
+    QPointF frontCenterLafetTanker{baseCenterX, lafetTankerRect.top()}; // 0.0, -37.5
+    QPointF frontRightLafetTanker{lafetTankerRect.right(), lafetTankerRect.top() + thirdHeight}; // 15.0, -12.5
+    QPointF frontLeftLafetTanker{baseLeft, lafetTankerRect.top() + thirdHeight}; // -15.0, -12.5
+    QPointF bottomRightLafetTanker{lafetTankerRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftLafetTanker{baseLeft, lafetTankerRect.bottom()}; // -15.0, 37.5
+    QPolygonF lafetTankerBasePolygon;
+    lafetTankerBasePolygon << frontCenterLafetTanker << frontRightLafetTanker
+                           << bottomRightLafetTanker << bottomLeftLafetTanker
+                           << frontLeftLafetTanker<< frontCenterLafetTanker;
+    // LafetTanker lafet
+    // Barrel
+    QPointF barrelP1{lafetTankerRect.left() + arrowWidth, lafetTankerRect.top() + thirdHeight};
+    QPointF barrelP2{baseLeft, lafetTankerRect.bottom()};
+    QLineF barrelLine{barrelP1, barrelP2};
+    //Stand
+    QPointF standP1{barrelLine.pointAt(0.5)};
+    QPointF standP2{baseLeft, standP1.y()};
+    // Left arrow
+    QLineF leftArrow;
+    leftArrow.setP1(barrelP1);
+    QPointF leftArrowP2{lafetTankerRect.left(), barrelP1.y() + lafetTankerRect.height() / 10.0};
+    leftArrow.setP2(leftArrowP2);
+    //Right arrow
+    QLineF rightArrow;
+    rightArrow.setP1(barrelP1);
+    rightArrow.setLength(leftArrow.length());
+    rightArrow.setAngle(barrelLine.angle() + leftArrow.angleTo(barrelLine));
+
+    QPainterPath lafetTankerPath;
+    lafetTankerPath.addPolygon(lafetTankerBasePolygon);
+    lafetTankerPath.moveTo(barrelLine.p1());
+    lafetTankerPath.lineTo(barrelLine.p2());
+    lafetTankerPath.moveTo(standP1);
+    lafetTankerPath.lineTo(standP2);
+    lafetTankerPath.moveTo(leftArrow.p1());
+    lafetTankerPath.lineTo(leftArrow.p2());
+    lafetTankerPath.moveTo(rightArrow.p1());
+    lafetTankerPath.lineTo(rightArrow.p2());
+
+    QPainterPathStroker ps_lafetTankerShape;
+    ps_lafetTankerShape.setWidth(p_lafetTankerShape->pen().widthF());
+    QPainterPath strokeLafetTankerPath = ps_lafetTankerShape.createStroke(lafetTankerPath);
+    strokeLafetTankerPath.addPath(lafetTankerPath);
+    QCOMPARE(p_lafetTankerShape->shape(), strokeLafetTankerPath);
+
+    // PumpStatShape show pipes
+    LafetTankerShape *p_lafetTanker= dynamic_cast<LafetTankerShape *>(p_lafetTankerShape);
+    lafetTankerPath.clear();
+    strokeLafetTankerPath.clear();
+    p_lafetTanker->setPipes(true);
+    lafetTankerPath.addPolygon(lafetTankerBasePolygon);
+    lafetTankerPath.moveTo(barrelLine.p1());
+    lafetTankerPath.lineTo(barrelLine.p2());
+    lafetTankerPath.moveTo(standP1);
+    lafetTankerPath.lineTo(standP2);
+    lafetTankerPath.moveTo(leftArrow.p1());
+    lafetTankerPath.lineTo(leftArrow.p2());
+    lafetTankerPath.moveTo(rightArrow.p1());
+    lafetTankerPath.lineTo(rightArrow.p2());
+
+    qreal sixthWidthLafetTanker{lafetTankerRect.width() / 6}; // 5.0
+    qreal pipeY{lafetTankerRect.bottom() - sixthWidthLafetTanker};
+    // Right pipe
+    QPointF rightPipeP1LafetTanker{lafetTankerRect.right(), pipeY};
+    QPointF rightPipeP2LafetTanker{lafetTankerRect.right() + sixthWidthLafetTanker, pipeY};
+    lafetTankerPath.moveTo(rightPipeP1LafetTanker);
+    lafetTankerPath.lineTo(rightPipeP2LafetTanker);
+    // Right pipe connection
+    QPointF rightConnectP1LafetTanker{rightPipeP2LafetTanker.x(), rightPipeP2LafetTanker.y()
+                                                                    + sixthWidthLafetTanker / 2};
+    QPointF rightConnectP2LafetTanker{rightPipeP2LafetTanker.x(), rightPipeP2LafetTanker.y()
+                                                                    - sixthWidthLafetTanker / 2};
+    lafetTankerPath.moveTo(rightConnectP1LafetTanker);
+    lafetTankerPath.lineTo(rightConnectP2LafetTanker);
+    // Left pipe
+    QPointF leftPipeP1LafetTanker{baseLeft, pipeY};
+    QPointF leftPipeP2LafetTanker{baseLeft - sixthWidthLafetTanker, pipeY};
+    lafetTankerPath.moveTo(leftPipeP1LafetTanker);
+    lafetTankerPath.lineTo(leftPipeP2LafetTanker);
+    // Right pipe connection
+    QPointF leftConnectP1LafetTanker{leftPipeP2LafetTanker.x(), leftPipeP2LafetTanker.y()
+                                                                    + sixthWidthLafetTanker / 2};
+    QPointF leftConnectP2LafetTanker{leftPipeP2LafetTanker.x(), leftPipeP2LafetTanker.y()
+                                                                    - sixthWidthLafetTanker / 2};
+    lafetTankerPath.moveTo(leftConnectP1LafetTanker);
+    lafetTankerPath.lineTo(leftConnectP2LafetTanker);
+
+    strokeLafetTankerPath = ps_lafetTankerShape.createStroke(lafetTankerPath);
+    strokeLafetTankerPath.addPath(lafetTankerPath);
+    QCOMPARE(p_lafetTanker->shape(), strokeLafetTankerPath);
+
+    // PumpStatShape show collector
+    lafetTankerPath.clear();
+    strokeLafetTankerPath.clear();
+    p_lafetTanker->setPipes(false);
+    p_lafetTanker->setCollector(true);
+    lafetTankerPath.addPolygon(lafetTankerBasePolygon);
+    lafetTankerPath.moveTo(barrelLine.p1());
+    lafetTankerPath.lineTo(barrelLine.p2());
+    lafetTankerPath.moveTo(standP1);
+    lafetTankerPath.lineTo(standP2);
+    lafetTankerPath.moveTo(leftArrow.p1());
+    lafetTankerPath.lineTo(leftArrow.p2());
+    lafetTankerPath.moveTo(rightArrow.p1());
+    lafetTankerPath.lineTo(rightArrow.p2());
+
+    qreal lafetTankerCollectorX{lafetTankerRect.right() - baseWidth / 2.0}; // 8.5
+    qreal lafetTankerCollectorY{lafetTankerRect.bottom() + lafetTankerRect.height() / 7.5}; // 10.0
+    //Left collector pipe
+    qreal lafetTankerLeftPipeX{lafetTankerCollectorX - sixthWidthLafetTanker};
+    QPointF lafetTankerLeftRightPipeP1{lafetTankerCollectorX, lafetTankerRect.bottom()};
+    QPointF lafetTankerLeftPipeP2{lafetTankerLeftPipeX, lafetTankerCollectorY};
+    lafetTankerPath.moveTo(lafetTankerLeftRightPipeP1);
+    lafetTankerPath.lineTo(lafetTankerLeftPipeP2);
+    //Right collector pipe
+    qreal lafetTankerRightPipeX{lafetTankerCollectorX + sixthWidthLafetTanker};
+    QPointF lafetTankerRightPipeP2{lafetTankerRightPipeX, lafetTankerCollectorY};
+    lafetTankerPath.moveTo(lafetTankerLeftRightPipeP1);
+    lafetTankerPath.lineTo(lafetTankerRightPipeP2);
+    //Left connector
+    QPointF lafetTankerLeftConnectP1{lafetTankerLeftPipeX - sixthWidthLafetTanker / 2
+                                     , lafetTankerCollectorY};
+    QPointF lafetTankerLeftConnectP2{lafetTankerLeftPipeX + sixthWidthLafetTanker / 2
+                                     , lafetTankerCollectorY};
+    lafetTankerPath.moveTo(lafetTankerLeftConnectP1);
+    lafetTankerPath.lineTo(lafetTankerLeftConnectP2);
+    //Right connector
+    QPointF lafetTankerRightConnectP1{lafetTankerRightPipeX - sixthWidthLafetTanker / 2
+                                      , lafetTankerCollectorY};
+    QPointF lafetTankerRightConnectP2{lafetTankerRightPipeX + sixthWidthLafetTanker / 2
+                                      , lafetTankerCollectorY};
+    lafetTankerPath.moveTo(lafetTankerRightConnectP1);
+    lafetTankerPath.lineTo(lafetTankerRightConnectP2);
+
+    strokeLafetTankerPath = ps_lafetTankerShape.createStroke(lafetTankerPath);
+    strokeLafetTankerPath.addPath(lafetTankerPath);
+    QCOMPARE(p_lafetTanker->shape(), strokeLafetTankerPath);
+
+    p_lafetTanker = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
 }
 
 void tst_TechnicShape::image()
@@ -1012,11 +1183,18 @@ void tst_TechnicShape::image()
     // PumpStatShape
     TechnicsShape *p_pumpStatShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpStat);
     QPixmap pumpStatImage{p_pumpStatShape->image()};
-    QVERIFY2(!pumpStatImage.isNull(), "TankerShape::image() returned a null pixmap");
+    QVERIFY2(!pumpStatImage.isNull(), "pumpStatShape::image() returned a null pixmap");
     QCOMPARE(pumpStatImage.width(), p_pumpStatShape->boundingRect().width());
     QCOMPARE(pumpStatImage.height(), p_pumpStatShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
 
+    // LafetTankerShape
+    TechnicsShape *p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
+    QPixmap lafetTankerImage{p_lafetTankerShape->image()};
+    QVERIFY2(!lafetTankerImage.isNull(), "lafetTankerShape::image() returned a null pixmap");
+    QCOMPARE(lafetTankerImage.width(), p_lafetTankerShape->boundingRect().width());
+    QCOMPARE(lafetTankerImage.height(), p_lafetTankerShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -1120,6 +1298,12 @@ void tst_TechnicShape::rect_setRect()
     p_pumpStatShape->setRect(rect);
     QCOMPARE(p_pumpStatShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
+
+    // LafetTankerShape
+    TechnicsShape *p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
+    p_lafetTankerShape->setRect(rect);
+    QCOMPARE(p_lafetTankerShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -1210,6 +1394,12 @@ void tst_TechnicShape::height_setHeight()
     p_pumpStatShape->setHeight(height);
     QCOMPARE(p_pumpStatShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
+
+    // LafetTankerShape
+    TechnicsShape *p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
+    p_lafetTankerShape->setHeight(height);
+    QCOMPARE(p_lafetTankerShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -1309,6 +1499,12 @@ void tst_TechnicShape::text_setText()
     p_pumpStatShape->setText(text);
     QCOMPARE(p_pumpStatShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
+
+    // LafetTankerShape
+    TechnicsShape *p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
+    p_lafetTankerShape->setText(text);
+    QCOMPARE(p_lafetTankerShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -1367,6 +1563,17 @@ void tst_TechnicShape::pipes_setPipes()
     QCOMPARE(p_pumpStat->pipes(), false);
     p_pumpStat = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
+
+    //LafetTankerShape
+    TechnicsShape *p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
+    LafetTankerShape *p_lafetTanker = dynamic_cast<LafetTankerShape *>(p_lafetTankerShape);
+    QCOMPARE(p_lafetTanker->pipes(), false);
+    p_lafetTanker->setPipes(true);
+    QCOMPARE(p_lafetTanker->pipes(), true);
+    p_lafetTanker->setPipes(false);
+    QCOMPARE(p_lafetTanker->pipes(), false);
+    p_lafetTanker = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
 }
 
 void tst_TechnicShape::collector_setCollector()
@@ -1425,6 +1632,17 @@ void tst_TechnicShape::collector_setCollector()
     QCOMPARE(p_pumpStat->collector(), false);
     p_pumpStat = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
+
+    //LafetTankerShape
+    TechnicsShape *p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
+    LafetTankerShape *p_lafetTanker = dynamic_cast<LafetTankerShape *>(p_lafetTankerShape);
+    QCOMPARE(p_lafetTanker->collector(), false);
+    p_lafetTanker->setCollector(true);
+    QCOMPARE(p_lafetTanker->collector(), true);
+    p_lafetTanker->setCollector(false);
+    QCOMPARE(p_lafetTanker->collector(), false);
+    p_lafetTanker = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
 }
 
 class ContextMenuTester : public QMenu
@@ -1839,6 +2057,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_pumpStatShape);
     delete p_pumpstatContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
+
+    // LafetTankerShape
+    ContextMenuTester *p_lafetTankerContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
+    p_lafetTankerShape->setMenu(p_lafetTankerContextMenu);
+    scene.addItem(p_lafetTankerShape);
+
+    mousePressEvent.setScenePos(p_lafetTankerShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_lafetTankerShape->setSelected(true);
+    QSignalSpy lafetTankerContextMenuSpy(p_lafetTankerShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(lafetTankerContextMenuSpy.count(), 0);
+
+    QList<QAction *> lafetTankerMenuActions{p_lafetTankerShape->menu()->actions()};
+    QCOMPARE(lafetTankerMenuActions.size(), 1);
+    lafetTankerMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_lafetTankerShape->boundingRect().center()));
+    lafetTankerMenuActions = p_lafetTankerShape->menu()->actions();
+    QCOMPARE(lafetTankerMenuActions.size(), 1);
+    QCOMPARE(lafetTankerContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_lafetTankerShape);
+    delete p_lafetTankerContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
