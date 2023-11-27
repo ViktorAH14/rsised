@@ -609,7 +609,14 @@
     <message>
         <location filename="../mainwindow.cpp" line="734"/>
         <source>Lafet tanker</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Автомобиль пожарный со стационарным лафетным стволом</translatorcomment>
+        <translation>АЛСС</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="736"/>
+        <source>Lafet car</source>
+        <translatorcomment>Автомобиль передвижной лафетный ствол</translatorcomment>
+        <translation>АЛСП</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="803"/>
