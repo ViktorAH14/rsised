@@ -98,6 +98,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case LafetTanker:
         p_technicsShape = new LafetTankerShape(parent);
         break;
+    case LafetCar:
+        p_technicsShape = new LafetCarShape(parent);
+        break;
     default:
         break;
     }
@@ -4303,4 +4306,202 @@ void LafetTankerShape::drawCollector(QPainter *painter, qreal sixthWidth)
     QPointF rightConnectP1{rightPipeX - sixthWidth / 2, collectorY};
     QPointF rightConnectP2{rightPipeX + sixthWidth / 2, collectorY};
     painter->drawLine(rightConnectP1, rightConnectP2);  //Right connector
+}
+
+LafetCarShape::LafetCarShape(QGraphicsItem *parent)
+    :TechnicsShape(parent)
+    , m_lafetCarType{LafetCar}
+    , m_lafetCarRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
+    , m_lafetCarText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void LafetCarShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawLafetCarShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF LafetCarShape::boundingRect() const
+{
+    QRectF boundingRect{m_lafetCarRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    return boundingRect;
+}
+
+QPainterPath LafetCarShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap LafetCarShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawLafetCarShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType LafetCarShape::shapeType() const
+{
+    return m_lafetCarType;
+}
+
+void LafetCarShape::setRect(const QRectF &rect)
+{
+    if (m_lafetCarRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_lafetCarRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_lafetCarText != nullptr)
+        m_lafetCarText->setPos(m_lafetCarRect.right(), m_lafetCarRect.bottom()
+                                                         - m_lafetCarRect.width() / 6);
+    update();
+}
+
+QRectF LafetCarShape::rect() const
+{
+    return m_lafetCarRect;
+}
+
+void LafetCarShape::setHeight(const qreal &height)
+{
+    if (m_lafetCarRect.height() == height)
+        return;
+
+    qreal oldHeight{m_lafetCarRect.height()};
+    prepareGeometryChange();
+    m_lafetCarRect.setHeight(height);
+    qreal dy{(m_lafetCarRect.height() - oldHeight) / 2};
+    m_lafetCarRect.moveTo(QPointF(m_lafetCarRect.x(), m_lafetCarRect.y() - dy));
+    update();
+}
+
+qreal LafetCarShape::height() const
+{
+    return m_lafetCarRect.height();
+}
+
+void LafetCarShape::setText(const QString &text)
+{
+    if (m_lafetCarText == nullptr) {
+        m_lafetCarText = new QGraphicsTextItem(this);
+        m_lafetCarText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_lafetCarText->setRotation(-90);
+    }
+    m_lafetCarText->setPlainText(text);
+    m_showText = true;
+}
+
+QString LafetCarShape::text() const
+{
+    if (m_lafetCarText == nullptr)
+        return "";
+
+    return m_lafetCarText->toPlainText();
+}
+
+void LafetCarShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_lafetCarActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_lafetCarActionList);
+            m_lafetCarActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void LafetCarShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_lafetCarActionList.append(m_addTextAction.get());
+}
+
+void LafetCarShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_lafetCarText == nullptr) {
+            m_lafetCarText=new QGraphicsTextItem(this);
+            m_lafetCarText->setPlainText("АПЛС-");
+            m_lafetCarText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_lafetCarText->setRotation(-90);
+        }
+        m_lafetCarText->show();
+        m_showText = true;
+    } else {
+        m_lafetCarText->hide();
+        m_showText = false;
+    }
+}
+
+void LafetCarShape::drawLafetCarShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+
+    // Draw lafet
+    qreal sixthWidth{m_lafetCarRect.width() / 6}; // 5.0
+    qreal thirdHeight{m_lafetCarRect.height() / 3.0}; // 25.0
+    QPointF barrelP1{m_lafetCarRect.left() + sixthWidth, m_lafetCarRect.top() + thirdHeight};
+    QPointF barrelP2{m_lafetCarRect.right() - sixthWidth, m_lafetCarRect.bottom() - sixthWidth};
+    QLineF barrelLine{barrelP1, barrelP2};
+    painter->drawLine(barrelLine); // Draw barrel
+    QPointF standP1{barrelLine.pointAt(0.5)};
+    QPointF standP2{barrelP2.x(), standP1.y()};
+    painter->drawLine(QLineF(standP1, standP2));    // Draw stand
+    QLineF leftArrow;
+    leftArrow.setP1(barrelP1);
+    QPointF leftArrowP2{barrelP1.x() - sixthWidth / 2
+                        , barrelP1.y() + m_lafetCarRect.height() / 10.0};
+    leftArrow.setP2(leftArrowP2);
+    painter->drawLine(leftArrow);    // Draw left part arrow
+    QLineF rightArrow;
+    rightArrow.setP1(barrelP1);
+    rightArrow.setLength(leftArrow.length());
+    rightArrow.setAngle(barrelLine.angle() + leftArrow.angleTo(barrelLine));
+    painter->drawLine(rightArrow);    // Draw right part arrow
+
+    if (m_showText) {
+        m_lafetCarText->setPos(m_lafetCarRect.right(), m_lafetCarRect.bottom() - sixthWidth * 2);
+    }
 }

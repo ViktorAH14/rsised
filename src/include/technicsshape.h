@@ -756,4 +756,46 @@ private:
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_lafetTankerActionList;
 };
+
+class LafetCarShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 215};
+
+    explicit LafetCarShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~LafetCarShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(LafetCarShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawLafetCarShape(QPainter *painter);
+
+    const ShapeType m_lafetCarType;
+    QRectF m_lafetCarRect;
+    QGraphicsTextItem *m_lafetCarText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_lafetCarActionList;
+};
 #endif // TECHNICSSHAPE_H
