@@ -41,7 +41,7 @@ private slots:
     void text_setText_data();
     void text_setText();
 
-    //TankerShape, PumpHoseShape, FirstAidShape, EmergencyShape, PumpStatShape
+    //TankerShape, PumpHoseShape, FirstAidShape, EmergencyShape, PumpStatShape, LafetTankerShape
     void pipes_setPipes();
     void collector_setCollector();
     void mousePressEvent();
@@ -146,9 +146,16 @@ void tst_TechnicShape::constructor()
     // LafetTankerShape
     TechnicsShape *p_lafetTankerShape = nullptr;
     p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
-    QVERIFY2(p_lafetTankerShape, "pumpStatShape is nullptr");
+    QVERIFY2(p_lafetTankerShape, "lafetTankerShape is nullptr");
     QCOMPARE(int(p_lafetTankerShape->type()), int(QGraphicsItem::UserType + 214));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
+
+    // LafetCarShape
+    TechnicsShape *p_lafetCarShape = nullptr;
+    p_lafetCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
+    QVERIFY2(p_lafetCarShape, "lafetCarShape is nullptr");
+    QCOMPARE(int(p_lafetCarShape->type()), int(QGraphicsItem::UserType + 215));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetCarShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -276,11 +283,16 @@ void tst_TechnicShape::boundingRect()
     p_lafetTanker->setCollector(false);
     QCOMPARE(p_lafetTankerShape->boundingRect(), QRectF(-24.0, -38.0, 48.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
+
+    // LafetCarShape
+    TechnicsShape *p_lafetCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
+    QCOMPARE(p_lafetCarShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetCarShape);
 }
 
 void tst_TechnicShape::shape()
 {
-    // BaseShape
+// BaseShape
     TechnicsShape *p_baseShape = TechnicsShape::createTechnicsShape(TechnicsShape::Base);
     QPainterPathStroker ps_baseShape;
     ps_baseShape.setWidth(p_baseShape->pen().widthF());
@@ -301,7 +313,7 @@ void tst_TechnicShape::shape()
     QCOMPARE(p_baseShape->shape(), strokeBasePath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_baseShape);
 
-    // TankerShape
+// TankerShape
     TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
     QPainterPathStroker ps_tankerShape;
     ps_tankerShape.setWidth(p_tankerShape->pen().widthF());
@@ -397,7 +409,7 @@ void tst_TechnicShape::shape()
     p_tanker= nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
 
-    // PumpHoseShape
+// PumpHoseShape
     TechnicsShape *p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
     QPainterPathStroker ps_pumpHoseShape;
     ps_pumpHoseShape.setWidth(p_pumpHoseShape->pen().widthF());
@@ -493,7 +505,7 @@ void tst_TechnicShape::shape()
     p_pumpHose= nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
 
-    // FirstAidShape
+// FirstAidShape
     TechnicsShape *p_firstAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
     QPainterPathStroker ps_firstAidShape;
     ps_firstAidShape.setWidth(p_firstAidShape->pen().widthF());
@@ -589,7 +601,7 @@ void tst_TechnicShape::shape()
     p_firstAid = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
 
-    // EmergencyShape
+// EmergencyShape
     TechnicsShape *p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
     QPainterPathStroker ps_emergencyShape;
     ps_emergencyShape.setWidth(p_emergencyShape->pen().widthF());
@@ -685,7 +697,7 @@ void tst_TechnicShape::shape()
     p_emergency = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
 
-    // AutoLadderShape
+// AutoLadderShape
     TechnicsShape *p_autoLadderShape = TechnicsShape::createTechnicsShape(TechnicsShape::AutoLadder);
     QPainterPathStroker ps_autoLadderShape;
     ps_autoLadderShape.setWidth(p_autoLadderShape->pen().widthF());
@@ -706,7 +718,7 @@ void tst_TechnicShape::shape()
     QCOMPARE(p_autoLadderShape->shape(), strokeAutoLadderPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
 
-    // CrankLiftShape
+// CrankLiftShape
     TechnicsShape *p_crankLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::CrankLift);
     QPainterPathStroker ps_crankLiftShape;
     ps_crankLiftShape.setWidth(p_crankLiftShape->pen().widthF());
@@ -727,7 +739,7 @@ void tst_TechnicShape::shape()
     QCOMPARE(p_crankLiftShape->shape(), strokeCrankLiftPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
 
-    // TelescopicLiftShape
+// TelescopicLiftShape
     TechnicsShape *p_telescopicLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::TelescopicLift);
     QPainterPathStroker ps_telescopicLiftShape;
     ps_telescopicLiftShape.setWidth(p_telescopicLiftShape->pen().widthF());
@@ -751,7 +763,7 @@ void tst_TechnicShape::shape()
     QCOMPARE(p_telescopicLiftShape->shape(), strokeTelescopicLiftPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_telescopicLiftShape);
 
-    // HoseCarShape
+// HoseCarShape
     TechnicsShape *p_hoseCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::HoseCar);
     QPainterPathStroker ps_hoseCarShape;
     ps_hoseCarShape.setWidth(p_hoseCarShape->pen().widthF());
@@ -772,7 +784,7 @@ void tst_TechnicShape::shape()
     QCOMPARE(p_hoseCarShape->shape(), strokeHoseCarPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_hoseCarShape);
 
-    // CommShape
+// CommShape
     TechnicsShape *p_commShape = TechnicsShape::createTechnicsShape(TechnicsShape::Comm);
     QPainterPathStroker ps_commShape;
     ps_commShape.setWidth(p_commShape->pen().widthF());
@@ -793,7 +805,7 @@ void tst_TechnicShape::shape()
     QCOMPARE(p_commShape->shape(), strokeCommPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
 
-    // TechServShape
+// TechServShape
     TechnicsShape *p_techServShape = TechnicsShape::createTechnicsShape(TechnicsShape::TechServ);
     QPainterPathStroker ps_techServShape;
     ps_techServShape.setWidth(p_techServShape->pen().widthF());
@@ -814,7 +826,7 @@ void tst_TechnicShape::shape()
     QCOMPARE(p_techServShape->shape(), strokeTechServPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_techServShape);
 
-    // SmokRemShape
+// SmokRemShape
     TechnicsShape *p_smokRemShape = TechnicsShape::createTechnicsShape(TechnicsShape::SmokRem);
     QPainterPathStroker ps_smokRemShape;
     ps_smokRemShape.setWidth(p_smokRemShape->pen().widthF());
@@ -835,7 +847,7 @@ void tst_TechnicShape::shape()
     QCOMPARE(p_smokRemShape->shape(), strokeSmokRemPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_smokRemShape);
 
-    // PumpStatShape
+// PumpStatShape
     TechnicsShape *p_pumpStatShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpStat);
     QPainterPathStroker ps_pumpStatShape;
     ps_pumpStatShape.setWidth(p_pumpStatShape->pen().widthF());
@@ -931,7 +943,7 @@ void tst_TechnicShape::shape()
     p_pumpStat= nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
 
-    // LafetTankerShape
+// LafetTankerShape
     TechnicsShape *p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
     QRectF lafetTankerRect{p_lafetTankerShape->rect()};
     qreal arrowWidth{lafetTankerRect.width() / 23.5}; // 2.0
@@ -1080,6 +1092,27 @@ void tst_TechnicShape::shape()
 
     p_lafetTanker = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
+
+// LafetCarShape
+    TechnicsShape *p_lafetCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
+    QPainterPathStroker ps_lafetCarShape;
+    ps_lafetCarShape.setWidth(p_lafetCarShape->pen().widthF());
+    QRectF lafetCarRect{p_lafetCarShape->rect()};
+    qreal frontTabLafetCar{lafetCarRect.height() / 3};
+    QPointF frontCenterLafetCar{lafetCarRect.center().x(), lafetCarRect.top()}; // 0.0, -37.5
+    QPointF frontRightLafetCar{lafetCarRect.right(), lafetCarRect.top() + frontTabLafetCar}; // 15.0, -12.5
+    QPointF frontLeftLafetCar{lafetCarRect.left(), lafetCarRect.top() + frontTabLafetCar}; // -15.0, -12.5
+    QPointF bottomRightLafetCar{lafetCarRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftLafetCar{lafetCarRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF lafetCarPolygon;
+    lafetCarPolygon << frontCenterLafetCar << frontRightLafetCar << bottomRightLafetCar
+                   << bottomLeftLafetCar << frontLeftLafetCar << frontCenterLafetCar;
+    QPainterPath lafetCarPath;
+    lafetCarPath.addPolygon(lafetCarPolygon);
+    QPainterPath strokeLafetCarPath = ps_lafetCarShape.createStroke(lafetCarPath);
+    strokeLafetCarPath.addPath(lafetCarPath);
+    QCOMPARE(p_lafetCarShape->shape(), strokeLafetCarPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetCarShape);
 }
 
 void tst_TechnicShape::image()
@@ -1195,6 +1228,14 @@ void tst_TechnicShape::image()
     QCOMPARE(lafetTankerImage.width(), p_lafetTankerShape->boundingRect().width());
     QCOMPARE(lafetTankerImage.height(), p_lafetTankerShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
+
+    // LafetCarShape
+    TechnicsShape *p_lafetCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
+    QPixmap lafetCarImage{p_lafetCarShape->image()};
+    QVERIFY2(!lafetCarImage.isNull(), "lafetCarShape::image() returned a null pixmap");
+    QCOMPARE(lafetCarImage.width(), p_lafetCarShape->boundingRect().width());
+    QCOMPARE(lafetCarImage.height(), p_lafetCarShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetCarShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -1304,6 +1345,12 @@ void tst_TechnicShape::rect_setRect()
     p_lafetTankerShape->setRect(rect);
     QCOMPARE(p_lafetTankerShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
+
+    // LafetCarShape
+    TechnicsShape *p_lafetCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
+    p_lafetCarShape->setRect(rect);
+    QCOMPARE(p_lafetCarShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetCarShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -1400,6 +1447,12 @@ void tst_TechnicShape::height_setHeight()
     p_lafetTankerShape->setHeight(height);
     QCOMPARE(p_lafetTankerShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
+
+    // LafetCarShape
+    TechnicsShape *p_lafetCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
+    p_lafetCarShape->setHeight(height);
+    QCOMPARE(p_lafetCarShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetCarShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -1505,6 +1558,12 @@ void tst_TechnicShape::text_setText()
     p_lafetTankerShape->setText(text);
     QCOMPARE(p_lafetTankerShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
+
+    // LafetCarShape
+    TechnicsShape *p_lafetCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
+    p_lafetCarShape->setText(text);
+    QCOMPARE(p_lafetCarShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetCarShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -2086,6 +2145,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_lafetTankerShape);
     delete p_lafetTankerContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
+
+    // LafetCarShape
+    ContextMenuTester *p_lafetCarContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_lafetCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
+    p_lafetCarShape->setMenu(p_lafetCarContextMenu);
+    scene.addItem(p_lafetCarShape);
+
+    mousePressEvent.setScenePos(p_lafetCarShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_lafetCarShape->setSelected(true);
+    QSignalSpy lafetCarContextMenuSpy(p_lafetCarShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(lafetCarContextMenuSpy.count(), 0);
+
+    QList<QAction *> lafetCarMenuActions{p_lafetCarShape->menu()->actions()};
+    QCOMPARE(lafetCarMenuActions.size(), 1);
+    lafetCarMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_lafetCarShape->boundingRect().center()));
+    lafetCarMenuActions = p_lafetCarShape->menu()->actions();
+    QCOMPARE(lafetCarMenuActions.size(), 1);
+    QCOMPARE(lafetCarContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_lafetCarShape);
+    delete p_lafetCarContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetCarShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
