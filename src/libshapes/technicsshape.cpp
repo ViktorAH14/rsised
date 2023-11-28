@@ -101,6 +101,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case LafetCar:
         p_technicsShape = new LafetCarShape(parent);
         break;
+    case Aerodrome:
+        p_technicsShape = new AerodromeShape(parent);
+        break;
     default:
         break;
     }
@@ -4504,4 +4507,369 @@ void LafetCarShape::drawLafetCarShape(QPainter *painter)
     if (m_showText) {
         m_lafetCarText->setPos(m_lafetCarRect.right(), m_lafetCarRect.bottom() - sixthWidth * 2);
     }
+}
+
+AerodromeShape::AerodromeShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_aerodromeType(Aerodrome)
+    , m_aerodromeText{nullptr}
+    , m_aerodromeRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
+    , m_showPipes{false}
+    , m_showCollector{false}
+    , m_showText{false}
+{
+
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void AerodromeShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawAerodromeShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF AerodromeShape::boundingRect() const
+{
+    QRectF boundingRect{m_aerodromeRect};
+    if (m_showPipes) {
+        qreal pipeLength{m_aerodromeRect.width() / 6};
+        boundingRect.adjust(-pipeLength, 0.0, pipeLength, 0.0);
+    }
+    if (m_showCollector) {
+        qreal collectorLength{m_aerodromeRect.width() / 3};
+        boundingRect.adjust(0.0, 0.0, 0.0, collectorLength);
+    }
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath AerodromeShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    qreal sixthWidth{m_aerodromeRect.width() / 6}; // 5.0
+    if (m_showPipes) {
+        qreal pipeY{m_aerodromeRect.bottom() - sixthWidth};
+        QPointF rightPipeP1{m_aerodromeRect.right(), pipeY};
+        QPointF rightPipeP2{m_aerodromeRect.right() + sixthWidth, pipeY};
+        // Right pipe
+        path.moveTo(rightPipeP1);
+        path.lineTo(rightPipeP2);
+
+        QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + sixthWidth / 2};
+        QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - sixthWidth / 2};
+        // Right pipe connection
+        path.moveTo(rightConnectP1);
+        path.lineTo(rightConnectP2);
+
+        QPointF leftPipeP1{m_aerodromeRect.left(), pipeY};
+        QPointF leftPipeP2{m_aerodromeRect.left() - sixthWidth, pipeY};
+        // Left pipe
+        path.moveTo(leftPipeP1);
+        path.lineTo(leftPipeP2);
+
+        QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + sixthWidth / 2};
+        QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - sixthWidth / 2};
+        // Right pipe connection
+        path.moveTo(leftConnectP1);
+        path.lineTo(leftConnectP2);
+    }
+
+    if (m_showCollector) {
+        qreal collectorX{m_aerodromeRect.center().x()};
+        qreal collectorY{m_aerodromeRect.bottom() + sixthWidth * 2};
+        qreal leftPipeX{collectorX - sixthWidth};
+        QPointF leftRightPipeP1{collectorX, m_aerodromeRect.bottom()};
+        QPointF leftPipeP2{leftPipeX, collectorY};
+        //Left collector pipe
+        path.moveTo(leftRightPipeP1);
+        path.lineTo(leftPipeP2);
+
+        qreal rightPipeX{collectorX + sixthWidth};
+        QPointF rightPipeP2{rightPipeX, collectorY};
+        //Right collector pipe
+        path.moveTo(leftRightPipeP1);
+        path.lineTo(rightPipeP2);
+
+        QPointF leftConnectP1{leftPipeX - sixthWidth / 2, collectorY};
+        QPointF leftConnectP2{leftPipeX + sixthWidth / 2, collectorY};
+        //Left connector
+        path.moveTo(leftConnectP1);
+        path.lineTo(leftConnectP2);
+
+        QPointF rightConnectP1{rightPipeX - sixthWidth / 2, collectorY};
+        QPointF rightConnectP2{rightPipeX + sixthWidth / 2, collectorY};
+        //Right connector
+        path.moveTo(rightConnectP1);
+        path.lineTo(rightConnectP2);
+    }
+
+    return shapeFromPath(path);
+}
+
+QPixmap AerodromeShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawAerodromeShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType AerodromeShape::shapeType() const
+{
+    return m_aerodromeType;
+}
+
+void AerodromeShape::setRect(const QRectF &rect)
+{
+    if (m_aerodromeRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_aerodromeRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_aerodromeText != nullptr)
+        m_aerodromeText->setPos(m_aerodromeRect.right(), m_aerodromeRect.bottom()
+                                                           - m_aerodromeRect.width() / 6);
+    if (m_showPipes) {
+        qreal pipeLength{m_aerodromeRect.width() / 6};
+        m_aerodromeRect.adjust(pipeLength, 0.0, -pipeLength, 0.0);
+    }
+    if (m_showCollector) {
+        qreal collectorLength{m_aerodromeRect.width() / 3};
+        m_aerodromeRect.adjust(0.0, 0.0, 0.0, -collectorLength);
+    }
+    update();
+}
+
+QRectF AerodromeShape::rect() const
+{
+    return m_aerodromeRect;
+}
+
+void AerodromeShape::setHeight(const qreal &height)
+{
+    if (m_aerodromeRect.height() == height)
+        return;
+
+    qreal oldHeight{m_aerodromeRect.height()};
+    prepareGeometryChange();
+    m_aerodromeRect.setHeight(height);
+    qreal dy{(m_aerodromeRect.height() - oldHeight) / 2};
+    m_aerodromeRect.moveTo(QPointF(m_aerodromeRect.x(), m_aerodromeRect.y() - dy));
+    update();
+}
+
+qreal AerodromeShape::height() const
+{
+    return m_aerodromeRect.height();
+}
+
+void AerodromeShape::setText(const QString &text)
+{
+    if (m_aerodromeText == nullptr) {
+        m_aerodromeText = new QGraphicsTextItem(this);
+        m_aerodromeText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_aerodromeText->setRotation(-90);
+    }
+    m_aerodromeText->setPlainText(text);
+    m_showText = true;
+}
+
+QString AerodromeShape::text() const
+{
+    if (m_aerodromeText == nullptr)
+        return "";
+
+    return m_aerodromeText->toPlainText();
+}
+
+void AerodromeShape::setPipes(bool showPipes)
+{
+    if (m_showPipes == showPipes)
+        return;
+
+    prepareGeometryChange();
+    m_showPipes = showPipes;
+    setSelected(false);
+    setSelected(true);
+    update();
+}
+
+bool AerodromeShape::pipes() const
+{
+    return m_showPipes;
+}
+
+void AerodromeShape::setCollector(bool showCollector)
+{
+    if (m_showCollector == showCollector)
+        return;
+
+    prepareGeometryChange();
+    m_showCollector = showCollector;
+    setSelected(false);
+    setSelected(true);
+    update();
+}
+
+bool AerodromeShape::collector()
+{
+    return m_showCollector;
+}
+
+void AerodromeShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_aerodromeActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_aerodromeActionList);
+            m_aerodromeActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void AerodromeShape::createAction()
+{
+    QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
+    m_showPipeAction.reset(new QAction(pipeActionText));
+    m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
+    QObject::connect(m_showPipeAction.get(), &QAction::triggered
+                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
+    m_aerodromeActionList.append(m_showPipeAction.get());
+
+    QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
+                                              : QObject::tr("Show collector")};
+    m_showCollectorAction.reset(new QAction(collectActionText));
+    m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
+    QObject::connect(m_showCollectorAction.get(), &QAction::triggered
+                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
+    m_aerodromeActionList.append(m_showCollectorAction.get());
+
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_aerodromeActionList.append(m_addTextAction.get());
+}
+
+void AerodromeShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_aerodromeText == nullptr) {
+            m_aerodromeText=new QGraphicsTextItem(this);
+            m_aerodromeText->setPlainText("АА-");
+            m_aerodromeText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_aerodromeText->setRotation(-90);
+        }
+        m_aerodromeText->show();
+        m_showText = true;
+    } else {
+        m_aerodromeText->hide();
+        m_showText = false;
+    }
+}
+
+void AerodromeShape::drawAerodromeShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+    painter->translate(m_aerodromeRect.center());
+    painter->rotate(270);
+    painter->translate(-m_aerodromeRect.center());
+    QTextOption textOption{Qt::AlignCenter};
+    painter->drawText(m_aerodromeRect, "АА", textOption);
+                                   painter->translate(m_aerodromeRect.center());
+        painter->rotate(-270);
+        painter->translate(-m_aerodromeRect.center());
+        qreal sixthWidth{m_aerodromeRect.width() / 6}; // 5.0
+
+        if (m_showText) {
+            m_aerodromeText->setPos(m_aerodromeRect.right(), m_aerodromeRect.bottom()
+                                                             - sixthWidth * 2);
+        }
+
+        if (m_showPipes) {
+            drawPipes(painter, sixthWidth);
+        }
+
+        if (m_showCollector) {
+            drawCollector(painter, sixthWidth);
+        }
+}
+
+void AerodromeShape::drawPipes(QPainter *painter, qreal sixtWidth)
+{
+        painter->setPen(QPen(Qt::black, 1));
+        qreal pipeY{m_aerodromeRect.bottom() - sixtWidth};
+        QPointF rightPipeP1{m_aerodromeRect.right(), pipeY};
+        QPointF rightPipeP2{m_aerodromeRect.right() + sixtWidth, pipeY};
+        painter->drawLine(rightPipeP1, rightPipeP2); // Right pipe
+
+        QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + sixtWidth / 2};
+        QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - sixtWidth / 2};
+        painter->drawLine(rightConnectP1, rightConnectP2); // Right pipe connection
+
+        QPointF leftPipeP1{m_aerodromeRect.left(), pipeY};
+        QPointF leftPipeP2{m_aerodromeRect.left() - sixtWidth, pipeY};
+        painter->drawLine(leftPipeP1, leftPipeP2); // Left pipe
+
+        QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + sixtWidth / 2};
+        QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - sixtWidth / 2};
+        painter->drawLine(leftConnectP1, leftConnectP2); // Right pipe connection
+}
+
+void AerodromeShape::drawCollector(QPainter *painter, qreal sixtWidth)
+{
+        painter->setPen(QPen(Qt::black, 1));
+        qreal collectorX{m_aerodromeRect.center().x()};
+        qreal collectorY{m_aerodromeRect.bottom() + sixtWidth * 2};
+        qreal leftPipeX{collectorX - sixtWidth};
+        QPointF leftRightPipeP1{collectorX, m_aerodromeRect.bottom()};
+        QPointF leftPipeP2{leftPipeX, collectorY};
+        painter->drawLine(leftRightPipeP1, leftPipeP2); //Left collector pipe
+
+        qreal rightPipeX{collectorX + sixtWidth};
+        QPointF rightPipeP2{rightPipeX, collectorY};
+        painter->drawLine(leftRightPipeP1, rightPipeP2); //Right collector pipe
+
+        QPointF leftConnectP1{leftPipeX - sixtWidth / 2, collectorY};
+        QPointF leftConnectP2{leftPipeX + sixtWidth / 2, collectorY};
+        painter->drawLine(leftConnectP1, leftConnectP2); //Left connector
+
+        QPointF rightConnectP1{rightPipeX - sixtWidth / 2, collectorY};
+        QPointF rightConnectP2{rightPipeX + sixtWidth / 2, collectorY};
+        painter->drawLine(rightConnectP1, rightConnectP2);  //Right connector
 }
