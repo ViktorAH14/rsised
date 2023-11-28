@@ -136,6 +136,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             lafetCarShape->setRect(value.toRectF());
         break;
     }
+    case AerodromeShape::Type: {
+        if (AerodromeShape *aerodromeShape = dynamic_cast<AerodromeShape *>(item))
+            aerodromeShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());

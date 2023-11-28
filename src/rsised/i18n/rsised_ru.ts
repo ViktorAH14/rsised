@@ -725,9 +725,10 @@
         <translation type="vanished">АЛСП</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="738"/>
         <source>Aerodrom</source>
         <translatorcomment>Автомобиль аэродромный</translatorcomment>
-        <translation type="vanished">АА</translation>
+        <translation>АА</translation>
     </message>
     <message>
         <source>Foam</source>
