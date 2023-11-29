@@ -731,9 +731,10 @@
         <translation>АА</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="740"/>
         <source>Foam</source>
         <translatorcomment>Автомобиль пенного тушения.</translatorcomment>
-        <translation type="vanished">АПТ</translation>
+        <translation>АПТ</translation>
     </message>
     <message>
         <source>Combo</source>
