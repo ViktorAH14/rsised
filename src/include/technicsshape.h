@@ -47,7 +47,7 @@ public:
                      , LafetTanker      //АЛСС автомобиль пожарный со стационарным лафетным стволом
                      , LafetCar         //АЛСП автомобиль передвижной лафетный ствол
                      , Aerodrome        //АА
-                     , Foam
+                     , Foam             //АПТ
                      , Combo
                      , Aerosol
                      , Powder
@@ -850,5 +850,58 @@ private:
     QScopedPointer<QAction> m_showCollectorAction;
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_aerodromeActionList;
+};
+
+class FoamShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 217};
+
+    explicit FoamShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~FoamShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(FoamShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawFoamShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixtWidth);
+    void drawCollector(QPainter *painter, qreal sixtWidth);
+
+    const ShapeType m_foamType;
+    QGraphicsTextItem *m_foamText;
+    QRectF m_foamRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_foamActionList;
 };
 #endif // TECHNICSSHAPE_H
