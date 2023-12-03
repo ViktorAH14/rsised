@@ -146,6 +146,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             foamShape->setRect(value.toRectF());
         break;
     }
+    case ComboShape::Type: {
+        if (ComboShape *comboShape = dynamic_cast<ComboShape *>(item))
+            comboShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());

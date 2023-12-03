@@ -621,7 +621,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         || shapeType == TechnicsShape::PumpStat
                         || shapeType == TechnicsShape::LafetTanker
                         || shapeType == TechnicsShape::Aerodrome
-                        || shapeType == TechnicsShape::Foam) {
+                        || shapeType == TechnicsShape::Foam
+                        || shapeType == TechnicsShape::Combo) {
                         if (attr.name() == "pipes") {
                             pipes = attr.value().toInt();
                         }
@@ -671,6 +672,10 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 if (FoamShape *p_foamShape = dynamic_cast<FoamShape *>(p_technicsShape)) {
                     p_foamShape->setPipes(pipes);
                     p_foamShape->setCollector(collector);
+                }
+                if (ComboShape *p_comboShape = dynamic_cast<ComboShape *>(p_technicsShape)) {
+                    p_comboShape->setPipes(pipes);
+                    p_comboShape->setCollector(collector);
                 }
 
                 itemList.append(p_technicsShape);
