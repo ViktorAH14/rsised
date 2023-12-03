@@ -42,7 +42,7 @@ private slots:
     void text_setText();
 
     // TankerShape, PumpHoseShape, FirstAidShape, EmergencyShape, PumpStatShape, LafetTankerShape,
-    // Aerodromeshape
+    // Aerodromeshape, FoamShape
     void pipes_setPipes();
     void collector_setCollector();
     void mousePressEvent();
@@ -164,6 +164,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_aerodromeShape, "aerodromeShape is nullptr");
     QCOMPARE(int(p_aerodromeShape->type()), int(QGraphicsItem::UserType + 216));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
+
+    // FoamShape
+    TechnicsShape *p_foamShape = nullptr;
+    p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Foam);
+    QVERIFY2(p_foamShape, "foamShape is nullptr");
+    QCOMPARE(int(p_foamShape->type()), int(QGraphicsItem::UserType + 217));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -310,6 +317,20 @@ void tst_TechnicShape::boundingRect()
     p_aerodrome->setCollector(false);
     QCOMPARE(p_aerodromeShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
+
+    // FoamShape
+    TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Foam);
+    QCOMPARE(p_foamShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    FoamShape *p_foam = dynamic_cast<FoamShape *>(p_foamShape);
+    p_foam->setPipes(true);
+    QCOMPARE(p_foamShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 76.0));
+    p_foam->setCollector(true);
+    QCOMPARE(p_foamShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 86.0));
+    p_foam->setPipes(false);
+    QCOMPARE(p_foamShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 86.0));
+    p_foam->setCollector(false);
+    QCOMPARE(p_foamShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
 }
 
 void tst_TechnicShape::shape()
@@ -991,7 +1012,7 @@ void tst_TechnicShape::shape()
     //Stand
     QPointF standP1{barrelLine.pointAt(0.5)};
     QPointF standP2{baseLeft, standP1.y()};
-    // Left arrow
+    //Left arrow
     QLineF leftArrow;
     leftArrow.setP1(barrelP1);
     QPointF leftArrowP2{lafetTankerRect.left(), barrelP1.y() + lafetTankerRect.height() / 10.0};
@@ -1019,7 +1040,7 @@ void tst_TechnicShape::shape()
     strokeLafetTankerPath.addPath(lafetTankerPath);
     QCOMPARE(p_lafetTankerShape->shape(), strokeLafetTankerPath);
 
-    // PumpStatShape show pipes
+    // LafetTankerShape show pipes
     LafetTankerShape *p_lafetTanker= dynamic_cast<LafetTankerShape *>(p_lafetTankerShape);
     lafetTankerPath.clear();
     strokeLafetTankerPath.clear();
@@ -1065,7 +1086,7 @@ void tst_TechnicShape::shape()
     strokeLafetTankerPath.addPath(lafetTankerPath);
     QCOMPARE(p_lafetTanker->shape(), strokeLafetTankerPath);
 
-    // PumpStatShape show collector
+    // LafetTankerShape show collector
     lafetTankerPath.clear();
     strokeLafetTankerPath.clear();
     p_lafetTanker->setPipes(false);
@@ -1156,7 +1177,7 @@ void tst_TechnicShape::shape()
     strokeAerodromePath.addPath(aerodromePath);
     QCOMPARE(p_aerodromeShape->shape(), strokeAerodromePath);
 
-    // FirstAidShape show pipes
+    // AerodromeShape show pipes
     AerodromeShape *p_aerodrome = dynamic_cast<AerodromeShape *>(p_aerodromeShape);
     aerodromePath.clear();
     strokeAerodromePath.clear();
@@ -1192,7 +1213,7 @@ void tst_TechnicShape::shape()
     strokeAerodromePath.addPath(aerodromePath);
     QCOMPARE(p_aerodrome->shape(), strokeAerodromePath);
 
-    // FirstAidShape show collector
+    // AerodromeShape show collector
     aerodromePath.clear();
     strokeAerodromePath.clear();
     p_aerodrome->setPipes(false);
@@ -1231,6 +1252,102 @@ void tst_TechnicShape::shape()
 
     p_aerodrome = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
+
+// FoamShape
+    TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerodrome);
+    QPainterPathStroker ps_foamShape;
+    ps_foamShape.setWidth(p_foamShape->pen().widthF());
+    QRectF foamRect{p_foamShape->rect()};
+    qreal frontTabFoam{foamRect.height() / 3};
+    QPointF frontCenterFoam{foamRect.center().x(), foamRect.top()}; // 0.0, -37.5
+    QPointF frontRightFoam{foamRect.right(), foamRect.top() + frontTabFoam}; // 15.0, -12.5
+    QPointF frontLeftFoam{foamRect.left(), foamRect.top() + frontTabFoam}; // -15.0, -12.5
+    QPointF bottomRightFoam{foamRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftFoam{foamRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF foamPolygon;
+    foamPolygon << frontCenterFoam << frontRightFoam << bottomRightFoam
+                     << bottomLeftFoam << frontLeftFoam << frontCenterFoam;
+    QPainterPath foamPath;
+    foamPath.addPolygon(foamPolygon);
+    QPainterPath strokeFoamPath = ps_foamShape.createStroke(foamPath);
+    strokeFoamPath.addPath(foamPath);
+    QCOMPARE(p_foamShape->shape(), strokeFoamPath);
+
+    // FoamShape show pipes
+    AerodromeShape *p_foam = dynamic_cast<AerodromeShape *>(p_foamShape);
+    foamPath.clear();
+    strokeFoamPath.clear();
+    p_foam->setPipes(true);
+    foamPath.addPolygon(foamPolygon);
+    qreal sixtWidthFoam{foamRect.width() / 6}; // 5.0
+    qreal pipeYFoam{foamRect.bottom() - sixtWidthFoam};
+    QPointF rightPipeP1Foam{foamRect.right(), pipeYFoam};
+    QPointF rightPipeP2Foam{foamRect.right() + sixtWidthFoam, pipeYFoam};
+    // Right pipe
+    foamPath.moveTo(rightPipeP1Foam);
+    foamPath.lineTo(rightPipeP2Foam);
+    QPointF rightConnectP1Foam{rightPipeP2Foam.x(), rightPipeP2Foam.y()
+                                                                  + sixtWidthFoam / 2};
+    QPointF rightConnectP2Foam{rightPipeP2Foam.x(), rightPipeP2Foam.y()
+                                                                  - sixtWidthFoam / 2};
+    // Right pipe connection
+    foamPath.moveTo(rightConnectP1Foam);
+    foamPath.lineTo(rightConnectP2Foam);
+    QPointF leftPipeP1Foam{foamRect.left(), pipeYFoam};
+    QPointF leftPipeP2Foam{foamRect.left() - sixtWidthFoam, pipeYFoam};
+    // Left pipe
+    foamPath.moveTo(leftPipeP1Foam);
+    foamPath.lineTo(leftPipeP2Foam);
+    QPointF leftConnectP1Foam{leftPipeP2Foam.x(), leftPipeP2Foam.y()
+                                                                + sixtWidthFoam / 2};
+    QPointF leftConnectP2Foam{leftPipeP2Foam.x(), leftPipeP2Foam.y()
+                                                                - sixtWidthFoam / 2};
+    // Right pipe connection
+    foamPath.moveTo(leftConnectP1Foam);
+    foamPath.lineTo(leftConnectP2Foam);
+    strokeFoamPath = ps_foamShape.createStroke(foamPath);
+    strokeFoamPath.addPath(foamPath);
+    QCOMPARE(p_foam->shape(), strokeFoamPath);
+
+    // AerodromeShape show collector
+    foamPath.clear();
+    strokeFoamPath.clear();
+    p_foam->setPipes(false);
+    p_foam->setCollector(true);
+    foamPath.addPolygon(foamPolygon);
+    qreal collectorXFoam{foamRect.center().x()};
+    qreal collectorYFoam{foamRect.bottom() + sixtWidthFoam * 2};
+    qreal leftCollectorPipeXFoam{collectorXFoam - sixtWidthFoam};
+    QPointF leftRightCollectorPipeP1Foam{collectorXFoam, foamRect.bottom()};
+    QPointF leftCollectorPipeP2Foam{leftCollectorPipeXFoam, collectorYFoam};
+    //Left collector pipe
+    foamPath.moveTo(leftRightCollectorPipeP1Foam);
+    foamPath.lineTo(leftCollectorPipeP2Foam);
+    qreal rightCollectorPipeXFoam{collectorXFoam + sixtWidthFoam};
+    QPointF rightCollectorPipeP2Foam{rightCollectorPipeXFoam, collectorYFoam};
+    //Right collector pipe
+    foamPath.moveTo(leftRightCollectorPipeP1Foam);
+    foamPath.lineTo(rightCollectorPipeP2Foam);
+    QPointF leftCollectorConnectP1Foam{leftCollectorPipeXFoam - sixtWidthFoam / 2
+                                            , collectorYFoam};
+    QPointF leftCollectorConnectP2Foam{leftCollectorPipeXFoam + sixtWidthFoam / 2
+                                            , collectorYFoam};
+    //Left connector
+    foamPath.moveTo(leftCollectorConnectP1Foam);
+    foamPath.lineTo(leftCollectorConnectP2Foam);
+    QPointF rightCollectorConnectP1Foam{rightCollectorPipeXFoam - sixtWidthFoam / 2
+                                             , collectorYFoam};
+    QPointF rightCollectorConnectP2Foam{rightCollectorPipeXFoam + sixtWidthFoam / 2
+                                             , collectorYFoam};
+    //Right connector
+    foamPath.moveTo(rightCollectorConnectP1Foam);
+    foamPath.lineTo(rightCollectorConnectP2Foam);
+    strokeFoamPath = ps_foamShape.createStroke(foamPath);
+    strokeFoamPath.addPath(foamPath);
+    QCOMPARE(p_foam->shape(), strokeFoamPath);
+
+    p_foam = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
 }
 
 void tst_TechnicShape::image()
@@ -1362,6 +1479,14 @@ void tst_TechnicShape::image()
     QCOMPARE(aerodromeImage.width(), p_aerodromeShape->boundingRect().width());
     QCOMPARE(aerodromeImage.height(), p_aerodromeShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
+
+    // FoamShape
+    TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Foam);
+    QPixmap foamImage{p_foamShape->image()};
+    QVERIFY2(!foamImage.isNull(), "foamShape::image() returned a null pixmap");
+    QCOMPARE(foamImage.width(), p_foamShape->boundingRect().width());
+    QCOMPARE(foamImage.height(), p_foamShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -1483,6 +1608,12 @@ void tst_TechnicShape::rect_setRect()
     p_aerodromeShape->setRect(rect);
     QCOMPARE(p_aerodromeShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
+
+    // FoamShape
+    TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Foam);
+    p_foamShape->setRect(rect);
+    QCOMPARE(p_foamShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -1591,6 +1722,12 @@ void tst_TechnicShape::height_setHeight()
     p_aerodromeShape->setHeight(height);
     QCOMPARE(p_aerodromeShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
+
+    // FoamShape
+    TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Foam);
+    p_foamShape->setHeight(height);
+    QCOMPARE(p_foamShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -1708,6 +1845,12 @@ void tst_TechnicShape::text_setText()
     p_aerodromeShape->setText(text);
     QCOMPARE(p_aerodromeShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
+
+    // FoamShape
+    TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Foam);
+    p_foamShape->setText(text);
+    QCOMPARE(p_foamShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -1786,8 +1929,19 @@ void tst_TechnicShape::pipes_setPipes()
     QCOMPARE(p_aerodrome->pipes(), true);
     p_aerodrome->setPipes(false);
     QCOMPARE(p_aerodrome->pipes(), false);
-    p_aerodrome= nullptr;
+    p_aerodrome = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
+
+    //FoamShape
+    TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Foam);
+    FoamShape *p_foam = dynamic_cast<FoamShape *>(p_foamShape);
+    QCOMPARE(p_foam->pipes(), false);
+    p_foam->setPipes(true);
+    QCOMPARE(p_foam->pipes(), true);
+    p_foam->setPipes(false);
+    QCOMPARE(p_foam->pipes(), false);
+    p_foam = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
 }
 
 void tst_TechnicShape::collector_setCollector()
@@ -1868,6 +2022,17 @@ void tst_TechnicShape::collector_setCollector()
     QCOMPARE(p_aerodrome->collector(), false);
     p_aerodrome = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
+
+    //FoamShape
+    TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Foam);
+    FoamShape *p_foam = dynamic_cast<FoamShape *>(p_foamShape);
+    QCOMPARE(p_foam->collector(), false);
+    p_foam->setCollector(true);
+    QCOMPARE(p_foam->collector(), true);
+    p_foam->setCollector(false);
+    QCOMPARE(p_foam->collector(), false);
+    p_foam = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
 }
 
 class ContextMenuTester : public QMenu
@@ -2369,6 +2534,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_aerodromeShape);
     delete p_aerodromeContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
+
+    // FoamShape
+    ContextMenuTester *p_foamContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
+    p_foamShape->setMenu(p_foamContextMenu);
+    scene.addItem(p_foamShape);
+
+    mousePressEvent.setScenePos(p_foamShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_foamShape->setSelected(true);
+    QSignalSpy foamContextMenuSpy(p_foamShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(foamContextMenuSpy.count(), 0);
+
+    QList<QAction *> foamMenuActions{p_foamShape->menu()->actions()};
+    QCOMPARE(foamMenuActions.size(), 1);
+    foamMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_foamShape->boundingRect().center()));
+    foamMenuActions = p_foamShape->menu()->actions();
+    QCOMPARE(foamMenuActions.size(), 1);
+    QCOMPARE(foamContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_foamShape);
+    delete p_foamContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
