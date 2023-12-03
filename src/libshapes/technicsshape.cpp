@@ -106,6 +106,10 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
         break;
     case Foam:
         p_technicsShape = new FoamShape(parent);
+        break;
+    case Combo:
+        p_technicsShape = new ComboShape(parent);
+        break;
     default:
         break;
     }
@@ -4884,125 +4888,124 @@ FoamShape::FoamShape(QGraphicsItem *parent)
     , m_showCollector{false}
     , m_showText{false}
 {
-        setFlag(ItemSendsGeometryChanges, true);
-        setAcceptHoverEvents(true);
-        setPen(QPen(Qt::red, 1));
-        setBrush(QBrush(Qt::white));
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
 }
 
 void FoamShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    Q_UNUSED(widget);
 
-        Q_UNUSED(widget);
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
 
-        painter->setRenderHint(QPainter::Antialiasing);
-        painter->setRenderHint(QPainter::SmoothPixmapTransform);
-        painter->setPen(pen());
-        painter->setBrush(brush());
+    drawFoamShape(painter);
 
-        drawFoamShape(painter);
-
-        if (option->state & QStyle::State_Selected)
-            highlightSelected(painter, option);
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
 }
 
 QRectF FoamShape::boundingRect() const
 {
-        QRectF boundingRect{m_foamRect};
-        if (m_showPipes) {
-            qreal pipeLength{m_foamRect.width() / 6};
-            boundingRect.adjust(-pipeLength, 0.0, pipeLength, 0.0);
-        }
-        if (m_showCollector) {
-            qreal collectorLength{m_foamRect.width() / 3};
-            boundingRect.adjust(0.0, 0.0, 0.0, collectorLength);
-        }
-        qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
-        if (halfpw > 0.0)
-            boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    QRectF boundingRect{m_foamRect};
+    if (m_showPipes) {
+        qreal pipeLength{m_foamRect.width() / 6};
+        boundingRect.adjust(-pipeLength, 0.0, pipeLength, 0.0);
+    }
+    if (m_showCollector) {
+        qreal collectorLength{m_foamRect.width() / 3};
+        boundingRect.adjust(0.0, 0.0, 0.0, collectorLength);
+    }
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
 
-        return boundingRect;
+    return boundingRect;
 }
 
 QPainterPath FoamShape::shape() const
 {
-        QPainterPath path;
-        path.addPolygon(basePolygon(rect()));
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
 
-        qreal sixthWidth{m_foamRect.width() / 6}; // 5.0
-        if (m_showPipes) {
-            qreal pipeY{m_foamRect.bottom() - sixthWidth};
-            QPointF rightPipeP1{m_foamRect.right(), pipeY};
-            QPointF rightPipeP2{m_foamRect.right() + sixthWidth, pipeY};
-            // Right pipe
-            path.moveTo(rightPipeP1);
-            path.lineTo(rightPipeP2);
+    qreal sixthWidth{m_foamRect.width() / 6}; // 5.0
+    if (m_showPipes) {
+        qreal pipeY{m_foamRect.bottom() - sixthWidth};
+        QPointF rightPipeP1{m_foamRect.right(), pipeY};
+        QPointF rightPipeP2{m_foamRect.right() + sixthWidth, pipeY};
+        // Right pipe
+        path.moveTo(rightPipeP1);
+        path.lineTo(rightPipeP2);
 
-            QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + sixthWidth / 2};
-            QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - sixthWidth / 2};
-            // Right pipe connection
-            path.moveTo(rightConnectP1);
-            path.lineTo(rightConnectP2);
+        QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + sixthWidth / 2};
+        QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - sixthWidth / 2};
+        // Right pipe connection
+        path.moveTo(rightConnectP1);
+        path.lineTo(rightConnectP2);
 
-            QPointF leftPipeP1{m_foamRect.left(), pipeY};
-            QPointF leftPipeP2{m_foamRect.left() - sixthWidth, pipeY};
-            // Left pipe
-            path.moveTo(leftPipeP1);
-            path.lineTo(leftPipeP2);
+        QPointF leftPipeP1{m_foamRect.left(), pipeY};
+        QPointF leftPipeP2{m_foamRect.left() - sixthWidth, pipeY};
+        // Left pipe
+        path.moveTo(leftPipeP1);
+        path.lineTo(leftPipeP2);
 
-            QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + sixthWidth / 2};
-            QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - sixthWidth / 2};
-            // Right pipe connection
-            path.moveTo(leftConnectP1);
-            path.lineTo(leftConnectP2);
-        }
+        QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + sixthWidth / 2};
+        QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - sixthWidth / 2};
+        // Right pipe connection
+        path.moveTo(leftConnectP1);
+        path.lineTo(leftConnectP2);
+    }
 
-        if (m_showCollector) {
-            qreal collectorX{m_foamRect.center().x()};
-            qreal collectorY{m_foamRect.bottom() + sixthWidth * 2};
-            qreal leftPipeX{collectorX - sixthWidth};
-            QPointF leftRightPipeP1{collectorX, m_foamRect.bottom()};
-            QPointF leftPipeP2{leftPipeX, collectorY};
-            //Left collector pipe
-            path.moveTo(leftRightPipeP1);
-            path.lineTo(leftPipeP2);
+    if (m_showCollector) {
+        qreal collectorX{m_foamRect.center().x()};
+        qreal collectorY{m_foamRect.bottom() + sixthWidth * 2};
+        qreal leftPipeX{collectorX - sixthWidth};
+        QPointF leftRightPipeP1{collectorX, m_foamRect.bottom()};
+        QPointF leftPipeP2{leftPipeX, collectorY};
+        //Left collector pipe
+        path.moveTo(leftRightPipeP1);
+        path.lineTo(leftPipeP2);
 
-            qreal rightPipeX{collectorX + sixthWidth};
-            QPointF rightPipeP2{rightPipeX, collectorY};
-            //Right collector pipe
-            path.moveTo(leftRightPipeP1);
-            path.lineTo(rightPipeP2);
+        qreal rightPipeX{collectorX + sixthWidth};
+        QPointF rightPipeP2{rightPipeX, collectorY};
+        //Right collector pipe
+        path.moveTo(leftRightPipeP1);
+        path.lineTo(rightPipeP2);
 
-            QPointF leftConnectP1{leftPipeX - sixthWidth / 2, collectorY};
-            QPointF leftConnectP2{leftPipeX + sixthWidth / 2, collectorY};
-            //Left connector
-            path.moveTo(leftConnectP1);
-            path.lineTo(leftConnectP2);
+        QPointF leftConnectP1{leftPipeX - sixthWidth / 2, collectorY};
+        QPointF leftConnectP2{leftPipeX + sixthWidth / 2, collectorY};
+        //Left connector
+        path.moveTo(leftConnectP1);
+        path.lineTo(leftConnectP2);
 
-            QPointF rightConnectP1{rightPipeX - sixthWidth / 2, collectorY};
-            QPointF rightConnectP2{rightPipeX + sixthWidth / 2, collectorY};
-            //Right connector
-            path.moveTo(rightConnectP1);
-            path.lineTo(rightConnectP2);
-        }
+        QPointF rightConnectP1{rightPipeX - sixthWidth / 2, collectorY};
+        QPointF rightConnectP2{rightPipeX + sixthWidth / 2, collectorY};
+        //Right connector
+        path.moveTo(rightConnectP1);
+        path.lineTo(rightConnectP2);
+    }
 
-        return shapeFromPath(path);
+    return shapeFromPath(path);
 }
 
 QPixmap FoamShape::image()
 {
-        qreal pixmapWidth{boundingRect().width()};
-        qreal pixmapHeight{boundingRect().height()};
-        QPixmap pixmap(pixmapWidth, pixmapHeight);
-        pixmap.fill(Qt::transparent);
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
 
-        QPainter painter(&pixmap);
-        painter.setPen(pen());
-        painter.setBrush(brush());
-        painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
-        drawFoamShape(&painter);
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawFoamShape(&painter);
 
-        return pixmap;
+    return pixmap;
 }
 
 TechnicsShape::ShapeType FoamShape::shapeType() const
@@ -5012,23 +5015,23 @@ TechnicsShape::ShapeType FoamShape::shapeType() const
 
 void FoamShape::setRect(const QRectF &rect)
 {
-        if (m_foamRect == rect)
-            return;
+    if (m_foamRect == rect)
+        return;
 
-        prepareGeometryChange();
-        m_foamRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
-        if (m_foamText != nullptr)
-            m_foamText->setPos(m_foamRect.right(), m_foamRect.bottom()
-                                                                 - m_foamRect.width() / 6);
-        if (m_showPipes) {
-            qreal pipeLength{m_foamRect.width() / 6};
-            m_foamRect.adjust(pipeLength, 0.0, -pipeLength, 0.0);
-        }
-        if (m_showCollector) {
-            qreal collectorLength{m_foamRect.width() / 3};
-            m_foamRect.adjust(0.0, 0.0, 0.0, -collectorLength);
-        }
-        update();
+    prepareGeometryChange();
+    m_foamRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_foamText != nullptr)
+        m_foamText->setPos(m_foamRect.right(), m_foamRect.bottom()
+                                                   - m_foamRect.width() / 6);
+    if (m_showPipes) {
+        qreal pipeLength{m_foamRect.width() / 6};
+        m_foamRect.adjust(pipeLength, 0.0, -pipeLength, 0.0);
+    }
+    if (m_showCollector) {
+        qreal collectorLength{m_foamRect.width() / 3};
+        m_foamRect.adjust(0.0, 0.0, 0.0, -collectorLength);
+    }
+    update();
 }
 
 QRectF FoamShape::rect() const
@@ -5038,15 +5041,15 @@ QRectF FoamShape::rect() const
 
 void FoamShape::setHeight(const qreal &height)
 {
-        if (m_foamRect.height() == height)
-            return;
+    if (m_foamRect.height() == height)
+        return;
 
-        qreal oldHeight{m_foamRect.height()};
-        prepareGeometryChange();
-        m_foamRect.setHeight(height);
-        qreal dy{(m_foamRect.height() - oldHeight) / 2};
-        m_foamRect.moveTo(QPointF(m_foamRect.x(), m_foamRect.y() - dy));
-        update();
+    qreal oldHeight{m_foamRect.height()};
+    prepareGeometryChange();
+    m_foamRect.setHeight(height);
+    qreal dy{(m_foamRect.height() - oldHeight) / 2};
+    m_foamRect.moveTo(QPointF(m_foamRect.x(), m_foamRect.y() - dy));
+    update();
 }
 
 qreal FoamShape::height() const
@@ -5056,33 +5059,33 @@ qreal FoamShape::height() const
 
 void FoamShape::setText(const QString &text)
 {
-        if (m_foamText == nullptr) {
-            m_foamText = new QGraphicsTextItem(this);
-            m_foamText->setTextInteractionFlags(Qt::TextEditorInteraction);
-            m_foamText->setRotation(-90);
-        }
-        m_foamText->setPlainText(text);
-        m_showText = true;
+    if (m_foamText == nullptr) {
+        m_foamText = new QGraphicsTextItem(this);
+        m_foamText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_foamText->setRotation(-90);
+    }
+    m_foamText->setPlainText(text);
+    m_showText = true;
 }
 
 QString FoamShape::text() const
 {
-        if (m_foamText == nullptr)
-            return "";
+    if (m_foamText == nullptr)
+        return "";
 
-        return m_foamText->toPlainText();
+    return m_foamText->toPlainText();
 }
 
 void FoamShape::setPipes(bool showPipes)
 {
-        if (m_showPipes == showPipes)
-            return;
+    if (m_showPipes == showPipes)
+        return;
 
-        prepareGeometryChange();
-        m_showPipes = showPipes;
-        setSelected(false);
-        setSelected(true);
-        update();
+    prepareGeometryChange();
+    m_showPipes = showPipes;
+    setSelected(false);
+    setSelected(true);
+    update();
 }
 
 bool FoamShape::pipes() const
@@ -5092,14 +5095,14 @@ bool FoamShape::pipes() const
 
 void FoamShape::setCollector(bool showCollector)
 {
-        if (m_showCollector == showCollector)
-            return;
+    if (m_showCollector == showCollector)
+        return;
 
-        prepareGeometryChange();
-        m_showCollector = showCollector;
-        setSelected(false);
-        setSelected(true);
-        update();
+    prepareGeometryChange();
+    m_showCollector = showCollector;
+    setSelected(false);
+    setSelected(true);
+    update();
 }
 
 bool FoamShape::collector()
@@ -5109,46 +5112,46 @@ bool FoamShape::collector()
 
 void FoamShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-        if (mouseEvent->buttons() == Qt::RightButton) {
-            createAction();
-            addActions(m_foamActionList);
-            QAction menuAction{menu()->exec(mouseEvent->screenPos())};
-            QString menuActionText;
-            if (menuAction.parent()) {
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_foamActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
             menuActionText = menuAction.parent()->objectName();
-            }
-            if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
             removeActions(m_foamActionList);
             m_foamActionList.clear();
-            }
-        } else {
-            AbstractShape::mousePressEvent(mouseEvent);
         }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
 }
 
 void FoamShape::createAction()
 {
-        QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
-        m_showPipeAction.reset(new QAction(pipeActionText));
-        m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
-        QObject::connect(m_showPipeAction.get(), &QAction::triggered
-                         , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
-        m_foamActionList.append(m_showPipeAction.get());
+    QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
+    m_showPipeAction.reset(new QAction(pipeActionText));
+    m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
+    QObject::connect(m_showPipeAction.get(), &QAction::triggered
+                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
+    m_foamActionList.append(m_showPipeAction.get());
 
-        QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
-                                                  : QObject::tr("Show collector")};
-        m_showCollectorAction.reset(new QAction(collectActionText));
-        m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
-        QObject::connect(m_showCollectorAction.get(), &QAction::triggered
-                         , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
-        m_foamActionList.append(m_showCollectorAction.get());
+    QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
+                                              : QObject::tr("Show collector")};
+    m_showCollectorAction.reset(new QAction(collectActionText));
+    m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
+    QObject::connect(m_showCollectorAction.get(), &QAction::triggered
+                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
+    m_foamActionList.append(m_showCollectorAction.get());
 
-        QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
-        m_addTextAction.reset(new QAction(addText));
-        m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-        QObject::connect(m_addTextAction.get(), &QAction::triggered
-                         , [this](){m_showText ? textShow(false) : textShow(true);});
-        m_foamActionList.append(m_addTextAction.get());
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_foamActionList.append(m_addTextAction.get());
 }
 
 void FoamShape::textShow(bool showText)
@@ -5172,7 +5175,7 @@ void FoamShape::drawFoamShape(QPainter *painter)
 {
     painter->drawPolygon(basePolygon(rect()));
 
-    //Draw exhauster
+    //Draw foam icon
     qreal thirdWidth{m_foamRect.width() / 3}; // 10.0
     qreal fifthHeight{m_foamRect.height() / 5}; // 15.0
     qreal ellipseCenterX{m_foamRect.center().x()};
@@ -5233,6 +5236,391 @@ void FoamShape::drawCollector(QPainter *painter, qreal sixtWidth)
     qreal collectorY{m_foamRect.bottom() + sixtWidth * 2};
     qreal leftPipeX{collectorX - sixtWidth};
     QPointF leftRightPipeP1{collectorX, m_foamRect.bottom()};
+    QPointF leftPipeP2{leftPipeX, collectorY};
+    painter->drawLine(leftRightPipeP1, leftPipeP2); //Left collector pipe
+
+    qreal rightPipeX{collectorX + sixtWidth};
+    QPointF rightPipeP2{rightPipeX, collectorY};
+    painter->drawLine(leftRightPipeP1, rightPipeP2); //Right collector pipe
+
+    QPointF leftConnectP1{leftPipeX - sixtWidth / 2, collectorY};
+    QPointF leftConnectP2{leftPipeX + sixtWidth / 2, collectorY};
+    painter->drawLine(leftConnectP1, leftConnectP2); //Left connector
+
+    QPointF rightConnectP1{rightPipeX - sixtWidth / 2, collectorY};
+    QPointF rightConnectP2{rightPipeX + sixtWidth / 2, collectorY};
+    painter->drawLine(rightConnectP1, rightConnectP2);  //Right connector
+}
+
+ComboShape::ComboShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_comboType(Combo)
+    , m_comboText{nullptr}
+    , m_comboRect{QRectF(-15.0, -37.5, 30.0, 75.0)}
+    , m_showPipes{false}
+    , m_showCollector{false}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void ComboShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawComboShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF ComboShape::boundingRect() const
+{
+    QRectF boundingRect{m_comboRect};
+    if (m_showPipes) {
+        qreal pipeLength{m_comboRect.width() / 6};
+        boundingRect.adjust(-pipeLength, 0.0, pipeLength, 0.0);
+    }
+    if (m_showCollector) {
+        qreal collectorLength{m_comboRect.width() / 3};
+        boundingRect.adjust(0.0, 0.0, 0.0, collectorLength);
+    }
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath ComboShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    qreal sixthWidth{m_comboRect.width() / 6}; // 5.0
+    if (m_showPipes) {
+        qreal pipeY{m_comboRect.bottom() - sixthWidth};
+        QPointF rightPipeP1{m_comboRect.right(), pipeY};
+        QPointF rightPipeP2{m_comboRect.right() + sixthWidth, pipeY};
+        // Right pipe
+        path.moveTo(rightPipeP1);
+        path.lineTo(rightPipeP2);
+
+        QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + sixthWidth / 2};
+        QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - sixthWidth / 2};
+        // Right pipe connection
+        path.moveTo(rightConnectP1);
+        path.lineTo(rightConnectP2);
+
+        QPointF leftPipeP1{m_comboRect.left(), pipeY};
+        QPointF leftPipeP2{m_comboRect.left() - sixthWidth, pipeY};
+        // Left pipe
+        path.moveTo(leftPipeP1);
+        path.lineTo(leftPipeP2);
+
+        QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + sixthWidth / 2};
+        QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - sixthWidth / 2};
+        // Right pipe connection
+        path.moveTo(leftConnectP1);
+        path.lineTo(leftConnectP2);
+    }
+
+    if (m_showCollector) {
+        qreal collectorX{m_comboRect.center().x()};
+        qreal collectorY{m_comboRect.bottom() + sixthWidth * 2};
+        qreal leftPipeX{collectorX - sixthWidth};
+        QPointF leftRightPipeP1{collectorX, m_comboRect.bottom()};
+        QPointF leftPipeP2{leftPipeX, collectorY};
+        //Left collector pipe
+        path.moveTo(leftRightPipeP1);
+        path.lineTo(leftPipeP2);
+
+        qreal rightPipeX{collectorX + sixthWidth};
+        QPointF rightPipeP2{rightPipeX, collectorY};
+        //Right collector pipe
+        path.moveTo(leftRightPipeP1);
+        path.lineTo(rightPipeP2);
+
+        QPointF leftConnectP1{leftPipeX - sixthWidth / 2, collectorY};
+        QPointF leftConnectP2{leftPipeX + sixthWidth / 2, collectorY};
+        //Left connector
+        path.moveTo(leftConnectP1);
+        path.lineTo(leftConnectP2);
+
+        QPointF rightConnectP1{rightPipeX - sixthWidth / 2, collectorY};
+        QPointF rightConnectP2{rightPipeX + sixthWidth / 2, collectorY};
+        //Right connector
+        path.moveTo(rightConnectP1);
+        path.lineTo(rightConnectP2);
+    }
+
+    return shapeFromPath(path);
+}
+
+QPixmap ComboShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawComboShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType ComboShape::shapeType() const
+{
+    return m_comboType;
+}
+
+void ComboShape::setRect(const QRectF &rect)
+{
+    if (m_comboRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_comboRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_comboText != nullptr)
+        m_comboText->setPos(m_comboRect.right(), m_comboRect.bottom()
+                                                   - m_comboRect.width() / 6);
+    if (m_showPipes) {
+        qreal pipeLength{m_comboRect.width() / 6};
+        m_comboRect.adjust(pipeLength, 0.0, -pipeLength, 0.0);
+    }
+    if (m_showCollector) {
+        qreal collectorLength{m_comboRect.width() / 3};
+        m_comboRect.adjust(0.0, 0.0, 0.0, -collectorLength);
+    }
+    update();
+}
+
+QRectF ComboShape::rect() const
+{
+    return m_comboRect;
+}
+
+void ComboShape::setHeight(const qreal &height)
+{
+    if (m_comboRect.height() == height)
+        return;
+
+    qreal oldHeight{m_comboRect.height()};
+    prepareGeometryChange();
+    m_comboRect.setHeight(height);
+    qreal dy{(m_comboRect.height() - oldHeight) / 2};
+    m_comboRect.moveTo(QPointF(m_comboRect.x(), m_comboRect.y() - dy));
+    update();
+}
+
+qreal ComboShape::height() const
+{
+    return m_comboRect.height();
+}
+
+void ComboShape::setText(const QString &text)
+{
+    if (m_comboText == nullptr) {
+        m_comboText = new QGraphicsTextItem(this);
+        m_comboText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_comboText->setRotation(-90);
+    }
+    m_comboText->setPlainText(text);
+    m_showText = true;
+}
+
+QString ComboShape::text() const
+{
+
+    if (m_comboText == nullptr)
+        return "";
+
+    return m_comboText->toPlainText();
+}
+
+void ComboShape::setPipes(bool showPipes)
+{
+    if (m_showPipes == showPipes)
+        return;
+
+    prepareGeometryChange();
+    m_showPipes = showPipes;
+    setSelected(false);
+    setSelected(true);
+    update();
+}
+
+bool ComboShape::pipes() const
+{
+    return m_showPipes;
+}
+
+void ComboShape::setCollector(bool showCollector)
+{
+    if (m_showCollector == showCollector)
+        return;
+
+    prepareGeometryChange();
+    m_showCollector = showCollector;
+    setSelected(false);
+    setSelected(true);
+    update();
+}
+
+bool ComboShape::collector()
+{
+    return m_showCollector;
+}
+
+void ComboShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_comboActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_comboActionList);
+            m_comboActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void ComboShape::createAction()
+{
+    QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
+    m_showPipeAction.reset(new QAction(pipeActionText));
+    m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
+    QObject::connect(m_showPipeAction.get(), &QAction::triggered
+                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
+    m_comboActionList.append(m_showPipeAction.get());
+
+    QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
+                                              : QObject::tr("Show collector")};
+    m_showCollectorAction.reset(new QAction(collectActionText));
+    m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
+    QObject::connect(m_showCollectorAction.get(), &QAction::triggered
+                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
+    m_comboActionList.append(m_showCollectorAction.get());
+
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_comboActionList.append(m_addTextAction.get());
+}
+
+void ComboShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_comboText == nullptr) {
+            m_comboText=new QGraphicsTextItem(this);
+            m_comboText->setPlainText("АКТ-");
+            m_comboText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_comboText->setRotation(-90);
+        }
+        m_comboText->show();
+        m_showText = true;
+    } else {
+        m_comboText->hide();
+        m_showText = false;
+    }
+}
+
+void ComboShape::drawComboShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+
+    //Draw foam icon
+    qreal thirdWidth{m_comboRect.width() / 3}; // 10.0
+    qreal fifthHeight{m_comboRect.height() / 5}; // 15.0
+    qreal ellipseCenterX{m_comboRect.center().x()};
+    qreal ellipseCenterY{m_comboRect.bottom() - fifthHeight}; // (0.0, 22.5)
+    QPointF ellipseCenter{ellipseCenterX, ellipseCenterY};
+    // Point on a circle. x = x0 + r * cos(a); y = y0 + r * sin(a)
+    // Starts at 3 o'clock, direction clockwise.
+    QPointF leftTop{ellipseCenterX + thirdWidth * qCos(qDegreesToRadians(225.0)),
+                    ellipseCenterY + thirdWidth * qSin(qDegreesToRadians(225.0))};
+    QPointF rightTop{ellipseCenterX + thirdWidth * qCos(qDegreesToRadians(315.0)),
+                     ellipseCenterY + thirdWidth * qSin(qDegreesToRadians(315.0))};
+    QPointF leftBottom{ellipseCenterX + thirdWidth * qCos(qDegreesToRadians(135.0)),
+                       ellipseCenterY + thirdWidth * qSin(qDegreesToRadians(135.0))};
+    QPointF rightBottom{ellipseCenterX + thirdWidth * qCos(qDegreesToRadians(45.0)),
+                        ellipseCenterY + thirdWidth * qSin(qDegreesToRadians(45.0))};
+    painter->drawEllipse(ellipseCenter, thirdWidth, thirdWidth);
+    painter->drawLine(leftTop, rightBottom);
+    painter->drawLine(leftBottom, rightTop);
+
+    //Draw powder icon
+    painter->setBrush(QBrush(Qt::red));
+    qreal sixthWidth{m_comboRect.width() / 6}; // 5.0
+    qreal thirdHeight{height() / 3}; // 25.0
+    qreal powderX{m_comboRect.left() + sixthWidth};
+    qreal powderY{m_comboRect.top() + thirdHeight};
+    qreal powderWidth{m_comboRect.width() - (sixthWidth * 2)};
+    qreal powderHeight{height() / 3.75}; // 20.0
+    QRectF powderRect{powderX, powderY, powderWidth, powderHeight};
+    painter->drawRect(powderRect);
+    painter->setBrush(brush());
+
+    if (m_showText) {
+        m_comboText->setPos(m_comboRect.right(), m_comboRect.bottom() - thirdWidth);
+    }
+    if (m_showPipes) {
+        drawPipes(painter, sixthWidth);
+    }
+
+    if (m_showCollector) {
+        drawCollector(painter, sixthWidth);
+    }
+}
+
+void ComboShape::drawPipes(QPainter *painter, qreal sixtWidth)
+{
+    painter->setPen(QPen(Qt::black, 1));
+    qreal pipeY{m_comboRect.bottom() - sixtWidth};
+    QPointF rightPipeP1{m_comboRect.right(), pipeY};
+    QPointF rightPipeP2{m_comboRect.right() + sixtWidth, pipeY};
+    painter->drawLine(rightPipeP1, rightPipeP2); // Right pipe
+
+    QPointF rightConnectP1{rightPipeP2.x(), rightPipeP2.y() + sixtWidth / 2};
+    QPointF rightConnectP2{rightPipeP2.x(), rightPipeP2.y() - sixtWidth / 2};
+    painter->drawLine(rightConnectP1, rightConnectP2); // Right pipe connection
+
+    QPointF leftPipeP1{m_comboRect.left(), pipeY};
+    QPointF leftPipeP2{m_comboRect.left() - sixtWidth, pipeY};
+    painter->drawLine(leftPipeP1, leftPipeP2); // Left pipe
+
+    QPointF leftConnectP1{leftPipeP2.x(), leftPipeP2.y() + sixtWidth / 2};
+    QPointF leftConnectP2{leftPipeP2.x(), leftPipeP2.y() - sixtWidth / 2};
+    painter->drawLine(leftConnectP1, leftConnectP2); // Right pipe connection
+}
+
+void ComboShape::drawCollector(QPainter *painter, qreal sixtWidth)
+{
+    painter->setPen(QPen(Qt::black, 1));
+    qreal collectorX{m_comboRect.center().x()};
+    qreal collectorY{m_comboRect.bottom() + sixtWidth * 2};
+    qreal leftPipeX{collectorX - sixtWidth};
+    QPointF leftRightPipeP1{collectorX, m_comboRect.bottom()};
     QPointF leftPipeP2{leftPipeX, collectorY};
     painter->drawLine(leftRightPipeP1, leftPipeP2); //Left collector pipe
 

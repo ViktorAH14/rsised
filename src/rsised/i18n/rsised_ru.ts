@@ -737,9 +737,10 @@
         <translation>АПТ</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="742"/>
         <source>Combo</source>
         <translatorcomment>Автомобиль комбинированного тушения.</translatorcomment>
-        <translation type="vanished">АКТ</translation>
+        <translation>АКТ</translation>
     </message>
     <message>
         <source>Aerosol</source>

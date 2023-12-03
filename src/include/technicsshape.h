@@ -32,23 +32,23 @@ class TechnicsShape : public AbstractShape
 public:
     enum { Type = UserType + 200 };
     enum ShapeType { Base               //Автомобиль пожарный общее обозначение
-                     , Tanker           //АЦ
-                     , PumpHose         //АНР
-                     , FirstAid         //АПП
-                     , Emergency        //АСА
-                     , AutoLadder       //АЛ
-                     , CrankLift        //АПК
-                     , TelescopicLift   //ТПЛ
-                     , HoseCar          //АР
-                     , Comm             //АСО
-                     , TechServ         //АТ
-                     , SmokRem          //АД
-                     , PumpStat         //ПНС
+                     , Tanker           //АЦ автоцистерна
+                     , PumpHose         //АНР автомобиль насосно-рукавный
+                     , FirstAid         //АПП автомобиль первой помощи
+                     , Emergency        //АСА пожарный аварийно-спасательный автомобиль
+                     , AutoLadder       //АЛ автолестница пожарная
+                     , CrankLift        //АПК автоподъёмник коленчатый
+                     , TelescopicLift   //ТПЛ автоподъёмник телескопический
+                     , HoseCar          //АР автомобиль рукавный
+                     , Comm             //АСО автомобиль связи и освещения
+                     , TechServ         //АТ автомобиль технической службы
+                     , SmokRem          //АД автомобиль дымоудаления
+                     , PumpStat         //ПНС пожарная автонасосная станция
                      , LafetTanker      //АЛСС автомобиль пожарный со стационарным лафетным стволом
                      , LafetCar         //АЛСП автомобиль передвижной лафетный ствол
-                     , Aerodrome        //АА
-                     , Foam             //АПТ
-                     , Combo
+                     , Aerodrome        //АА автомобиль пожарный аэродромный
+                     , Foam             //АПТ автомобиль пожарный пенного тушения
+                     , Combo            //АКТ автомобиль пожарный комбинированного тушения
                      , Aerosol
                      , Powder
                      , Carbon
@@ -903,5 +903,58 @@ private:
     QScopedPointer<QAction> m_showCollectorAction;
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_foamActionList;
+};
+
+class ComboShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 218};
+
+    explicit ComboShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~ComboShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(ComboShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawComboShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixtWidth);
+    void drawCollector(QPainter *painter, qreal sixtWidth);
+
+    const ShapeType m_comboType;
+    QGraphicsTextItem *m_comboText;
+    QRectF m_comboRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_comboActionList;
 };
 #endif // TECHNICSSHAPE_H
