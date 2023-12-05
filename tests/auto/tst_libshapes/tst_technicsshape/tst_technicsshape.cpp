@@ -171,6 +171,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_foamShape, "foamShape is nullptr");
     QCOMPARE(int(p_foamShape->type()), int(QGraphicsItem::UserType + 217));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
+
+    // ComboShape
+    TechnicsShape *p_comboShape = nullptr;
+    p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Combo);
+    QVERIFY2(p_comboShape, "comboShape is nullptr");
+    QCOMPARE(int(p_comboShape->type()), int(QGraphicsItem::UserType + 218));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -331,6 +338,20 @@ void tst_TechnicShape::boundingRect()
     p_foam->setCollector(false);
     QCOMPARE(p_foamShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
+
+    // ComboShape
+    TechnicsShape *p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Combo);
+    QCOMPARE(p_comboShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    ComboShape *p_combo = dynamic_cast<ComboShape *>(p_comboShape);
+    p_combo->setPipes(true);
+    QCOMPARE(p_comboShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 76.0));
+    p_combo->setCollector(true);
+    QCOMPARE(p_comboShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 86.0));
+    p_combo->setPipes(false);
+    QCOMPARE(p_comboShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 86.0));
+    p_combo->setCollector(false);
+    QCOMPARE(p_comboShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
 }
 
 void tst_TechnicShape::shape()
@@ -1309,7 +1330,7 @@ void tst_TechnicShape::shape()
     strokeFoamPath.addPath(foamPath);
     QCOMPARE(p_foam->shape(), strokeFoamPath);
 
-    // AerodromeShape show collector
+    // FoamShape show collector
     foamPath.clear();
     strokeFoamPath.clear();
     p_foam->setPipes(false);
@@ -1348,6 +1369,102 @@ void tst_TechnicShape::shape()
 
     p_foam = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
+
+// ComboShape
+    TechnicsShape *p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerodrome);
+    QPainterPathStroker ps_comboShape;
+    ps_comboShape.setWidth(p_comboShape->pen().widthF());
+    QRectF comboRect{p_comboShape->rect()};
+    qreal frontTabCombo{comboRect.height() / 3};
+    QPointF frontCenterCombo{comboRect.center().x(), comboRect.top()}; // 0.0, -37.5
+    QPointF frontRightCombo{comboRect.right(), comboRect.top() + frontTabCombo}; // 15.0, -12.5
+    QPointF frontLeftCombo{comboRect.left(), comboRect.top() + frontTabCombo}; // -15.0, -12.5
+    QPointF bottomRightCombo{comboRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftCombo{comboRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF comboPolygon;
+    comboPolygon << frontCenterCombo << frontRightCombo << bottomRightCombo
+                << bottomLeftCombo << frontLeftCombo << frontCenterCombo;
+    QPainterPath comboPath;
+    comboPath.addPolygon(comboPolygon);
+    QPainterPath strokeComboPath = ps_comboShape.createStroke(comboPath);
+    strokeComboPath.addPath(comboPath);
+    QCOMPARE(p_comboShape->shape(), strokeComboPath);
+
+    // ComboShape show pipes
+    AerodromeShape *p_combo = dynamic_cast<AerodromeShape *>(p_comboShape);
+    comboPath.clear();
+    strokeComboPath.clear();
+    p_combo->setPipes(true);
+    comboPath.addPolygon(comboPolygon);
+    qreal sixtWidthCombo{comboRect.width() / 6}; // 5.0
+    qreal pipeYCombo{comboRect.bottom() - sixtWidthCombo};
+    QPointF rightPipeP1Combo{comboRect.right(), pipeYCombo};
+    QPointF rightPipeP2Combo{comboRect.right() + sixtWidthCombo, pipeYCombo};
+    // Right pipe
+    comboPath.moveTo(rightPipeP1Combo);
+    comboPath.lineTo(rightPipeP2Combo);
+    QPointF rightConnectP1Combo{rightPipeP2Combo.x(), rightPipeP2Combo.y()
+                                                        + sixtWidthCombo / 2};
+    QPointF rightConnectP2Combo{rightPipeP2Combo.x(), rightPipeP2Combo.y()
+                                                        - sixtWidthCombo / 2};
+    // Right pipe connection
+    comboPath.moveTo(rightConnectP1Combo);
+    comboPath.lineTo(rightConnectP2Combo);
+    QPointF leftPipeP1Combo{comboRect.left(), pipeYCombo};
+    QPointF leftPipeP2Combo{comboRect.left() - sixtWidthCombo, pipeYCombo};
+    // Left pipe
+    comboPath.moveTo(leftPipeP1Combo);
+    comboPath.lineTo(leftPipeP2Combo);
+    QPointF leftConnectP1Combo{leftPipeP2Combo.x(), leftPipeP2Combo.y()
+                                                      + sixtWidthCombo / 2};
+    QPointF leftConnectP2Combo{leftPipeP2Combo.x(), leftPipeP2Combo.y()
+                                                      - sixtWidthCombo / 2};
+    // Right pipe connection
+    comboPath.moveTo(leftConnectP1Combo);
+    comboPath.lineTo(leftConnectP2Combo);
+    strokeComboPath = ps_comboShape.createStroke(comboPath);
+    strokeComboPath.addPath(comboPath);
+    QCOMPARE(p_combo->shape(), strokeComboPath);
+
+    // ComboShape show collector
+    comboPath.clear();
+    strokeComboPath.clear();
+    p_combo->setPipes(false);
+    p_combo->setCollector(true);
+    comboPath.addPolygon(comboPolygon);
+    qreal collectorXCombo{comboRect.center().x()};
+    qreal collectorYCombo{comboRect.bottom() + sixtWidthCombo * 2};
+    qreal leftCollectorPipeXCombo{collectorXCombo - sixtWidthCombo};
+    QPointF leftRightCollectorPipeP1Combo{collectorXCombo, comboRect.bottom()};
+    QPointF leftCollectorPipeP2Combo{leftCollectorPipeXCombo, collectorYCombo};
+    //Left collector pipe
+    comboPath.moveTo(leftRightCollectorPipeP1Combo);
+    comboPath.lineTo(leftCollectorPipeP2Combo);
+    qreal rightCollectorPipeXCombo{collectorXCombo + sixtWidthCombo};
+    QPointF rightCollectorPipeP2Combo{rightCollectorPipeXCombo, collectorYCombo};
+    //Right collector pipe
+    comboPath.moveTo(leftRightCollectorPipeP1Combo);
+    comboPath.lineTo(rightCollectorPipeP2Combo);
+    QPointF leftCollectorConnectP1Combo{leftCollectorPipeXCombo - sixtWidthCombo / 2
+                                       , collectorYCombo};
+    QPointF leftCollectorConnectP2Combo{leftCollectorPipeXCombo + sixtWidthCombo / 2
+                                       , collectorYCombo};
+    //Left connector
+    comboPath.moveTo(leftCollectorConnectP1Combo);
+    comboPath.lineTo(leftCollectorConnectP2Combo);
+    QPointF rightCollectorConnectP1Combo{rightCollectorPipeXCombo - sixtWidthCombo / 2
+                                        , collectorYCombo};
+    QPointF rightCollectorConnectP2Combo{rightCollectorPipeXCombo + sixtWidthCombo / 2
+                                        , collectorYCombo};
+    //Right connector
+    comboPath.moveTo(rightCollectorConnectP1Combo);
+    comboPath.lineTo(rightCollectorConnectP2Combo);
+    strokeComboPath = ps_comboShape.createStroke(comboPath);
+    strokeComboPath.addPath(comboPath);
+    QCOMPARE(p_combo->shape(), strokeComboPath);
+
+    p_combo = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
 }
 
 void tst_TechnicShape::image()
@@ -1487,6 +1604,14 @@ void tst_TechnicShape::image()
     QCOMPARE(foamImage.width(), p_foamShape->boundingRect().width());
     QCOMPARE(foamImage.height(), p_foamShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
+
+    // ComboShape
+    TechnicsShape *p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Combo);
+    QPixmap comboImage{p_comboShape->image()};
+    QVERIFY2(!comboImage.isNull(), "comboShape::image() returned a null pixmap");
+    QCOMPARE(comboImage.width(), p_comboShape->boundingRect().width());
+    QCOMPARE(comboImage.height(), p_comboShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -1614,6 +1739,12 @@ void tst_TechnicShape::rect_setRect()
     p_foamShape->setRect(rect);
     QCOMPARE(p_foamShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
+
+    // ComboShape
+    TechnicsShape *p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Combo);
+    p_comboShape->setRect(rect);
+    QCOMPARE(p_comboShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -1728,6 +1859,12 @@ void tst_TechnicShape::height_setHeight()
     p_foamShape->setHeight(height);
     QCOMPARE(p_foamShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
+
+    // ComboShape
+    TechnicsShape *p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Combo);
+    p_comboShape->setHeight(height);
+    QCOMPARE(p_comboShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -1851,6 +1988,12 @@ void tst_TechnicShape::text_setText()
     p_foamShape->setText(text);
     QCOMPARE(p_foamShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
+
+    // ComboShape
+    TechnicsShape *p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Combo);
+    p_comboShape->setText(text);
+    QCOMPARE(p_comboShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -1942,6 +2085,17 @@ void tst_TechnicShape::pipes_setPipes()
     QCOMPARE(p_foam->pipes(), false);
     p_foam = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
+
+    //ComboShape
+    TechnicsShape *p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Combo);
+    ComboShape *p_combo = dynamic_cast<ComboShape *>(p_comboShape);
+    QCOMPARE(p_combo->pipes(), false);
+    p_combo->setPipes(true);
+    QCOMPARE(p_combo->pipes(), true);
+    p_combo->setPipes(false);
+    QCOMPARE(p_combo->pipes(), false);
+    p_combo = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
 }
 
 void tst_TechnicShape::collector_setCollector()
@@ -2033,6 +2187,17 @@ void tst_TechnicShape::collector_setCollector()
     QCOMPARE(p_foam->collector(), false);
     p_foam = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
+
+    //ComboShape
+    TechnicsShape *p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Combo);
+    ComboShape *p_combo = dynamic_cast<ComboShape *>(p_comboShape);
+    QCOMPARE(p_combo->collector(), false);
+    p_combo->setCollector(true);
+    QCOMPARE(p_combo->collector(), true);
+    p_combo->setCollector(false);
+    QCOMPARE(p_combo->collector(), false);
+    p_combo = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
 }
 
 class ContextMenuTester : public QMenu
@@ -2509,7 +2674,7 @@ void tst_TechnicShape::mousePressEvent()
     // AerodromeShape
     ContextMenuTester *p_aerodromeContextMenu = new ContextMenuTester();
 
-    TechnicsShape *p_aerodromeShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
+    TechnicsShape *p_aerodromeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerodrome);
     p_aerodromeShape->setMenu(p_aerodromeContextMenu);
     scene.addItem(p_aerodromeShape);
 
@@ -2538,7 +2703,7 @@ void tst_TechnicShape::mousePressEvent()
     // FoamShape
     ContextMenuTester *p_foamContextMenu = new ContextMenuTester();
 
-    TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
+    TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Foam);
     p_foamShape->setMenu(p_foamContextMenu);
     scene.addItem(p_foamShape);
 
@@ -2563,6 +2728,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_foamShape);
     delete p_foamContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
+
+    // ComboShape
+    ContextMenuTester *p_comboContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Combo);
+    p_comboShape->setMenu(p_comboContextMenu);
+    scene.addItem(p_comboShape);
+
+    mousePressEvent.setScenePos(p_comboShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_comboShape->setSelected(true);
+    QSignalSpy comboContextMenuSpy(p_comboShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(comboContextMenuSpy.count(), 0);
+
+    QList<QAction *> comboMenuActions{p_comboShape->menu()->actions()};
+    QCOMPARE(comboMenuActions.size(), 1);
+    comboMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_comboShape->boundingRect().center()));
+    comboMenuActions = p_comboShape->menu()->actions();
+    QCOMPARE(comboMenuActions.size(), 1);
+    QCOMPARE(comboContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_comboShape);
+    delete p_comboContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
