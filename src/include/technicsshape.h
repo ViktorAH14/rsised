@@ -49,7 +49,7 @@ public:
                      , Aerodrome        //АА автомобиль пожарный аэродромный
                      , Foam             //АПТ автомобиль пожарный пенного тушения
                      , Combo            //АКТ автомобиль пожарный комбинированного тушения
-                     , Aerosol
+                     , Aerosol          //ABT автомобиль водоаэрозольного тушения
                      , Powder
                      , Carbon
                      , GazWater
@@ -957,4 +957,47 @@ private:
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_comboActionList;
 };
+
+class AerosolShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 219};
+
+    explicit AerosolShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~AerosolShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(AerosolShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawAerosolShape(QPainter *painter);
+
+    const ShapeType m_aerosolType;
+    QRectF m_aerosolRect;
+    QGraphicsTextItem *m_aerosolText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_aerosolActionList;
+};
+
 #endif // TECHNICSSHAPE_H

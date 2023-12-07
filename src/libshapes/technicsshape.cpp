@@ -110,6 +110,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Combo:
         p_technicsShape = new ComboShape(parent);
         break;
+    case Aerosol:
+        p_technicsShape = new AerosolShape(parent);
+        break;
     default:
         break;
     }
@@ -5443,7 +5446,6 @@ void ComboShape::setText(const QString &text)
 
 QString ComboShape::text() const
 {
-
     if (m_comboText == nullptr)
         return "";
 
@@ -5635,4 +5637,197 @@ void ComboShape::drawCollector(QPainter *painter, qreal sixtWidth)
     QPointF rightConnectP1{rightPipeX - sixtWidth / 2, collectorY};
     QPointF rightConnectP2{rightPipeX + sixtWidth / 2, collectorY};
     painter->drawLine(rightConnectP1, rightConnectP2);  //Right connector
+}
+
+AerosolShape::AerosolShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_aerosolType{Aerosol}
+    , m_aerosolRect{-15.0, -37.5, 30.0, 75.0}
+    , m_aerosolText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void AerosolShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawAerosolShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF AerosolShape::boundingRect() const
+{
+    QRectF boundingRect{m_aerosolRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    return boundingRect;
+}
+
+QPainterPath AerosolShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap AerosolShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawAerosolShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType AerosolShape::shapeType() const
+{
+    return m_aerosolType;
+}
+
+void AerosolShape::setRect(const QRectF &rect)
+{
+    if (m_aerosolRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_aerosolRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_aerosolText != nullptr)
+        m_aerosolText->setPos(m_aerosolRect.right(), m_aerosolRect.bottom()
+                                                           - m_aerosolRect.width() / 6);
+    update();
+}
+
+QRectF AerosolShape::rect() const
+{
+    return m_aerosolRect;
+}
+
+void AerosolShape::setHeight(const qreal &height)
+{
+    if (m_aerosolRect.height() == height)
+        return;
+
+    qreal oldHeight{m_aerosolRect.height()};
+    prepareGeometryChange();
+    m_aerosolRect.setHeight(height);
+    qreal dy{(m_aerosolRect.height() - oldHeight) / 2};
+    m_aerosolRect.moveTo(QPointF(m_aerosolRect.x(), m_aerosolRect.y() - dy));
+    update();
+}
+
+qreal AerosolShape::height() const
+{
+    return m_aerosolRect.height();
+}
+
+void AerosolShape::setText(const QString &text)
+{
+    if (m_aerosolText == nullptr) {
+        m_aerosolText = new QGraphicsTextItem(this);
+        m_aerosolText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_aerosolText->setRotation(-90);
+    }
+    m_aerosolText->setPlainText(text);
+    m_showText = true;
+}
+
+QString AerosolShape::text() const
+{
+    if (m_aerosolText == nullptr)
+        return "";
+
+    return m_aerosolText->toPlainText();
+}
+
+void AerosolShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_aerosolActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_aerosolActionList);
+            m_aerosolActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void AerosolShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_aerosolActionList.append(m_addTextAction.get());
+}
+
+void AerosolShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_aerosolText == nullptr) {
+            m_aerosolText=new QGraphicsTextItem(this);
+            m_aerosolText->setPlainText("АВТ-");
+            m_aerosolText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_aerosolText->setRotation(-90);
+        }
+        m_aerosolText->show();
+        m_showText = true;
+    } else {
+        m_aerosolText->hide();
+        m_showText = false;
+    }
+}
+
+void AerosolShape::drawAerosolShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+
+    // Draw aerosol icon
+    qreal sixthWidth{m_aerosolRect.width() / 6}; // 5.0
+    qreal fifteenthHeight{m_aerosolRect.height() / 15.0}; // 5.0
+    qreal ellipseX{m_aerosolRect.center().x()};
+    qreal topEllipseY{m_aerosolRect.bottom() - fifteenthHeight * 2.0};
+    qreal centerEllipseY{topEllipseY - fifteenthHeight * 3.0};
+    qreal bottomEllipseY{centerEllipseY - fifteenthHeight * 3.0};
+    QPointF topEllipse{ellipseX, topEllipseY};
+    QPointF centerEllipse{ellipseX, centerEllipseY};
+    QPointF bottomEllipse{ellipseX, bottomEllipseY};
+    painter->setBrush(QBrush(Qt::red));
+    painter->drawEllipse(topEllipse, fifteenthHeight, fifteenthHeight);
+    painter->drawEllipse(centerEllipse, fifteenthHeight, fifteenthHeight);
+    painter->drawEllipse(bottomEllipse, fifteenthHeight, fifteenthHeight);
+    painter->setBrush(brush());
+
+
+    if (m_showText) {
+        m_aerosolText->setPos(m_aerosolRect.right(), m_aerosolRect.bottom() - sixthWidth * 2);
+    }
 }
