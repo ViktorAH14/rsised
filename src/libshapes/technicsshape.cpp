@@ -113,6 +113,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Aerosol:
         p_technicsShape = new AerosolShape(parent);
         break;
+    case Powder:
+        p_technicsShape = new PowderShape(parent);
+        break;
     default:
         break;
     }
@@ -5826,8 +5829,195 @@ void AerosolShape::drawAerosolShape(QPainter *painter)
     painter->drawEllipse(bottomEllipse, fifteenthHeight, fifteenthHeight);
     painter->setBrush(brush());
 
-
     if (m_showText) {
         m_aerosolText->setPos(m_aerosolRect.right(), m_aerosolRect.bottom() - sixthWidth * 2);
+    }
+}
+
+PowderShape::PowderShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_powderType{Powder}
+    , m_powderRect{-15.0, -37.5, 30.0, 75.0}
+    , m_powderText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void PowderShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawPowderShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF PowderShape::boundingRect() const
+{
+    QRectF boundingRect{m_powderRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    return boundingRect;
+}
+
+QPainterPath PowderShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap PowderShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawPowderShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType PowderShape::shapeType() const
+{
+    return m_powderType;
+}
+
+void PowderShape::setRect(const QRectF &rect)
+{
+    if (m_powderRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_powderRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_powderText != nullptr)
+        m_powderText->setPos(m_powderRect.right(), m_powderRect.bottom()
+                                                         - m_powderRect.width() / 6);
+    update();
+}
+
+QRectF PowderShape::rect() const
+{
+    return m_powderRect;
+}
+
+void PowderShape::setHeight(const qreal &height)
+{
+    if (m_powderRect.height() == height)
+        return;
+
+    qreal oldHeight{m_powderRect.height()};
+    prepareGeometryChange();
+    m_powderRect.setHeight(height);
+    qreal dy{(m_powderRect.height() - oldHeight) / 2};
+    m_powderRect.moveTo(QPointF(m_powderRect.x(), m_powderRect.y() - dy));
+    update();
+}
+
+qreal PowderShape::height() const
+{
+    return m_powderRect.height();
+}
+
+void PowderShape::setText(const QString &text)
+{
+    if (m_powderText == nullptr) {
+        m_powderText = new QGraphicsTextItem(this);
+        m_powderText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_powderText->setRotation(-90);
+    }
+    m_powderText->setPlainText(text);
+    m_showText = true;
+}
+
+QString PowderShape::text() const
+{
+    if (m_powderText == nullptr)
+        return "";
+
+    return m_powderText->toPlainText();
+}
+
+void PowderShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_powderActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_powderActionList);
+            m_powderActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void PowderShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_powderActionList.append(m_addTextAction.get());
+}
+
+void PowderShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_powderText == nullptr) {
+            m_powderText=new QGraphicsTextItem(this);
+            m_powderText->setPlainText("АП-");
+            m_powderText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_powderText->setRotation(-90);
+        }
+        m_powderText->show();
+        m_showText = true;
+    } else {
+        m_powderText->hide();
+        m_showText = false;
+    }
+}
+
+void PowderShape::drawPowderShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+
+    //Draw powder icon
+    painter->setBrush(QBrush(Qt::red));
+    qreal sixthWidth{m_powderRect.width() / 6}; // 5.0
+    qreal thirdHeight{height() / 3}; // 25.0
+    qreal powderX{m_powderRect.left() + sixthWidth};
+    qreal powderY{m_powderRect.bottom() - thirdHeight};
+    qreal powderWidth{m_powderRect.width() - (sixthWidth * 2)};
+    qreal powderHeight{height() / 3.75}; // 20.0
+    QRectF powderRect{powderX, powderY, powderWidth, powderHeight};
+    painter->drawRect(powderRect);
+    painter->setBrush(brush());
+
+    if (m_showText) {
+        m_powderText->setPos(m_powderRect.right(), m_powderRect.bottom() - sixthWidth * 2);
     }
 }

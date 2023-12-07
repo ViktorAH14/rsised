@@ -156,6 +156,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             aerosolShape->setRect(value.toRectF());
         break;
     }
+    case PowderShape::Type: {
+        if (PowderShape *powderShape = dynamic_cast<PowderShape *>(item))
+            powderShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());
