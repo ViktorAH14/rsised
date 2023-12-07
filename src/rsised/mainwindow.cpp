@@ -741,8 +741,8 @@ void MainWindow::createShapeToolBox()
                                                        , TechnicsShape::Foam), 4, 0);
    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Combo")
                                                       , TechnicsShape::Combo), 4, 1);
-//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Aerosol")
-//                                                       , TechnicsShape::Aerosol), 6, 0);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Aerosol")
+                                                      , TechnicsShape::Aerosol), 4, 2);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Powder")
 //                                                       , TechnicsShape::Powder), 6, 1);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Carbon")

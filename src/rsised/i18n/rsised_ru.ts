@@ -743,9 +743,10 @@
         <translation>АКТ</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="744"/>
         <source>Aerosol</source>
         <translatorcomment>Автомобиль водоаэрозольного тушения.</translatorcomment>
-        <translation type="vanished">АВД</translation>
+        <translation>АВД</translation>
     </message>
     <message>
         <source>Powder</source>
