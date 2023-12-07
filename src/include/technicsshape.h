@@ -50,7 +50,7 @@ public:
                      , Foam             //АПТ автомобиль пожарный пенного тушения
                      , Combo            //АКТ автомобиль пожарный комбинированного тушения
                      , Aerosol          //ABT автомобиль водоаэрозольного тушения
-                     , Powder
+                     , Powder           //АП автомобиль порошкового тушения
                      , Carbon
                      , GazWater
                      , Tracked
@@ -1000,4 +1000,45 @@ private:
     QList<QAction *> m_aerosolActionList;
 };
 
+class PowderShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 220};
+
+    explicit PowderShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~PowderShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(PowderShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawPowderShape(QPainter *painter);
+
+    const ShapeType m_powderType;
+    QRectF m_powderRect;
+    QGraphicsTextItem *m_powderText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_powderActionList;
+};
 #endif // TECHNICSSHAPE_H

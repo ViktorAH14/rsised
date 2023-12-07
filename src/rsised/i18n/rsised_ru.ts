@@ -749,9 +749,10 @@
         <translation>АВД</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="746"/>
         <source>Powder</source>
         <translatorcomment>Автомобиль порошкового тушения.</translatorcomment>
-        <translation type="vanished">АП</translation>
+        <translation>АП</translation>
     </message>
     <message>
         <source>Carbon</source>
