@@ -755,9 +755,10 @@
         <translation>АП</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="748"/>
         <source>Carbon</source>
         <translatorcomment>Автомобиль газового тушения (СО2).</translatorcomment>
-        <translation type="vanished">АГТ</translation>
+        <translation>АГТ</translation>
     </message>
     <message>
         <source>GazWater</source>
