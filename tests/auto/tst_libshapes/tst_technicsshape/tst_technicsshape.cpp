@@ -185,6 +185,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_aerosolShape, "aerosolShape is nullptr");
     QCOMPARE(int(p_aerosolShape->type()), int(QGraphicsItem::UserType + 219));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerosolShape);
+
+    // PowderShape
+    TechnicsShape *p_powderShape = nullptr;
+    p_powderShape = TechnicsShape::createTechnicsShape(TechnicsShape::Powder);
+    QVERIFY2(p_powderShape, "powderShape is nullptr");
+    QCOMPARE(int(p_powderShape->type()), int(QGraphicsItem::UserType + 220));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -364,6 +371,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_aerosolShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerosol);
     QCOMPARE(p_aerosolShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerosolShape);
+
+    // PowderShape
+    TechnicsShape *p_powderShape = TechnicsShape::createTechnicsShape(TechnicsShape::Powder);
+    QCOMPARE(p_powderShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
 }
 
 void tst_TechnicShape::shape()
@@ -1478,7 +1490,7 @@ void tst_TechnicShape::shape()
     p_combo = nullptr;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
 
-// AeroslShape
+// AerosolShape
     TechnicsShape *p_aerosolShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerosol);
     QPainterPathStroker ps_aerosolShape;
     ps_aerosolShape.setWidth(p_aerosolShape->pen().widthF());
@@ -1499,6 +1511,26 @@ void tst_TechnicShape::shape()
     QCOMPARE(p_aerosolShape->shape(), strokeAerosolPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerosolShape);
 
+// PowderShape
+    TechnicsShape *p_powderShape = TechnicsShape::createTechnicsShape(TechnicsShape::Powder);
+    QPainterPathStroker ps_powderShape;
+    ps_powderShape.setWidth(p_powderShape->pen().widthF());
+    QRectF powderRect{p_powderShape->rect()};
+    qreal frontTabPowder{powderRect.height() / 3};
+    QPointF frontCenterPowder{powderRect.center().x(), powderRect.top()}; // 0.0, -37.5
+    QPointF frontRightPowder{powderRect.right(), powderRect.top() + frontTabPowder}; // 15.0, -12.5
+    QPointF frontLeftPowder{powderRect.left(), powderRect.top() + frontTabPowder}; // -15.0, -12.5
+    QPointF bottomRightPowder{powderRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftPowder{powderRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF powderPolygon;
+    powderPolygon << frontCenterPowder << frontRightPowder << bottomRightPowder
+                   << bottomLeftPowder << frontLeftPowder << frontCenterPowder;
+    QPainterPath powderPath;
+    powderPath.addPolygon(powderPolygon);
+    QPainterPath strokePowderPath = ps_powderShape.createStroke(powderPath);
+    strokePowderPath.addPath(powderPath);
+    QCOMPARE(p_powderShape->shape(), strokePowderPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
 }
 
 void tst_TechnicShape::image()
@@ -1650,10 +1682,18 @@ void tst_TechnicShape::image()
     // AerosolShape
     TechnicsShape *p_aerosolShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerosol);
     QPixmap aerosolImage{p_aerosolShape->image()};
-    QVERIFY2(!aerodromeImage.isNull(), "aerosolShape::image() returned a null pixmap");
+    QVERIFY2(!aerosolImage.isNull(), "aerosolShape::image() returned a null pixmap");
     QCOMPARE(aerosolImage.width(), p_aerosolShape->boundingRect().width());
     QCOMPARE(aerosolImage.height(), p_aerosolShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerosolShape);
+
+    // PowderShape
+    TechnicsShape *p_powderShape = TechnicsShape::createTechnicsShape(TechnicsShape::Powder);
+    QPixmap powderImage{p_powderShape->image()};
+    QVERIFY2(!powderImage.isNull(), "powderShape::image() returned a null pixmap");
+    QCOMPARE(powderImage.width(), p_powderShape->boundingRect().width());
+    QCOMPARE(powderImage.height(), p_powderShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -1793,6 +1833,12 @@ void tst_TechnicShape::rect_setRect()
     p_aerosolShape->setRect(rect);
     QCOMPARE(p_aerosolShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerosolShape);
+
+    // PowderShape
+    TechnicsShape *p_powderShape = TechnicsShape::createTechnicsShape(TechnicsShape::Powder);
+    p_powderShape->setRect(rect);
+    QCOMPARE(p_powderShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -1919,6 +1965,12 @@ void tst_TechnicShape::height_setHeight()
     p_aerosolShape->setHeight(height);
     QCOMPARE(p_aerosolShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerosolShape);
+
+    // PowderShape
+    TechnicsShape *p_powderShape = TechnicsShape::createTechnicsShape(TechnicsShape::Powder);
+    p_powderShape->setHeight(height);
+    QCOMPARE(p_powderShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -2054,6 +2106,12 @@ void tst_TechnicShape::text_setText()
     p_aerosolShape->setText(text);
     QCOMPARE(p_aerosolShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerosolShape);
+
+    // PowderShape
+    TechnicsShape *p_powderShape = TechnicsShape::createTechnicsShape(TechnicsShape::Powder);
+    p_powderShape->setText(text);
+    QCOMPARE(p_powderShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -2846,6 +2904,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_aerosolShape);
     delete p_aerosolContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerosolShape);
+
+    // PowderShape
+    ContextMenuTester *p_powderContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_powderShape = TechnicsShape::createTechnicsShape(TechnicsShape::Powder);
+    p_powderShape->setMenu(p_powderContextMenu);
+    scene.addItem(p_powderShape);
+
+    mousePressEvent.setScenePos(p_powderShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_powderShape->setSelected(true);
+    QSignalSpy powderContextMenuSpy(p_powderShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(powderContextMenuSpy.count(), 0);
+
+    QList<QAction *> powderMenuActions{p_powderShape->menu()->actions()};
+    QCOMPARE(powderMenuActions.size(), 1);
+    powderMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_powderShape->boundingRect().center()));
+    powderMenuActions = p_powderShape->menu()->actions();
+    QCOMPARE(powderMenuActions.size(), 1);
+    QCOMPARE(powderContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_powderShape);
+    delete p_powderContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
