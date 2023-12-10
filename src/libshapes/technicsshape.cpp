@@ -116,6 +116,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Powder:
         p_technicsShape = new PowderShape(parent);
         break;
+    case Carbon:
+        p_technicsShape = new CarbonShape(parent);
+        break;
     default:
         break;
     }
@@ -6019,5 +6022,198 @@ void PowderShape::drawPowderShape(QPainter *painter)
 
     if (m_showText) {
         m_powderText->setPos(m_powderRect.right(), m_powderRect.bottom() - sixthWidth * 2);
+    }
+}
+
+CarbonShape::CarbonShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_carbonType{Carbon}
+    , m_carbonRect{-15.0, -37.5, 30.0, 75.0}
+    , m_carbonText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void CarbonShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawCarbonShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF CarbonShape::boundingRect() const
+{
+    QRectF boundingRect{m_carbonRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    return boundingRect;
+}
+
+QPainterPath CarbonShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap CarbonShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawCarbonShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType CarbonShape::shapeType() const
+{
+    return m_carbonType;
+}
+
+void CarbonShape::setRect(const QRectF &rect)
+{
+    if (m_carbonRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_carbonRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_carbonText != nullptr)
+        m_carbonText->setPos(m_carbonRect.right(), m_carbonRect.bottom()
+                                                       - m_carbonRect.width() / 6);
+    update();
+}
+
+QRectF CarbonShape::rect() const
+{
+    return m_carbonRect;
+}
+
+void CarbonShape::setHeight(const qreal &height)
+{
+    if (m_carbonRect.height() == height)
+        return;
+
+    qreal oldHeight{m_carbonRect.height()};
+    prepareGeometryChange();
+    m_carbonRect.setHeight(height);
+    qreal dy{(m_carbonRect.height() - oldHeight) / 2};
+    m_carbonRect.moveTo(QPointF(m_carbonRect.x(), m_carbonRect.y() - dy));
+    update();
+}
+
+qreal CarbonShape::height() const
+{
+    return m_carbonRect.height();
+}
+
+void CarbonShape::setText(const QString &text)
+{
+    if (m_carbonText == nullptr) {
+        m_carbonText = new QGraphicsTextItem(this);
+        m_carbonText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_carbonText->setRotation(-90);
+    }
+    m_carbonText->setPlainText(text);
+    m_showText = true;
+}
+
+QString CarbonShape::text() const
+{
+    if (m_carbonText == nullptr)
+        return "";
+
+    return m_carbonText->toPlainText();
+}
+
+void CarbonShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_carbonActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_carbonActionList);
+            m_carbonActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void CarbonShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_carbonActionList.append(m_addTextAction.get());
+}
+
+void CarbonShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_carbonText == nullptr) {
+            m_carbonText=new QGraphicsTextItem(this);
+            m_carbonText->setPlainText("АГТ-");
+            m_carbonText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_carbonText->setRotation(-90);
+        }
+        m_carbonText->show();
+        m_showText = true;
+    } else {
+        m_carbonText->hide();
+        m_showText = false;
+    }
+}
+
+void CarbonShape::drawCarbonShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+
+    //Draw carbon icon
+    painter->setBrush(QBrush(Qt::red));
+    qreal sixthWidth{m_carbonRect.width() / 6}; // 5.0
+    qreal thirdHeight{height() / 3}; // 25.0
+    qreal fifteenthHeight{m_carbonRect.height() / 15.0}; // 5.0
+    qreal carbonBottom{m_carbonRect.bottom() - fifteenthHeight};
+    QPointF carbonTop{m_carbonRect.center().x(), m_carbonRect.bottom() - thirdHeight};
+    QPointF carbonLeftBottom{m_carbonRect.left() + sixthWidth, carbonBottom};
+    QPointF carbonRightBottom{m_carbonRect.right() - sixthWidth, carbonBottom};
+    QPainterPath carbonPath;
+    carbonPath.moveTo(carbonTop);
+    carbonPath.lineTo(carbonRightBottom);
+    carbonPath.lineTo(carbonLeftBottom);
+    carbonPath.lineTo(carbonTop);
+    painter->drawPath(carbonPath);
+    painter->setBrush(brush());
+
+    if (m_showText) {
+        m_carbonText->setPos(m_carbonRect.right(), m_carbonRect.bottom() - sixthWidth * 2);
     }
 }
