@@ -761,9 +761,10 @@
         <translation>АГТ</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="750"/>
         <source>GazWater</source>
         <translatorcomment>Автомобиль газо-водяного тушения.</translatorcomment>
-        <translation type="vanished">АГВТ</translation>
+        <translation>АГВТ</translation>
     </message>
     <message>
         <source>Tank</source>

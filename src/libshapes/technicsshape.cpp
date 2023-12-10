@@ -119,6 +119,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Carbon:
         p_technicsShape = new CarbonShape(parent);
         break;
+    case GazWater:
+        p_technicsShape = new GazWaterShape(parent);
+        break;
     default:
         break;
     }
@@ -6215,5 +6218,191 @@ void CarbonShape::drawCarbonShape(QPainter *painter)
 
     if (m_showText) {
         m_carbonText->setPos(m_carbonRect.right(), m_carbonRect.bottom() - sixthWidth * 2);
+    }
+}
+
+GazWaterShape::GazWaterShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_gazWaterType{GazWater}
+    , m_gazWaterRect{-15.0, -37.5, 30.0, 75.0}
+    , m_gazWaterText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void GazWaterShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawGazWaterShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF GazWaterShape::boundingRect() const
+{
+    QRectF boundingRect{m_gazWaterRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath GazWaterShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap GazWaterShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawGazWaterShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType GazWaterShape::shapeType() const
+{
+    return m_gazWaterType;
+}
+
+void GazWaterShape::setRect(const QRectF &rect)
+{
+    if (m_gazWaterRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_gazWaterRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_gazWaterText != nullptr)
+        m_gazWaterText->setPos(m_gazWaterRect.right(), m_gazWaterRect.bottom()
+                                                       - m_gazWaterRect.width() / 6);
+    update();
+}
+
+QRectF GazWaterShape::rect() const
+{
+    return m_gazWaterRect;
+}
+
+void GazWaterShape::setHeight(const qreal &height)
+{
+    if (m_gazWaterRect.height() == height)
+        return;
+
+    qreal oldHeight{m_gazWaterRect.height()};
+    prepareGeometryChange();
+    m_gazWaterRect.setHeight(height);
+    qreal dy{(m_gazWaterRect.height() - oldHeight) / 2};
+    m_gazWaterRect.moveTo(QPointF(m_gazWaterRect.x(), m_gazWaterRect.y() - dy));
+    update();
+}
+
+qreal GazWaterShape::height() const
+{
+    return m_gazWaterRect.height();
+}
+
+void GazWaterShape::setText(const QString &text)
+{
+    if (m_gazWaterText == nullptr) {
+        m_gazWaterText = new QGraphicsTextItem(this);
+        m_gazWaterText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_gazWaterText->setRotation(-90);
+    }
+    m_gazWaterText->setPlainText(text);
+    m_showText = true;
+}
+
+QString GazWaterShape::text() const
+{
+    if (m_gazWaterText == nullptr)
+        return "";
+
+    return m_gazWaterText->toPlainText();
+}
+
+void GazWaterShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_gazWaterActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_gazWaterActionList);
+            m_gazWaterActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void GazWaterShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_gazWaterActionList.append(m_addTextAction.get());
+}
+
+void GazWaterShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_gazWaterText == nullptr) {
+            m_gazWaterText=new QGraphicsTextItem(this);
+            m_gazWaterText->setPlainText("АГВТ-");
+            m_gazWaterText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_gazWaterText->setRotation(-90);
+        }
+        m_gazWaterText->show();
+        m_showText = true;
+    } else {
+        m_gazWaterText->hide();
+        m_showText = false;
+    }
+}
+
+void GazWaterShape::drawGazWaterShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+    painter->translate(m_gazWaterRect.center());
+    painter->rotate(270);
+    painter->translate(-m_gazWaterRect.center());
+    QTextOption textOption{Qt::AlignCenter};
+    painter->drawText(m_gazWaterRect, "АГВТ", textOption);
+    painter->translate(m_gazWaterRect.center());
+    painter->rotate(-270);
+    painter->translate(-m_gazWaterRect.center());
+    qreal sixthWidth{m_gazWaterRect.width() / 6}; // 5.0
+
+    if (m_showText) {
+        m_gazWaterText->setPos(m_gazWaterRect.right(), m_gazWaterRect.bottom() - sixthWidth * 2);
     }
 }

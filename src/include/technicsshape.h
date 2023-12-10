@@ -52,7 +52,7 @@ public:
                      , Aerosol          //ABT автомобиль водоаэрозольного тушения
                      , Powder           //АП автомобиль порошкового тушения
                      , Carbon           //АГТ автомобиль углекислотного тушения
-                     , GazWater
+                     , GazWater         //АГВТ автомобиль газоводяного тушения
                      , Tracked
                      , Tank
                      , GDZS
@@ -1082,5 +1082,47 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_carbonActionList;
+};
+
+class GazWaterShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 222};
+
+    explicit GazWaterShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~GazWaterShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(GazWaterShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawGazWaterShape(QPainter *painter);
+
+    const ShapeType m_gazWaterType;
+    QRectF m_gazWaterRect;
+    QGraphicsTextItem *m_gazWaterText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_gazWaterActionList;
 };
 #endif // TECHNICSSHAPE_H
