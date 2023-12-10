@@ -192,6 +192,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_powderShape, "powderShape is nullptr");
     QCOMPARE(int(p_powderShape->type()), int(QGraphicsItem::UserType + 220));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
+
+    // CarbonShape
+    TechnicsShape *p_carbonShape = nullptr;
+    p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
+    QVERIFY2(p_carbonShape, "carbonShape is nullptr");
+    QCOMPARE(int(p_carbonShape->type()), int(QGraphicsItem::UserType + 221));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -376,6 +383,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_powderShape = TechnicsShape::createTechnicsShape(TechnicsShape::Powder);
     QCOMPARE(p_powderShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
+
+    // CarbonShape
+    TechnicsShape *p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
+    QCOMPARE(p_carbonShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
 }
 
 void tst_TechnicShape::shape()
@@ -1531,6 +1543,27 @@ void tst_TechnicShape::shape()
     strokePowderPath.addPath(powderPath);
     QCOMPARE(p_powderShape->shape(), strokePowderPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
+
+// CarbonShape
+    TechnicsShape *p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
+    QPainterPathStroker ps_carbonShape;
+    ps_carbonShape.setWidth(p_carbonShape->pen().widthF());
+    QRectF carbonRect{p_carbonShape->rect()};
+    qreal frontTabCarbon{carbonRect.height() / 3};
+    QPointF frontCenterCarbon{carbonRect.center().x(), carbonRect.top()}; // 0.0, -37.5
+    QPointF frontRightCarbon{carbonRect.right(), carbonRect.top() + frontTabCarbon}; // 15.0, -12.5
+    QPointF frontLeftCarbon{carbonRect.left(), carbonRect.top() + frontTabCarbon}; // -15.0, -12.5
+    QPointF bottomRightCarbon{carbonRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftCarbon{carbonRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF carbonPolygon;
+    carbonPolygon << frontCenterCarbon << frontRightCarbon << bottomRightCarbon
+                  << bottomLeftCarbon << frontLeftCarbon << frontCenterCarbon;
+    QPainterPath carbonPath;
+    carbonPath.addPolygon(carbonPolygon);
+    QPainterPath strokeCarbonPath = ps_carbonShape.createStroke(carbonPath);
+    strokeCarbonPath.addPath(carbonPath);
+    QCOMPARE(p_carbonShape->shape(), strokeCarbonPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
 }
 
 void tst_TechnicShape::image()
@@ -1694,6 +1727,14 @@ void tst_TechnicShape::image()
     QCOMPARE(powderImage.width(), p_powderShape->boundingRect().width());
     QCOMPARE(powderImage.height(), p_powderShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
+
+    // CarbonShape
+    TechnicsShape *p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
+    QPixmap carbonImage{p_carbonShape->image()};
+    QVERIFY2(!carbonImage.isNull(), "carbonShape::image() returned a null pixmap");
+    QCOMPARE(carbonImage.width(), p_carbonShape->boundingRect().width());
+    QCOMPARE(carbonImage.height(), p_carbonShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -1839,6 +1880,12 @@ void tst_TechnicShape::rect_setRect()
     p_powderShape->setRect(rect);
     QCOMPARE(p_powderShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
+
+    // CarbonShape
+    TechnicsShape *p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
+    p_carbonShape->setRect(rect);
+    QCOMPARE(p_carbonShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -1971,6 +2018,12 @@ void tst_TechnicShape::height_setHeight()
     p_powderShape->setHeight(height);
     QCOMPARE(p_powderShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
+
+    // CarbonShape
+    TechnicsShape *p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
+    p_carbonShape->setHeight(height);
+    QCOMPARE(p_carbonShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -2112,6 +2165,12 @@ void tst_TechnicShape::text_setText()
     p_powderShape->setText(text);
     QCOMPARE(p_powderShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
+
+    // CarbonShape
+    TechnicsShape *p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
+    p_carbonShape->setText(text);
+    QCOMPARE(p_carbonShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -2933,6 +2992,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_powderShape);
     delete p_powderContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
+
+    // CarbonShape
+    ContextMenuTester *p_carbonContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
+    p_carbonShape->setMenu(p_carbonContextMenu);
+    scene.addItem(p_carbonShape);
+
+    mousePressEvent.setScenePos(p_carbonShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_carbonShape->setSelected(true);
+    QSignalSpy carbonContextMenuSpy(p_carbonShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(carbonContextMenuSpy.count(), 0);
+
+    QList<QAction *> carbonMenuActions{p_carbonShape->menu()->actions()};
+    QCOMPARE(carbonMenuActions.size(), 1);
+    carbonMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_carbonShape->boundingRect().center()));
+    carbonMenuActions = p_carbonShape->menu()->actions();
+    QCOMPARE(carbonMenuActions.size(), 1);
+    QCOMPARE(carbonContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_carbonShape);
+    delete p_carbonContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
