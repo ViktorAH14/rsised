@@ -1922,6 +1922,12 @@ void tst_TechnicShape::rect_setRect()
     QCOMPARE(p_powderShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
 
+    // CarbonShape
+    TechnicsShape *p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
+    p_carbonShape->setRect(rect);
+    QCOMPARE(p_carbonShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
+
     // GazWaterShape
     TechnicsShape *p_gazWaterShape = TechnicsShape::createTechnicsShape(TechnicsShape::GazWater);
     p_gazWaterShape->setRect(rect);
