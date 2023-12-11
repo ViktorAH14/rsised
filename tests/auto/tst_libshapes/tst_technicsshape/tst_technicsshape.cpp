@@ -199,6 +199,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_carbonShape, "carbonShape is nullptr");
     QCOMPARE(int(p_carbonShape->type()), int(QGraphicsItem::UserType + 221));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
+
+    // GazWaterShape
+    TechnicsShape *p_gazWaterShape = nullptr;
+    p_gazWaterShape = TechnicsShape::createTechnicsShape(TechnicsShape::GazWater);
+    QVERIFY2(p_gazWaterShape, "gazWaterShape is nullptr");
+    QCOMPARE(int(p_gazWaterShape->type()), int(QGraphicsItem::UserType + 222));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -388,6 +395,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
     QCOMPARE(p_carbonShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
+
+    // GazWaterShape
+    TechnicsShape *p_gazWaterShape = TechnicsShape::createTechnicsShape(TechnicsShape::GazWater);
+    QCOMPARE(p_gazWaterShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
 }
 
 void tst_TechnicShape::shape()
@@ -1564,6 +1576,27 @@ void tst_TechnicShape::shape()
     strokeCarbonPath.addPath(carbonPath);
     QCOMPARE(p_carbonShape->shape(), strokeCarbonPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
+
+// GazWaterShape
+    TechnicsShape *p_gazWaterShape = TechnicsShape::createTechnicsShape(TechnicsShape::GazWater);
+    QPainterPathStroker ps_gazWaterShape;
+    ps_gazWaterShape.setWidth(p_gazWaterShape->pen().widthF());
+    QRectF gazWaterRect{p_gazWaterShape->rect()};
+    qreal frontTabGazWater{gazWaterRect.height() / 3};
+    QPointF frontCenterGazWater{gazWaterRect.center().x(), gazWaterRect.top()}; // 0.0, -37.5
+    QPointF frontRightGazWater{gazWaterRect.right(), gazWaterRect.top() + frontTabGazWater}; // 15.0, -12.5
+    QPointF frontLeftGazWater{gazWaterRect.left(), gazWaterRect.top() + frontTabGazWater}; // -15.0, -12.5
+    QPointF bottomRightGazWater{gazWaterRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftGazWater{gazWaterRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF gazWaterPolygon;
+    gazWaterPolygon << frontCenterGazWater << frontRightGazWater << bottomRightGazWater
+                  << bottomLeftGazWater << frontLeftGazWater << frontCenterGazWater;
+    QPainterPath gazWaterPath;
+    gazWaterPath.addPolygon(gazWaterPolygon);
+    QPainterPath strokeGazWaterPath = ps_gazWaterShape.createStroke(gazWaterPath);
+    strokeGazWaterPath.addPath(gazWaterPath);
+    QCOMPARE(p_gazWaterShape->shape(), strokeGazWaterPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
 }
 
 void tst_TechnicShape::image()
@@ -1735,6 +1768,14 @@ void tst_TechnicShape::image()
     QCOMPARE(carbonImage.width(), p_carbonShape->boundingRect().width());
     QCOMPARE(carbonImage.height(), p_carbonShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
+
+    // GazWaterShape
+    TechnicsShape *p_gazWaterShape = TechnicsShape::createTechnicsShape(TechnicsShape::GazWater);
+    QPixmap gazWaterImage{p_gazWaterShape->image()};
+    QVERIFY2(!gazWaterImage.isNull(), "gazWaterShape::image() returned a null pixmap");
+    QCOMPARE(gazWaterImage.width(), p_gazWaterShape->boundingRect().width());
+    QCOMPARE(gazWaterImage.height(), p_gazWaterShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -1881,11 +1922,11 @@ void tst_TechnicShape::rect_setRect()
     QCOMPARE(p_powderShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
 
-    // CarbonShape
-    TechnicsShape *p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
-    p_carbonShape->setRect(rect);
-    QCOMPARE(p_carbonShape->rect(), rect);
-    TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
+    // GazWaterShape
+    TechnicsShape *p_gazWaterShape = TechnicsShape::createTechnicsShape(TechnicsShape::GazWater);
+    p_gazWaterShape->setRect(rect);
+    QCOMPARE(p_gazWaterShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -2024,6 +2065,12 @@ void tst_TechnicShape::height_setHeight()
     p_carbonShape->setHeight(height);
     QCOMPARE(p_carbonShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
+
+    // GazWaterShape
+    TechnicsShape *p_gazWaterShape = TechnicsShape::createTechnicsShape(TechnicsShape::GazWater);
+    p_gazWaterShape->setHeight(height);
+    QCOMPARE(p_gazWaterShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -2171,6 +2218,12 @@ void tst_TechnicShape::text_setText()
     p_carbonShape->setText(text);
     QCOMPARE(p_carbonShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
+
+    // GazWaterShape
+    TechnicsShape *p_gazWaterShape = TechnicsShape::createTechnicsShape(TechnicsShape::GazWater);
+    p_gazWaterShape->setText(text);
+    QCOMPARE(p_gazWaterShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -3021,6 +3074,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_carbonShape);
     delete p_carbonContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
+
+    // GazWaterShape
+    ContextMenuTester *p_gazWaterContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_gazWaterShape = TechnicsShape::createTechnicsShape(TechnicsShape::GazWater);
+    p_gazWaterShape->setMenu(p_gazWaterContextMenu);
+    scene.addItem(p_gazWaterShape);
+
+    mousePressEvent.setScenePos(p_gazWaterShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_gazWaterShape->setSelected(true);
+    QSignalSpy gazWaterContextMenuSpy(p_gazWaterShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(gazWaterContextMenuSpy.count(), 0);
+
+    QList<QAction *> gazWaterMenuActions{p_gazWaterShape->menu()->actions()};
+    QCOMPARE(gazWaterMenuActions.size(), 1);
+    gazWaterMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_gazWaterShape->boundingRect().center()));
+    gazWaterMenuActions = p_gazWaterShape->menu()->actions();
+    QCOMPARE(gazWaterMenuActions.size(), 1);
+    QCOMPARE(gazWaterContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_gazWaterShape);
+    delete p_gazWaterContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
