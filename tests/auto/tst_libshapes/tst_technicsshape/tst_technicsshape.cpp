@@ -213,6 +213,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_trackedShape, "trackedShape is nullptr");
     QCOMPARE(int(p_trackedShape->type()), int(QGraphicsItem::UserType + 223));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
+
+    // TankShape
+    TechnicsShape *p_tankShape = nullptr;
+    p_tankShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tank);
+    QVERIFY2(p_tankShape, "tankShape is nullptr");
+    QCOMPARE(int(p_tankShape->type()), int(QGraphicsItem::UserType + 224));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -412,6 +419,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_trackedShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tracked);
     QCOMPARE(p_trackedShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
+
+    // TankShape
+    TechnicsShape *p_tankShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tank);
+    QCOMPARE(p_tankShape->boundingRect(), QRectF(-18.5, -38.0, 37.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
 }
 
 void tst_TechnicShape::shape()
@@ -429,7 +441,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftBase{baseRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF basePolygon;
     basePolygon << frontCenterBase << frontRightBase << bottomRightBase << bottomLeftBase
-                << frontLeftBase << frontCenterBase;
+                << frontLeftBase;
     QPainterPath basePath;
     basePath.addPolygon(basePolygon);
     QPainterPath strokeBasePath = ps_baseShape.createStroke(basePath);
@@ -450,7 +462,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftTanker{tankerRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF tankerPolygon;
     tankerPolygon << frontCenterTanker << frontRightTanker << bottomRightTanker
-                << bottomLeftTanker << frontLeftTanker << frontCenterTanker;
+                << bottomLeftTanker << frontLeftTanker;
     QPainterPath tankerPath;
     tankerPath.addPolygon(tankerPolygon);
     QPainterPath strokeTankerPath = ps_tankerShape.createStroke(tankerPath);
@@ -546,7 +558,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftPumpHose{pumpHoseRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF pumpHosePolygon;
     pumpHosePolygon << frontCenterPumpHose << frontRightPumpHose << bottomRightPumpHose
-                  << bottomLeftPumpHose << frontLeftPumpHose << frontCenterPumpHose;
+                  << bottomLeftPumpHose << frontLeftPumpHose;
     QPainterPath pumpHosePath;
     pumpHosePath.addPolygon(pumpHosePolygon);
     QPainterPath strokePumpHosePath = ps_pumpHoseShape.createStroke(pumpHosePath);
@@ -642,7 +654,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftFirstAid{firstAidRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF firstAidPolygon;
     firstAidPolygon << frontCenterFirstAid << frontRightFirstAid << bottomRightFirstAid
-                    << bottomLeftFirstAid << frontLeftFirstAid << frontCenterFirstAid;
+                    << bottomLeftFirstAid << frontLeftFirstAid;
     QPainterPath firstAidPath;
     firstAidPath.addPolygon(firstAidPolygon);
     QPainterPath strokeFirstAidPath = ps_firstAidShape.createStroke(firstAidPath);
@@ -738,7 +750,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftEmergency{emergencyRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF emergencyPolygon;
     emergencyPolygon << frontCenterEmergency << frontRightEmergency << bottomRightEmergency
-                    << bottomLeftEmergency << frontLeftEmergency << frontCenterEmergency;
+                    << bottomLeftEmergency << frontLeftEmergency;
     QPainterPath emergencyPath;
     emergencyPath.addPolygon(emergencyPolygon);
     QPainterPath strokeEmergencyPath = ps_emergencyShape.createStroke(emergencyPath);
@@ -834,7 +846,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftAutoLadder{autoLadderRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF autoLadderPolygon;
     autoLadderPolygon << frontCenterAutoLadder << frontRightAutoLadder << bottomRightAutoLadder
-                      << bottomLeftAutoLadder << frontLeftAutoLadder << frontCenterAutoLadder;
+                      << bottomLeftAutoLadder << frontLeftAutoLadder;
     QPainterPath autoLadderPath;
     autoLadderPath.addPolygon(autoLadderPolygon);
     QPainterPath strokeAutoLadderPath = ps_autoLadderShape.createStroke(autoLadderPath);
@@ -855,7 +867,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftCrankLift{crankLiftRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF crankLiftPolygon;
     crankLiftPolygon << frontCenterCrankLift << frontRightCrankLift << bottomRightCrankLift
-                      << bottomLeftCrankLift << frontLeftCrankLift << frontCenterCrankLift;
+                      << bottomLeftCrankLift << frontLeftCrankLift;
     QPainterPath crankLiftPath;
     crankLiftPath.addPolygon(crankLiftPolygon);
     QPainterPath strokeCrankLiftPath = ps_crankLiftShape.createStroke(crankLiftPath);
@@ -879,7 +891,7 @@ void tst_TechnicShape::shape()
     QPolygonF telescopicLiftPolygon;
     telescopicLiftPolygon << frontCenterTelescopicLift << frontRightTelescopicLift
                           << bottomRightTelescopicLift << bottomLeftTelescopicLift
-                          << frontLeftTelescopicLift << frontCenterTelescopicLift;
+                          << frontLeftTelescopicLift;
     QPainterPath telescopicLiftPath;
     telescopicLiftPath.addPolygon(telescopicLiftPolygon);
     QPainterPath strokeTelescopicLiftPath = ps_telescopicLiftShape.createStroke(telescopicLiftPath);
@@ -900,7 +912,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftHoseCar{hoseCarRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF hoseCarPolygon;
     hoseCarPolygon << frontCenterHoseCar << frontRightHoseCar << bottomRightHoseCar
-                   << bottomLeftHoseCar << frontLeftHoseCar << frontCenterHoseCar;
+                   << bottomLeftHoseCar << frontLeftHoseCar;
     QPainterPath hoseCarPath;
     hoseCarPath.addPolygon(hoseCarPolygon);
     QPainterPath strokeHoseCarPath = ps_hoseCarShape.createStroke(hoseCarPath);
@@ -921,7 +933,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftComm{commRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF commPolygon;
     commPolygon << frontCenterComm << frontRightComm << bottomRightComm << bottomLeftComm
-                << frontLeftComm << frontCenterComm;
+                << frontLeftComm;
     QPainterPath commPath;
     commPath.addPolygon(commPolygon);
     QPainterPath strokeCommPath = ps_commShape.createStroke(commPath);
@@ -942,7 +954,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftTechServ{techServRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF techServPolygon;
     techServPolygon << frontCenterTechServ << frontRightTechServ << bottomRightTechServ
-                    << bottomLeftTechServ << frontLeftTechServ << frontCenterTechServ;
+                    << bottomLeftTechServ << frontLeftTechServ;
     QPainterPath techServPath;
     techServPath.addPolygon(techServPolygon);
     QPainterPath strokeTechServPath = ps_techServShape.createStroke(techServPath);
@@ -963,7 +975,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftSmokRem{smokRemRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF smokRemPolygon;
     smokRemPolygon << frontCenterSmokRem << frontRightSmokRem << bottomRightSmokRem
-                    << bottomLeftSmokRem << frontLeftSmokRem << frontCenterSmokRem;
+                    << bottomLeftSmokRem << frontLeftSmokRem;
     QPainterPath smokRemPath;
     smokRemPath.addPolygon(smokRemPolygon);
     QPainterPath strokeSmokRemPath = ps_smokRemShape.createStroke(smokRemPath);
@@ -984,7 +996,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftPumpStat{pumpStatRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF pumpStatPolygon;
     pumpStatPolygon << frontCenterPumpStat << frontRightPumpStat << bottomRightPumpStat
-                  << bottomLeftPumpStat << frontLeftPumpStat << frontCenterPumpStat;
+                  << bottomLeftPumpStat << frontLeftPumpStat;
     QPainterPath pumpStatPath;
     pumpStatPath.addPolygon(pumpStatPolygon);
     QPainterPath strokePumpStatPath = ps_pumpStatShape.createStroke(pumpStatPath);
@@ -1230,7 +1242,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftLafetCar{lafetCarRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF lafetCarPolygon;
     lafetCarPolygon << frontCenterLafetCar << frontRightLafetCar << bottomRightLafetCar
-                   << bottomLeftLafetCar << frontLeftLafetCar << frontCenterLafetCar;
+                   << bottomLeftLafetCar << frontLeftLafetCar;
     QPainterPath lafetCarPath;
     lafetCarPath.addPolygon(lafetCarPolygon);
     QPainterPath strokeLafetCarPath = ps_lafetCarShape.createStroke(lafetCarPath);
@@ -1251,7 +1263,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftAerodrome{aerodromeRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF aerodromePolygon;
     aerodromePolygon << frontCenterAerodrome << frontRightAerodrome << bottomRightAerodrome
-                    << bottomLeftAerodrome << frontLeftAerodrome << frontCenterAerodrome;
+                    << bottomLeftAerodrome << frontLeftAerodrome;
     QPainterPath aerodromePath;
     aerodromePath.addPolygon(aerodromePolygon);
     QPainterPath strokeAerodromePath = ps_aerodromeShape.createStroke(aerodromePath);
@@ -1347,7 +1359,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftFoam{foamRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF foamPolygon;
     foamPolygon << frontCenterFoam << frontRightFoam << bottomRightFoam
-                     << bottomLeftFoam << frontLeftFoam << frontCenterFoam;
+                     << bottomLeftFoam << frontLeftFoam;
     QPainterPath foamPath;
     foamPath.addPolygon(foamPolygon);
     QPainterPath strokeFoamPath = ps_foamShape.createStroke(foamPath);
@@ -1443,7 +1455,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftCombo{comboRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF comboPolygon;
     comboPolygon << frontCenterCombo << frontRightCombo << bottomRightCombo
-                << bottomLeftCombo << frontLeftCombo << frontCenterCombo;
+                << bottomLeftCombo << frontLeftCombo;
     QPainterPath comboPath;
     comboPath.addPolygon(comboPolygon);
     QPainterPath strokeComboPath = ps_comboShape.createStroke(comboPath);
@@ -1539,7 +1551,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftAerosol{aerosolRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF aerosolPolygon;
     aerosolPolygon << frontCenterAerosol << frontRightAerosol << bottomRightAerosol
-                    << bottomLeftAerosol << frontLeftAerosol << frontCenterAerosol;
+                    << bottomLeftAerosol << frontLeftAerosol;
     QPainterPath aerosolPath;
     aerosolPath.addPolygon(aerosolPolygon);
     QPainterPath strokeAerosolPath = ps_aerosolShape.createStroke(aerosolPath);
@@ -1560,7 +1572,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftPowder{powderRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF powderPolygon;
     powderPolygon << frontCenterPowder << frontRightPowder << bottomRightPowder
-                   << bottomLeftPowder << frontLeftPowder << frontCenterPowder;
+                   << bottomLeftPowder << frontLeftPowder;
     QPainterPath powderPath;
     powderPath.addPolygon(powderPolygon);
     QPainterPath strokePowderPath = ps_powderShape.createStroke(powderPath);
@@ -1581,7 +1593,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftCarbon{carbonRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF carbonPolygon;
     carbonPolygon << frontCenterCarbon << frontRightCarbon << bottomRightCarbon
-                  << bottomLeftCarbon << frontLeftCarbon << frontCenterCarbon;
+                  << bottomLeftCarbon << frontLeftCarbon;
     QPainterPath carbonPath;
     carbonPath.addPolygon(carbonPolygon);
     QPainterPath strokeCarbonPath = ps_carbonShape.createStroke(carbonPath);
@@ -1602,7 +1614,7 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftGazWater{gazWaterRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF gazWaterPolygon;
     gazWaterPolygon << frontCenterGazWater << frontRightGazWater << bottomRightGazWater
-                  << bottomLeftGazWater << frontLeftGazWater << frontCenterGazWater;
+                  << bottomLeftGazWater << frontLeftGazWater;
     QPainterPath gazWaterPath;
     gazWaterPath.addPolygon(gazWaterPolygon);
     QPainterPath strokeGazWaterPath = ps_gazWaterShape.createStroke(gazWaterPath);
@@ -1610,7 +1622,7 @@ void tst_TechnicShape::shape()
     QCOMPARE(p_gazWaterShape->shape(), strokeGazWaterPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
 
-    // TrackedShape
+// TrackedShape
     TechnicsShape *p_trackedShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tracked);
     QPainterPathStroker ps_trackedShape;
     ps_trackedShape.setWidth(p_trackedShape->pen().widthF());
@@ -1623,13 +1635,31 @@ void tst_TechnicShape::shape()
     QPointF bottomLeftTracked{trackedRect.bottomLeft()}; // -15.0, 37.5
     QPolygonF trackedPolygon;
     trackedPolygon << frontCenterTracked << frontRightTracked << bottomRightTracked
-                    << bottomLeftTracked << frontLeftTracked << frontCenterTracked;
+                    << bottomLeftTracked << frontLeftTracked;
     QPainterPath trackedPath;
     trackedPath.addPolygon(trackedPolygon);
     QPainterPath strokeTrackedPath = ps_trackedShape.createStroke(trackedPath);
     strokeTrackedPath.addPath(trackedPath);
     QCOMPARE(p_trackedShape->shape(), strokeTrackedPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
+
+// TankShape
+    TechnicsShape *p_tankShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tank);
+    QPainterPathStroker ps_tankShape;
+    ps_tankShape.setWidth(p_tankShape->pen().widthF());
+    QRectF tankRect{p_tankShape->rect()};
+    QPointF tankTop{tankRect.center().x(), tankRect.top()}; // 0.0, -37.5
+    QPointF tankRight{tankRect.right(), tankRect.center().y()}; // 18.0, 0.0
+    QPointF tankLeft{tankRect.left(), tankRect.center().y()}; // -18.0, 0.0
+    QPointF tankBottom{tankRect.center().x(), tankRect.bottom()}; // 0.0, 37.5
+    QPolygonF tankPolygon;
+    tankPolygon << tankBottom << tankLeft << tankTop << tankRight;
+    QPainterPath tankPath;
+    tankPath.addPolygon(tankPolygon);
+    QPainterPath strokeTankPath = ps_tankShape.createStroke(tankPath);
+    strokeTankPath.addPath(tankPath);
+    QCOMPARE(p_tankShape->shape(), strokeTankPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
 }
 
 void tst_TechnicShape::image()
@@ -1817,6 +1847,14 @@ void tst_TechnicShape::image()
     QCOMPARE(trackedImage.width(), p_trackedShape->boundingRect().width());
     QCOMPARE(trackedImage.height(), p_trackedShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
+
+    // TankShape
+    TechnicsShape *p_tankShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tank);
+    QPixmap tankImage{p_tankShape->image()};
+    QVERIFY2(!tankImage.isNull(), "tankShape::image() returned a null pixmap");
+    QCOMPARE(tankImage.width(), p_tankShape->boundingRect().width());
+    QCOMPARE(tankImage.height(), p_tankShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -1980,6 +2018,12 @@ void tst_TechnicShape::rect_setRect()
     p_trackedShape->setRect(rect);
     QCOMPARE(p_trackedShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
+
+    // TankShape
+    TechnicsShape *p_tankShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tank);
+    p_tankShape->setRect(rect);
+    QCOMPARE(p_tankShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -2130,6 +2174,12 @@ void tst_TechnicShape::height_setHeight()
     p_trackedShape->setHeight(height);
     QCOMPARE(p_trackedShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
+
+    // TankShape
+    TechnicsShape *p_tankShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tank);
+    p_tankShape->setHeight(height);
+    QCOMPARE(p_tankShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -2289,6 +2339,12 @@ void tst_TechnicShape::text_setText()
     p_trackedShape->setText(text);
     QCOMPARE(p_trackedShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
+
+    // TankShape
+    TechnicsShape *p_tankShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tank);
+    p_tankShape->setText(text);
+    QCOMPARE(p_tankShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -3197,6 +3253,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_trackedShape);
     delete p_trackedContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
+
+    // TankShape
+    ContextMenuTester *p_tankContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_tankShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tank);
+    p_tankShape->setMenu(p_tankContextMenu);
+    scene.addItem(p_tankShape);
+
+    mousePressEvent.setScenePos(p_tankShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_tankShape->setSelected(true);
+    QSignalSpy tankContextMenuSpy(p_tankShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(tankContextMenuSpy.count(), 0);
+
+    QList<QAction *> tankMenuActions{p_tankShape->menu()->actions()};
+    QCOMPARE(tankMenuActions.size(), 1);
+    tankMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_tankShape->boundingRect().center()));
+    tankMenuActions = p_tankShape->menu()->actions();
+    QCOMPARE(tankMenuActions.size(), 1);
+    QCOMPARE(tankContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_tankShape);
+    delete p_tankContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
