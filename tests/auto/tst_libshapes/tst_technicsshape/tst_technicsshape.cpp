@@ -206,6 +206,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_gazWaterShape, "gazWaterShape is nullptr");
     QCOMPARE(int(p_gazWaterShape->type()), int(QGraphicsItem::UserType + 222));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
+
+    // TrackedShape
+    TechnicsShape *p_trackedShape = nullptr;
+    p_trackedShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tracked);
+    QVERIFY2(p_trackedShape, "trackedShape is nullptr");
+    QCOMPARE(int(p_trackedShape->type()), int(QGraphicsItem::UserType + 223));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -400,6 +407,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_gazWaterShape = TechnicsShape::createTechnicsShape(TechnicsShape::GazWater);
     QCOMPARE(p_gazWaterShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
+
+    // TrackedShape
+    TechnicsShape *p_trackedShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tracked);
+    QCOMPARE(p_trackedShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
 }
 
 void tst_TechnicShape::shape()
@@ -1597,6 +1609,27 @@ void tst_TechnicShape::shape()
     strokeGazWaterPath.addPath(gazWaterPath);
     QCOMPARE(p_gazWaterShape->shape(), strokeGazWaterPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
+
+    // TrackedShape
+    TechnicsShape *p_trackedShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tracked);
+    QPainterPathStroker ps_trackedShape;
+    ps_trackedShape.setWidth(p_trackedShape->pen().widthF());
+    QRectF trackedRect{p_trackedShape->rect()};
+    qreal frontTabTracked{trackedRect.height() / 3};
+    QPointF frontCenterTracked{trackedRect.center().x(), trackedRect.top()}; // 0.0, -37.5
+    QPointF frontRightTracked{trackedRect.right(), trackedRect.top() + frontTabTracked}; // 15.0, -12.5
+    QPointF frontLeftTracked{trackedRect.left(), trackedRect.top() + frontTabTracked}; // -15.0, -12.5
+    QPointF bottomRightTracked{trackedRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftTracked{trackedRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF trackedPolygon;
+    trackedPolygon << frontCenterTracked << frontRightTracked << bottomRightTracked
+                    << bottomLeftTracked << frontLeftTracked << frontCenterTracked;
+    QPainterPath trackedPath;
+    trackedPath.addPolygon(trackedPolygon);
+    QPainterPath strokeTrackedPath = ps_trackedShape.createStroke(trackedPath);
+    strokeTrackedPath.addPath(trackedPath);
+    QCOMPARE(p_trackedShape->shape(), strokeTrackedPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
 }
 
 void tst_TechnicShape::image()
@@ -1776,6 +1809,14 @@ void tst_TechnicShape::image()
     QCOMPARE(gazWaterImage.width(), p_gazWaterShape->boundingRect().width());
     QCOMPARE(gazWaterImage.height(), p_gazWaterShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
+
+    // TrackedShape
+    TechnicsShape *p_trackedShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tracked);
+    QPixmap trackedImage{p_trackedShape->image()};
+    QVERIFY2(!trackedImage.isNull(), "trackedShape::image() returned a null pixmap");
+    QCOMPARE(trackedImage.width(), p_trackedShape->boundingRect().width());
+    QCOMPARE(trackedImage.height(), p_trackedShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -1933,6 +1974,12 @@ void tst_TechnicShape::rect_setRect()
     p_gazWaterShape->setRect(rect);
     QCOMPARE(p_gazWaterShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
+
+    // TrackedShape
+    TechnicsShape *p_trackedShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tracked);
+    p_trackedShape->setRect(rect);
+    QCOMPARE(p_trackedShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -2077,6 +2124,12 @@ void tst_TechnicShape::height_setHeight()
     p_gazWaterShape->setHeight(height);
     QCOMPARE(p_gazWaterShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
+
+    // TrackedShape
+    TechnicsShape *p_trackedShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tracked);
+    p_trackedShape->setHeight(height);
+    QCOMPARE(p_trackedShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -2230,6 +2283,12 @@ void tst_TechnicShape::text_setText()
     p_gazWaterShape->setText(text);
     QCOMPARE(p_gazWaterShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
+
+    // TrackedShape
+    TechnicsShape *p_trackedShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tracked);
+    p_trackedShape->setText(text);
+    QCOMPARE(p_trackedShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -3109,6 +3168,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_gazWaterShape);
     delete p_gazWaterContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
+
+    // TrackedShape
+    ContextMenuTester *p_trackedContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_trackedShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tracked);
+    p_trackedShape->setMenu(p_trackedContextMenu);
+    scene.addItem(p_trackedShape);
+
+    mousePressEvent.setScenePos(p_trackedShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_trackedShape->setSelected(true);
+    QSignalSpy trackedContextMenuSpy(p_trackedShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(trackedContextMenuSpy.count(), 0);
+
+    QList<QAction *> trackedMenuActions{p_trackedShape->menu()->actions()};
+    QCOMPARE(trackedMenuActions.size(), 1);
+    trackedMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_trackedShape->boundingRect().center()));
+    trackedMenuActions = p_trackedShape->menu()->actions();
+    QCOMPARE(trackedMenuActions.size(), 1);
+    QCOMPARE(trackedContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_trackedShape);
+    delete p_trackedContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
