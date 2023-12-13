@@ -768,9 +768,10 @@
         <translation>АГВТ</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="754"/>
         <source>Tank</source>
         <translatorcomment>Пожарный танк.</translatorcomment>
-        <translation type="vanished">Танк</translation>
+        <translation>Танк</translation>
     </message>
     <message>
         <source>GDZS</source>

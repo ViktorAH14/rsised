@@ -53,8 +53,8 @@ public:
                      , Powder           //АП автомобиль порошкового тушения
                      , Carbon           //АГТ автомобиль углекислотного тушения
                      , GazWater         //АГВТ автомобиль газоводяного тушения
-                     , Tracked          // машина на гусеничном ходу
-                     , Tank
+                     , Tracked          //ГПМ машина на гусеничном ходу
+                     , Tank             //Танк пожарный
                      , GDZS
                      , Waterproof
                      , Laboratory
@@ -1166,5 +1166,48 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_trackedActionList;
+};
+
+class TankShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 224};
+
+    explicit TankShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~TankShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(TankShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawTankShape(QPainter *painter);
+    QPolygonF tankPolygon(const QRectF &rect) const;
+
+    const ShapeType m_tankType;
+    QRectF m_tankRect;
+    QGraphicsTextItem *m_tankText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_tankActionList;
 };
 #endif // TECHNICSSHAPE_H
