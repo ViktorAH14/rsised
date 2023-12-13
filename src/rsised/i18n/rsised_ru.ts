@@ -774,9 +774,10 @@
         <translation>Танк</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="756"/>
         <source>GDZS</source>
         <translatorcomment>Автомобиль газодымозащитной службы.</translatorcomment>
-        <translation type="vanished">АГ</translation>
+        <translation>АГ</translation>
     </message>
     <message>
         <source>Waterproof</source>

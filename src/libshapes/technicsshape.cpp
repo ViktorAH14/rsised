@@ -127,6 +127,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Tank:
         p_technicsShape = new TankShape(parent);
         break;
+    case GDZS:
+        p_technicsShape = new GdzsShape(parent);
+        break;
     default:
         break;
     }
@@ -6692,8 +6695,7 @@ void TankShape::setRect(const QRectF &rect)
     prepareGeometryChange();
     m_tankRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
     if (m_tankText != nullptr)
-        m_tankText->setPos(m_tankRect.right(), m_tankRect.bottom()
-                                                       - m_tankRect.width() / 6);
+        m_tankText->setPos(m_tankRect.right(), m_tankRect.bottom() - m_tankRect.width() / 6);
 
     update();
 }
@@ -6807,4 +6809,190 @@ QPolygonF TankShape::tankPolygon(const QRectF &rect) const
     tankPolygon << bottom << left << top << right;
 
     return tankPolygon;
+}
+
+GdzsShape::GdzsShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_gdzsType{GDZS}
+    , m_gdzsRect{-15.0, -37.5, 30.0, 75.0}
+    , m_gdzsText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void GdzsShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawGdzsShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF GdzsShape::boundingRect() const
+{
+    QRectF boundingRect{m_gdzsRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath GdzsShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap GdzsShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawGdzsShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType GdzsShape::shapeType() const
+{
+    return m_gdzsType;
+}
+
+void GdzsShape::setRect(const QRectF &rect)
+{
+    if (m_gdzsRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_gdzsRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_gdzsText != nullptr)
+        m_gdzsText->setPos(m_gdzsRect.right(), m_gdzsRect.bottom() - m_gdzsRect.width() / 6);
+
+    update();
+}
+
+QRectF GdzsShape::rect() const
+{
+    return m_gdzsRect;
+}
+
+void GdzsShape::setHeight(const qreal &height)
+{
+    if (m_gdzsRect.height() == height)
+        return;
+
+    qreal oldHeight{m_gdzsRect.height()};
+    prepareGeometryChange();
+    m_gdzsRect.setHeight(height);
+    qreal dy{(m_gdzsRect.height() - oldHeight) / 2};
+    m_gdzsRect.moveTo(QPointF(m_gdzsRect.x(), m_gdzsRect.y() - dy));
+    update();
+}
+
+qreal GdzsShape::height() const
+{
+    return m_gdzsRect.height();
+}
+
+void GdzsShape::setText(const QString &text)
+{
+    if (m_gdzsText == nullptr) {
+        m_gdzsText = new QGraphicsTextItem(this);
+        m_gdzsText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_gdzsText->setRotation(-90);
+    }
+    m_gdzsText->setPlainText(text);
+    m_showText = true;
+}
+
+QString GdzsShape::text() const
+{
+    if (m_gdzsText == nullptr)
+        return "";
+
+    return m_gdzsText->toPlainText();
+}
+
+void GdzsShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_gdzsActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_gdzsActionList);
+            m_gdzsActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void GdzsShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_gdzsActionList.append(m_addTextAction.get());
+}
+
+void GdzsShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_gdzsText == nullptr) {
+            m_gdzsText=new QGraphicsTextItem(this);
+            m_gdzsText->setPlainText("ГДЗ-");
+            m_gdzsText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_gdzsText->setRotation(-90);
+        }
+        m_gdzsText->show();
+        m_showText = true;
+    } else {
+        m_gdzsText->hide();
+        m_showText = false;
+    }
+}
+
+void GdzsShape::drawGdzsShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+    painter->translate(m_gdzsRect.center());
+    painter->rotate(270);
+    painter->translate(-m_gdzsRect.center());
+    QTextOption textOption{Qt::AlignCenter};
+    painter->drawText(m_gdzsRect, "ГДЗ", textOption);
+    painter->translate(m_gdzsRect.center());
+    painter->rotate(-270);
+    painter->translate(-m_gdzsRect.center());
+    qreal sixthWidth{m_gdzsRect.width() / 6}; // 5.0
+
+    if (m_showText) {
+        m_gdzsText->setPos(m_gdzsRect.right(), m_gdzsRect.bottom() - sixthWidth * 2);
+    }
 }
