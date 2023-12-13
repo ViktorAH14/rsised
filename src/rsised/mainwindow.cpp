@@ -749,8 +749,8 @@ void MainWindow::createShapeToolBox()
                                                       , TechnicsShape::Carbon), 5, 0);
    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("GazWater")
                                                       , TechnicsShape::GazWater), 5, 1);
-//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Tracked")
-//                                                       , TechnicsShape::Tracked), 7, 1);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Tracked")
+                                                      , TechnicsShape::Tracked), 5, 2);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Tank")
 //                                                       , TechnicsShape::Tank), 7, 2);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("GDZS")

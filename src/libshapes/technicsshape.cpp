@@ -122,6 +122,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case GazWater:
         p_technicsShape = new GazWaterShape(parent);
         break;
+    case Tracked:
+        p_technicsShape = new TrackedShape(parent);
+        break;
     default:
         break;
     }
@@ -6404,5 +6407,210 @@ void GazWaterShape::drawGazWaterShape(QPainter *painter)
 
     if (m_showText) {
         m_gazWaterText->setPos(m_gazWaterRect.right(), m_gazWaterRect.bottom() - sixthWidth * 2);
+    }
+}
+
+TrackedShape::TrackedShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_trackedType{Tracked}
+    , m_trackedRect{-15.0, -37.5, 30.0, 75.0}
+    , m_trackedText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void TrackedShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawTrackedShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF TrackedShape::boundingRect() const
+{
+    QRectF boundingRect{m_trackedRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath TrackedShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap TrackedShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawTrackedShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType TrackedShape::shapeType() const
+{
+    return m_trackedType;
+}
+
+void TrackedShape::setRect(const QRectF &rect)
+{
+    if (m_trackedRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_trackedRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_trackedText != nullptr)
+        m_trackedText->setPos(m_trackedRect.right(), m_trackedRect.bottom()
+                                                       - m_trackedRect.width() / 6);
+
+    update();
+}
+
+QRectF TrackedShape::rect() const
+{
+    return m_trackedRect;
+}
+
+void TrackedShape::setHeight(const qreal &height)
+{
+    if (m_trackedRect.height() == height)
+        return;
+
+    qreal oldHeight{m_trackedRect.height()};
+    prepareGeometryChange();
+    m_trackedRect.setHeight(height);
+    qreal dy{(m_trackedRect.height() - oldHeight) / 2};
+    m_trackedRect.moveTo(QPointF(m_trackedRect.x(), m_trackedRect.y() - dy));
+    update();
+}
+
+qreal TrackedShape::height() const
+{
+    return m_trackedRect.height();
+}
+
+void TrackedShape::setText(const QString &text)
+{
+    if (m_trackedText == nullptr) {
+        m_trackedText = new QGraphicsTextItem(this);
+        m_trackedText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_trackedText->setRotation(-90);
+    }
+    m_trackedText->setPlainText(text);
+    m_showText = true;
+}
+
+QString TrackedShape::text() const
+{
+    if (m_trackedText == nullptr)
+        return "";
+
+    return m_trackedText->toPlainText();
+}
+
+void TrackedShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_trackedActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_trackedActionList);
+            m_trackedActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void TrackedShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+                m_trackedActionList.append(m_addTextAction.get());
+}
+
+void TrackedShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_trackedText == nullptr) {
+            m_trackedText=new QGraphicsTextItem(this);
+            m_trackedText->setPlainText("ГПМ-");
+            m_trackedText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_trackedText->setRotation(-90);
+        }
+        m_trackedText->show();
+        m_showText = true;
+    } else {
+        m_trackedText->hide();
+        m_showText = false;
+    }
+}
+
+void TrackedShape::drawTrackedShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+
+    // Draw track
+    qreal frontTab{m_trackedRect.height() / 3};
+    QPointF frontCenter{m_trackedRect.center().x(), m_trackedRect.top()}; // 0.0, -37.5
+    QPointF frontRight{m_trackedRect.right(), m_trackedRect.top() + frontTab}; // 15.0, -12.5
+    QPointF frontLeft{m_trackedRect.left(), m_trackedRect.top() + frontTab}; // -15.0, -12.5
+    QLineF leftTopLine{frontLeft, frontCenter};
+    QLineF rightTopLine{frontRight, frontCenter};
+    qreal sixthWidth{m_trackedRect.width() / 6}; // 5.0
+    qreal trackLeft{m_trackedRect.left() + sixthWidth};
+    QPointF intersectLeftBottom{trackLeft, m_trackedRect.bottom()};
+    QPointF intersectLeftTop{trackLeft, m_trackedRect.top()};
+    QLineF leftIntersectLine{intersectLeftBottom, intersectLeftTop};
+    QPointF leftTrackTop{};
+    leftTopLine.intersects(leftIntersectLine, &leftTrackTop);
+    QPointF leftTrackBottom{trackLeft, m_trackedRect.bottom()};
+    QLineF leftTrack{leftTrackBottom, leftTrackTop};
+    painter->drawLine(leftTrack);
+    qreal trackRight{m_trackedRect.right() - sixthWidth};
+    QPointF intersectRightBottom{trackRight, m_trackedRect.bottom()};
+    QPointF intersectRightTop{trackRight, m_trackedRect.top()};
+    QLineF rightIntersectLine{intersectRightBottom, intersectRightTop};
+    QPointF rightTrackTop{};
+    rightTopLine.intersects(rightIntersectLine, &rightTrackTop);
+    QPointF rightTrackBottom{trackRight, m_trackedRect.bottom()};
+    QLineF rightTrack{rightTrackBottom, rightTrackTop};
+    painter->drawLine(rightTrack);
+
+    if (m_showText) {
+        m_trackedText->setPos(m_trackedRect.right(), m_trackedRect.bottom() - sixthWidth * 2);
     }
 }

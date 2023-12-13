@@ -517,9 +517,10 @@
         <translation>ТПЛ</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="752"/>
         <source>Tracked</source>
         <translatorcomment>Машина на гусеничном ходу</translatorcomment>
-        <translation type="vanished">ГПМ</translation>
+        <translation>ГПМ</translation>
     </message>
     <message>
         <source>Adapted</source>
