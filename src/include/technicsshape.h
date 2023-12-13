@@ -55,7 +55,7 @@ public:
                      , GazWater         //АГВТ автомобиль газоводяного тушения
                      , Tracked          //ГПМ машина на гусеничном ходу
                      , Tank             //Танк пожарный
-                     , GDZS
+                     , GDZS             //АГ автомобиль газодымозащитной службы
                      , Waterproof
                      , Laboratory
                      , StaffCar
@@ -1209,5 +1209,47 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_tankActionList;
+};
+
+class GdzsShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 225};
+
+    explicit GdzsShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~GdzsShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(GdzsShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawGdzsShape(QPainter *painter);
+
+    const ShapeType m_gdzsType;
+    QRectF m_gdzsRect;
+    QGraphicsTextItem *m_gdzsText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_gdzsActionList;
 };
 #endif // TECHNICSSHAPE_H

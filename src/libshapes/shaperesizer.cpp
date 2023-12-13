@@ -181,6 +181,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             tankShape->setRect(value.toRectF());
         break;
     }
+    case GdzsShape::Type: {
+        if (GdzsShape *gdzsShape = dynamic_cast<GdzsShape *>(item))
+            gdzsShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());
