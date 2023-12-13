@@ -47,8 +47,7 @@ QPolygonF TechnicsShape::basePolygon(const QRectF &rect) const
     QPointF bottomRight{rect.bottomRight()}; // 15.0, 37.5
     QPointF bottomLeft{rect.bottomLeft()}; // -15.0, 37.5
     QPolygonF basePolygon;
-    basePolygon << frontCenter << frontRight << bottomRight << bottomLeft << frontLeft
-                            << frontCenter;
+    basePolygon << frontCenter << frontRight << bottomRight << bottomLeft << frontLeft;
     return basePolygon;
 }
 
@@ -124,6 +123,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
         break;
     case Tracked:
         p_technicsShape = new TrackedShape(parent);
+        break;
+    case Tank:
+        p_technicsShape = new TankShape(parent);
         break;
     default:
         break;
@@ -6559,7 +6561,7 @@ void TrackedShape::createAction()
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
     QObject::connect(m_addTextAction.get(), &QAction::triggered
                      , [this](){m_showText ? textShow(false) : textShow(true);});
-                m_trackedActionList.append(m_addTextAction.get());
+    m_trackedActionList.append(m_addTextAction.get());
 }
 
 void TrackedShape::textShow(bool showText)
@@ -6613,4 +6615,196 @@ void TrackedShape::drawTrackedShape(QPainter *painter)
     if (m_showText) {
         m_trackedText->setPos(m_trackedRect.right(), m_trackedRect.bottom() - sixthWidth * 2);
     }
+}
+
+TankShape::TankShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_tankType{Tank}
+    , m_tankRect{-18.0, -37.5, 36.0, 75.0}
+    , m_tankText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void TankShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawTankShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF TankShape::boundingRect() const
+{
+    QRectF boundingRect{m_tankRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath TankShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(tankPolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap TankShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawTankShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType TankShape::shapeType() const
+{
+    return m_tankType;
+}
+
+void TankShape::setRect(const QRectF &rect)
+{
+    if (m_tankRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_tankRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_tankText != nullptr)
+        m_tankText->setPos(m_tankRect.right(), m_tankRect.bottom()
+                                                       - m_tankRect.width() / 6);
+
+    update();
+}
+
+QRectF TankShape::rect() const
+{
+    return m_tankRect;
+}
+
+void TankShape::setHeight(const qreal &height)
+{
+    if (m_tankRect.height() == height)
+        return;
+
+    qreal oldHeight{m_tankRect.height()};
+    prepareGeometryChange();
+    m_tankRect.setHeight(height);
+    qreal dy{(m_tankRect.height() - oldHeight) / 2};
+    m_tankRect.moveTo(QPointF(m_tankRect.x(), m_tankRect.y() - dy));
+    update();
+}
+
+qreal TankShape::height() const
+{
+    return m_tankRect.height();
+}
+
+void TankShape::setText(const QString &text)
+{
+    if (m_tankText == nullptr) {
+        m_tankText = new QGraphicsTextItem(this);
+        m_tankText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_tankText->setRotation(-90);
+    }
+    m_tankText->setPlainText(text);
+    m_showText = true;
+}
+
+QString TankShape::text() const
+{
+    if (m_tankText == nullptr)
+        return "";
+
+    return m_tankText->toPlainText();
+}
+
+void TankShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_tankActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_tankActionList);
+            m_tankActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void TankShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_tankActionList.append(m_addTextAction.get());
+}
+
+void TankShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_tankText == nullptr) {
+            m_tankText=new QGraphicsTextItem(this);
+            m_tankText->setPlainText("Танк-");
+            m_tankText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_tankText->setRotation(-90);
+        }
+        m_tankText->show();
+        m_showText = true;
+    } else {
+        m_tankText->hide();
+        m_showText = false;
+    }
+}
+
+void TankShape::drawTankShape(QPainter *painter)
+{
+    painter->drawPolygon(tankPolygon(rect()));
+
+    qreal sixthWidth{m_tankRect.width() / 6}; // 6.0
+    if (m_showText) {
+        m_tankText->setPos(m_tankRect.right(), m_tankRect.bottom() - sixthWidth * 2);
+    }
+}
+
+QPolygonF TankShape::tankPolygon(const QRectF &rect) const
+{
+    QPointF top{rect.center().x(), rect.top()}; // 0.0, -37.5
+    QPointF right{rect.right(), rect.center().y()}; // 18.0, 0.0
+    QPointF left{rect.left(), rect.center().y()}; // -18.0, 0.0
+    QPointF bottom{rect.center().x(), rect.bottom()}; // 0.0, 37.5
+
+    QPolygonF tankPolygon;
+    tankPolygon << bottom << left << top << right;
+
+    return tankPolygon;
 }
