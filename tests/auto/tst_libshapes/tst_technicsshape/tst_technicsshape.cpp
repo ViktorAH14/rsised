@@ -220,6 +220,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_tankShape, "tankShape is nullptr");
     QCOMPARE(int(p_tankShape->type()), int(QGraphicsItem::UserType + 224));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
+
+    // GdzsShape
+    TechnicsShape *p_gdzsShape = nullptr;
+    p_gdzsShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
+    QVERIFY2(p_gdzsShape, "gdzsShape is nullptr");
+    QCOMPARE(int(p_gdzsShape->type()), int(QGraphicsItem::UserType + 225));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -424,6 +431,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_tankShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tank);
     QCOMPARE(p_tankShape->boundingRect(), QRectF(-18.5, -38.0, 37.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
+
+    // GdzsShape
+    TechnicsShape *p_gdzsShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
+    QCOMPARE(p_gdzsShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
 }
 
 void tst_TechnicShape::shape()
@@ -1660,6 +1672,27 @@ void tst_TechnicShape::shape()
     strokeTankPath.addPath(tankPath);
     QCOMPARE(p_tankShape->shape(), strokeTankPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
+
+// GdzsShape
+    TechnicsShape *p_gdzsShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
+    QPainterPathStroker ps_gdzsShape;
+    ps_gdzsShape.setWidth(p_gdzsShape->pen().widthF());
+    QRectF gdzsRect{p_gdzsShape->rect()};
+    qreal frontTabGdzs{gdzsRect.height() / 3};
+    QPointF frontCenterGdzs{gdzsRect.center().x(), gdzsRect.top()}; // 0.0, -37.5
+    QPointF frontRightGdzs{gdzsRect.right(), gdzsRect.top() + frontTabGdzs}; // 15.0, -12.5
+    QPointF frontLeftGdzs{gdzsRect.left(), gdzsRect.top() + frontTabGdzs}; // -15.0, -12.5
+    QPointF bottomRightGdzs{gdzsRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftGdzs{gdzsRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF gdzsPolygon;
+    gdzsPolygon << frontCenterGdzs << frontRightGdzs << bottomRightGdzs
+                   << bottomLeftGdzs << frontLeftGdzs;
+    QPainterPath gdzsPath;
+    gdzsPath.addPolygon(gdzsPolygon);
+    QPainterPath strokeGdzsPath = ps_gdzsShape.createStroke(gdzsPath);
+    strokeGdzsPath.addPath(gdzsPath);
+    QCOMPARE(p_gdzsShape->shape(), strokeGdzsPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
 }
 
 void tst_TechnicShape::image()
@@ -1855,6 +1888,14 @@ void tst_TechnicShape::image()
     QCOMPARE(tankImage.width(), p_tankShape->boundingRect().width());
     QCOMPARE(tankImage.height(), p_tankShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
+
+    // GdzsShape
+    TechnicsShape *p_gdzsShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
+    QPixmap gdzsImage{p_gdzsShape->image()};
+    QVERIFY2(!gdzsImage.isNull(), "gdzsShape::image() returned a null pixmap");
+    QCOMPARE(gdzsImage.width(), p_gdzsShape->boundingRect().width());
+    QCOMPARE(gdzsImage.height(), p_gdzsShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -2024,6 +2065,12 @@ void tst_TechnicShape::rect_setRect()
     p_tankShape->setRect(rect);
     QCOMPARE(p_tankShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
+
+    // GdzsShape
+    TechnicsShape *p_gdzsShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
+    p_gdzsShape->setRect(rect);
+    QCOMPARE(p_gdzsShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -2180,6 +2227,12 @@ void tst_TechnicShape::height_setHeight()
     p_tankShape->setHeight(height);
     QCOMPARE(p_tankShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
+
+    // GdzsShape
+    TechnicsShape *p_gdzsShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
+    p_gdzsShape->setHeight(height);
+    QCOMPARE(p_gdzsShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -2345,6 +2398,12 @@ void tst_TechnicShape::text_setText()
     p_tankShape->setText(text);
     QCOMPARE(p_tankShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
+
+    // GdzsShape
+    TechnicsShape *p_gdzsShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
+    p_gdzsShape->setText(text);
+    QCOMPARE(p_gdzsShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -3282,6 +3341,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_tankShape);
     delete p_tankContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
+
+    // GdzsShape
+    ContextMenuTester *p_gdzsContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_gdzsShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
+    p_gdzsShape->setMenu(p_gdzsContextMenu);
+    scene.addItem(p_gdzsShape);
+
+    mousePressEvent.setScenePos(p_gdzsShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_gdzsShape->setSelected(true);
+    QSignalSpy gdzsContextMenuSpy(p_gdzsShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(gdzsContextMenuSpy.count(), 0);
+
+    QList<QAction *> gdzsMenuActions{p_gdzsShape->menu()->actions()};
+    QCOMPARE(gdzsMenuActions.size(), 1);
+    gdzsMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_gdzsShape->boundingRect().center()));
+    gdzsMenuActions = p_gdzsShape->menu()->actions();
+    QCOMPARE(gdzsMenuActions.size(), 1);
+    QCOMPARE(gdzsContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_gdzsShape);
+    delete p_gdzsContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
