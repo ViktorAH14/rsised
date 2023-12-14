@@ -241,6 +241,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_laboratoryShape, "laboratoryShape is nullptr");
     QCOMPARE(int(p_laboratoryShape->type()), int(QGraphicsItem::UserType + 227));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
+
+    // StaffCarShape
+    TechnicsShape *p_staffCarShape = nullptr;
+    p_staffCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::StaffCar);
+    QVERIFY2(p_staffCarShape, "staffCarShape is nullptr");
+    QCOMPARE(int(p_staffCarShape->type()), int(QGraphicsItem::UserType + 228));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_staffCarShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -460,6 +467,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_laboratoryShape = TechnicsShape::createTechnicsShape(TechnicsShape::Laboratory);
     QCOMPARE(p_laboratoryShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
+
+    // StaffCarShape
+    TechnicsShape *p_staffCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::StaffCar);
+    QCOMPARE(p_staffCarShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_staffCarShape);
 }
 
 void tst_TechnicShape::shape()
@@ -1759,6 +1771,27 @@ void tst_TechnicShape::shape()
     strokeLaboratoryPath.addPath(laboratoryPath);
     QCOMPARE(p_laboratoryShape->shape(), strokeLaboratoryPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
+
+// StaffCarShape
+    TechnicsShape *p_staffCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::Laboratory);
+    QPainterPathStroker ps_staffCarShape;
+    ps_staffCarShape.setWidth(p_staffCarShape->pen().widthF());
+    QRectF staffCarRect{p_staffCarShape->rect()};
+    qreal frontTabStaffCar{staffCarRect.height() / 3};
+    QPointF frontCenterStaffCar{staffCarRect.center().x(), staffCarRect.top()}; // 0.0, -37.5
+    QPointF frontRightStaffCar{staffCarRect.right(), staffCarRect.top() + frontTabStaffCar}; // 15.0, -12.5
+    QPointF frontLeftStaffCar{staffCarRect.left(), staffCarRect.top() + frontTabStaffCar}; // -15.0, -12.5
+    QPointF bottomRightStaffCar{staffCarRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftStaffCar{staffCarRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF staffCarPolygon;
+    staffCarPolygon << frontCenterStaffCar << frontRightStaffCar << bottomRightStaffCar
+                      << bottomLeftStaffCar << frontLeftStaffCar;
+    QPainterPath staffCarPath;
+    staffCarPath.addPolygon(staffCarPolygon);
+    QPainterPath strokeStaffCarPath = ps_staffCarShape.createStroke(staffCarPath);
+    strokeStaffCarPath.addPath(staffCarPath);
+    QCOMPARE(p_staffCarShape->shape(), strokeStaffCarPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_staffCarShape);
 }
 
 void tst_TechnicShape::image()
@@ -1978,6 +2011,14 @@ void tst_TechnicShape::image()
     QCOMPARE(laboratoryImage.width(), p_laboratoryShape->boundingRect().width());
     QCOMPARE(laboratoryImage.height(), p_laboratoryShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
+
+    // StaffCarShape
+    TechnicsShape *p_staffCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::StaffCar);
+    QPixmap staffCarImage{p_staffCarShape->image()};
+    QVERIFY2(!staffCarImage.isNull(), "staffCarShape::image() returned a null pixmap");
+    QCOMPARE(staffCarImage.width(), p_staffCarShape->boundingRect().width());
+    QCOMPARE(staffCarImage.height(), p_staffCarShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_staffCarShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -2165,6 +2206,12 @@ void tst_TechnicShape::rect_setRect()
     p_laboratoryShape->setRect(rect);
     QCOMPARE(p_laboratoryShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
+
+    // StaffCarShape
+    TechnicsShape *p_staffCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::StaffCar);
+    p_staffCarShape->setRect(rect);
+    QCOMPARE(p_staffCarShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_staffCarShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -2339,6 +2386,12 @@ void tst_TechnicShape::height_setHeight()
     p_laboratoryShape->setHeight(height);
     QCOMPARE(p_laboratoryShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
+
+    // StaffCarShape
+    TechnicsShape *p_staffCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::StaffCar);
+    p_staffCarShape->setHeight(height);
+    QCOMPARE(p_staffCarShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_staffCarShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -2522,6 +2575,12 @@ void tst_TechnicShape::text_setText()
     p_laboratoryShape->setText(text);
     QCOMPARE(p_laboratoryShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
+
+    // StaffCarShape
+    TechnicsShape *p_staffCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::StaffCar);
+    p_staffCarShape->setText(text);
+    QCOMPARE(p_staffCarShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_staffCarShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -3546,6 +3605,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_laboratoryShape);
     delete p_laboratoryContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
+
+    // StaffCarShape
+    ContextMenuTester *p_staffCarContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_staffCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
+    p_staffCarShape->setMenu(p_staffCarContextMenu);
+    scene.addItem(p_staffCarShape);
+
+    mousePressEvent.setScenePos(p_staffCarShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_staffCarShape->setSelected(true);
+    QSignalSpy staffCarContextMenuSpy(p_staffCarShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(staffCarContextMenuSpy.count(), 0);
+
+    QList<QAction *> staffCarMenuActions{p_staffCarShape->menu()->actions()};
+    QCOMPARE(staffCarMenuActions.size(), 1);
+    staffCarMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_staffCarShape->boundingRect().center()));
+    staffCarMenuActions = p_staffCarShape->menu()->actions();
+    QCOMPARE(staffCarMenuActions.size(), 1);
+    QCOMPARE(staffCarContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_staffCarShape);
+    delete p_staffCarContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_staffCarShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
