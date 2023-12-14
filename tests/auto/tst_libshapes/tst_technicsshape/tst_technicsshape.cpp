@@ -234,6 +234,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_waterproofShape, "waterproofShape is nullptr");
     QCOMPARE(int(p_waterproofShape->type()), int(QGraphicsItem::UserType + 226));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
+
+    // LaboratoryShape
+    TechnicsShape *p_laboratoryShape = nullptr;
+    p_laboratoryShape = TechnicsShape::createTechnicsShape(TechnicsShape::Laboratory);
+    QVERIFY2(p_laboratoryShape, "laboratoryShape is nullptr");
+    QCOMPARE(int(p_laboratoryShape->type()), int(QGraphicsItem::UserType + 227));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -448,6 +455,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_waterproofShape = TechnicsShape::createTechnicsShape(TechnicsShape::Waterproof);
     QCOMPARE(p_waterproofShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
+
+    // LaboratoryShape
+    TechnicsShape *p_laboratoryShape = TechnicsShape::createTechnicsShape(TechnicsShape::Laboratory);
+    QCOMPARE(p_laboratoryShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
 }
 
 void tst_TechnicShape::shape()
@@ -1726,6 +1738,27 @@ void tst_TechnicShape::shape()
     strokeWaterproofPath.addPath(waterproofPath);
     QCOMPARE(p_waterproofShape->shape(), strokeWaterproofPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
+
+// LaboratoryShape
+    TechnicsShape *p_laboratoryShape = TechnicsShape::createTechnicsShape(TechnicsShape::Laboratory);
+    QPainterPathStroker ps_laboratoryShape;
+    ps_laboratoryShape.setWidth(p_laboratoryShape->pen().widthF());
+    QRectF laboratoryRect{p_laboratoryShape->rect()};
+    qreal frontTabLaboratory{laboratoryRect.height() / 3};
+    QPointF frontCenterLaboratory{laboratoryRect.center().x(), laboratoryRect.top()}; // 0.0, -37.5
+    QPointF frontRightLaboratory{laboratoryRect.right(), laboratoryRect.top() + frontTabLaboratory}; // 15.0, -12.5
+    QPointF frontLeftLaboratory{laboratoryRect.left(), laboratoryRect.top() + frontTabLaboratory}; // -15.0, -12.5
+    QPointF bottomRightLaboratory{laboratoryRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftLaboratory{laboratoryRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF laboratoryPolygon;
+    laboratoryPolygon << frontCenterLaboratory << frontRightLaboratory << bottomRightLaboratory
+                      << bottomLeftLaboratory << frontLeftLaboratory;
+    QPainterPath laboratoryPath;
+    laboratoryPath.addPolygon(laboratoryPolygon);
+    QPainterPath strokeLaboratoryPath = ps_laboratoryShape.createStroke(laboratoryPath);
+    strokeLaboratoryPath.addPath(laboratoryPath);
+    QCOMPARE(p_laboratoryShape->shape(), strokeLaboratoryPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
 }
 
 void tst_TechnicShape::image()
@@ -1937,6 +1970,14 @@ void tst_TechnicShape::image()
     QCOMPARE(waterproofImage.width(), p_waterproofShape->boundingRect().width());
     QCOMPARE(waterproofImage.height(), p_waterproofShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
+
+    // LaboratoryShape
+    TechnicsShape *p_laboratoryShape = TechnicsShape::createTechnicsShape(TechnicsShape::Laboratory);
+    QPixmap laboratoryImage{p_laboratoryShape->image()};
+    QVERIFY2(!laboratoryImage.isNull(), "laboratoryShape::image() returned a null pixmap");
+    QCOMPARE(laboratoryImage.width(), p_laboratoryShape->boundingRect().width());
+    QCOMPARE(laboratoryImage.height(), p_laboratoryShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -2118,6 +2159,12 @@ void tst_TechnicShape::rect_setRect()
     p_waterproofShape->setRect(rect);
     QCOMPARE(p_waterproofShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
+
+    // LaboratoryShape
+    TechnicsShape *p_laboratoryShape = TechnicsShape::createTechnicsShape(TechnicsShape::Laboratory);
+    p_laboratoryShape->setRect(rect);
+    QCOMPARE(p_laboratoryShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -2286,6 +2333,12 @@ void tst_TechnicShape::height_setHeight()
     p_waterproofShape->setHeight(height);
     QCOMPARE(p_waterproofShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
+
+    // LaboratoryShape
+    TechnicsShape *p_laboratoryShape = TechnicsShape::createTechnicsShape(TechnicsShape::Laboratory);
+    p_laboratoryShape->setHeight(height);
+    QCOMPARE(p_laboratoryShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -2463,6 +2516,12 @@ void tst_TechnicShape::text_setText()
     p_waterproofShape->setText(text);
     QCOMPARE(p_waterproofShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
+
+    // LaboratoryShape
+    TechnicsShape *p_laboratoryShape = TechnicsShape::createTechnicsShape(TechnicsShape::Laboratory);
+    p_laboratoryShape->setText(text);
+    QCOMPARE(p_laboratoryShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -3458,6 +3517,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_waterproofShape);
     delete p_waterproofContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
+
+    // LaboratoryShape
+    ContextMenuTester *p_laboratoryContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_laboratoryShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
+    p_laboratoryShape->setMenu(p_laboratoryContextMenu);
+    scene.addItem(p_laboratoryShape);
+
+    mousePressEvent.setScenePos(p_laboratoryShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_laboratoryShape->setSelected(true);
+    QSignalSpy laboratoryContextMenuSpy(p_laboratoryShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(laboratoryContextMenuSpy.count(), 0);
+
+    QList<QAction *> laboratoryMenuActions{p_laboratoryShape->menu()->actions()};
+    QCOMPARE(laboratoryMenuActions.size(), 1);
+    laboratoryMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_laboratoryShape->boundingRect().center()));
+    laboratoryMenuActions = p_laboratoryShape->menu()->actions();
+    QCOMPARE(laboratoryMenuActions.size(), 1);
+    QCOMPARE(laboratoryContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_laboratoryShape);
+    delete p_laboratoryContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
