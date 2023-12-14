@@ -58,7 +58,7 @@ public:
                      , GDZS             //АГ автомобиль газодымозащитной службы
                      , Waterproof       //АВЗ автомобиль водозащитный
                      , Laboratory       //АЛП автолаборатория пожарная
-                     , StaffCar
+                     , StaffCar         //АШ автомобиль штабной
                      , Trailer
                      , Vessel
                      , Boat
@@ -1335,5 +1335,47 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_laboratoryActionList;
+};
+
+class StaffCarShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 228};
+
+    explicit StaffCarShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~StaffCarShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(StaffCarShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawStaffCarShape(QPainter *painter);
+
+    const ShapeType m_staffCarType;
+    QRectF m_staffCarRect;
+    QGraphicsTextItem *m_staffCarText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_staffCarActionList;
 };
 #endif // TECHNICSSHAPE_H

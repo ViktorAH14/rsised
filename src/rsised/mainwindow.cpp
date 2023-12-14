@@ -759,8 +759,8 @@ void MainWindow::createShapeToolBox()
                                                       , TechnicsShape::Waterproof), 6, 1);
    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Laboratory")
                                                       , TechnicsShape::Laboratory), 6, 2);
-//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("StaffCar")
-//                                                       , TechnicsShape::StaffCar), 9, 0);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("StaffCar")
+                                                      , TechnicsShape::StaffCar), 6, 3);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Trailer")
 //                                                       , TechnicsShape::Trailer), 9, 1);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Vessel")

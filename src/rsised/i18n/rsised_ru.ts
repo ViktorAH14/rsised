@@ -792,9 +792,10 @@
         <translation>АЛП</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="762"/>
         <source>StaffCar</source>
         <translatorcomment>Пожарный штабной автомобиль.</translatorcomment>
-        <translation type="vanished">АШ</translation>
+        <translation>АШ</translation>
     </message>
     <message>
         <source>Trailer</source>
