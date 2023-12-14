@@ -186,6 +186,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             gdzsShape->setRect(value.toRectF());
         break;
     }
+    case WaterproofShape::Type: {
+        if (WaterproofShape *waterproofShape = dynamic_cast<WaterproofShape *>(item))
+            waterproofShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());

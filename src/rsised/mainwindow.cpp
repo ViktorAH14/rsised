@@ -755,8 +755,8 @@ void MainWindow::createShapeToolBox()
                                                       , TechnicsShape::Tank), 5, 3);
    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("GDZS")
                                                       , TechnicsShape::GDZS), 6, 0);
-//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Waterproof")
-//                                                       , TechnicsShape::Waterproof), 8, 1);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Waterproof")
+                                                      , TechnicsShape::Waterproof), 6, 1);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Laboratory")
 //                                                       , TechnicsShape::Laboratory), 8, 2);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("StaffCar")

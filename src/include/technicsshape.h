@@ -56,7 +56,7 @@ public:
                      , Tracked          //ГПМ машина на гусеничном ходу
                      , Tank             //Танк пожарный
                      , GDZS             //АГ автомобиль газодымозащитной службы
-                     , Waterproof
+                     , Waterproof       //АВЗ автомобиль водозащитный
                      , Laboratory
                      , StaffCar
                      , Trailer
@@ -1251,5 +1251,47 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_gdzsActionList;
+};
+
+class WaterproofShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 226};
+
+    explicit WaterproofShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~WaterproofShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(WaterproofShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawWaterproofShape(QPainter *painter);
+
+    const ShapeType m_waterproofType;
+    QRectF m_waterproofRect;
+    QGraphicsTextItem *m_waterproofText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_waterproofActionList;
 };
 #endif // TECHNICSSHAPE_H

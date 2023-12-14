@@ -780,9 +780,10 @@
         <translation>АГ</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="758"/>
         <source>Waterproof</source>
         <translatorcomment>Автомобиль водозащитный.</translatorcomment>
-        <translation type="vanished">АВЗ</translation>
+        <translation>АВЗ</translation>
     </message>
     <message>
         <source>Laboratory</source>
