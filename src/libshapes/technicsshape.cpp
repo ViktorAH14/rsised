@@ -136,6 +136,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Laboratory:
         p_technicsShape = new LaboratoryShape(parent);
         break;
+    case StaffCar:
+        p_technicsShape = new StaffCarShape(parent);
+        break;
     default:
         break;
     }
@@ -7372,5 +7375,191 @@ void LaboratoryShape::drawLaboratoryShape(QPainter *painter)
 
     if (m_showText) {
         m_laboratoryText->setPos(m_laboratoryRect.right(), m_laboratoryRect.bottom() - sixthWidth * 2);
+    }
+}
+
+StaffCarShape::StaffCarShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_staffCarType{StaffCar}
+    , m_staffCarRect{-15.0, -37.5, 30.0, 75.0}
+    , m_staffCarText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void StaffCarShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawStaffCarShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF StaffCarShape::boundingRect() const
+{
+    QRectF boundingRect{m_staffCarRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath StaffCarShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap StaffCarShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawStaffCarShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType StaffCarShape::shapeType() const
+{
+    return m_staffCarType;
+}
+
+void StaffCarShape::setRect(const QRectF &rect)
+{
+    if (m_staffCarRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_staffCarRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_staffCarText != nullptr)
+        m_staffCarText->setPos(m_staffCarRect.right(), m_staffCarRect.bottom() - m_staffCarRect.width() / 6);
+
+    update();
+}
+
+QRectF StaffCarShape::rect() const
+{
+    return m_staffCarRect;
+}
+
+void StaffCarShape::setHeight(const qreal &height)
+{
+    if (m_staffCarRect.height() == height)
+        return;
+
+    qreal oldHeight{m_staffCarRect.height()};
+    prepareGeometryChange();
+    m_staffCarRect.setHeight(height);
+    qreal dy{(m_staffCarRect.height() - oldHeight) / 2};
+    m_staffCarRect.moveTo(QPointF(m_staffCarRect.x(), m_staffCarRect.y() - dy));
+    update();
+}
+
+qreal StaffCarShape::height() const
+{
+    return m_staffCarRect.height();
+}
+
+void StaffCarShape::setText(const QString &text)
+{
+    if (m_staffCarText == nullptr) {
+        m_staffCarText = new QGraphicsTextItem(this);
+        m_staffCarText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_staffCarText->setRotation(-90);
+    }
+    m_staffCarText->setPlainText(text);
+    m_showText = true;
+}
+
+QString StaffCarShape::text() const
+{
+    if (m_staffCarText == nullptr)
+        return "";
+
+    return m_staffCarText->toPlainText();
+}
+
+void StaffCarShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_staffCarActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_staffCarActionList);
+            m_staffCarActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void StaffCarShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_staffCarActionList.append(m_addTextAction.get());
+}
+
+void StaffCarShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_staffCarText == nullptr) {
+            m_staffCarText=new QGraphicsTextItem(this);
+            m_staffCarText->setPlainText("АШ-");
+            m_staffCarText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_staffCarText->setRotation(-90);
+        }
+        m_staffCarText->show();
+        m_showText = true;
+    } else {
+        m_staffCarText->hide();
+        m_showText = false;
+    }
+}
+
+void StaffCarShape::drawStaffCarShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+    painter->translate(m_staffCarRect.center());
+    painter->rotate(270);
+    painter->translate(-m_staffCarRect.center());
+    QTextOption textOption{Qt::AlignCenter};
+    painter->drawText(m_staffCarRect, "Ш", textOption);
+    painter->translate(m_staffCarRect.center());
+    painter->rotate(-270);
+    painter->translate(-m_staffCarRect.center());
+    qreal sixthWidth{m_staffCarRect.width() / 6}; // 5.0
+
+    if (m_showText) {
+        m_staffCarText->setPos(m_staffCarRect.right(), m_staffCarRect.bottom() - sixthWidth * 2);
     }
 }
