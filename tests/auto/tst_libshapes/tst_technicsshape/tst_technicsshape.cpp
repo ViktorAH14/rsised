@@ -227,6 +227,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_gdzsShape, "gdzsShape is nullptr");
     QCOMPARE(int(p_gdzsShape->type()), int(QGraphicsItem::UserType + 225));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
+
+    // WaterproofShape
+    TechnicsShape *p_waterproofShape = nullptr;
+    p_waterproofShape = TechnicsShape::createTechnicsShape(TechnicsShape::Waterproof);
+    QVERIFY2(p_waterproofShape, "waterproofShape is nullptr");
+    QCOMPARE(int(p_waterproofShape->type()), int(QGraphicsItem::UserType + 226));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -436,6 +443,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_gdzsShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
     QCOMPARE(p_gdzsShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
+
+    // WaterproofShape
+    TechnicsShape *p_waterproofShape = TechnicsShape::createTechnicsShape(TechnicsShape::Waterproof);
+    QCOMPARE(p_waterproofShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
 }
 
 void tst_TechnicShape::shape()
@@ -1693,6 +1705,27 @@ void tst_TechnicShape::shape()
     strokeGdzsPath.addPath(gdzsPath);
     QCOMPARE(p_gdzsShape->shape(), strokeGdzsPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
+
+// WaterproofShape
+    TechnicsShape *p_waterproofShape = TechnicsShape::createTechnicsShape(TechnicsShape::Waterproof);
+    QPainterPathStroker ps_waterproofShape;
+    ps_waterproofShape.setWidth(p_waterproofShape->pen().widthF());
+    QRectF waterproofRect{p_waterproofShape->rect()};
+    qreal frontTabWaterproof{waterproofRect.height() / 3};
+    QPointF frontCenterWaterproof{waterproofRect.center().x(), waterproofRect.top()}; // 0.0, -37.5
+    QPointF frontRightWaterproof{waterproofRect.right(), waterproofRect.top() + frontTabWaterproof}; // 15.0, -12.5
+    QPointF frontLeftWaterproof{waterproofRect.left(), waterproofRect.top() + frontTabWaterproof}; // -15.0, -12.5
+    QPointF bottomRightWaterproof{waterproofRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftWaterproof{waterproofRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF waterproofPolygon;
+    waterproofPolygon << frontCenterWaterproof << frontRightWaterproof << bottomRightWaterproof
+                << bottomLeftWaterproof << frontLeftWaterproof;
+    QPainterPath waterproofPath;
+    waterproofPath.addPolygon(waterproofPolygon);
+    QPainterPath strokeWaterproofPath = ps_waterproofShape.createStroke(waterproofPath);
+    strokeWaterproofPath.addPath(waterproofPath);
+    QCOMPARE(p_waterproofShape->shape(), strokeWaterproofPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
 }
 
 void tst_TechnicShape::image()
@@ -1896,6 +1929,14 @@ void tst_TechnicShape::image()
     QCOMPARE(gdzsImage.width(), p_gdzsShape->boundingRect().width());
     QCOMPARE(gdzsImage.height(), p_gdzsShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
+
+    // WaterproofShape
+    TechnicsShape *p_waterproofShape = TechnicsShape::createTechnicsShape(TechnicsShape::Waterproof);
+    QPixmap waterproofImage{p_waterproofShape->image()};
+    QVERIFY2(!waterproofImage.isNull(), "waterproofShape::image() returned a null pixmap");
+    QCOMPARE(waterproofImage.width(), p_waterproofShape->boundingRect().width());
+    QCOMPARE(waterproofImage.height(), p_waterproofShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -2071,6 +2112,12 @@ void tst_TechnicShape::rect_setRect()
     p_gdzsShape->setRect(rect);
     QCOMPARE(p_gdzsShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
+
+    // WaterproofShape
+    TechnicsShape *p_waterproofShape = TechnicsShape::createTechnicsShape(TechnicsShape::Waterproof);
+    p_waterproofShape->setRect(rect);
+    QCOMPARE(p_waterproofShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -2233,6 +2280,12 @@ void tst_TechnicShape::height_setHeight()
     p_gdzsShape->setHeight(height);
     QCOMPARE(p_gdzsShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
+
+    // WaterproofShape
+    TechnicsShape *p_waterproofShape = TechnicsShape::createTechnicsShape(TechnicsShape::Waterproof);
+    p_waterproofShape->setHeight(height);
+    QCOMPARE(p_waterproofShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -2404,6 +2457,12 @@ void tst_TechnicShape::text_setText()
     p_gdzsShape->setText(text);
     QCOMPARE(p_gdzsShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
+
+    // WaterproofShape
+    TechnicsShape *p_waterproofShape = TechnicsShape::createTechnicsShape(TechnicsShape::Waterproof);
+    p_waterproofShape->setText(text);
+    QCOMPARE(p_waterproofShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -3370,6 +3429,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_gdzsShape);
     delete p_gdzsContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
+
+    // WaterproofShape
+    ContextMenuTester *p_waterproofContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_waterproofShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
+    p_waterproofShape->setMenu(p_waterproofContextMenu);
+    scene.addItem(p_waterproofShape);
+
+    mousePressEvent.setScenePos(p_waterproofShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_waterproofShape->setSelected(true);
+    QSignalSpy waterproofContextMenuSpy(p_waterproofShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(waterproofContextMenuSpy.count(), 0);
+
+    QList<QAction *> waterproofMenuActions{p_waterproofShape->menu()->actions()};
+    QCOMPARE(waterproofMenuActions.size(), 1);
+    waterproofMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_waterproofShape->boundingRect().center()));
+    waterproofMenuActions = p_waterproofShape->menu()->actions();
+    QCOMPARE(waterproofMenuActions.size(), 1);
+    QCOMPARE(waterproofContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_waterproofShape);
+    delete p_waterproofContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
