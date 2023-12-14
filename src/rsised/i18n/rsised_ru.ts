@@ -786,9 +786,10 @@
         <translation>АВЗ</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="760"/>
         <source>Laboratory</source>
         <translatorcomment>Пожарная автолаборатория.</translatorcomment>
-        <translation type="vanished">АЛП</translation>
+        <translation>АЛП</translation>
     </message>
     <message>
         <source>StaffCar</source>

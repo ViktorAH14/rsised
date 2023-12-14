@@ -133,6 +133,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Waterproof:
         p_technicsShape = new WaterproofShape(parent);
         break;
+    case Laboratory:
+        p_technicsShape = new LaboratoryShape(parent);
+        break;
     default:
         break;
     }
@@ -7183,5 +7186,191 @@ void WaterproofShape::drawWaterproofShape(QPainter *painter)
 
     if (m_showText) {
         m_waterproofText->setPos(m_waterproofRect.right(), m_waterproofRect.bottom() - sixthWidth * 2);
+    }
+}
+
+LaboratoryShape::LaboratoryShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_laboratoryType{Laboratory}
+    , m_laboratoryRect{-15.0, -37.5, 30.0, 75.0}
+    , m_laboratoryText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void LaboratoryShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawLaboratoryShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF LaboratoryShape::boundingRect() const
+{
+    QRectF boundingRect{m_laboratoryRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath LaboratoryShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap LaboratoryShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawLaboratoryShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType LaboratoryShape::shapeType() const
+{
+    return m_laboratoryType;
+}
+
+void LaboratoryShape::setRect(const QRectF &rect)
+{
+    if (m_laboratoryRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_laboratoryRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_laboratoryText != nullptr)
+        m_laboratoryText->setPos(m_laboratoryRect.right(), m_laboratoryRect.bottom() - m_laboratoryRect.width() / 6);
+
+    update();
+}
+
+QRectF LaboratoryShape::rect() const
+{
+    return m_laboratoryRect;
+}
+
+void LaboratoryShape::setHeight(const qreal &height)
+{
+    if (m_laboratoryRect.height() == height)
+        return;
+
+    qreal oldHeight{m_laboratoryRect.height()};
+    prepareGeometryChange();
+    m_laboratoryRect.setHeight(height);
+    qreal dy{(m_laboratoryRect.height() - oldHeight) / 2};
+    m_laboratoryRect.moveTo(QPointF(m_laboratoryRect.x(), m_laboratoryRect.y() - dy));
+    update();
+}
+
+qreal LaboratoryShape::height() const
+{
+    return m_laboratoryRect.height();
+}
+
+void LaboratoryShape::setText(const QString &text)
+{
+    if (m_laboratoryText == nullptr) {
+        m_laboratoryText = new QGraphicsTextItem(this);
+        m_laboratoryText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_laboratoryText->setRotation(-90);
+    }
+    m_laboratoryText->setPlainText(text);
+    m_showText = true;
+}
+
+QString LaboratoryShape::text() const
+{
+    if (m_laboratoryText == nullptr)
+        return "";
+
+    return m_laboratoryText->toPlainText();
+}
+
+void LaboratoryShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_laboratoryActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_laboratoryActionList);
+            m_laboratoryActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void LaboratoryShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_laboratoryActionList.append(m_addTextAction.get());
+}
+
+void LaboratoryShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_laboratoryText == nullptr) {
+            m_laboratoryText=new QGraphicsTextItem(this);
+            m_laboratoryText->setPlainText("АЛП-");
+            m_laboratoryText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_laboratoryText->setRotation(-90);
+        }
+        m_laboratoryText->show();
+        m_showText = true;
+    } else {
+        m_laboratoryText->hide();
+        m_showText = false;
+    }
+}
+
+void LaboratoryShape::drawLaboratoryShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+    painter->translate(m_laboratoryRect.center());
+    painter->rotate(270);
+    painter->translate(-m_laboratoryRect.center());
+    QTextOption textOption{Qt::AlignCenter};
+    painter->drawText(m_laboratoryRect, "ЛБ", textOption);
+    painter->translate(m_laboratoryRect.center());
+    painter->rotate(-270);
+    painter->translate(-m_laboratoryRect.center());
+    qreal sixthWidth{m_laboratoryRect.width() / 6}; // 5.0
+
+    if (m_showText) {
+        m_laboratoryText->setPos(m_laboratoryRect.right(), m_laboratoryRect.bottom() - sixthWidth * 2);
     }
 }
