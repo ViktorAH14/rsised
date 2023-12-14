@@ -130,6 +130,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case GDZS:
         p_technicsShape = new GdzsShape(parent);
         break;
+    case Waterproof:
+        p_technicsShape = new WaterproofShape(parent);
+        break;
     default:
         break;
     }
@@ -6994,5 +6997,191 @@ void GdzsShape::drawGdzsShape(QPainter *painter)
 
     if (m_showText) {
         m_gdzsText->setPos(m_gdzsRect.right(), m_gdzsRect.bottom() - sixthWidth * 2);
+    }
+}
+
+WaterproofShape::WaterproofShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_waterproofType{Waterproof}
+    , m_waterproofRect{-15.0, -37.5, 30.0, 75.0}
+    , m_waterproofText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void WaterproofShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawWaterproofShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF WaterproofShape::boundingRect() const
+{
+    QRectF boundingRect{m_waterproofRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath WaterproofShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap WaterproofShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawWaterproofShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType WaterproofShape::shapeType() const
+{
+    return m_waterproofType;
+}
+
+void WaterproofShape::setRect(const QRectF &rect)
+{
+    if (m_waterproofRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_waterproofRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_waterproofText != nullptr)
+        m_waterproofText->setPos(m_waterproofRect.right(), m_waterproofRect.bottom() - m_waterproofRect.width() / 6);
+
+    update();
+}
+
+QRectF WaterproofShape::rect() const
+{
+    return m_waterproofRect;
+}
+
+void WaterproofShape::setHeight(const qreal &height)
+{
+    if (m_waterproofRect.height() == height)
+        return;
+
+    qreal oldHeight{m_waterproofRect.height()};
+    prepareGeometryChange();
+    m_waterproofRect.setHeight(height);
+    qreal dy{(m_waterproofRect.height() - oldHeight) / 2};
+    m_waterproofRect.moveTo(QPointF(m_waterproofRect.x(), m_waterproofRect.y() - dy));
+    update();
+}
+
+qreal WaterproofShape::height() const
+{
+    return m_waterproofRect.height();
+}
+
+void WaterproofShape::setText(const QString &text)
+{
+    if (m_waterproofText == nullptr) {
+        m_waterproofText = new QGraphicsTextItem(this);
+        m_waterproofText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_waterproofText->setRotation(-90);
+    }
+    m_waterproofText->setPlainText(text);
+    m_showText = true;
+}
+
+QString WaterproofShape::text() const
+{
+    if (m_waterproofText == nullptr)
+        return "";
+
+    return m_waterproofText->toPlainText();
+}
+
+void WaterproofShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_waterproofActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_waterproofActionList);
+            m_waterproofActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void WaterproofShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_waterproofActionList.append(m_addTextAction.get());
+}
+
+void WaterproofShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_waterproofText == nullptr) {
+            m_waterproofText=new QGraphicsTextItem(this);
+            m_waterproofText->setPlainText("АВЗ-");
+            m_waterproofText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_waterproofText->setRotation(-90);
+        }
+        m_waterproofText->show();
+        m_showText = true;
+    } else {
+        m_waterproofText->hide();
+        m_showText = false;
+    }
+}
+
+void WaterproofShape::drawWaterproofShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+    painter->translate(m_waterproofRect.center());
+    painter->rotate(270);
+    painter->translate(-m_waterproofRect.center());
+    QTextOption textOption{Qt::AlignCenter};
+    painter->drawText(m_waterproofRect, "ВЗ", textOption);
+    painter->translate(m_waterproofRect.center());
+    painter->rotate(-270);
+    painter->translate(-m_waterproofRect.center());
+    qreal sixthWidth{m_waterproofRect.width() / 6}; // 5.0
+
+    if (m_showText) {
+        m_waterproofText->setPos(m_waterproofRect.right(), m_waterproofRect.bottom() - sixthWidth * 2);
     }
 }
