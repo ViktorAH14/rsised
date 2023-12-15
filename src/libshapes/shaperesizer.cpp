@@ -201,6 +201,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             staffCarShape->setRect(value.toRectF());
         break;
     }
+    case TrailerShape::Type: {
+        if (TrailerShape *trailerShape = dynamic_cast<TrailerShape *>(item))
+            trailerShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());

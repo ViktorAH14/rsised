@@ -798,9 +798,10 @@
         <translation>АШ</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="764"/>
         <source>Trailer</source>
         <translatorcomment>Прицеп пожарный.</translatorcomment>
-        <translation type="vanished">ПЦ</translation>
+        <translation>ПЦ</translation>
     </message>
     <message>
         <source>Vessel</source>

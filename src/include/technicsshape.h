@@ -59,7 +59,7 @@ public:
                      , Waterproof       //АВЗ автомобиль водозащитный
                      , Laboratory       //АЛП автолаборатория пожарная
                      , StaffCar         //АШ автомобиль штабной
-                     , Trailer
+                     , Trailer          //Прицеп пожарный
                      , Vessel
                      , Boat
                      , Train
@@ -1377,5 +1377,48 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_staffCarActionList;
+};
+
+class TrailerShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 229};
+
+    explicit TrailerShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~TrailerShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(TrailerShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawTrailerShape(QPainter *painter);
+
+    const ShapeType m_trailerType;
+    QRectF m_trailerRect;
+    QGraphicsTextItem *m_trailerText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_trailerActionList;
+    QPainterPath m_trailerPath;
 };
 #endif // TECHNICSSHAPE_H
