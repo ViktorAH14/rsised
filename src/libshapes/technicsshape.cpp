@@ -7577,7 +7577,7 @@ TrailerShape::TrailerShape(QGraphicsItem *parent)
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
     setPen(QPen(Qt::red, 1));
-    setBrush(QBrush(Qt::white));
+    setBrush(QBrush(Qt::white));  
 }
 
 void TrailerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -7607,7 +7607,7 @@ QRectF TrailerShape::boundingRect() const
 
 QPainterPath TrailerShape::shape() const
 {
-    return shapeFromPath(m_trailerPath);
+    return shapeFromPath(trailerPath());
 }
 
 QPixmap TrailerShape::image()
@@ -7734,7 +7734,17 @@ void TrailerShape::textShow(bool showText)
 
 void TrailerShape::drawTrailerShape(QPainter *painter)
 {
-    m_trailerPath.clear();
+    painter->drawPath(trailerPath());
+
+    if (m_showText) {
+        qreal fourthWidth{m_trailerRect.width() / 4.0}; // 5.0
+        m_trailerText->setPos(m_trailerRect.right(), m_trailerRect.bottom() - fourthWidth);
+    }
+}
+
+QPainterPath TrailerShape::trailerPath() const
+{
+    QPainterPath curentPath;
     qreal fifteenthHeight{height() / 15.5}; //4.0
     qreal eighthWidth{m_trailerRect.width() / 8}; //5.0
     qreal wheelTop{m_trailerRect. bottom() - (fifteenthHeight * 2)}; // 23.0
@@ -7743,29 +7753,24 @@ void TrailerShape::drawTrailerShape(QPainter *painter)
     qreal bodyLeft{m_trailerRect.left() + eighthWidth}; //-15.0
     qreal bodyRight{m_trailerRect.right() - eighthWidth}; //15.0
     //left wheel
-    m_trailerPath.moveTo(m_trailerRect.left(), m_trailerRect.bottom()); //-20.0, 31.0
-    m_trailerPath.lineTo(m_trailerRect.left(), wheelTop); //-20.0, 23.0
+    curentPath.moveTo(m_trailerRect.left(), m_trailerRect.bottom()); //-20.0, 31.0
+    curentPath.lineTo(m_trailerRect.left(), wheelTop); //-20.0, 23.0
     //body bottom
-    m_trailerPath.moveTo(m_trailerRect.left(), bodyBotoom); //-20.0, 27.0
-    m_trailerPath.lineTo(m_trailerRect.right(), bodyBotoom); //20.o, 27.0
+    curentPath.moveTo(m_trailerRect.left(), bodyBotoom); //-20.0, 27.0
+    curentPath.lineTo(m_trailerRect.right(), bodyBotoom); //20.o, 27.0
     //right wheel
-    m_trailerPath.moveTo(m_trailerRect.right(), m_trailerRect.bottom()); //20.0, 31.0
-    m_trailerPath.lineTo(m_trailerRect.right(), wheelTop); //20.0, 23.0
+    curentPath.moveTo(m_trailerRect.right(), m_trailerRect.bottom()); //20.0, 31.0
+    curentPath.lineTo(m_trailerRect.right(), wheelTop); //20.0, 23.0
     //body left
-    m_trailerPath.moveTo(bodyLeft, bodyBotoom); //-15.0, 27.0
-    m_trailerPath.lineTo(bodyLeft, bodyTop); //-15.0, -19.0
+    curentPath.moveTo(bodyLeft, bodyBotoom); //-15.0, 27.0
+    curentPath.lineTo(bodyLeft, bodyTop); //-15.0, -19.0
     //body top
-    m_trailerPath.lineTo(bodyRight, bodyTop); //15.0, -19.0
+    curentPath.lineTo(bodyRight, bodyTop); //15.0, -19.0
     //body right
-    m_trailerPath.lineTo(bodyRight, bodyBotoom); //15.0, 27.0
+    curentPath.lineTo(bodyRight, bodyBotoom); //15.0, 27.0
     //driver
-    m_trailerPath.moveTo(m_trailerRect.center().x(), bodyTop); //0.0, -19.0
-    m_trailerPath.lineTo(m_trailerRect.center().x(), m_trailerRect.top()); //0.0, -31.0
+    curentPath.moveTo(m_trailerRect.center().x(), bodyTop); //0.0, -19.0
+    curentPath.lineTo(m_trailerRect.center().x(), m_trailerRect.top()); //0.0, -31.0
 
-    painter->drawPath(m_trailerPath);
-
-    if (m_showText) {
-        qreal fourthWidth{m_trailerRect.width() / 4.0}; // 5.0
-        m_trailerText->setPos(m_trailerRect.right(), m_trailerRect.bottom() - fourthWidth);
-    }
+    return curentPath;
 }

@@ -1411,6 +1411,7 @@ private:
     void createAction();
     void textShow(bool showText);
     void drawTrailerShape(QPainter *painter);
+    QPainterPath trailerPath() const;
 
     const ShapeType m_trailerType;
     QRectF m_trailerRect;
@@ -1419,6 +1420,5 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_trailerActionList;
-    QPainterPath m_trailerPath;
 };
 #endif // TECHNICSSHAPE_H
