@@ -139,6 +139,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case StaffCar:
         p_technicsShape = new StaffCarShape(parent);
         break;
+    case Trailer:
+        p_technicsShape = new TrailerShape(parent);
+        break;
     default:
         break;
     }
@@ -7561,5 +7564,208 @@ void StaffCarShape::drawStaffCarShape(QPainter *painter)
 
     if (m_showText) {
         m_staffCarText->setPos(m_staffCarRect.right(), m_staffCarRect.bottom() - sixthWidth * 2);
+    }
+}
+
+TrailerShape::TrailerShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_trailerType{Trailer}
+    , m_trailerRect{-20.0, -31.0, 40.0, 62.0}
+    , m_trailerText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void TrailerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawTrailerShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF TrailerShape::boundingRect() const
+{
+    QRectF boundingRect{m_trailerRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath TrailerShape::shape() const
+{
+    return shapeFromPath(m_trailerPath);
+}
+
+QPixmap TrailerShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawTrailerShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType TrailerShape::shapeType() const
+{
+    return m_trailerType;
+}
+
+void TrailerShape::setRect(const QRectF &rect)
+{
+    if (m_trailerRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_trailerRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_trailerText != nullptr)
+        m_trailerText->setPos(m_trailerRect.right(), m_trailerRect.bottom() - m_trailerRect.width() / 6);
+
+    update();
+}
+
+QRectF TrailerShape::rect() const
+{
+    return m_trailerRect;
+}
+
+void TrailerShape::setHeight(const qreal &height)
+{
+    if (m_trailerRect.height() == height)
+        return;
+
+    qreal oldHeight{m_trailerRect.height()};
+    prepareGeometryChange();
+    m_trailerRect.setHeight(height);
+    qreal dy{(m_trailerRect.height() - oldHeight) / 2};
+    m_trailerRect.moveTo(QPointF(m_trailerRect.x(), m_trailerRect.y() - dy));
+    update();
+}
+
+qreal TrailerShape::height() const
+{
+    return m_trailerRect.height();
+}
+
+void TrailerShape::setText(const QString &text)
+{
+    if (m_trailerText == nullptr) {
+        m_trailerText = new QGraphicsTextItem(this);
+        m_trailerText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_trailerText->setRotation(-90);
+    }
+    m_trailerText->setPlainText(text);
+    m_showText = true;
+}
+
+QString TrailerShape::text() const
+{
+    if (m_trailerText == nullptr)
+        return "";
+
+    return m_trailerText->toPlainText();
+}
+
+void TrailerShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_trailerActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_trailerActionList);
+            m_trailerActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void TrailerShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_trailerActionList.append(m_addTextAction.get());
+}
+
+void TrailerShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_trailerText == nullptr) {
+            m_trailerText=new QGraphicsTextItem(this);
+            m_trailerText->setPlainText("Прицеп-");
+            m_trailerText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_trailerText->setRotation(-90);
+        }
+        m_trailerText->show();
+        m_showText = true;
+    } else {
+        m_trailerText->hide();
+        m_showText = false;
+    }
+}
+
+void TrailerShape::drawTrailerShape(QPainter *painter)
+{
+    m_trailerPath.clear();
+    qreal fifteenthHeight{height() / 15.5}; //4.0
+    qreal eighthWidth{m_trailerRect.width() / 8}; //5.0
+    qreal wheelTop{m_trailerRect. bottom() - (fifteenthHeight * 2)}; // 23.0
+    qreal bodyTop{m_trailerRect.top() + (fifteenthHeight * 3.0)}; //-19.0
+    qreal bodyBotoom{m_trailerRect.bottom() - fifteenthHeight}; //27.0
+    qreal bodyLeft{m_trailerRect.left() + eighthWidth}; //-15.0
+    qreal bodyRight{m_trailerRect.right() - eighthWidth}; //15.0
+    //left wheel
+    m_trailerPath.moveTo(m_trailerRect.left(), m_trailerRect.bottom()); //-20.0, 31.0
+    m_trailerPath.lineTo(m_trailerRect.left(), wheelTop); //-20.0, 23.0
+    //body bottom
+    m_trailerPath.moveTo(m_trailerRect.left(), bodyBotoom); //-20.0, 27.0
+    m_trailerPath.lineTo(m_trailerRect.right(), bodyBotoom); //20.o, 27.0
+    //right wheel
+    m_trailerPath.moveTo(m_trailerRect.right(), m_trailerRect.bottom()); //20.0, 31.0
+    m_trailerPath.lineTo(m_trailerRect.right(), wheelTop); //20.0, 23.0
+    //body left
+    m_trailerPath.moveTo(bodyLeft, bodyBotoom); //-15.0, 27.0
+    m_trailerPath.lineTo(bodyLeft, bodyTop); //-15.0, -19.0
+    //body top
+    m_trailerPath.lineTo(bodyRight, bodyTop); //15.0, -19.0
+    //body right
+    m_trailerPath.lineTo(bodyRight, bodyBotoom); //15.0, 27.0
+    //driver
+    m_trailerPath.moveTo(m_trailerRect.center().x(), bodyTop); //0.0, -19.0
+    m_trailerPath.lineTo(m_trailerRect.center().x(), m_trailerRect.top()); //0.0, -31.0
+
+    painter->drawPath(m_trailerPath);
+
+    if (m_showText) {
+        qreal fourthWidth{m_trailerRect.width() / 4.0}; // 5.0
+        m_trailerText->setPos(m_trailerRect.right(), m_trailerRect.bottom() - fourthWidth);
     }
 }
