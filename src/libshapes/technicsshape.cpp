@@ -142,6 +142,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Trailer:
         p_technicsShape = new TrailerShape(parent);
         break;
+    case Ship:
+        p_technicsShape = new ShipShape(parent);
+        break;
     default:
         break;
     }
@@ -157,8 +160,8 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
 //    autoBase << QPointF(0.0, -37.5) << QPointF(15.0, -12.5) << QPointF(15.0, 37.5)
 //            << QPointF(-15.0, 37.5) << QPointF(-15.0, -12.5) << QPointF(0.0, -37.5);
 
-//    QPolygonF vesselPolygon;
-//    vesselPolygon << QPointF(0.0, 37.5) << QPointF(15.0, 20.0) << QPointF(15.0, -20.0)
+//    QPolygonF shipPolygon;
+//    shipPolygon << QPointF(0.0, 37.5) << QPointF(15.0, 20.0) << QPointF(15.0, -20.0)
 //                  << QPointF(0.0, -37.5) << QPointF(-15.0, -20.0) << QPointF(-15.0, 20.0);
 
 //    QPainterPath planePath;
@@ -423,16 +426,16 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
 //        painter->drawLine(QLineF(0.0, -12.0, 0.0, -25.0));    //center
 //        break;
 //    }
-//    case Vessel: {
+//    case Ship: {
 //        painter->setPen(QPen(Qt::red, 1));
-//        painter->drawPolygon(vesselPolygon);
+//        painter->drawPolygon(shipPolygon);
 //        painter->rotate(-90);
 //        painter->drawText(QPointF(-5.0, 4.0), QString("С"));
 //        break;
 //    }
 //    case Boat: {
 //        painter->setPen(QPen(Qt::red, 1));
-//        painter->drawPolygon(vesselPolygon);
+//        painter->drawPolygon(shipPolygon);
 //        painter->rotate(-90);
 //        painter->drawText(QPointF(-5.0, 4.0), QString("К"));
 //        break;
@@ -7577,7 +7580,7 @@ TrailerShape::TrailerShape(QGraphicsItem *parent)
     setFlag(ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
     setPen(QPen(Qt::red, 1));
-    setBrush(QBrush(Qt::white));  
+    setBrush(QBrush(Qt::white));
 }
 
 void TrailerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -7773,4 +7776,206 @@ QPainterPath TrailerShape::trailerPath() const
     curentPath.lineTo(m_trailerRect.center().x(), m_trailerRect.top()); //0.0, -31.0
 
     return curentPath;
+}
+
+ShipShape::ShipShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_shipType{Ship}
+    , m_shipRect{-15.0, -37.5, 30.0, 75.0}
+    , m_shipText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void ShipShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawShipShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF ShipShape::boundingRect() const
+{
+    QRectF boundingRect{m_shipRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath ShipShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(shipPolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap ShipShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawShipShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType ShipShape::shapeType() const
+{
+    return m_shipType;
+}
+
+void ShipShape::setRect(const QRectF &rect)
+{
+    if (m_shipRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_shipRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_shipText != nullptr)
+        m_shipText->setPos(m_shipRect.right(), m_shipRect.bottom() - m_shipRect.width() / 6);
+
+    update();
+}
+
+QRectF ShipShape::rect() const
+{
+    return m_shipRect;
+}
+
+void ShipShape::setHeight(const qreal &height)
+{
+    if (m_shipRect.height() == height)
+        return;
+
+    qreal oldHeight{m_shipRect.height()};
+    prepareGeometryChange();
+    m_shipRect.setHeight(height);
+    qreal dy{(m_shipRect.height() - oldHeight) / 2};
+    m_shipRect.moveTo(QPointF(m_shipRect.x(), m_shipRect.y() - dy));
+    update();
+}
+
+qreal ShipShape::height() const
+{
+    return m_shipRect.height();
+}
+
+void ShipShape::setText(const QString &text)
+{
+    if (m_shipText == nullptr) {
+        m_shipText = new QGraphicsTextItem(this);
+        m_shipText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_shipText->setRotation(-90);
+    }
+    m_shipText->setPlainText(text);
+    m_showText = true;
+}
+
+QString ShipShape::text() const
+{
+    if (m_shipText == nullptr)
+        return "";
+
+    return m_shipText->toPlainText();
+}
+
+void ShipShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_shipActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_shipActionList);
+            m_shipActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void ShipShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_shipActionList.append(m_addTextAction.get());
+}
+
+void ShipShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_shipText == nullptr) {
+            m_shipText=new QGraphicsTextItem(this);
+            m_shipText->setPlainText("СП-");
+            m_shipText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_shipText->setRotation(-90);
+        }
+        m_shipText->show();
+        m_showText = true;
+    } else {
+        m_shipText->hide();
+        m_showText = false;
+    }
+}
+
+void ShipShape::drawShipShape(QPainter *painter)
+{
+    painter->drawPolygon(shipPolygon(rect()));
+
+    painter->translate(m_shipRect.center());
+    painter->rotate(270);
+    painter->translate(-m_shipRect.center());
+    QTextOption textOption{Qt::AlignCenter};
+    painter->drawText(m_shipRect, "C", textOption);
+    painter->translate(m_shipRect.center());
+    painter->rotate(-270);
+    painter->translate(-m_shipRect.center());
+
+    if (m_showText) {
+        qreal sixthWidth{m_shipRect.width() / 6}; // 5.0
+        m_shipText->setPos(m_shipRect.right(), m_shipRect.bottom() - sixthWidth);
+    }
+}
+
+QPolygonF ShipShape::shipPolygon(const QRectF &rect) const
+{
+    QPointF centerBottom{rect.center().x(), rect.bottom()}; //0.0, 37.5
+    qreal fourthHeight{rect.height() / 4}; //18.75
+    QPointF leftBottom{rect.left(), rect.bottom() - fourthHeight}; //-15.0, 18.75
+    QPointF leftTop{rect.left(), rect.top() + fourthHeight}; // -15.0, -18.75
+    QPointF centerTop{rect.center().x(), rect.top()}; //0.0, -37.5
+    QPointF rightTop{rect.right(), rect.top() +fourthHeight}; //15.0, -18.75
+    QPointF rightBottom{rect.right(), rect.bottom() - fourthHeight}; //15.0, 18.75
+    QPolygonF shipPolygon;
+    shipPolygon << centerBottom << leftBottom << leftTop << centerTop << rightTop << rightBottom;
+
+    return shipPolygon;
 }

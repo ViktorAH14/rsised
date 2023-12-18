@@ -804,9 +804,10 @@
         <translation>ПЦ</translation>
     </message>
     <message>
-        <source>Vessel</source>
+        <location filename="../mainwindow.cpp" line="766"/>
+        <source>Ship</source>
         <translatorcomment>Судно пожарное</translatorcomment>
-        <translation type="vanished">СП</translation>
+        <translation>СП</translation>
     </message>
     <message>
         <source>Boat</source>
