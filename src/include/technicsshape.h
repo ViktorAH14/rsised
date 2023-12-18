@@ -60,7 +60,7 @@ public:
                      , Laboratory       //АЛП автолаборатория пожарная
                      , StaffCar         //АШ автомобиль штабной
                      , Trailer          //Прицеп пожарный
-                     , Vessel
+                     , Ship           //Судно пожарное
                      , Boat
                      , Train
                      , Plane
@@ -1420,5 +1420,48 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_trailerActionList;
+};
+
+class ShipShape : public TechnicsShape //FIXME change class name?
+{
+public:
+    enum {Type = UserType + 230};
+
+    explicit ShipShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~ShipShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(ShipShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawShipShape(QPainter *painter);
+    QPolygonF shipPolygon(const QRectF &rect) const;
+
+    const ShapeType m_shipType;
+    QRectF m_shipRect;
+    QGraphicsTextItem *m_shipText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_shipActionList;
 };
 #endif // TECHNICSSHAPE_H
