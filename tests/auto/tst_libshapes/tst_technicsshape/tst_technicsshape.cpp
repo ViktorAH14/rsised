@@ -262,6 +262,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_shipShape, "shipShape is nullptr");
     QCOMPARE(int(p_shipShape->type()), int(QGraphicsItem::UserType + 230));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_shipShape);
+
+    // BoatShape
+    TechnicsShape *p_boatShape = nullptr;
+    p_boatShape = TechnicsShape::createTechnicsShape(TechnicsShape::Boat);
+    QVERIFY2(p_boatShape, "boatShape is nullptr");
+    QCOMPARE(int(p_boatShape->type()), int(QGraphicsItem::UserType + 231));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -496,6 +503,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_shipShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ship);
     QCOMPARE(p_shipShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_shipShape);
+
+    // BoatShape
+    TechnicsShape *p_boatShape = TechnicsShape::createTechnicsShape(TechnicsShape::Boat);
+    QCOMPARE(p_boatShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
 }
 
 void tst_TechnicShape::shape()
@@ -1859,22 +1871,44 @@ void tst_TechnicShape::shape()
     QPainterPathStroker ps_shipShape;
     ps_shipShape.setWidth(p_shipShape->pen().widthF());
     QRectF shipRect{p_shipShape->rect()};
-    QPointF centerBottom{shipRect.center().x(), shipRect.bottom()}; //0.0, 37.5
-    qreal fourthHeight{shipRect.height() / 4}; //18.75
-    QPointF leftBottom{shipRect.left(), shipRect.bottom() - fourthHeight}; //-15.0, 18.75
-    QPointF leftTop{shipRect.left(), shipRect.top() + fourthHeight}; // -15.0, -18.75
-    QPointF centerTop{shipRect.center().x(), shipRect.top()}; //0.0, -37.5
-    QPointF rightTop{shipRect.right(), shipRect.top() +fourthHeight}; //15.0, -18.75
-    QPointF rightBottom{shipRect.right(), shipRect.bottom() - fourthHeight}; //15.0, 18.75
+    QPointF shipCenterBottom{shipRect.center().x(), shipRect.bottom()}; //0.0, 37.5
+    qreal shipFourthHeight{shipRect.height() / 4}; //18.75
+    QPointF shipLeftBottom{shipRect.left(), shipRect.bottom() - shipFourthHeight}; //-15.0, 18.75
+    QPointF shipLeftTop{shipRect.left(), shipRect.top() + shipFourthHeight}; // -15.0, -18.75
+    QPointF shipCenterTop{shipRect.center().x(), shipRect.top()}; //0.0, -37.5
+    QPointF shipRightTop{shipRect.right(), shipRect.top() +shipFourthHeight}; //15.0, -18.75
+    QPointF shipRightBottom{shipRect.right(), shipRect.bottom() - shipFourthHeight}; //15.0, 18.75
     QPolygonF shipPolygon;
-    shipPolygon << centerBottom << leftBottom << leftTop << centerTop << rightTop
-                << rightBottom;
+    shipPolygon << shipCenterBottom << shipLeftBottom << shipLeftTop << shipCenterTop
+                << shipRightTop << shipRightBottom;
     QPainterPath shipPath;
     shipPath.addPolygon(shipPolygon);
     QPainterPath strokeShipPath = ps_shipShape.createStroke(shipPath);
     strokeShipPath.addPath(shipPath);
     QCOMPARE(p_shipShape->shape(), strokeShipPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_shipShape);
+
+// BoatShape
+    TechnicsShape *p_boatShape = TechnicsShape::createTechnicsShape(TechnicsShape::Boat);
+    QPainterPathStroker ps_boatShape;
+    ps_boatShape.setWidth(p_boatShape->pen().widthF());
+    QRectF boatRect{p_boatShape->rect()};
+    QPointF boatCenterBottom{boatRect.center().x(), boatRect.bottom()}; //0.0, 37.5
+    qreal boatFourthHeight{boatRect.height() / 4}; //18.75
+    QPointF boatLeftBottom{boatRect.left(), boatRect.bottom() - boatFourthHeight}; //-15.0, 18.75
+    QPointF boatLeftTop{boatRect.left(), boatRect.top() + boatFourthHeight}; // -15.0, -18.75
+    QPointF boatCenterTop{boatRect.center().x(), boatRect.top()}; //0.0, -37.5
+    QPointF boatRightTop{boatRect.right(), boatRect.top() +boatFourthHeight}; //15.0, -18.75
+    QPointF boatRightBottom{boatRect.right(), boatRect.bottom() - boatFourthHeight}; //15.0, 18.75
+    QPolygonF boatPolygon;
+    boatPolygon << boatCenterBottom << boatLeftBottom << boatLeftTop << boatCenterTop
+                << boatRightTop << boatRightBottom;
+    QPainterPath boatPath;
+    boatPath.addPolygon(boatPolygon);
+    QPainterPath strokeBoatPath = ps_boatShape.createStroke(boatPath);
+    strokeBoatPath.addPath(boatPath);
+    QCOMPARE(p_boatShape->shape(), strokeBoatPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
 }
 
 void tst_TechnicShape::image()
@@ -2118,6 +2152,14 @@ void tst_TechnicShape::image()
     QCOMPARE(shipImage.width(), p_shipShape->boundingRect().width());
     QCOMPARE(shipImage.height(), p_shipShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_shipShape);
+
+    // BoatShape
+    TechnicsShape *p_boatShape = TechnicsShape::createTechnicsShape(TechnicsShape::Boat);
+    QPixmap boatImage{p_boatShape->image()};
+    QVERIFY2(!boatImage.isNull(), "boatShape::image() returned a null pixmap");
+    QCOMPARE(boatImage.width(), p_boatShape->boundingRect().width());
+    QCOMPARE(boatImage.height(), p_boatShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -2323,6 +2365,12 @@ void tst_TechnicShape::rect_setRect()
     p_shipShape->setRect(rect);
     QCOMPARE(p_shipShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_shipShape);
+
+    // BoatShape
+    TechnicsShape *p_boatShape = TechnicsShape::createTechnicsShape(TechnicsShape::Boat);
+    p_boatShape->setRect(rect);
+    QCOMPARE(p_boatShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -2515,6 +2563,12 @@ void tst_TechnicShape::height_setHeight()
     p_shipShape->setHeight(height);
     QCOMPARE(p_shipShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_shipShape);
+
+    // BoatShape
+    TechnicsShape *p_boatShape = TechnicsShape::createTechnicsShape(TechnicsShape::Boat);
+    p_boatShape->setHeight(height);
+    QCOMPARE(p_boatShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -2716,6 +2770,12 @@ void tst_TechnicShape::text_setText()
     p_shipShape->setText(text);
     QCOMPARE(p_shipShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_shipShape);
+
+    // BoatShape
+    TechnicsShape *p_boatShape = TechnicsShape::createTechnicsShape(TechnicsShape::Boat);
+    p_boatShape->setText(text);
+    QCOMPARE(p_boatShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -3827,6 +3887,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_shipShape);
     delete p_shipContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_shipShape);
+
+    // BoatShape
+    ContextMenuTester *p_boatContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_boatShape = TechnicsShape::createTechnicsShape(TechnicsShape::Boat);
+    p_boatShape->setMenu(p_boatContextMenu);
+    scene.addItem(p_boatShape);
+
+    mousePressEvent.setScenePos(p_boatShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_boatShape->setSelected(true);
+    QSignalSpy boatContextMenuSpy(p_boatShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(boatContextMenuSpy.count(), 0);
+
+    QList<QAction *> boatMenuActions{p_boatShape->menu()->actions()};
+    QCOMPARE(boatMenuActions.size(), 1);
+    boatMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_boatShape->boundingRect().center()));
+    boatMenuActions = p_boatShape->menu()->actions();
+    QCOMPARE(boatMenuActions.size(), 1);
+    QCOMPARE(boatContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_boatShape);
+    delete p_boatContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
