@@ -145,6 +145,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Ship:
         p_technicsShape = new ShipShape(parent);
         break;
+    case Boat:
+        p_technicsShape = new BoatShape(parent);
+        break;
     default:
         break;
     }
@@ -7979,3 +7982,206 @@ QPolygonF ShipShape::shipPolygon(const QRectF &rect) const
 
     return shipPolygon;
 }
+
+BoatShape::BoatShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_boatType{Boat}
+    , m_boatRect{-15.0, -37.5, 30.0, 75.0}
+    , m_boatText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void BoatShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawBoatShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF BoatShape::boundingRect() const
+{
+    QRectF boundingRect{m_boatRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath BoatShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(boatPolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap BoatShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawBoatShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType BoatShape::shapeType() const
+{
+    return m_boatType;
+}
+
+void BoatShape::setRect(const QRectF &rect)
+{
+    if (m_boatRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_boatRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_boatText != nullptr)
+        m_boatText->setPos(m_boatRect.right(), m_boatRect.bottom() - m_boatRect.width() / 6);
+
+    update();
+}
+
+QRectF BoatShape::rect() const
+{
+    return m_boatRect;
+}
+
+void BoatShape::setHeight(const qreal &height)
+{
+    if (m_boatRect.height() == height)
+        return;
+
+    qreal oldHeight{m_boatRect.height()};
+    prepareGeometryChange();
+    m_boatRect.setHeight(height);
+    qreal dy{(m_boatRect.height() - oldHeight) / 2};
+    m_boatRect.moveTo(QPointF(m_boatRect.x(), m_boatRect.y() - dy));
+    update();
+}
+
+qreal BoatShape::height() const
+{
+    return m_boatRect.height();
+}
+
+void BoatShape::setText(const QString &text)
+{
+    if (m_boatText == nullptr) {
+        m_boatText = new QGraphicsTextItem(this);
+        m_boatText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_boatText->setRotation(-90);
+    }
+    m_boatText->setPlainText(text);
+    m_showText = true;
+}
+
+QString BoatShape::text() const
+{
+    if (m_boatText == nullptr)
+        return "";
+
+    return m_boatText->toPlainText();
+}
+
+void BoatShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_boatActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_boatActionList);
+            m_boatActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void BoatShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_boatActionList.append(m_addTextAction.get());
+}
+
+void BoatShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_boatText == nullptr) {
+            m_boatText=new QGraphicsTextItem(this);
+            m_boatText->setPlainText("К-");
+            m_boatText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_boatText->setRotation(-90);
+        }
+        m_boatText->show();
+        m_showText = true;
+    } else {
+        m_boatText->hide();
+        m_showText = false;
+    }
+}
+
+void BoatShape::drawBoatShape(QPainter *painter)
+{
+    painter->drawPolygon(boatPolygon(rect()));
+
+    painter->translate(m_boatRect.center());
+    painter->rotate(270);
+    painter->translate(-m_boatRect.center());
+    QTextOption textOption{Qt::AlignCenter};
+    painter->drawText(m_boatRect, "К", textOption);
+    painter->translate(m_boatRect.center());
+    painter->rotate(-270);
+    painter->translate(-m_boatRect.center());
+
+    if (m_showText) {
+        qreal sixthWidth{m_boatRect.width() / 6}; // 5.0
+        m_boatText->setPos(m_boatRect.right(), m_boatRect.bottom() - sixthWidth);
+    }
+}
+
+QPolygonF BoatShape::boatPolygon(const QRectF &rect) const
+{
+    QPointF centerBottom{rect.center().x(), rect.bottom()}; //0.0, 37.5
+    qreal fourthHeight{rect.height() / 4}; //18.75
+    QPointF leftBottom{rect.left(), rect.bottom() - fourthHeight}; //-15.0, 18.75
+    QPointF leftTop{rect.left(), rect.top() + fourthHeight}; // -15.0, -18.75
+    QPointF centerTop{rect.center().x(), rect.top()}; //0.0, -37.5
+    QPointF rightTop{rect.right(), rect.top() +fourthHeight}; //15.0, -18.75
+    QPointF rightBottom{rect.right(), rect.bottom() - fourthHeight}; //15.0, 18.75
+    QPolygonF boatPolygon;
+    boatPolygon << centerBottom << leftBottom << leftTop << centerTop << rightTop << rightBottom;
+
+    return boatPolygon;
+}
+
