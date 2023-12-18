@@ -60,8 +60,8 @@ public:
                      , Laboratory       //АЛП автолаборатория пожарная
                      , StaffCar         //АШ автомобиль штабной
                      , Trailer          //Прицеп пожарный
-                     , Ship           //Судно пожарное
-                     , Boat
+                     , Ship             //Судно пожарное
+                     , Boat             //Катер пожарный
                      , Train
                      , Plane
                      , Seaplane
@@ -1422,7 +1422,7 @@ private:
     QList<QAction *> m_trailerActionList;
 };
 
-class ShipShape : public TechnicsShape //FIXME change class name?
+class ShipShape : public TechnicsShape
 {
 public:
     enum {Type = UserType + 230};
@@ -1463,5 +1463,48 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_shipActionList;
+};
+
+class BoatShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 231};
+
+    explicit BoatShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~BoatShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(BoatShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawBoatShape(QPainter *painter);
+    QPolygonF boatPolygon(const QRectF &rect) const;
+
+    const ShapeType m_boatType;
+    QRectF m_boatRect;
+    QGraphicsTextItem *m_boatText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_boatActionList;
 };
 #endif // TECHNICSSHAPE_H

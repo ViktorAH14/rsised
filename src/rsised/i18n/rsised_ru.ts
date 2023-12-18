@@ -810,9 +810,10 @@
         <translation>СП</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="768"/>
         <source>Boat</source>
         <translatorcomment>Катер пожарный</translatorcomment>
-        <translation type="vanished">КП</translation>
+        <translation>КП</translation>
     </message>
     <message>
         <source>Plane</source>
