@@ -269,6 +269,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_boatShape, "boatShape is nullptr");
     QCOMPARE(int(p_boatShape->type()), int(QGraphicsItem::UserType + 231));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
+
+    // TrainShape
+    TechnicsShape *p_trainShape = nullptr;
+    p_trainShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    QVERIFY2(p_trainShape, "trainShape is nullptr");
+    QCOMPARE(int(p_trainShape->type()), int(QGraphicsItem::UserType + 232));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -508,6 +515,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_boatShape = TechnicsShape::createTechnicsShape(TechnicsShape::Boat);
     QCOMPARE(p_boatShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
+
+    // TrainShape
+    TechnicsShape *p_trainShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    QCOMPARE(p_trainShape->boundingRect(), QRectF(-15.5, -25.5, 31.0, 51.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
 }
 
 void tst_TechnicShape::shape()
@@ -1909,6 +1921,31 @@ void tst_TechnicShape::shape()
     strokeBoatPath.addPath(boatPath);
     QCOMPARE(p_boatShape->shape(), strokeBoatPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
+
+// TrainShape
+    TechnicsShape *p_trainShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    QPainterPathStroker ps_trainShape;
+    ps_trainShape.setWidth(p_trainShape->pen().widthF());
+    QRectF trainRect{p_trainShape->rect()};
+    qreal fourthWidth{trainRect.width() / 4.0}; //7.5
+    qreal centerY{trainRect.bottom() - (trainRect.height() / 10.0 * 3.0)}; //10.0
+    QPointF bottomLeft{trainRect.bottomLeft()}; //-15.0, 25.0
+    QPointF centerLeft{trainRect.left(), centerY}; //-15.0, 10.0
+    QPointF centerLeftR{trainRect.left() + fourthWidth, centerY}; //-7.5, 10.0
+    QPointF topLeft{trainRect.left() + fourthWidth, trainRect.top()}; //-7.5, -25.0
+    QPointF topRight{trainRect.right() - fourthWidth, trainRect.top()}; //7.5, -25.0
+    QPointF centerRightL{trainRect.right() - fourthWidth, centerY}; //7.5, 10.0
+    QPointF centerRight{trainRect.right(), centerY}; //15.0, 10.0
+    QPointF bottomRight{trainRect.bottomRight()}; // 15.0, 25.0
+    QPolygonF trainPolygon;
+    trainPolygon << bottomLeft << centerLeft << centerLeftR << topLeft << topRight
+                 << centerRightL << centerRight << bottomRight;
+    QPainterPath trainPath;
+    trainPath.addPolygon(trainPolygon);
+    QPainterPath strokeTrainPath = ps_trainShape.createStroke(trainPath);
+    strokeTrainPath.addPath(trainPath);
+    QCOMPARE(p_trainShape->shape(), strokeTrainPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
 }
 
 void tst_TechnicShape::image()
@@ -2160,6 +2197,14 @@ void tst_TechnicShape::image()
     QCOMPARE(boatImage.width(), p_boatShape->boundingRect().width());
     QCOMPARE(boatImage.height(), p_boatShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
+
+    // TrainShape
+    TechnicsShape *p_trainShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    QPixmap trainImage{p_trainShape->image()};
+    QVERIFY2(!trainImage.isNull(), "trainShape::image() returned a null pixmap");
+    QCOMPARE(trainImage.width(), p_trainShape->boundingRect().width());
+    QCOMPARE(trainImage.height(), p_trainShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -2371,6 +2416,12 @@ void tst_TechnicShape::rect_setRect()
     p_boatShape->setRect(rect);
     QCOMPARE(p_boatShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
+
+    // TrainShape
+    TechnicsShape *p_trainShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    p_trainShape->setRect(rect);
+    QCOMPARE(p_trainShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -2569,6 +2620,12 @@ void tst_TechnicShape::height_setHeight()
     p_boatShape->setHeight(height);
     QCOMPARE(p_boatShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
+
+    // TrainShape
+    TechnicsShape *p_trainShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    p_trainShape->setHeight(height);
+    QCOMPARE(p_trainShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -2776,6 +2833,12 @@ void tst_TechnicShape::text_setText()
     p_boatShape->setText(text);
     QCOMPARE(p_boatShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
+
+    // TrainShape
+    TechnicsShape *p_trainShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    p_trainShape->setText(text);
+    QCOMPARE(p_trainShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -3916,6 +3979,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_boatShape);
     delete p_boatContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
+
+    // TrainShape
+    ContextMenuTester *p_trainContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_trainShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    p_trainShape->setMenu(p_trainContextMenu);
+    scene.addItem(p_trainShape);
+
+    mousePressEvent.setScenePos(p_trainShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_trainShape->setSelected(true);
+    QSignalSpy trainContextMenuSpy(p_trainShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(trainContextMenuSpy.count(), 0);
+
+    QList<QAction *> trainMenuActions{p_trainShape->menu()->actions()};
+    QCOMPARE(trainMenuActions.size(), 1);
+    trainMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_trainShape->boundingRect().center()));
+    trainMenuActions = p_trainShape->menu()->actions();
+    QCOMPARE(trainMenuActions.size(), 1);
+    QCOMPARE(trainContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_trainShape);
+    delete p_trainContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
