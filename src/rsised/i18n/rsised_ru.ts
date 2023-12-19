@@ -538,9 +538,10 @@
         <translation type="vanished">МВД</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="770"/>
         <source>Train</source>
         <translatorcomment>Пожарный поезд</translatorcomment>
-        <translation type="vanished">ПП</translation>
+        <translation>ПП</translation>
     </message>
     <message>
         <source>Other adapted</source>

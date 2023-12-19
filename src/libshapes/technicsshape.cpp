@@ -148,6 +148,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Boat:
         p_technicsShape = new BoatShape(parent);
         break;
+    case Train:
+        p_technicsShape = new TrainShape(parent);
+        break;
     default:
         break;
     }
@@ -8183,5 +8186,202 @@ QPolygonF BoatShape::boatPolygon(const QRectF &rect) const
     boatPolygon << centerBottom << leftBottom << leftTop << centerTop << rightTop << rightBottom;
 
     return boatPolygon;
+}
+
+TrainShape::TrainShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_trainType{Train}
+    , m_trainRect{-15.0, -25.0, 30.0, 50.0}
+    , m_trainText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::red));
+}
+
+void TrainShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawTrainShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF TrainShape::boundingRect() const
+{
+    QRectF boundingRect{m_trainRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath TrainShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(trainPolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap TrainShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawTrainShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType TrainShape::shapeType() const
+{
+    return m_trainType;
+}
+
+void TrainShape::setRect(const QRectF &rect)
+{
+    if (m_trainRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_trainRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_trainText != nullptr)
+        m_trainText->setPos(m_trainRect.right(), m_trainRect.bottom() - m_trainRect.width() / 6);
+
+    update();
+}
+
+QRectF TrainShape::rect() const
+{
+    return m_trainRect;
+}
+
+void TrainShape::setHeight(const qreal &height)
+{
+    if (m_trainRect.height() == height)
+        return;
+
+    qreal oldHeight{m_trainRect.height()};
+    prepareGeometryChange();
+    m_trainRect.setHeight(height);
+    qreal dy{(m_trainRect.height() - oldHeight) / 2};
+    m_trainRect.moveTo(QPointF(m_trainRect.x(), m_trainRect.y() - dy));
+    update();
+}
+
+qreal TrainShape::height() const
+{
+    return m_trainRect.height();
+}
+
+void TrainShape::setText(const QString &text)
+{
+    if (m_trainText == nullptr) {
+        m_trainText = new QGraphicsTextItem(this);
+        m_trainText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_trainText->setRotation(-90);
+    }
+    m_trainText->setPlainText(text);
+    m_showText = true;
+}
+
+QString TrainShape::text() const
+{
+    if (m_trainText == nullptr)
+        return "";
+
+    return m_trainText->toPlainText();
+}
+
+void TrainShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_trainActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_trainActionList);
+            m_trainActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void TrainShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_trainActionList.append(m_addTextAction.get());
+}
+
+void TrainShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_trainText == nullptr) {
+            m_trainText=new QGraphicsTextItem(this);
+            m_trainText->setPlainText("Поезд-");
+            m_trainText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_trainText->setRotation(-90);
+        }
+        m_trainText->show();
+        m_showText = true;
+    } else {
+        m_trainText->hide();
+        m_showText = false;
+    }
+}
+
+void TrainShape::drawTrainShape(QPainter *painter)
+{
+    painter->drawPolygon(trainPolygon(rect()));
+
+    if (m_showText) {
+        qreal sixthWidth{m_trainRect.width() / 6}; // 5.0
+        m_trainText->setPos(m_trainRect.right(), m_trainRect.bottom() - sixthWidth);
+    }
+}
+
+QPolygonF TrainShape::trainPolygon(const QRectF &rect) const
+{
+    qreal fourthWidth{rect.width() / 4.0}; //7.5
+    qreal centerY{rect.bottom() - (rect.height() / 10.0 * 3.0)}; //10.0
+    QPointF bottomLeft{rect.bottomLeft()}; //-15.0, 25.0
+    QPointF centerLeft{rect.left(), centerY}; //-15.0, 10.0
+    QPointF centerLeftR{rect.left() + fourthWidth, centerY}; //-7.5, 10.0
+    QPointF topLeft{rect.left() + fourthWidth, rect.top()}; //-7.5, -25.0
+    QPointF topRight{rect.right() - fourthWidth, rect.top()}; //7.5, -25.0
+    QPointF centerRightL{rect.right() - fourthWidth, centerY}; //7.5, 10.0
+    QPointF centerRight{rect.right(), centerY}; //15.0, 10.0
+    QPointF bottomRight{rect.bottomRight()}; // 15.0, 25.0
+    QPolygonF trainPolygon;
+    trainPolygon << bottomLeft << centerLeft << centerLeftR << topLeft << topRight
+                 << centerRightL << centerRight << bottomRight;
+
+    return trainPolygon;
 }
 

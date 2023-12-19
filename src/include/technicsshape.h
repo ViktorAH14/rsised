@@ -62,7 +62,7 @@ public:
                      , Trailer          //Прицеп пожарный
                      , Ship             //Судно пожарное
                      , Boat             //Катер пожарный
-                     , Train
+                     , Train            //Поезд пожарный
                      , Plane
                      , Seaplane
                      , Helicopter
@@ -1506,5 +1506,48 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_boatActionList;
+};
+
+class TrainShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 232};
+
+    explicit TrainShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~TrainShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(TrainShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawTrainShape(QPainter *painter);
+    QPolygonF trainPolygon(const QRectF &rect) const;
+
+    const ShapeType m_trainType;
+    QRectF m_trainRect;
+    QGraphicsTextItem *m_trainText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_trainActionList;
 };
 #endif // TECHNICSSHAPE_H
