@@ -221,6 +221,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             trainShape->setRect(value.toRectF());
         break;
     }
+    case PlaneShape::Type: {
+        if (PlaneShape *planeShape = dynamic_cast<PlaneShape *>(item))
+            planeShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());

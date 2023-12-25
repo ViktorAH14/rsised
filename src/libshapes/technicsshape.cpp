@@ -151,6 +151,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Train:
         p_technicsShape = new TrainShape(parent);
         break;
+    case Plane:
+        p_technicsShape = new PlaneShape(parent);
+        break;
     default:
         break;
     }
@@ -8385,3 +8388,243 @@ QPolygonF TrainShape::trainPolygon(const QRectF &rect) const
     return trainPolygon;
 }
 
+PlaneShape::PlaneShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_planeType{Plane}
+    , m_planeRect{-30.0, -37.5, 60.0, 75.0} //FIXME resize
+    , m_planeText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::red));
+}
+
+void PlaneShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawPlaneShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF PlaneShape::boundingRect() const
+{
+    QRectF boundingRect{m_planeRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath PlaneShape::shape() const
+{
+    return shapeFromPath(planePath());
+}
+
+QPixmap PlaneShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawPlaneShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType PlaneShape::shapeType() const
+{
+    return m_planeType;
+}
+
+void PlaneShape::setRect(const QRectF &rect)
+{
+    if (m_planeRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_planeRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_planeText != nullptr)
+        m_planeText->setPos(m_planeRect.right(), m_planeRect.bottom() - m_planeRect.width() / 6);
+
+    update();
+}
+
+QRectF PlaneShape::rect() const
+{
+    return m_planeRect;
+}
+
+void PlaneShape::setHeight(const qreal &height)
+{
+    if (m_planeRect.height() == height)
+        return;
+
+    qreal oldHeight{m_planeRect.height()};
+    prepareGeometryChange();
+    m_planeRect.setHeight(height);
+    qreal dy{(m_planeRect.height() - oldHeight) / 2};
+    m_planeRect.moveTo(QPointF(m_planeRect.x(), m_planeRect.y() - dy));
+    update();
+}
+
+qreal PlaneShape::height() const
+{
+    return m_planeRect.height();
+}
+
+void PlaneShape::setText(const QString &text)
+{
+    if (m_planeText == nullptr) {
+        m_planeText = new QGraphicsTextItem(this);
+        m_planeText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_planeText->setRotation(-90);
+    }
+    m_planeText->setPlainText(text);
+    m_showText = true;
+}
+
+QString PlaneShape::text() const
+{
+    if (m_planeText == nullptr)
+        return "";
+
+    return m_planeText->toPlainText();
+}
+
+void PlaneShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_planeActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_planeActionList);
+            m_planeActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void PlaneShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_planeActionList.append(m_addTextAction.get());
+}
+
+void PlaneShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_planeText == nullptr) {
+            m_planeText=new QGraphicsTextItem(this);
+            m_planeText->setPlainText("Самолёт-");
+            m_planeText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_planeText->setRotation(-90);
+        }
+        m_planeText->show();
+        m_showText = true;
+    } else {
+        m_planeText->hide();
+        m_showText = false;
+    }
+}
+
+void PlaneShape::drawPlaneShape(QPainter *painter)
+{
+    painter->drawPath(planePath());
+
+    if (m_showText) {
+        qreal fourthWidth{m_planeRect.width() / 4.0}; // 5.0
+        m_planeText->setPos(m_planeRect.right(), m_planeRect.bottom() - fourthWidth);
+    }
+}
+
+QPainterPath PlaneShape::planePath() const
+{
+    QPainterPath currentPath;
+
+    qreal fuselageWidth{m_planeRect.width() / 6.0}; //10.0 X
+    qreal wingArcIndent{fuselageWidth / 2.0}; //5.0 X
+    qreal wingHeight{m_planeRect.height() / 7.5}; //10.0 Y
+    qreal fuselageArcIndent{wingHeight / 2.0}; //5.0 Y
+
+    qreal fuselageRight{m_planeRect.center().x() + wingArcIndent}; //5.0 X
+    qreal fuselageLeft{m_planeRect.center().x() - wingArcIndent}; //-5.0 X
+
+    qreal wingLeft{m_planeRect.left() + wingArcIndent}; //-25.0 X
+    qreal wingTop{m_planeRect.center().y() - fuselageArcIndent}; //-5.0 Y
+    qreal wingRight{m_planeRect.right() - wingArcIndent}; //25.0 X
+    qreal wingBottom{m_planeRect.center().y() + fuselageArcIndent}; //5.0 Y
+
+    qreal thirdWidht{m_planeRect.width() / 3.0}; //20.0
+    qreal tailLeft{m_planeRect.left() + thirdWidht}; //-10.0 X
+    qreal tailTop{m_planeRect.bottom() - wingHeight}; //27.5 Y
+    qreal tailRight{m_planeRect.right() - thirdWidht}; //10.0  X
+
+    qreal sweepLenght{180.0};
+    qreal startAngle{270.0};
+
+    //tail
+    currentPath.moveTo(tailLeft, m_planeRect.bottom()); //-10.0, 37.5
+    currentPath.lineTo(tailRight, m_planeRect.bottom()); //10.0, 37.5
+    currentPath.arcTo(tailRight - wingArcIndent, tailTop, fuselageWidth, wingHeight, startAngle
+                      , sweepLenght); //5.0, 27.5
+    currentPath.lineTo(fuselageRight, tailTop); //5.0, 27.5
+
+    //fuselage
+    currentPath.lineTo(fuselageRight, wingBottom); //5.0, 5.0
+
+    //right wing
+    currentPath.lineTo(wingRight, wingBottom); //25.0, 5.0
+    currentPath.arcTo(wingRight - wingArcIndent, wingTop, fuselageWidth, wingHeight
+                      , startAngle, sweepLenght); //20.0, -5.0
+    currentPath.lineTo(fuselageRight, wingTop); //5.0, -5.0
+
+    //fuselage
+    currentPath.lineTo(fuselageRight, m_planeRect.top() + fuselageArcIndent); // 5.0, -32.0? or -32.5
+    startAngle = 0.0;
+    currentPath.arcTo(fuselageLeft, m_planeRect.top(), fuselageWidth, wingHeight, startAngle
+                      , sweepLenght); // -5.0, -37.0? or -37.5
+    currentPath.lineTo(fuselageLeft, wingTop); // -5.0, -5.0
+
+    //left wing
+    currentPath.lineTo(wingLeft, wingTop); //-25.0, -5.0
+    startAngle = 90.0;
+    currentPath.arcTo(m_planeRect.left(), wingTop, fuselageWidth, wingHeight, startAngle
+                      , sweepLenght); //-30.0, -5.0
+    currentPath.lineTo(fuselageLeft, wingBottom); //-5.0, 5.0
+
+    //fuselage
+    currentPath.lineTo(fuselageLeft, tailTop); //-5.0, 27.5
+
+    //tail
+    currentPath.lineTo(tailLeft, tailTop); //-10.0, 27.5
+    currentPath.arcTo(tailLeft - wingArcIndent, tailTop, fuselageWidth, wingHeight
+                      , startAngle, sweepLenght); //-15.0, 27.5
+
+    return currentPath;
+}
