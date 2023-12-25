@@ -817,9 +817,10 @@
         <translation>КП</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="772"/>
         <source>Plane</source>
         <translatorcomment>Самолёт пожарный</translatorcomment>
-        <translation type="vanished">Ил</translation>
+        <translation>Самолёт</translation>
     </message>
     <message>
         <source>Seaplane</source>
