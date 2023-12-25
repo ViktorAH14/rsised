@@ -276,6 +276,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_trainShape, "trainShape is nullptr");
     QCOMPARE(int(p_trainShape->type()), int(QGraphicsItem::UserType + 232));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
+
+    // PlaneShape
+    TechnicsShape *p_planeShape = nullptr;
+    p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Plane);
+    QVERIFY2(p_planeShape, "planeShape is nullptr");
+    QCOMPARE(int(p_planeShape->type()), int(QGraphicsItem::UserType + 233));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -520,6 +527,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_trainShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
     QCOMPARE(p_trainShape->boundingRect(), QRectF(-15.5, -25.5, 31.0, 51.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
+
+    // PlaneShape
+    TechnicsShape *p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Plane);
+    QCOMPARE(p_planeShape->boundingRect(), QRectF(-30.5, -38.0, 61.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
 }
 
 void tst_TechnicShape::shape()
@@ -1946,6 +1958,64 @@ void tst_TechnicShape::shape()
     strokeTrainPath.addPath(trainPath);
     QCOMPARE(p_trainShape->shape(), strokeTrainPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
+
+// PlaneShape
+    TechnicsShape *p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Plane);
+    QPainterPathStroker ps_planeShape;
+    ps_planeShape.setWidth(p_planeShape->pen().widthF());
+    QRectF planeRect{p_planeShape->rect()};
+    qreal fuselageWidth{planeRect.width() / 6.0}; //10.0 X
+    qreal wingArcIndent{fuselageWidth / 2.0}; //5.0 X
+    qreal wingHeight{planeRect.height() / 7.5}; //10.0 Y
+    qreal fuselageArcIndent{wingHeight / 2.0}; //5.0 Y
+    qreal fuselageRight{planeRect.center().x() + wingArcIndent}; //5.0 X
+    qreal fuselageLeft{planeRect.center().x() - wingArcIndent}; //-5.0 X
+    qreal wingLeft{planeRect.left() + wingArcIndent}; //-25.0 X
+    qreal wingTop{planeRect.center().y() - fuselageArcIndent}; //-5.0 Y
+    qreal wingRight{planeRect.right() - wingArcIndent}; //25.0 X
+    qreal wingBottom{planeRect.center().y() + fuselageArcIndent}; //5.0 Y
+    qreal thirdWidht{planeRect.width() / 3.0}; //20.0
+    qreal tailLeft{planeRect.left() + thirdWidht}; //-10.0 X
+    qreal tailTop{planeRect.bottom() - wingHeight}; //27.5 Y
+    qreal tailRight{planeRect.right() - thirdWidht}; //10.0  X
+    qreal sweepLenght{180.0};
+    qreal startAngle{270.0};
+    QPainterPath planePath;
+    //tail
+    planePath.moveTo(tailLeft, planeRect.bottom()); //-10.0, 37.5
+    planePath.lineTo(tailRight, planeRect.bottom()); //10.0, 37.5
+    planePath.arcTo(tailRight - wingArcIndent, tailTop, fuselageWidth, wingHeight, startAngle
+                      , sweepLenght); //5.0, 27.5
+    planePath.lineTo(fuselageRight, tailTop); //5.0, 27.5
+    //fuselage
+    planePath.lineTo(fuselageRight, wingBottom); //5.0, 5.0
+    //right wing
+    planePath.lineTo(wingRight, wingBottom); //25.0, 5.0
+    planePath.arcTo(wingRight - wingArcIndent, wingTop, fuselageWidth, wingHeight
+                      , startAngle, sweepLenght); //20.0, -5.0
+    planePath.lineTo(fuselageRight, wingTop); //5.0, -5.0
+    //fuselage
+    planePath.lineTo(fuselageRight, planeRect.top() + fuselageArcIndent); // 5.0, -32.0? or -32.5
+    startAngle = 0.0;
+    planePath.arcTo(fuselageLeft, planeRect.top(), fuselageWidth, wingHeight, startAngle
+                      , sweepLenght); // -5.0, -37.0? or -37.5
+    planePath.lineTo(fuselageLeft, wingTop); // -5.0, -5.0
+    //left wing
+    planePath.lineTo(wingLeft, wingTop); //-25.0, -5.0
+    startAngle = 90.0;
+    planePath.arcTo(planeRect.left(), wingTop, fuselageWidth, wingHeight, startAngle
+                      , sweepLenght); //-30.0, -5.0
+    planePath.lineTo(fuselageLeft, wingBottom); //-5.0, 5.0
+    //fuselage
+    planePath.lineTo(fuselageLeft, tailTop); //-5.0, 27.5
+    //tail
+    planePath.lineTo(tailLeft, tailTop); //-10.0, 27.5
+    planePath.arcTo(tailLeft - wingArcIndent, tailTop, fuselageWidth, wingHeight
+                      , startAngle, sweepLenght); //-15.0, 27.5
+    QPainterPath strokePlanePath = ps_planeShape.createStroke(planePath);
+    strokePlanePath.addPath(planePath);
+    QCOMPARE(p_planeShape->shape(), strokePlanePath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
 }
 
 void tst_TechnicShape::image()
@@ -2205,6 +2275,14 @@ void tst_TechnicShape::image()
     QCOMPARE(trainImage.width(), p_trainShape->boundingRect().width());
     QCOMPARE(trainImage.height(), p_trainShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
+
+    // PlaneShape
+    TechnicsShape *p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Plane);
+    QPixmap planeImage{p_planeShape->image()};
+    QVERIFY2(!planeImage.isNull(), "planeShape::image() returned a null pixmap");
+    QCOMPARE(planeImage.width(), p_planeShape->boundingRect().width());
+    QCOMPARE(planeImage.height(), p_planeShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -2422,6 +2500,12 @@ void tst_TechnicShape::rect_setRect()
     p_trainShape->setRect(rect);
     QCOMPARE(p_trainShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
+
+    // PlaneShape
+    TechnicsShape *p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Plane);
+    p_planeShape->setRect(rect);
+    QCOMPARE(p_planeShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -2626,6 +2710,12 @@ void tst_TechnicShape::height_setHeight()
     p_trainShape->setHeight(height);
     QCOMPARE(p_trainShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
+
+    // PlaneShape
+    TechnicsShape *p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Plane);
+    p_planeShape->setHeight(height);
+    QCOMPARE(p_planeShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -2839,6 +2929,12 @@ void tst_TechnicShape::text_setText()
     p_trainShape->setText(text);
     QCOMPARE(p_trainShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
+
+    // PlaneShape
+    TechnicsShape *p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Plane);
+    p_planeShape->setText(text);
+    QCOMPARE(p_planeShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -4008,6 +4104,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_trainShape);
     delete p_trainContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
+
+    // PlaneShape
+    ContextMenuTester *p_planeContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    p_planeShape->setMenu(p_planeContextMenu);
+    scene.addItem(p_planeShape);
+
+    mousePressEvent.setScenePos(p_planeShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_planeShape->setSelected(true);
+    QSignalSpy planeContextMenuSpy(p_planeShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(planeContextMenuSpy.count(), 0);
+
+    QList<QAction *> planeMenuActions{p_planeShape->menu()->actions()};
+    QCOMPARE(planeMenuActions.size(), 1);
+    planeMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_planeShape->boundingRect().center()));
+    planeMenuActions = p_planeShape->menu()->actions();
+    QCOMPARE(planeMenuActions.size(), 1);
+    QCOMPARE(planeContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_planeShape);
+    delete p_planeContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
