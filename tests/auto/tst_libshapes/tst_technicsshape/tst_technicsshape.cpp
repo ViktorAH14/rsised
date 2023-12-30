@@ -283,6 +283,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_planeShape, "planeShape is nullptr");
     QCOMPARE(int(p_planeShape->type()), int(QGraphicsItem::UserType + 233));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
+
+    // SeaplaneShape
+    TechnicsShape *p_seaplaneShape = nullptr;
+    p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
+    QVERIFY2(p_seaplaneShape, "seaplaneShape is nullptr");
+    QCOMPARE(int(p_seaplaneShape->type()), int(QGraphicsItem::UserType + 234));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -532,6 +539,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Plane);
     QCOMPARE(p_planeShape->boundingRect(), QRectF(-30.5, -38.0, 61.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
+
+    // SeaplaneShape
+    TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
+    QCOMPARE(p_seaplaneShape->boundingRect(), QRectF(-30.5, -38.0, 61.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
 }
 
 void tst_TechnicShape::shape()
@@ -2016,6 +2028,71 @@ void tst_TechnicShape::shape()
     strokePlanePath.addPath(planePath);
     QCOMPARE(p_planeShape->shape(), strokePlanePath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
+
+// SeaplaneShape
+        TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
+        QPainterPathStroker ps_seaplaneShape;
+        ps_seaplaneShape.setWidth(p_seaplaneShape->pen().widthF());
+        QRectF seaplaneRect{p_seaplaneShape->rect()};
+        qreal seaFuselageWidth{seaplaneRect.width() / 6.0}; //10.0 X
+        qreal seaWingArcIndent{seaFuselageWidth / 2.0}; //5.0 X
+        qreal seaWingHeight{seaplaneRect.height() / 7.5}; //10.0 Y
+        qreal seaFuselageArcIndent{seaWingHeight / 2.0}; //5.0 Y
+        qreal seaFuselageRight{seaplaneRect.center().x() + seaWingArcIndent}; //5.0 X
+        qreal seaFuselageLeft{seaplaneRect.center().x() - seaWingArcIndent}; //-5.0 X
+        qreal seaWingLeft{seaplaneRect.left() + seaWingArcIndent}; //-25.0 X
+        qreal seaWingTop{seaplaneRect.center().y() - seaFuselageArcIndent}; //-5.0 Y
+        qreal seaWingRight{seaplaneRect.right() - seaWingArcIndent}; //25.0 X
+        qreal seaWingBottom{seaplaneRect.center().y() + seaFuselageArcIndent}; //5.0 Y
+        qreal seaThirdWidht{seaplaneRect.width() / 3.0}; //20.0
+        qreal seaTailLeft{seaplaneRect.left() + seaThirdWidht}; //-10.0 X
+        qreal seaTailTop{seaplaneRect.bottom() - seaWingHeight}; //27.5 Y
+        qreal seaTailRight{seaplaneRect.right() - seaThirdWidht}; //10.0  X
+        qreal seaSweepLenght{180.0};
+        qreal SeaStartAngle{270.0};
+        QPainterPath seaplanePath;
+        //tail
+        seaplanePath.moveTo(seaTailLeft, seaplaneRect.bottom()); //-10.0, 37.5
+        seaplanePath.lineTo(seaTailRight, seaplaneRect.bottom()); //10.0, 37.5
+        seaplanePath.arcTo(seaTailRight - seaWingArcIndent, seaTailTop, seaFuselageWidth, seaWingHeight, SeaStartAngle
+                          , seaSweepLenght); //5.0, 27.5
+        seaplanePath.lineTo(seaFuselageRight, seaTailTop); //5.0, 27.5
+        //fuselage
+        seaplanePath.lineTo(seaFuselageRight, seaWingBottom); //5.0, 5.0
+        //right wing
+        seaplanePath.lineTo(seaWingRight, seaWingBottom); //25.0, 5.0
+        seaplanePath.arcTo(seaWingRight - seaWingArcIndent, seaWingTop, seaFuselageWidth, seaWingHeight
+                          , SeaStartAngle, seaSweepLenght); //20.0, -5.0
+        seaplanePath.lineTo(seaFuselageRight, seaWingTop); //5.0, -5.0
+        //fuselage
+        seaplanePath.lineTo(seaFuselageRight, seaplaneRect.top() + seaFuselageArcIndent); // 5.0, -32.0? or -32.5
+        SeaStartAngle = 0.0;
+        seaplanePath.arcTo(seaFuselageLeft, seaplaneRect.top(), seaFuselageWidth, seaWingHeight, SeaStartAngle
+                          , seaSweepLenght); // -5.0, -37.0? or -37.5
+        seaplanePath.lineTo(seaFuselageLeft, seaWingTop); // -5.0, -5.0
+        //left wing
+        seaplanePath.lineTo(seaWingLeft, seaWingTop); //-25.0, -5.0
+        SeaStartAngle = 90.0;
+        seaplanePath.arcTo(seaplaneRect.left(), seaWingTop, seaFuselageWidth, seaWingHeight, SeaStartAngle
+                          , seaSweepLenght); //-30.0, -5.0
+        seaplanePath.lineTo(seaFuselageLeft, seaWingBottom); //-5.0, 5.0
+        //fuselage
+        seaplanePath.lineTo(seaFuselageLeft, seaTailTop); //-5.0, 27.5
+        //tail
+        seaplanePath.lineTo(seaTailLeft, seaTailTop); //-10.0, 27.5
+        seaplanePath.arcTo(seaTailLeft - seaWingArcIndent, seaTailTop, seaFuselageWidth, seaWingHeight
+                          , SeaStartAngle, seaSweepLenght); //-15.0, 27.5
+        //left lending gear
+        seaplanePath.moveTo(seaWingLeft + seaWingArcIndent, seaWingBottom + seaFuselageArcIndent); //-20.0, 10.0
+        seaplanePath.lineTo(seaWingLeft + seaWingArcIndent, seaWingTop - seaFuselageArcIndent); //-20.0, -10.0
+
+        //right landing gear
+        seaplanePath.moveTo(seaWingRight - seaWingArcIndent, seaWingBottom + seaFuselageArcIndent); //20.0, 10.0
+        seaplanePath.lineTo(seaWingRight - seaWingArcIndent, seaWingTop - seaFuselageArcIndent); //20.0, -10.0
+        QPainterPath strokeSeaplanePath = ps_seaplaneShape.createStroke(seaplanePath);
+        strokeSeaplanePath.addPath(seaplanePath);
+        QCOMPARE(p_seaplaneShape->shape(), strokeSeaplanePath);
+        TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
 }
 
 void tst_TechnicShape::image()
@@ -2283,6 +2360,14 @@ void tst_TechnicShape::image()
     QCOMPARE(planeImage.width(), p_planeShape->boundingRect().width());
     QCOMPARE(planeImage.height(), p_planeShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
+
+    // SeaplaneShape
+    TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
+    QPixmap seaplaneImage{p_seaplaneShape->image()};
+    QVERIFY2(!seaplaneImage.isNull(), "seaplaneShape::image() returned a null pixmap");
+    QCOMPARE(seaplaneImage.width(), p_seaplaneShape->boundingRect().width());
+    QCOMPARE(seaplaneImage.height(), p_seaplaneShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -2506,6 +2591,12 @@ void tst_TechnicShape::rect_setRect()
     p_planeShape->setRect(rect);
     QCOMPARE(p_planeShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
+
+    // SeaplaneShape
+    TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
+    p_seaplaneShape->setRect(rect);
+    QCOMPARE(p_seaplaneShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -2716,6 +2807,12 @@ void tst_TechnicShape::height_setHeight()
     p_planeShape->setHeight(height);
     QCOMPARE(p_planeShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
+
+    // SeaplaneShape
+    TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
+    p_seaplaneShape->setHeight(height);
+    QCOMPARE(p_seaplaneShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -2935,6 +3032,12 @@ void tst_TechnicShape::text_setText()
     p_planeShape->setText(text);
     QCOMPARE(p_planeShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
+
+    // SeaplaneShape
+    TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
+    p_seaplaneShape->setText(text);
+    QCOMPARE(p_seaplaneShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -4133,6 +4236,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_planeShape);
     delete p_planeContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
+
+    // SeaplaneShape
+    ContextMenuTester *p_seaplaneContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    p_seaplaneShape->setMenu(p_seaplaneContextMenu);
+    scene.addItem(p_seaplaneShape);
+
+    mousePressEvent.setScenePos(p_seaplaneShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_seaplaneShape->setSelected(true);
+    QSignalSpy seaplaneContextMenuSpy(p_seaplaneShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(seaplaneContextMenuSpy.count(), 0);
+
+    QList<QAction *> seaplaneMenuActions{p_seaplaneShape->menu()->actions()};
+    QCOMPARE(seaplaneMenuActions.size(), 1);
+    seaplaneMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_seaplaneShape->boundingRect().center()));
+    seaplaneMenuActions = p_seaplaneShape->menu()->actions();
+    QCOMPARE(seaplaneMenuActions.size(), 1);
+    QCOMPARE(seaplaneContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_seaplaneShape);
+    delete p_seaplaneContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
