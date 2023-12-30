@@ -154,6 +154,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Plane:
         p_technicsShape = new PlaneShape(parent);
         break;
+    case Seaplane:
+        p_technicsShape = new SeaplaneShape(parent);
+        break;
     default:
         break;
     }
@@ -588,10 +591,8 @@ void BaseShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     painter->drawPolygon(basePolygon(rect()));
 
-    if (m_showText) {
-        qreal sixthWidth{m_baseRect.width() / 6}; // 5.0
-        m_baseText->setPos(m_baseRect.right(), m_baseRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_baseText->setPos(m_baseRect.right(), m_baseRect.bottom());
 
     if (option->state & QStyle::State_Selected)
         highlightSelected(painter, option);
@@ -723,7 +724,7 @@ void BaseShape::textShow(bool showText)
     if (showText) {
         if (m_baseText == nullptr) {
             m_baseText=new QGraphicsTextItem(this);
-            m_baseText->setPlainText(QObject::tr("Insert text"));
+            m_baseText->setPlainText("ПА-");
             m_baseText->setTextInteractionFlags(Qt::TextEditorInteraction);
             m_baseText->setRotation(-90);
         }
@@ -2382,12 +2383,9 @@ void AutoLadderShape::drawAutoLadderShape(QPainter *painter)
         stepY -= stepDistanse;
     }
 
-    qreal sixthWidth{m_autoLadderRect.width() / 6}; // 5.0
 
-    if (m_showText) {
-        m_autoLadderText->setPos(m_autoLadderRect.right(), m_autoLadderRect.bottom()
-                                                               - sixthWidth * 2);
-        }
+    if (m_showText)
+        m_autoLadderText->setPos(m_autoLadderRect.right(), m_autoLadderRect.bottom());
 }
 
 CrankLiftShape::CrankLiftShape(QGraphicsItem *parent)
@@ -2562,7 +2560,6 @@ void CrankLiftShape::drawCrankLiftShape(QPainter *painter)
     painter->drawPolygon(basePolygon(rect()));
 
     //Draw ladder
-    qreal sixthWidth{m_crankLiftRect.width() / 6}; // 5.0
     qreal sixthHeight{m_crankLiftRect.height() / 6};
     qreal crankIndent{m_crankLiftRect.width() / 5};
     QPointF leftBottomBowstring{m_crankLiftRect.left() + crankIndent
@@ -2583,10 +2580,8 @@ void CrankLiftShape::drawCrankLiftShape(QPainter *painter)
     painter->drawLine(centerBowstring); //Center bowstring
 
 
-    if (m_showText) {
-        m_crankLiftText->setPos(m_crankLiftRect.right(), m_crankLiftRect.bottom()
-                                                               - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_crankLiftText->setPos(m_crankLiftRect.right(), m_crankLiftRect.bottom());
 }
 
 TelescopicLiftShape::TelescopicLiftShape(QGraphicsItem *parent)
@@ -2762,7 +2757,6 @@ void TelescopicLiftShape::drawTelescopicLiftShape(QPainter *painter)
     painter->drawPolygon(basePolygon(rect()));
 
     //Draw ladder
-    qreal sixthWidth{m_telescopicLiftRect.width() / 6}; // 5.0
     qreal sixthHeight{m_telescopicLiftRect.height() / 6};
     qreal telescopicIndent{m_telescopicLiftRect.width() / 5};
     QPointF leftBottomBowstring{m_telescopicLiftRect.left() + telescopicIndent
@@ -2787,10 +2781,8 @@ void TelescopicLiftShape::drawTelescopicLiftShape(QPainter *painter)
     painter->drawLine(centerBowstring); //Center bowstring
 
 
-    if (m_showText) {
-        m_telescopicLiftText->setPos(m_telescopicLiftRect.right(), m_telescopicLiftRect.bottom()
-                                                                       - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_telescopicLiftText->setPos(m_telescopicLiftRect.right(), m_telescopicLiftRect.bottom());
 }
 
 HoseCarShape::HoseCarShape(QGraphicsItem *parent)
@@ -2971,11 +2963,9 @@ void HoseCarShape::drawHoseCarShape(QPainter *painter)
     painter->translate(m_hoseCarRect.center());
     painter->rotate(-270);
     painter->translate(-m_hoseCarRect.center());
-    qreal sixthWidth{m_hoseCarRect.width() / 6}; // 5.0
 
-    if (m_showText) {
-        m_hoseCarText->setPos(m_hoseCarRect.right(), m_hoseCarRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_hoseCarText->setPos(m_hoseCarRect.right(), m_hoseCarRect.bottom());
 }
 
 CommShape::CommShape(QGraphicsItem *parent)
@@ -3155,11 +3145,9 @@ void CommShape::drawCommShape(QPainter *painter)
     painter->translate(m_commRect.center());
     painter->rotate(-270);
     painter->translate(-m_commRect.center());
-    qreal sixthWidth{m_commRect.width() / 6}; // 5.0
 
-    if (m_showText) {
-        m_commText->setPos(m_commRect.right(), m_commRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_commText->setPos(m_commRect.right(), m_commRect.bottom());
 }
 
 TechServShape::TechServShape(QGraphicsItem *parent)
@@ -3340,11 +3328,9 @@ void TechServShape::drawTechServShape(QPainter *painter)
     painter->translate(m_techServRect.center());
     painter->rotate(-270);
     painter->translate(-m_techServRect.center());
-    qreal sixthWidth{m_techServRect.width() / 6}; // 5.0
 
-    if (m_showText) {
-        m_techServText->setPos(m_techServRect.right(), m_techServRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_techServText->setPos(m_techServRect.right(), m_techServRect.bottom());
 }
 
 SmokRemShape::SmokRemShape(QGraphicsItem *parent)
@@ -3540,9 +3526,8 @@ void SmokRemShape::drawSmokRemShape(QPainter *painter)
     painter->drawLine(leftBottom, leftTop);
     painter->drawLine(rightBottom, rightTop);
 
-    if (m_showText) {
-        m_smokRemText->setPos(m_smokRemRect.right(), m_smokRemRect.bottom() - thirdWidth);
-    }
+    if (m_showText)
+        m_smokRemText->setPos(m_smokRemRect.right(), m_smokRemRect.bottom());
 }
 
 PumpStatShape::PumpStatShape(QGraphicsItem *parent)
@@ -4554,9 +4539,8 @@ void LafetCarShape::drawLafetCarShape(QPainter *painter)
     rightArrow.setAngle(barrelLine.angle() + leftArrow.angleTo(barrelLine));
     painter->drawLine(rightArrow);    // Draw right part arrow
 
-    if (m_showText) {
-        m_lafetCarText->setPos(m_lafetCarRect.right(), m_lafetCarRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_lafetCarText->setPos(m_lafetCarRect.right(), m_lafetCarRect.bottom());
 }
 
 AerodromeShape::AerodromeShape(QGraphicsItem *parent)
@@ -5852,7 +5836,6 @@ void AerosolShape::drawAerosolShape(QPainter *painter)
     painter->drawPolygon(basePolygon(rect()));
 
     // Draw aerosol icon
-    qreal sixthWidth{m_aerosolRect.width() / 6}; // 5.0
     qreal fifteenthHeight{m_aerosolRect.height() / 15.0}; // 5.0
     qreal ellipseX{m_aerosolRect.center().x()};
     qreal topEllipseY{m_aerosolRect.bottom() - fifteenthHeight * 2.0};
@@ -5867,9 +5850,8 @@ void AerosolShape::drawAerosolShape(QPainter *painter)
     painter->drawEllipse(bottomEllipse, fifteenthHeight, fifteenthHeight);
     painter->setBrush(brush());
 
-    if (m_showText) {
-        m_aerosolText->setPos(m_aerosolRect.right(), m_aerosolRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_aerosolText->setPos(m_aerosolRect.right(), m_aerosolRect.bottom());
 }
 
 PowderShape::PowderShape(QGraphicsItem *parent)
@@ -6055,9 +6037,8 @@ void PowderShape::drawPowderShape(QPainter *painter)
     painter->drawRect(powderRect);
     painter->setBrush(brush());
 
-    if (m_showText) {
-        m_powderText->setPos(m_powderRect.right(), m_powderRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_powderText->setPos(m_powderRect.right(), m_powderRect.bottom());
 }
 
 CarbonShape::CarbonShape(QGraphicsItem *parent)
@@ -6248,9 +6229,8 @@ void CarbonShape::drawCarbonShape(QPainter *painter)
     painter->drawPath(carbonPath);
     painter->setBrush(brush());
 
-    if (m_showText) {
-        m_carbonText->setPos(m_carbonRect.right(), m_carbonRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_carbonText->setPos(m_carbonRect.right(), m_carbonRect.bottom());
 }
 
 GazWaterShape::GazWaterShape(QGraphicsItem *parent)
@@ -6432,11 +6412,9 @@ void GazWaterShape::drawGazWaterShape(QPainter *painter)
     painter->translate(m_gazWaterRect.center());
     painter->rotate(-270);
     painter->translate(-m_gazWaterRect.center());
-    qreal sixthWidth{m_gazWaterRect.width() / 6}; // 5.0
 
-    if (m_showText) {
-        m_gazWaterText->setPos(m_gazWaterRect.right(), m_gazWaterRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_gazWaterText->setPos(m_gazWaterRect.right(), m_gazWaterRect.bottom());
 }
 
 TrackedShape::TrackedShape(QGraphicsItem *parent)
@@ -6639,9 +6617,8 @@ void TrackedShape::drawTrackedShape(QPainter *painter)
     QLineF rightTrack{rightTrackBottom, rightTrackTop};
     painter->drawLine(rightTrack);
 
-    if (m_showText) {
-        m_trackedText->setPos(m_trackedRect.right(), m_trackedRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_trackedText->setPos(m_trackedRect.right(), m_trackedRect.bottom());
 }
 
 TankShape::TankShape(QGraphicsItem *parent)
@@ -6816,10 +6793,8 @@ void TankShape::drawTankShape(QPainter *painter)
 {
     painter->drawPolygon(tankPolygon(rect()));
 
-    qreal sixthWidth{m_tankRect.width() / 6}; // 6.0
-    if (m_showText) {
-        m_tankText->setPos(m_tankRect.right(), m_tankRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_tankText->setPos(m_tankRect.right(), m_tankRect.bottom());
 }
 
 QPolygonF TankShape::tankPolygon(const QRectF &rect) const
@@ -7014,11 +6989,9 @@ void GdzsShape::drawGdzsShape(QPainter *painter)
     painter->translate(m_gdzsRect.center());
     painter->rotate(-270);
     painter->translate(-m_gdzsRect.center());
-    qreal sixthWidth{m_gdzsRect.width() / 6}; // 5.0
 
-    if (m_showText) {
-        m_gdzsText->setPos(m_gdzsRect.right(), m_gdzsRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_gdzsText->setPos(m_gdzsRect.right(), m_gdzsRect.bottom());
 }
 
 WaterproofShape::WaterproofShape(QGraphicsItem *parent)
@@ -7200,11 +7173,9 @@ void WaterproofShape::drawWaterproofShape(QPainter *painter)
     painter->translate(m_waterproofRect.center());
     painter->rotate(-270);
     painter->translate(-m_waterproofRect.center());
-    qreal sixthWidth{m_waterproofRect.width() / 6}; // 5.0
 
-    if (m_showText) {
-        m_waterproofText->setPos(m_waterproofRect.right(), m_waterproofRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_waterproofText->setPos(m_waterproofRect.right(), m_waterproofRect.bottom());
 }
 
 LaboratoryShape::LaboratoryShape(QGraphicsItem *parent)
@@ -7386,11 +7357,9 @@ void LaboratoryShape::drawLaboratoryShape(QPainter *painter)
     painter->translate(m_laboratoryRect.center());
     painter->rotate(-270);
     painter->translate(-m_laboratoryRect.center());
-    qreal sixthWidth{m_laboratoryRect.width() / 6}; // 5.0
 
-    if (m_showText) {
-        m_laboratoryText->setPos(m_laboratoryRect.right(), m_laboratoryRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_laboratoryText->setPos(m_laboratoryRect.right(), m_laboratoryRect.bottom());
 }
 
 StaffCarShape::StaffCarShape(QGraphicsItem *parent)
@@ -7572,11 +7541,9 @@ void StaffCarShape::drawStaffCarShape(QPainter *painter)
     painter->translate(m_staffCarRect.center());
     painter->rotate(-270);
     painter->translate(-m_staffCarRect.center());
-    qreal sixthWidth{m_staffCarRect.width() / 6}; // 5.0
 
-    if (m_showText) {
-        m_staffCarText->setPos(m_staffCarRect.right(), m_staffCarRect.bottom() - sixthWidth * 2);
-    }
+    if (m_showText)
+        m_staffCarText->setPos(m_staffCarRect.right(), m_staffCarRect.bottom());
 }
 
 TrailerShape::TrailerShape(QGraphicsItem *parent)
@@ -7748,10 +7715,8 @@ void TrailerShape::drawTrailerShape(QPainter *painter)
 {
     painter->drawPath(trailerPath());
 
-    if (m_showText) {
-        qreal fourthWidth{m_trailerRect.width() / 4.0}; // 5.0
-        m_trailerText->setPos(m_trailerRect.right(), m_trailerRect.bottom() - fourthWidth);
-    }
+    if (m_showText)
+        m_trailerText->setPos(m_trailerRect.right(), m_trailerRect.bottom());
 }
 
 QPainterPath TrailerShape::trailerPath() const
@@ -7968,10 +7933,8 @@ void ShipShape::drawShipShape(QPainter *painter)
     painter->rotate(-270);
     painter->translate(-m_shipRect.center());
 
-    if (m_showText) {
-        qreal sixthWidth{m_shipRect.width() / 6}; // 5.0
-        m_shipText->setPos(m_shipRect.right(), m_shipRect.bottom() - sixthWidth);
-    }
+    if (m_showText)
+        m_shipText->setPos(m_shipRect.right(), m_shipRect.bottom());
 }
 
 QPolygonF ShipShape::shipPolygon(const QRectF &rect) const
@@ -8170,10 +8133,8 @@ void BoatShape::drawBoatShape(QPainter *painter)
     painter->rotate(-270);
     painter->translate(-m_boatRect.center());
 
-    if (m_showText) {
-        qreal sixthWidth{m_boatRect.width() / 6}; // 5.0
-        m_boatText->setPos(m_boatRect.right(), m_boatRect.bottom() - sixthWidth);
-    }
+    if (m_showText)
+        m_boatText->setPos(m_boatRect.right(), m_boatRect.bottom());
 }
 
 QPolygonF BoatShape::boatPolygon(const QRectF &rect) const
@@ -8363,10 +8324,8 @@ void TrainShape::drawTrainShape(QPainter *painter)
 {
     painter->drawPolygon(trainPolygon(rect()));
 
-    if (m_showText) {
-        qreal sixthWidth{m_trainRect.width() / 6}; // 5.0
-        m_trainText->setPos(m_trainRect.right(), m_trainRect.bottom() - sixthWidth);
-    }
+    if (m_showText)
+        m_trainText->setPos(m_trainRect.right(), m_trainRect.bottom());
 }
 
 QPolygonF TrainShape::trainPolygon(const QRectF &rect) const
@@ -8391,7 +8350,7 @@ QPolygonF TrainShape::trainPolygon(const QRectF &rect) const
 PlaneShape::PlaneShape(QGraphicsItem *parent)
     : TechnicsShape(parent)
     , m_planeType{Plane}
-    , m_planeRect{-30.0, -37.5, 60.0, 75.0} //FIXME resize
+    , m_planeRect{-30.0, -37.5, 60.0, 75.0}
     , m_planeText{nullptr}
     , m_showText{false}
 {
@@ -8541,7 +8500,7 @@ void PlaneShape::textShow(bool showText)
     if (showText) {
         if (m_planeText == nullptr) {
             m_planeText=new QGraphicsTextItem(this);
-            m_planeText->setPlainText("Самолёт-");
+            m_planeText->setPlainText("СА-");
             m_planeText->setTextInteractionFlags(Qt::TextEditorInteraction);
             m_planeText->setRotation(-90);
         }
@@ -8557,10 +8516,8 @@ void PlaneShape::drawPlaneShape(QPainter *painter)
 {
     painter->drawPath(planePath());
 
-    if (m_showText) {
-        qreal fourthWidth{m_planeRect.width() / 4.0}; // 5.0
-        m_planeText->setPos(m_planeRect.right(), m_planeRect.bottom() - fourthWidth);
-    }
+    if (m_showText)
+        m_planeText->setPos(m_planeRect.right(), m_planeRect.bottom());
 }
 
 QPainterPath PlaneShape::planePath() const
@@ -8625,6 +8582,254 @@ QPainterPath PlaneShape::planePath() const
     currentPath.lineTo(tailLeft, tailTop); //-10.0, 27.5
     currentPath.arcTo(tailLeft - wingArcIndent, tailTop, fuselageWidth, wingHeight
                       , startAngle, sweepLenght); //-15.0, 27.5
+
+    return currentPath;
+}
+
+
+SeaplaneShape::SeaplaneShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_seaplaneType{Seaplane}
+    , m_seaplaneRect{-30.0, -37.5, 60.0, 75.0}
+    , m_seaplaneText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::red));
+}
+
+void SeaplaneShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawSeaplaneShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF SeaplaneShape::boundingRect() const
+{
+    QRectF boundingRect{m_seaplaneRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath SeaplaneShape::shape() const
+{
+    return shapeFromPath(seaplanePath());
+}
+
+QPixmap SeaplaneShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawSeaplaneShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType SeaplaneShape::shapeType() const
+{
+    return m_seaplaneType;
+}
+
+void SeaplaneShape::setRect(const QRectF &rect)
+{
+    if (m_seaplaneRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_seaplaneRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_seaplaneText != nullptr)
+        m_seaplaneText->setPos(m_seaplaneRect.right(), m_seaplaneRect.bottom() - m_seaplaneRect.width() / 6);
+
+    update();
+}
+
+QRectF SeaplaneShape::rect() const
+{
+    return m_seaplaneRect;
+}
+
+void SeaplaneShape::setHeight(const qreal &height)
+{
+    if (m_seaplaneRect.height() == height)
+        return;
+
+    qreal oldHeight{m_seaplaneRect.height()};
+    prepareGeometryChange();
+    m_seaplaneRect.setHeight(height);
+    qreal dy{(m_seaplaneRect.height() - oldHeight) / 2};
+    m_seaplaneRect.moveTo(QPointF(m_seaplaneRect.x(), m_seaplaneRect.y() - dy));
+    update();
+}
+
+qreal SeaplaneShape::height() const
+{
+    return m_seaplaneRect.height();
+}
+
+void SeaplaneShape::setText(const QString &text)
+{
+    if (m_seaplaneText == nullptr) {
+        m_seaplaneText = new QGraphicsTextItem(this);
+        m_seaplaneText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_seaplaneText->setRotation(-90);
+    }
+    m_seaplaneText->setPlainText(text);
+    m_showText = true;
+}
+
+QString SeaplaneShape::text() const
+{
+    if (m_seaplaneText == nullptr)
+        return "";
+
+    return m_seaplaneText->toPlainText();
+}
+
+void SeaplaneShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_seaplaneActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_seaplaneActionList);
+            m_seaplaneActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void SeaplaneShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_seaplaneActionList.append(m_addTextAction.get());
+}
+
+void SeaplaneShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_seaplaneText == nullptr) {
+            m_seaplaneText=new QGraphicsTextItem(this);
+            m_seaplaneText->setPlainText("ГСА-");
+            m_seaplaneText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_seaplaneText->setRotation(-90);
+        }
+        m_seaplaneText->show();
+        m_showText = true;
+    } else {
+        m_seaplaneText->hide();
+        m_showText = false;
+    }
+}
+
+void SeaplaneShape::drawSeaplaneShape(QPainter *painter)
+{
+    painter->drawPath(seaplanePath());
+
+    if (m_showText)
+        m_seaplaneText->setPos(m_seaplaneRect.right(), m_seaplaneRect.bottom());
+}
+
+QPainterPath SeaplaneShape::seaplanePath() const
+{
+    QPainterPath currentPath;
+
+    qreal fuselageWidth{m_seaplaneRect.width() / 6.0}; //10.0 X
+    qreal wingArcIndent{fuselageWidth / 2.0}; //5.0 X
+    qreal wingHeight{m_seaplaneRect.height() / 7.5}; //10.0 Y
+    qreal fuselageArcIndent{wingHeight / 2.0}; //5.0 Y
+
+    qreal fuselageRight{m_seaplaneRect.center().x() + wingArcIndent}; //5.0 X
+    qreal fuselageLeft{m_seaplaneRect.center().x() - wingArcIndent}; //-5.0 X
+
+    qreal wingLeft{m_seaplaneRect.left() + wingArcIndent}; //-25.0 X
+    qreal wingTop{m_seaplaneRect.center().y() - fuselageArcIndent}; //-5.0 Y
+    qreal wingRight{m_seaplaneRect.right() - wingArcIndent}; //25.0 X
+    qreal wingBottom{m_seaplaneRect.center().y() + fuselageArcIndent}; //5.0 Y
+
+    qreal thirdWidht{m_seaplaneRect.width() / 3.0}; //20.0
+    qreal tailLeft{m_seaplaneRect.left() + thirdWidht}; //-10.0 X
+    qreal tailTop{m_seaplaneRect.bottom() - wingHeight}; //27.5 Y
+    qreal tailRight{m_seaplaneRect.right() - thirdWidht}; //10.0  X
+
+    qreal sweepLenght{180.0};
+    qreal startAngle{270.0};
+
+    //tail
+    currentPath.moveTo(tailLeft, m_seaplaneRect.bottom()); //-10.0, 37.5
+    currentPath.lineTo(tailRight, m_seaplaneRect.bottom()); //10.0, 37.5
+    currentPath.arcTo(tailRight - wingArcIndent, tailTop, fuselageWidth, wingHeight, startAngle
+                      , sweepLenght); //5.0, 27.5
+    currentPath.lineTo(fuselageRight, tailTop); //5.0, 27.5
+
+    //fuselage
+    currentPath.lineTo(fuselageRight, wingBottom); //5.0, 5.0
+
+    //right wing
+    currentPath.lineTo(wingRight, wingBottom); //25.0, 5.0
+    currentPath.arcTo(wingRight - wingArcIndent, wingTop, fuselageWidth, wingHeight
+                      , startAngle, sweepLenght); //20.0, -5.0
+    currentPath.lineTo(fuselageRight, wingTop); //5.0, -5.0
+
+    //fuselage
+    currentPath.lineTo(fuselageRight, m_seaplaneRect.top() + fuselageArcIndent); // 5.0, -32.0? or -32.5
+    startAngle = 0.0;
+    currentPath.arcTo(fuselageLeft, m_seaplaneRect.top(), fuselageWidth, wingHeight, startAngle
+                      , sweepLenght); // -5.0, -37.0? or -37.5
+    currentPath.lineTo(fuselageLeft, wingTop); // -5.0, -5.0
+
+    //left wing
+    currentPath.lineTo(wingLeft, wingTop); //-25.0, -5.0
+    startAngle = 90.0;
+    currentPath.arcTo(m_seaplaneRect.left(), wingTop, fuselageWidth, wingHeight, startAngle
+                      , sweepLenght); //-30.0, -5.0
+    currentPath.lineTo(fuselageLeft, wingBottom); //-5.0, 5.0
+
+    //fuselage
+    currentPath.lineTo(fuselageLeft, tailTop); //-5.0, 27.5
+
+    //tail
+    currentPath.lineTo(tailLeft, tailTop); //-10.0, 27.5
+    currentPath.arcTo(tailLeft - wingArcIndent, tailTop, fuselageWidth, wingHeight
+                      , startAngle, sweepLenght); //-15.0, 27.5
+
+    //left lending gear
+    currentPath.moveTo(wingLeft + wingArcIndent, wingBottom + fuselageArcIndent); //-20.0, 10.0
+    currentPath.lineTo(wingLeft + wingArcIndent, wingTop - fuselageArcIndent); //-20.0, -10.0
+
+    //right landing gear
+    currentPath.moveTo(wingRight - wingArcIndent, wingBottom + fuselageArcIndent); //20.0, 10.0
+    currentPath.lineTo(wingRight - wingArcIndent, wingTop - fuselageArcIndent); //20.0, -10.0
 
     return currentPath;
 }

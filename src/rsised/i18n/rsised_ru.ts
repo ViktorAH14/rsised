@@ -485,7 +485,7 @@
         <location filename="../mainwindow.cpp" line="710"/>
         <source>Car</source>
         <translatorcomment>Автомобиль пожарный, общее обозначение.</translatorcomment>
-        <translation>Авто</translation>
+        <translation>ПА</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="711"/>
@@ -820,12 +820,13 @@
         <location filename="../mainwindow.cpp" line="772"/>
         <source>Plane</source>
         <translatorcomment>Самолёт пожарный</translatorcomment>
-        <translation>Самолёт</translation>
+        <translation>СА</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="774"/>
         <source>Seaplane</source>
         <translatorcomment>Гидросамолёт пожарный</translatorcomment>
-        <translation type="vanished">БЕ</translation>
+        <translation>ГСА</translation>
     </message>
     <message>
         <source>Helicopter</source>

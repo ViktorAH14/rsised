@@ -62,168 +62,173 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
         break;
     }
     case TankerShape::Type: {
-        if (TankerShape *tankerShape = dynamic_cast<TankerShape *>(item))
-            tankerShape->setRect(value.toRectF());
+        if (TankerShape *p_tankerShape = dynamic_cast<TankerShape *>(item))
+            p_tankerShape->setRect(value.toRectF());
         break;
     }
     case BaseShape::Type: {
-        if (BaseShape *baseShape = dynamic_cast<BaseShape *>(item))
-            baseShape->setRect(value.toRectF());
+        if (BaseShape *p_baseShape = dynamic_cast<BaseShape *>(item))
+            p_baseShape->setRect(value.toRectF());
         break;
     }
     case PumpHoseShape::Type: {
-        if (PumpHoseShape *pumpHoseShape = dynamic_cast<PumpHoseShape *>(item))
-            pumpHoseShape->setRect(value.toRectF());
+        if (PumpHoseShape *p_pumpHoseShape = dynamic_cast<PumpHoseShape *>(item))
+            p_pumpHoseShape->setRect(value.toRectF());
         break;
     }
     case FirstAidShape::Type: {
-        if (FirstAidShape *firstAidShape = dynamic_cast<FirstAidShape *>(item))
-            firstAidShape->setRect(value.toRectF());
+        if (FirstAidShape *p_firstAidShape = dynamic_cast<FirstAidShape *>(item))
+            p_firstAidShape->setRect(value.toRectF());
         break;
     }
     case EmergencyShape::Type: {
-        if (EmergencyShape *emergencyShape = dynamic_cast<EmergencyShape *>(item))
-            emergencyShape->setRect(value.toRectF());
+        if (EmergencyShape *p_emergencyShape = dynamic_cast<EmergencyShape *>(item))
+            p_emergencyShape->setRect(value.toRectF());
         break;
     }
     case AutoLadderShape::Type: {
-        if (AutoLadderShape *autoLadderShape = dynamic_cast<AutoLadderShape *>(item))
-            autoLadderShape->setRect(value.toRectF());
+        if (AutoLadderShape *p_autoLadderShape = dynamic_cast<AutoLadderShape *>(item))
+            p_autoLadderShape->setRect(value.toRectF());
         break;
     }
     case CrankLiftShape::Type: {
-        if (CrankLiftShape *crankLiftShape = dynamic_cast<CrankLiftShape *>(item))
-            crankLiftShape->setRect(value.toRectF());
+        if (CrankLiftShape *p_crankLiftShape = dynamic_cast<CrankLiftShape *>(item))
+            p_crankLiftShape->setRect(value.toRectF());
         break;
     }
     case TelescopicLiftShape::Type: {
-        if (TelescopicLiftShape *telescopicLiftShape = dynamic_cast<TelescopicLiftShape *>(item))
-            telescopicLiftShape->setRect(value.toRectF());
+        if (TelescopicLiftShape *p_telescopicLiftShape = dynamic_cast<TelescopicLiftShape *>(item))
+            p_telescopicLiftShape->setRect(value.toRectF());
         break;
     }
     case HoseCarShape::Type: {
-        if (HoseCarShape *hoseCarShape = dynamic_cast<HoseCarShape *>(item))
-            hoseCarShape->setRect(value.toRectF());
+        if (HoseCarShape *p_hoseCarShape = dynamic_cast<HoseCarShape *>(item))
+            p_hoseCarShape->setRect(value.toRectF());
         break;
     }
     case CommShape::Type: {
-        if (CommShape *commShape = dynamic_cast<CommShape *>(item))
-            commShape->setRect(value.toRectF());
+        if (CommShape *p_commShape = dynamic_cast<CommShape *>(item))
+            p_commShape->setRect(value.toRectF());
         break;
     }
     case TechServShape::Type: {
-        if (TechServShape *techServShape = dynamic_cast<TechServShape *>(item))
-            techServShape->setRect(value.toRectF());
+        if (TechServShape *p_techServShape = dynamic_cast<TechServShape *>(item))
+            p_techServShape->setRect(value.toRectF());
         break;
     }
     case SmokRemShape::Type: {
-        if (SmokRemShape *smokRemShape = dynamic_cast<SmokRemShape *>(item))
-            smokRemShape->setRect(value.toRectF());
+        if (SmokRemShape *p_smokRemShape = dynamic_cast<SmokRemShape *>(item))
+            p_smokRemShape->setRect(value.toRectF());
         break;
     }
     case PumpStatShape::Type: {
-        if (PumpStatShape *pumpStatShape = dynamic_cast<PumpStatShape *>(item))
-            pumpStatShape->setRect(value.toRectF());
+        if (PumpStatShape *p_pumpStatShape = dynamic_cast<PumpStatShape *>(item))
+            p_pumpStatShape->setRect(value.toRectF());
         break;
     }
     case LafetTankerShape::Type: {
-        if (LafetTankerShape *lafetTankerShape = dynamic_cast<LafetTankerShape *>(item))
-            lafetTankerShape->setRect(value.toRectF());
+        if (LafetTankerShape *p_lafetTankerShape = dynamic_cast<LafetTankerShape *>(item))
+            p_lafetTankerShape->setRect(value.toRectF());
         break;
     }
     case LafetCarShape::Type: {
-        if (LafetCarShape *lafetCarShape = dynamic_cast<LafetCarShape *>(item))
-            lafetCarShape->setRect(value.toRectF());
+        if (LafetCarShape *p_lafetCarShape = dynamic_cast<LafetCarShape *>(item))
+            p_lafetCarShape->setRect(value.toRectF());
         break;
     }
     case AerodromeShape::Type: {
-        if (AerodromeShape *aerodromeShape = dynamic_cast<AerodromeShape *>(item))
-            aerodromeShape->setRect(value.toRectF());
+        if (AerodromeShape *p_aerodromeShape = dynamic_cast<AerodromeShape *>(item))
+            p_aerodromeShape->setRect(value.toRectF());
         break;
     }
     case FoamShape::Type: {
-        if (FoamShape *foamShape = dynamic_cast<FoamShape *>(item))
-            foamShape->setRect(value.toRectF());
+        if (FoamShape *p_foamShape = dynamic_cast<FoamShape *>(item))
+            p_foamShape->setRect(value.toRectF());
         break;
     }
     case ComboShape::Type: {
-        if (ComboShape *comboShape = dynamic_cast<ComboShape *>(item))
-            comboShape->setRect(value.toRectF());
+        if (ComboShape *p_comboShape = dynamic_cast<ComboShape *>(item))
+            p_comboShape->setRect(value.toRectF());
         break;
     }
     case AerosolShape::Type: {
-        if (AerosolShape *aerosolShape = dynamic_cast<AerosolShape *>(item))
-            aerosolShape->setRect(value.toRectF());
+        if (AerosolShape *p_aerosolShape = dynamic_cast<AerosolShape *>(item))
+            p_aerosolShape->setRect(value.toRectF());
         break;
     }
     case PowderShape::Type: {
-        if (PowderShape *powderShape = dynamic_cast<PowderShape *>(item))
-            powderShape->setRect(value.toRectF());
+        if (PowderShape *p_powderShape = dynamic_cast<PowderShape *>(item))
+            p_powderShape->setRect(value.toRectF());
         break;
     }
     case CarbonShape::Type: {
-        if (CarbonShape *carbonShape = dynamic_cast<CarbonShape *>(item))
-            carbonShape->setRect(value.toRectF());
+        if (CarbonShape *p_carbonShape = dynamic_cast<CarbonShape *>(item))
+            p_carbonShape->setRect(value.toRectF());
         break;
     }
     case GazWaterShape::Type: {
-        if (GazWaterShape *gazWaterShape = dynamic_cast<GazWaterShape *>(item))
-            gazWaterShape->setRect(value.toRectF());
+        if (GazWaterShape *p_gazWaterShape = dynamic_cast<GazWaterShape *>(item))
+            p_gazWaterShape->setRect(value.toRectF());
         break;
     }
     case TrackedShape::Type: {
-        if (TrackedShape *trackedShape = dynamic_cast<TrackedShape *>(item))
-            trackedShape->setRect(value.toRectF());
+        if (TrackedShape *p_trackedShape = dynamic_cast<TrackedShape *>(item))
+            p_trackedShape->setRect(value.toRectF());
         break;
     }
     case TankShape::Type: {
-        if (TankShape *tankShape = dynamic_cast<TankShape *>(item))
-            tankShape->setRect(value.toRectF());
+        if (TankShape *p_tankShape = dynamic_cast<TankShape *>(item))
+            p_tankShape->setRect(value.toRectF());
         break;
     }
     case GdzsShape::Type: {
-        if (GdzsShape *gdzsShape = dynamic_cast<GdzsShape *>(item))
-            gdzsShape->setRect(value.toRectF());
+        if (GdzsShape *p_gdzsShape = dynamic_cast<GdzsShape *>(item))
+            p_gdzsShape->setRect(value.toRectF());
         break;
     }
     case WaterproofShape::Type: {
-        if (WaterproofShape *waterproofShape = dynamic_cast<WaterproofShape *>(item))
-            waterproofShape->setRect(value.toRectF());
+        if (WaterproofShape *p_waterproofShape = dynamic_cast<WaterproofShape *>(item))
+            p_waterproofShape->setRect(value.toRectF());
         break;
     }
     case LaboratoryShape::Type: {
-        if (LaboratoryShape *laboratoryShape = dynamic_cast<LaboratoryShape *>(item))
-            laboratoryShape->setRect(value.toRectF());
+        if (LaboratoryShape *p_laboratoryShape = dynamic_cast<LaboratoryShape *>(item))
+            p_laboratoryShape->setRect(value.toRectF());
         break;
     }
     case StaffCarShape::Type: {
-        if (StaffCarShape *staffCarShape = dynamic_cast<StaffCarShape *>(item))
-            staffCarShape->setRect(value.toRectF());
+        if (StaffCarShape *p_staffCarShape = dynamic_cast<StaffCarShape *>(item))
+            p_staffCarShape->setRect(value.toRectF());
         break;
     }
     case TrailerShape::Type: {
-        if (TrailerShape *trailerShape = dynamic_cast<TrailerShape *>(item))
-            trailerShape->setRect(value.toRectF());
+        if (TrailerShape *p_trailerShape = dynamic_cast<TrailerShape *>(item))
+            p_trailerShape->setRect(value.toRectF());
         break;
     }
     case ShipShape::Type: {
-        if (ShipShape *shipShape = dynamic_cast<ShipShape *>(item))
-            shipShape->setRect(value.toRectF());
+        if (ShipShape *p_shipShape = dynamic_cast<ShipShape *>(item))
+            p_shipShape->setRect(value.toRectF());
         break;
     }
     case BoatShape::Type: {
-        if (BoatShape *boatShape = dynamic_cast<BoatShape *>(item))
-            boatShape->setRect(value.toRectF());
+        if (BoatShape *p_boatShape = dynamic_cast<BoatShape *>(item))
+            p_boatShape->setRect(value.toRectF());
         break;
     }
     case TrainShape::Type: {
-        if (TrainShape *trainShape = dynamic_cast<TrainShape *>(item))
-            trainShape->setRect(value.toRectF());
+        if (TrainShape *p_trainShape = dynamic_cast<TrainShape *>(item))
+            p_trainShape->setRect(value.toRectF());
         break;
     }
     case PlaneShape::Type: {
-        if (PlaneShape *planeShape = dynamic_cast<PlaneShape *>(item))
-            planeShape->setRect(value.toRectF());
+        if (PlaneShape *p_planeShape = dynamic_cast<PlaneShape *>(item))
+            p_planeShape->setRect(value.toRectF());
+        break;
+    }
+    case SeaplaneShape::Type: {
+        if (SeaplaneShape *seaplaneShape = dynamic_cast<SeaplaneShape *>(item))
+            seaplaneShape->setRect(value.toRectF());
         break;
     }
     case DeviceShape::Type: {
