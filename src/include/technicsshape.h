@@ -65,7 +65,7 @@ public:
                      , Train            //Поезд пожарный
                      , Plane            //Самолёт пожарный
                      , Seaplane         //Гидросамолёт пожарный
-                     , Helicopter
+                     , Helicopter       //Вертолёт пожарный
                      , MotoPump_1
                      , MotoPump_2
                      , TrailerPowder
@@ -1635,5 +1635,48 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_seaplaneActionList;
+};
+
+class HelicopterShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 235};
+
+    explicit HelicopterShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~HelicopterShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(HelicopterShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawHelicopterShape(QPainter *painter);
+    QPainterPath helicopterPath() const;
+
+    const ShapeType m_helicopterType;
+    QRectF m_helicopterRect;
+    QGraphicsTextItem *m_helicopterText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_helicopterActionList;
 };
 #endif // TECHNICSSHAPE_H

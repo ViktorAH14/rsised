@@ -773,8 +773,8 @@ void MainWindow::createShapeToolBox()
                                                           , TechnicsShape::Plane), 8, 0);
    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Seaplane")
                                                           , TechnicsShape::Seaplane), 8, 1);
-//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Helicopter")
-//                                                           , TechnicsShape::Helicopter), 11, 1);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Helicopter")
+                                                          , TechnicsShape::Helicopter), 8, 2);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("MotoPump 1")
 //                                                           , TechnicsShape::MotoPump_1), 11, 2);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("MotoPump 2")

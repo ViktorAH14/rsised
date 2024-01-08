@@ -157,6 +157,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Seaplane:
         p_technicsShape = new SeaplaneShape(parent);
         break;
+    case Helicopter:
+        p_technicsShape = new HelicopterShape(parent);
+        break;
     default:
         break;
     }
@@ -8830,6 +8833,210 @@ QPainterPath SeaplaneShape::seaplanePath() const
     //right landing gear
     currentPath.moveTo(wingRight - wingArcIndent, wingBottom + fuselageArcIndent); //20.0, 10.0
     currentPath.lineTo(wingRight - wingArcIndent, wingTop - fuselageArcIndent); //20.0, -10.0
+
+    return currentPath;
+}
+
+HelicopterShape::HelicopterShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_helicopterType{Helicopter}
+    , m_helicopterRect{-20.0, -37.5, 40.0, 75.0}
+    , m_helicopterText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::NoBrush));
+}
+
+void HelicopterShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawHelicopterShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF HelicopterShape::boundingRect() const
+{
+    QRectF boundingRect{m_helicopterRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath HelicopterShape::shape() const
+{
+    return shapeFromPath(helicopterPath());
+}
+
+QPixmap HelicopterShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawHelicopterShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType HelicopterShape::shapeType() const
+{
+    return m_helicopterType;
+}
+
+void HelicopterShape::setRect(const QRectF &rect)
+{
+    if (m_helicopterRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_helicopterRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_helicopterText != nullptr)
+        m_helicopterText->setPos(m_helicopterRect.right(), m_helicopterRect.bottom() - m_helicopterRect.width() / 6);
+
+    update();
+}
+
+QRectF HelicopterShape::rect() const
+{
+    return m_helicopterRect;
+}
+
+void HelicopterShape::setHeight(const qreal &height)
+{
+    if (m_helicopterRect.height() == height)
+        return;
+
+    qreal oldHeight{m_helicopterRect.height()};
+    prepareGeometryChange();
+    m_helicopterRect.setHeight(height);
+    qreal dy{(m_helicopterRect.height() - oldHeight) / 2};
+    m_helicopterRect.moveTo(QPointF(m_helicopterRect.x(), m_helicopterRect.y() - dy));
+    update();
+}
+
+qreal HelicopterShape::height() const
+{
+    return m_helicopterRect.height();
+}
+
+void HelicopterShape::setText(const QString &text)
+{
+    if (m_helicopterText == nullptr) {
+        m_helicopterText = new QGraphicsTextItem(this);
+        m_helicopterText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_helicopterText->setRotation(90);
+    }
+    m_helicopterText->setPlainText(text);
+    m_showText = true;
+}
+
+QString HelicopterShape::text() const
+{
+    if (m_helicopterText == nullptr)
+        return "";
+
+    return m_helicopterText->toPlainText();
+}
+
+void HelicopterShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_helicopterActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_helicopterActionList);
+            m_helicopterActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void HelicopterShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_helicopterActionList.append(m_addTextAction.get());
+}
+
+void HelicopterShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_helicopterText == nullptr) {
+            m_helicopterText=new QGraphicsTextItem(this);
+            m_helicopterText->setPlainText("ВП-");
+            m_helicopterText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_helicopterText->setRotation(90);
+        }
+        m_helicopterText->show();
+        m_showText = true;
+    } else {
+        m_helicopterText->hide();
+        m_showText = false;
+    }
+}
+
+void HelicopterShape::drawHelicopterShape(QPainter *painter)
+{
+    painter->drawPath(helicopterPath());
+
+    if (m_showText)
+        m_helicopterText->setPos(m_helicopterRect.left(), m_helicopterRect.top());
+}
+
+QPainterPath HelicopterShape::helicopterPath() const
+{
+    QPainterPath currentPath;
+    qreal centerX{m_helicopterRect.center().x() - m_helicopterRect.width() / 4.0}; //-10.0
+    //small propeller
+    qreal smallPropTop{m_helicopterRect.bottom() - m_helicopterRect.height() / 7.5}; // -27.5
+    currentPath.moveTo(centerX, m_helicopterRect.bottom()); //-10.0, 37.5
+    currentPath.lineTo(m_helicopterRect.center().x(), smallPropTop); //0.0, 27.5
+    currentPath.moveTo(m_helicopterRect.center().x(), m_helicopterRect.bottom()); //0.0,37.5
+    currentPath.lineTo(centerX, smallPropTop); //-10.0, 27.5
+    //tail
+    qreal tailTop{m_helicopterRect.center().y() - m_helicopterRect.height() / 15.0}; // -5.0
+    currentPath.lineTo(centerX, tailTop); //-10.0, -5.0
+    //big properller
+    currentPath.lineTo(m_helicopterRect.topRight()); // 20.0, -37.5
+    currentPath.moveTo(m_helicopterRect.right(), tailTop); //20.0, -5.0
+    currentPath.lineTo(centerX, m_helicopterRect.top()); //-10.0, -37.5
+    //cabin
+    QLineF startLine{m_helicopterRect.right(), tailTop, centerX, m_helicopterRect.top()};
+    QLineF endLine{ m_helicopterRect.right(), m_helicopterRect.top(), centerX, tailTop};
+    qreal rectWidth{m_helicopterRect.width() / 2.0};
+    qreal rectHeight{m_helicopterRect.height() / 2.5};
+    qreal startAngle = startLine.angle();
+    qreal sweepLenght = startLine.angleTo(endLine);
+    QRectF cabinRect(m_helicopterRect.left(), m_helicopterRect.top(), rectWidth, rectHeight);
+    currentPath.arcTo(cabinRect, startAngle, sweepLenght);
+    currentPath.lineTo(centerX, tailTop);
 
     return currentPath;
 }
