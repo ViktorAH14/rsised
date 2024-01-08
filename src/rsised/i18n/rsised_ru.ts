@@ -829,9 +829,10 @@
         <translation>ГСА</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="776"/>
         <source>Helicopter</source>
         <translatorcomment>Вертолёт пожарный</translatorcomment>
-        <translation type="vanished">БК</translation>
+        <translation>ВП</translation>
     </message>
     <message>
         <source>MotoPump 1</source>

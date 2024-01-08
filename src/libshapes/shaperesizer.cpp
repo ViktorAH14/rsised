@@ -231,6 +231,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             seaplaneShape->setRect(value.toRectF());
         break;
     }
+    case HelicopterShape::Type: {
+        if (HelicopterShape *helicopterShape = dynamic_cast<HelicopterShape *>(item))
+            helicopterShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());
