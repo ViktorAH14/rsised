@@ -290,6 +290,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_seaplaneShape, "seaplaneShape is nullptr");
     QCOMPARE(int(p_seaplaneShape->type()), int(QGraphicsItem::UserType + 234));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
+
+    // HelicopterShape
+    TechnicsShape *p_helicopterShape = nullptr;
+    p_helicopterShape = TechnicsShape::createTechnicsShape(TechnicsShape::Helicopter);
+    QVERIFY2(p_helicopterShape, "helicopterShape is nullptr");
+    QCOMPARE(int(p_helicopterShape->type()), int(QGraphicsItem::UserType + 235));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -544,6 +551,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
     QCOMPARE(p_seaplaneShape->boundingRect(), QRectF(-30.5, -38.0, 61.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
+
+    // HelicopterShape
+    TechnicsShape *p_helicopterShape = TechnicsShape::createTechnicsShape(TechnicsShape::Helicopter);
+    QCOMPARE(p_helicopterShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
 }
 
 void tst_TechnicShape::shape()
@@ -2030,69 +2042,103 @@ void tst_TechnicShape::shape()
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
 
 // SeaplaneShape
-        TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
-        QPainterPathStroker ps_seaplaneShape;
-        ps_seaplaneShape.setWidth(p_seaplaneShape->pen().widthF());
-        QRectF seaplaneRect{p_seaplaneShape->rect()};
-        qreal seaFuselageWidth{seaplaneRect.width() / 6.0}; //10.0 X
-        qreal seaWingArcIndent{seaFuselageWidth / 2.0}; //5.0 X
-        qreal seaWingHeight{seaplaneRect.height() / 7.5}; //10.0 Y
-        qreal seaFuselageArcIndent{seaWingHeight / 2.0}; //5.0 Y
-        qreal seaFuselageRight{seaplaneRect.center().x() + seaWingArcIndent}; //5.0 X
-        qreal seaFuselageLeft{seaplaneRect.center().x() - seaWingArcIndent}; //-5.0 X
-        qreal seaWingLeft{seaplaneRect.left() + seaWingArcIndent}; //-25.0 X
-        qreal seaWingTop{seaplaneRect.center().y() - seaFuselageArcIndent}; //-5.0 Y
-        qreal seaWingRight{seaplaneRect.right() - seaWingArcIndent}; //25.0 X
-        qreal seaWingBottom{seaplaneRect.center().y() + seaFuselageArcIndent}; //5.0 Y
-        qreal seaThirdWidht{seaplaneRect.width() / 3.0}; //20.0
-        qreal seaTailLeft{seaplaneRect.left() + seaThirdWidht}; //-10.0 X
-        qreal seaTailTop{seaplaneRect.bottom() - seaWingHeight}; //27.5 Y
-        qreal seaTailRight{seaplaneRect.right() - seaThirdWidht}; //10.0  X
-        qreal seaSweepLenght{180.0};
-        qreal SeaStartAngle{270.0};
-        QPainterPath seaplanePath;
-        //tail
-        seaplanePath.moveTo(seaTailLeft, seaplaneRect.bottom()); //-10.0, 37.5
-        seaplanePath.lineTo(seaTailRight, seaplaneRect.bottom()); //10.0, 37.5
-        seaplanePath.arcTo(seaTailRight - seaWingArcIndent, seaTailTop, seaFuselageWidth, seaWingHeight, SeaStartAngle
-                          , seaSweepLenght); //5.0, 27.5
-        seaplanePath.lineTo(seaFuselageRight, seaTailTop); //5.0, 27.5
-        //fuselage
-        seaplanePath.lineTo(seaFuselageRight, seaWingBottom); //5.0, 5.0
-        //right wing
-        seaplanePath.lineTo(seaWingRight, seaWingBottom); //25.0, 5.0
-        seaplanePath.arcTo(seaWingRight - seaWingArcIndent, seaWingTop, seaFuselageWidth, seaWingHeight
-                          , SeaStartAngle, seaSweepLenght); //20.0, -5.0
-        seaplanePath.lineTo(seaFuselageRight, seaWingTop); //5.0, -5.0
-        //fuselage
-        seaplanePath.lineTo(seaFuselageRight, seaplaneRect.top() + seaFuselageArcIndent); // 5.0, -32.0? or -32.5
-        SeaStartAngle = 0.0;
-        seaplanePath.arcTo(seaFuselageLeft, seaplaneRect.top(), seaFuselageWidth, seaWingHeight, SeaStartAngle
-                          , seaSweepLenght); // -5.0, -37.0? or -37.5
-        seaplanePath.lineTo(seaFuselageLeft, seaWingTop); // -5.0, -5.0
-        //left wing
-        seaplanePath.lineTo(seaWingLeft, seaWingTop); //-25.0, -5.0
-        SeaStartAngle = 90.0;
-        seaplanePath.arcTo(seaplaneRect.left(), seaWingTop, seaFuselageWidth, seaWingHeight, SeaStartAngle
-                          , seaSweepLenght); //-30.0, -5.0
-        seaplanePath.lineTo(seaFuselageLeft, seaWingBottom); //-5.0, 5.0
-        //fuselage
-        seaplanePath.lineTo(seaFuselageLeft, seaTailTop); //-5.0, 27.5
-        //tail
-        seaplanePath.lineTo(seaTailLeft, seaTailTop); //-10.0, 27.5
-        seaplanePath.arcTo(seaTailLeft - seaWingArcIndent, seaTailTop, seaFuselageWidth, seaWingHeight
-                          , SeaStartAngle, seaSweepLenght); //-15.0, 27.5
-        //left lending gear
-        seaplanePath.moveTo(seaWingLeft + seaWingArcIndent, seaWingBottom + seaFuselageArcIndent); //-20.0, 10.0
-        seaplanePath.lineTo(seaWingLeft + seaWingArcIndent, seaWingTop - seaFuselageArcIndent); //-20.0, -10.0
+    TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
+    QPainterPathStroker ps_seaplaneShape;
+    ps_seaplaneShape.setWidth(p_seaplaneShape->pen().widthF());
+    QRectF seaplaneRect{p_seaplaneShape->rect()};
+    qreal seaFuselageWidth{seaplaneRect.width() / 6.0}; //10.0 X
+    qreal seaWingArcIndent{seaFuselageWidth / 2.0}; //5.0 X
+    qreal seaWingHeight{seaplaneRect.height() / 7.5}; //10.0 Y
+    qreal seaFuselageArcIndent{seaWingHeight / 2.0}; //5.0 Y
+    qreal seaFuselageRight{seaplaneRect.center().x() + seaWingArcIndent}; //5.0 X
+    qreal seaFuselageLeft{seaplaneRect.center().x() - seaWingArcIndent}; //-5.0 X
+    qreal seaWingLeft{seaplaneRect.left() + seaWingArcIndent}; //-25.0 X
+    qreal seaWingTop{seaplaneRect.center().y() - seaFuselageArcIndent}; //-5.0 Y
+    qreal seaWingRight{seaplaneRect.right() - seaWingArcIndent}; //25.0 X
+    qreal seaWingBottom{seaplaneRect.center().y() + seaFuselageArcIndent}; //5.0 Y
+    qreal seaThirdWidht{seaplaneRect.width() / 3.0}; //20.0
+    qreal seaTailLeft{seaplaneRect.left() + seaThirdWidht}; //-10.0 X
+    qreal seaTailTop{seaplaneRect.bottom() - seaWingHeight}; //27.5 Y
+    qreal seaTailRight{seaplaneRect.right() - seaThirdWidht}; //10.0  X
+    qreal seaSweepLenght{180.0};
+    qreal SeaStartAngle{270.0};
+    QPainterPath seaplanePath;
+    //tail
+    seaplanePath.moveTo(seaTailLeft, seaplaneRect.bottom()); //-10.0, 37.5
+    seaplanePath.lineTo(seaTailRight, seaplaneRect.bottom()); //10.0, 37.5
+    seaplanePath.arcTo(seaTailRight - seaWingArcIndent, seaTailTop, seaFuselageWidth, seaWingHeight, SeaStartAngle
+                       , seaSweepLenght); //5.0, 27.5
+    seaplanePath.lineTo(seaFuselageRight, seaTailTop); //5.0, 27.5
+    //fuselage
+    seaplanePath.lineTo(seaFuselageRight, seaWingBottom); //5.0, 5.0
+    //right wing
+    seaplanePath.lineTo(seaWingRight, seaWingBottom); //25.0, 5.0
+    seaplanePath.arcTo(seaWingRight - seaWingArcIndent, seaWingTop, seaFuselageWidth, seaWingHeight
+                       , SeaStartAngle, seaSweepLenght); //20.0, -5.0
+    seaplanePath.lineTo(seaFuselageRight, seaWingTop); //5.0, -5.0
+    //fuselage
+    seaplanePath.lineTo(seaFuselageRight, seaplaneRect.top() + seaFuselageArcIndent); // 5.0, -32.0? or -32.5
+    SeaStartAngle = 0.0;
+    seaplanePath.arcTo(seaFuselageLeft, seaplaneRect.top(), seaFuselageWidth, seaWingHeight, SeaStartAngle
+                       , seaSweepLenght); // -5.0, -37.0? or -37.5
+    seaplanePath.lineTo(seaFuselageLeft, seaWingTop); // -5.0, -5.0
+    //left wing
+    seaplanePath.lineTo(seaWingLeft, seaWingTop); //-25.0, -5.0
+    SeaStartAngle = 90.0;
+    seaplanePath.arcTo(seaplaneRect.left(), seaWingTop, seaFuselageWidth, seaWingHeight, SeaStartAngle
+                       , seaSweepLenght); //-30.0, -5.0
+    seaplanePath.lineTo(seaFuselageLeft, seaWingBottom); //-5.0, 5.0
+    //fuselage
+    seaplanePath.lineTo(seaFuselageLeft, seaTailTop); //-5.0, 27.5
+    //tail
+    seaplanePath.lineTo(seaTailLeft, seaTailTop); //-10.0, 27.5
+    seaplanePath.arcTo(seaTailLeft - seaWingArcIndent, seaTailTop, seaFuselageWidth, seaWingHeight
+                       , SeaStartAngle, seaSweepLenght); //-15.0, 27.5
+    //left lending gear
+    seaplanePath.moveTo(seaWingLeft + seaWingArcIndent, seaWingBottom + seaFuselageArcIndent); //-20.0, 10.0
+    seaplanePath.lineTo(seaWingLeft + seaWingArcIndent, seaWingTop - seaFuselageArcIndent); //-20.0, -10.0
+    //right landing gear
+    seaplanePath.moveTo(seaWingRight - seaWingArcIndent, seaWingBottom + seaFuselageArcIndent); //20.0, 10.0
+    seaplanePath.lineTo(seaWingRight - seaWingArcIndent, seaWingTop - seaFuselageArcIndent); //20.0, -10.0
+    QPainterPath strokeSeaplanePath = ps_seaplaneShape.createStroke(seaplanePath);
+    strokeSeaplanePath.addPath(seaplanePath);
+    QCOMPARE(p_seaplaneShape->shape(), strokeSeaplanePath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
 
-        //right landing gear
-        seaplanePath.moveTo(seaWingRight - seaWingArcIndent, seaWingBottom + seaFuselageArcIndent); //20.0, 10.0
-        seaplanePath.lineTo(seaWingRight - seaWingArcIndent, seaWingTop - seaFuselageArcIndent); //20.0, -10.0
-        QPainterPath strokeSeaplanePath = ps_seaplaneShape.createStroke(seaplanePath);
-        strokeSeaplanePath.addPath(seaplanePath);
-        QCOMPARE(p_seaplaneShape->shape(), strokeSeaplanePath);
-        TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
+// HelicopterShape
+    TechnicsShape *p_helicopterShape = TechnicsShape::createTechnicsShape(TechnicsShape::Helicopter);
+    QPainterPathStroker ps_helicopterShape;
+    ps_helicopterShape.setWidth(p_helicopterShape->pen().widthF());
+    QRectF helicopterRect{p_helicopterShape->rect()};
+    QPainterPath helicopterPath;
+    qreal centerX{helicopterRect.center().x() - helicopterRect.width() / 4.0}; //-10.0
+    //small propeller
+    qreal smallPropTop{helicopterRect.bottom() - helicopterRect.height() / 7.5}; // -27.5
+    helicopterPath.moveTo(centerX, helicopterRect.bottom()); //-10.0, 37.5
+    helicopterPath.lineTo(helicopterRect.center().x(), smallPropTop); //0.0, 27.5
+    helicopterPath.moveTo(helicopterRect.center().x(), helicopterRect.bottom()); //0.0,37.5
+    helicopterPath.lineTo(centerX, smallPropTop); //-10.0, 27.5
+    //tail
+    qreal helicopterTailTop{helicopterRect.center().y() - helicopterRect.height() / 15.0}; // -5.0
+    helicopterPath.lineTo(centerX, helicopterTailTop); //-10.0, -5.0
+    //big properller
+    helicopterPath.lineTo(helicopterRect.topRight()); // 20.0, -37.5
+    helicopterPath.moveTo(helicopterRect.right(), helicopterTailTop); //20.0, -5.0
+    helicopterPath.lineTo(centerX, helicopterRect.top()); //-10.0, -37.5
+    //cabin
+    QLineF startLine{helicopterRect.right(), helicopterTailTop, centerX, helicopterRect.top()};
+    QLineF endLine{ helicopterRect.right(), helicopterRect.top(), centerX, helicopterTailTop};
+    qreal rectWidth{helicopterRect.width() / 2.0};
+    qreal rectHeight{helicopterRect.height() / 2.5};
+    qreal helicopterStartAngle = startLine.angle();
+    qreal helicopterSweepLenght = startLine.angleTo(endLine);
+    QRectF cabinRect(helicopterRect.left(), helicopterRect.top(), rectWidth, rectHeight);
+    helicopterPath.arcTo(cabinRect, helicopterStartAngle, helicopterSweepLenght);
+    helicopterPath.lineTo(centerX, helicopterTailTop);
+    QPainterPath strokeHelicopterPath = ps_helicopterShape.createStroke(helicopterPath);
+    strokeHelicopterPath.addPath(helicopterPath);
+    QCOMPARE(p_helicopterShape->shape(), strokeHelicopterPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
 }
 
 void tst_TechnicShape::image()
@@ -2368,6 +2414,14 @@ void tst_TechnicShape::image()
     QCOMPARE(seaplaneImage.width(), p_seaplaneShape->boundingRect().width());
     QCOMPARE(seaplaneImage.height(), p_seaplaneShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
+
+    // HelicopterShape
+    TechnicsShape *p_helicopterShape = TechnicsShape::createTechnicsShape(TechnicsShape::Helicopter);
+    QPixmap helicopterImage{p_helicopterShape->image()};
+    QVERIFY2(!helicopterImage.isNull(), "helicopterShape::image() returned a null pixmap");
+    QCOMPARE(helicopterImage.width(), p_helicopterShape->boundingRect().width());
+    QCOMPARE(helicopterImage.height(), p_helicopterShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -2597,6 +2651,12 @@ void tst_TechnicShape::rect_setRect()
     p_seaplaneShape->setRect(rect);
     QCOMPARE(p_seaplaneShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
+
+    // HelicopterShape
+    TechnicsShape *p_helicopterShape = TechnicsShape::createTechnicsShape(TechnicsShape::Helicopter);
+    p_helicopterShape->setRect(rect);
+    QCOMPARE(p_helicopterShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -2813,6 +2873,12 @@ void tst_TechnicShape::height_setHeight()
     p_seaplaneShape->setHeight(height);
     QCOMPARE(p_seaplaneShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
+
+    // HelicopterShape
+    TechnicsShape *p_helicopterShape = TechnicsShape::createTechnicsShape(TechnicsShape::Helicopter);
+    p_helicopterShape->setHeight(height);
+    QCOMPARE(p_helicopterShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -3038,6 +3104,12 @@ void tst_TechnicShape::text_setText()
     p_seaplaneShape->setText(text);
     QCOMPARE(p_seaplaneShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
+
+    // HelicopterShape
+    TechnicsShape *p_helicopterShape = TechnicsShape::createTechnicsShape(TechnicsShape::Helicopter);
+    p_helicopterShape->setText(text);
+    QCOMPARE(p_helicopterShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -4211,7 +4283,7 @@ void tst_TechnicShape::mousePressEvent()
     // PlaneShape
     ContextMenuTester *p_planeContextMenu = new ContextMenuTester();
 
-    TechnicsShape *p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    TechnicsShape *p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Plane);
     p_planeShape->setMenu(p_planeContextMenu);
     scene.addItem(p_planeShape);
 
@@ -4240,7 +4312,7 @@ void tst_TechnicShape::mousePressEvent()
     // SeaplaneShape
     ContextMenuTester *p_seaplaneContextMenu = new ContextMenuTester();
 
-    TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
     p_seaplaneShape->setMenu(p_seaplaneContextMenu);
     scene.addItem(p_seaplaneShape);
 
@@ -4265,6 +4337,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_seaplaneShape);
     delete p_seaplaneContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
+
+    // HelicopterShape
+    ContextMenuTester *p_helicopterContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_helicopterShape = TechnicsShape::createTechnicsShape(TechnicsShape::Helicopter);
+    p_helicopterShape->setMenu(p_helicopterContextMenu);
+    scene.addItem(p_helicopterShape);
+
+    mousePressEvent.setScenePos(p_helicopterShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_helicopterShape->setSelected(true);
+    QSignalSpy helicopterContextMenuSpy(p_helicopterShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(helicopterContextMenuSpy.count(), 0);
+
+    QList<QAction *> helicopterMenuActions{p_helicopterShape->menu()->actions()};
+    QCOMPARE(helicopterMenuActions.size(), 1);
+    helicopterMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_helicopterShape->boundingRect().center()));
+    helicopterMenuActions = p_helicopterShape->menu()->actions();
+    QCOMPARE(helicopterMenuActions.size(), 1);
+    QCOMPARE(helicopterContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_helicopterShape);
+    delete p_helicopterContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
