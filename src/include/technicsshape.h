@@ -66,7 +66,7 @@ public:
                      , Plane            //Самолёт пожарный
                      , Seaplane         //Гидросамолёт пожарный
                      , Helicopter       //Вертолёт пожарный
-                     , MotoPump_1
+                     , PortableMotoPump       //Мотопомпа пожарная переносная
                      , MotoPump_2
                      , TrailerPowder
                      , Adapted
@@ -1678,5 +1678,48 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_helicopterActionList;
+};
+
+class PortableMotoPumpShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 236};
+
+    explicit PortableMotoPumpShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~PortableMotoPumpShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(PortableMotoPumpShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawPortableMotoPumpShape(QPainter *painter);
+    QPainterPath portableMotoPumpPath() const;
+
+    const ShapeType m_portableMotoPumpType;
+    QRectF m_portableMotoPumpRect;
+    QGraphicsTextItem *m_portableMotoPumpText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_portableMotoPumpActionList;
 };
 #endif // TECHNICSSHAPE_H
