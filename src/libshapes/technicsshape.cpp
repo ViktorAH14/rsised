@@ -160,6 +160,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Helicopter:
         p_technicsShape = new HelicopterShape(parent);
         break;
+    case PortableMotoPump:
+        p_technicsShape = new PortableMotoPumpShape(parent);
+        break;
     default:
         break;
     }
@@ -493,7 +496,7 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
 //        painter->drawArc(cabinRect, startAngle, spanAngle);    //cabin
 //        break;
 //    }
-//    case MotoPump_1: {
+//    case PortableMotoPump: {
 //        painter->setPen(QPen(Qt::red, 1));
 //        painter->drawRect(-20.0, -30.0, 40.0, 60.0);
 //        painter->drawLine(-10.0, 30.0, -10.0, 20.0);    //left pump line
@@ -9037,6 +9040,197 @@ QPainterPath HelicopterShape::helicopterPath() const
     QRectF cabinRect(m_helicopterRect.left(), m_helicopterRect.top(), rectWidth, rectHeight);
     currentPath.arcTo(cabinRect, startAngle, sweepLenght);
     currentPath.lineTo(centerX, tailTop);
+
+    return currentPath;
+}
+
+PortableMotoPumpShape::PortableMotoPumpShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_portableMotoPumpType{PortableMotoPump}
+    , m_portableMotoPumpRect{-20.0, -30.0, 40.0, 60.0}
+    , m_portableMotoPumpText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::NoBrush));
+}
+
+void PortableMotoPumpShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawPortableMotoPumpShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF PortableMotoPumpShape::boundingRect() const
+{
+    QRectF boundingRect{m_portableMotoPumpRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath PortableMotoPumpShape::shape() const
+{
+    return shapeFromPath(portableMotoPumpPath());
+}
+
+QPixmap PortableMotoPumpShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawPortableMotoPumpShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType PortableMotoPumpShape::shapeType() const
+{
+    return m_portableMotoPumpType;
+}
+
+void PortableMotoPumpShape::setRect(const QRectF &rect)
+{
+    if (m_portableMotoPumpRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_portableMotoPumpRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_portableMotoPumpText != nullptr)
+        m_portableMotoPumpText->setPos(m_portableMotoPumpRect.right(), m_portableMotoPumpRect.bottom() - m_portableMotoPumpRect.width() / 6);
+
+    update();
+}
+
+QRectF PortableMotoPumpShape::rect() const
+{
+    return m_portableMotoPumpRect;
+}
+
+void PortableMotoPumpShape::setHeight(const qreal &height)
+{
+    if (m_portableMotoPumpRect.height() == height)
+        return;
+
+    qreal oldHeight{m_portableMotoPumpRect.height()};
+    prepareGeometryChange();
+    m_portableMotoPumpRect.setHeight(height);
+    qreal dy{(m_portableMotoPumpRect.height() - oldHeight) / 2};
+    m_portableMotoPumpRect.moveTo(QPointF(m_portableMotoPumpRect.x(), m_portableMotoPumpRect.y() - dy));
+    update();
+}
+
+qreal PortableMotoPumpShape::height() const
+{
+    return m_portableMotoPumpRect.height();
+}
+
+void PortableMotoPumpShape::setText(const QString &text)
+{
+    if (m_portableMotoPumpText == nullptr) {
+        m_portableMotoPumpText = new QGraphicsTextItem(this);
+        m_portableMotoPumpText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_portableMotoPumpText->setRotation(-90);
+    }
+    m_portableMotoPumpText->setPlainText(text);
+    m_showText = true;
+}
+
+QString PortableMotoPumpShape::text() const
+{
+    if (m_portableMotoPumpText == nullptr)
+        return "";
+
+    return m_portableMotoPumpText->toPlainText();
+}
+
+void PortableMotoPumpShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_portableMotoPumpActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_portableMotoPumpActionList);
+            m_portableMotoPumpActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void PortableMotoPumpShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_portableMotoPumpActionList.append(m_addTextAction.get());
+}
+
+void PortableMotoPumpShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_portableMotoPumpText == nullptr) {
+            m_portableMotoPumpText=new QGraphicsTextItem(this);
+            m_portableMotoPumpText->setPlainText("МП-");
+            m_portableMotoPumpText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_portableMotoPumpText->setRotation(-90);
+        }
+        m_portableMotoPumpText->show();
+        m_showText = true;
+    } else {
+        m_portableMotoPumpText->hide();
+        m_showText = false;
+    }
+}
+
+void PortableMotoPumpShape::drawPortableMotoPumpShape(QPainter *painter)
+{
+    painter->drawPath(portableMotoPumpPath());
+
+    if (m_showText)
+        m_portableMotoPumpText->setPos(m_portableMotoPumpRect.right(), m_portableMotoPumpRect.bottom());
+}
+
+QPainterPath PortableMotoPumpShape::portableMotoPumpPath() const
+{
+    QPainterPath currentPath;
+    currentPath.addRect(m_portableMotoPumpRect.left(), m_portableMotoPumpRect.top()
+                        , m_portableMotoPumpRect.width(), m_portableMotoPumpRect.height()); // -20.0, -30.0, 40.0, 60.0
+    qreal fourthWidth{m_portableMotoPumpRect.width() / 4.0}; //10.0
+    qreal pumpLeft{m_portableMotoPumpRect.left() + fourthWidth}; //-10.0
+    currentPath.moveTo(pumpLeft, m_portableMotoPumpRect.bottom()); //-10.0, 30.0
+    qreal sixthHeight{m_portableMotoPumpRect.height() / 6.0}; //10.0
+    qreal pumpTop{m_portableMotoPumpRect.bottom() - sixthHeight}; //20.0
+    currentPath.lineTo(pumpLeft, pumpTop); // -10.0, 20.0
+    qreal pumpRight{m_portableMotoPumpRect.right() - fourthWidth}; //10.0
+    currentPath.lineTo(pumpRight, pumpTop); //10.0, 20.0
+    currentPath.lineTo(pumpRight, m_portableMotoPumpRect.bottom()); //10.0, 30.0
 
     return currentPath;
 }

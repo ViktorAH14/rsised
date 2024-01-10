@@ -621,6 +621,12 @@
         <translation>АЛСП</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="778"/>
+        <source>PortableMotoPump</source>
+        <translatorcomment>Мотопомпа переносная</translatorcomment>
+        <translation>МП</translation>
+    </message>
+    <message>
         <location filename="../mainwindow.cpp" line="803"/>
         <source>Barrel 1</source>
         <translation>РС-50</translation>
