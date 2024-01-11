@@ -297,6 +297,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_helicopterShape, "helicopterShape is nullptr");
     QCOMPARE(int(p_helicopterShape->type()), int(QGraphicsItem::UserType + 235));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
+
+    // PortableMotoPumpShape
+    TechnicsShape *p_portableMotoPumpShape = nullptr;
+    p_portableMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::PortableMotoPump);
+    QVERIFY2(p_portableMotoPumpShape, "portableMotoPumpShape is nullptr");
+    QCOMPARE(int(p_portableMotoPumpShape->type()), int(QGraphicsItem::UserType + 236));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_portableMotoPumpShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -556,6 +563,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_helicopterShape = TechnicsShape::createTechnicsShape(TechnicsShape::Helicopter);
     QCOMPARE(p_helicopterShape->boundingRect(), QRectF(-20.5, -38.0, 41.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
+
+    // PortableMotoPumpShape
+    TechnicsShape *p_portableMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::PortableMotoPump);
+    QCOMPARE(p_portableMotoPumpShape->boundingRect(), QRectF(-20.5, -30.5, 41.0, 61.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_portableMotoPumpShape);
 }
 
 void tst_TechnicShape::shape()
@@ -2139,6 +2151,28 @@ void tst_TechnicShape::shape()
     strokeHelicopterPath.addPath(helicopterPath);
     QCOMPARE(p_helicopterShape->shape(), strokeHelicopterPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
+
+// PortableMotoPumpShape
+    TechnicsShape *p_portableMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::PortableMotoPump);
+    QPainterPathStroker ps_portableMotoPumpShape;
+    ps_portableMotoPumpShape.setWidth(p_portableMotoPumpShape->pen().widthF());
+    QRectF portableMotoPumpRect{p_portableMotoPumpShape->rect()};
+    QPainterPath portableMotoPumpPath;
+    portableMotoPumpPath.addRect(portableMotoPumpRect.left(), portableMotoPumpRect.top()
+                        , portableMotoPumpRect.width(), portableMotoPumpRect.height()); // -20.0, -30.0, 40.0, 60.0
+    qreal fourthWidthPMP{portableMotoPumpRect.width() / 4.0}; //10.0
+    qreal pumpLeft{portableMotoPumpRect.left() + fourthWidthPMP}; //-10.0
+    portableMotoPumpPath.moveTo(pumpLeft, portableMotoPumpRect.bottom()); //-10.0, 30.0
+    qreal sixthHeight{portableMotoPumpRect.height() / 6.0}; //10.0
+    qreal pumpTop{portableMotoPumpRect.bottom() - sixthHeight}; //20.0
+    portableMotoPumpPath.lineTo(pumpLeft, pumpTop); // -10.0, 20.0
+    qreal pumpRight{portableMotoPumpRect.right() - fourthWidthPMP}; //10.0
+    portableMotoPumpPath.lineTo(pumpRight, pumpTop); //10.0, 20.0
+    portableMotoPumpPath.lineTo(pumpRight, portableMotoPumpRect.bottom()); //10.0, 30.0
+    QPainterPath strokePortableMotoPumpPath = ps_portableMotoPumpShape.createStroke(portableMotoPumpPath);
+    strokePortableMotoPumpPath.addPath(portableMotoPumpPath);
+    QCOMPARE(p_portableMotoPumpShape->shape(), strokePortableMotoPumpPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_portableMotoPumpShape);
 }
 
 void tst_TechnicShape::image()
@@ -2422,6 +2456,14 @@ void tst_TechnicShape::image()
     QCOMPARE(helicopterImage.width(), p_helicopterShape->boundingRect().width());
     QCOMPARE(helicopterImage.height(), p_helicopterShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
+
+    // PortableMotoPumpShape
+    TechnicsShape *p_portableMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::PortableMotoPump);
+    QPixmap portableMotoPumpImage{p_portableMotoPumpShape->image()};
+    QVERIFY2(!portableMotoPumpImage.isNull(), "portableMotoPumpShape::image() returned a null pixmap");
+    QCOMPARE(portableMotoPumpImage.width(), p_portableMotoPumpShape->boundingRect().width());
+    QCOMPARE(portableMotoPumpImage.height(), p_portableMotoPumpShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_portableMotoPumpShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -2657,6 +2699,12 @@ void tst_TechnicShape::rect_setRect()
     p_helicopterShape->setRect(rect);
     QCOMPARE(p_helicopterShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
+
+    // PortableMotoPumpShape
+    TechnicsShape *p_portableMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::PortableMotoPump);
+    p_portableMotoPumpShape->setRect(rect);
+    QCOMPARE(p_portableMotoPumpShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_portableMotoPumpShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -2879,6 +2927,12 @@ void tst_TechnicShape::height_setHeight()
     p_helicopterShape->setHeight(height);
     QCOMPARE(p_helicopterShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
+
+    // PortableMotoPumpShape
+    TechnicsShape *p_portableMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::PortableMotoPump);
+    p_portableMotoPumpShape->setHeight(height);
+    QCOMPARE(p_portableMotoPumpShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_portableMotoPumpShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -3110,6 +3164,12 @@ void tst_TechnicShape::text_setText()
     p_helicopterShape->setText(text);
     QCOMPARE(p_helicopterShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
+
+    // PortableMotoPumpShape
+    TechnicsShape *p_portableMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::PortableMotoPump);
+    p_portableMotoPumpShape->setText(text);
+    QCOMPARE(p_portableMotoPumpShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_portableMotoPumpShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -4366,6 +4426,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_helicopterShape);
     delete p_helicopterContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
+
+    // PortableMotoPumpShape
+    ContextMenuTester *p_portableMotoPumpContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_portableMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::PortableMotoPump);
+    p_portableMotoPumpShape->setMenu(p_portableMotoPumpContextMenu);
+    scene.addItem(p_portableMotoPumpShape);
+
+    mousePressEvent.setScenePos(p_portableMotoPumpShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_portableMotoPumpShape->setSelected(true);
+    QSignalSpy portableMotoPumpContextMenuSpy(p_portableMotoPumpShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(portableMotoPumpContextMenuSpy.count(), 0);
+
+    QList<QAction *> portableMotoPumpMenuActions{p_portableMotoPumpShape->menu()->actions()};
+    QCOMPARE(portableMotoPumpMenuActions.size(), 1);
+    portableMotoPumpMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_portableMotoPumpShape->boundingRect().center()));
+    portableMotoPumpMenuActions = p_portableMotoPumpShape->menu()->actions();
+    QCOMPARE(portableMotoPumpMenuActions.size(), 1);
+    QCOMPARE(portableMotoPumpContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_portableMotoPumpShape);
+    delete p_portableMotoPumpContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_portableMotoPumpShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
