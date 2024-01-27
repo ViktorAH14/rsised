@@ -163,6 +163,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case PortableMotoPump:
         p_technicsShape = new PortableMotoPumpShape(parent);
         break;
+    case MobileMotoPump:
+        p_technicsShape = new MobileMotoPumpShape(parent);
+        break;
     default:
         break;
     }
@@ -504,7 +507,7 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
 //        painter->drawLine(10.0, 20.0, 10.0, 30.0); //right pump line
 //        break;
 //    }
-//    case MotoPump_2: {
+//    case MobileMotoPump: {
 //        painter->setPen(QPen(Qt::red, 1));
 //        painter->drawRect(-20.0, -30.0, 40.0, 60.0);
 //        painter->drawLine(-10.0, 30.0, -10.0, 20.0);    //left pump line
@@ -9231,6 +9234,218 @@ QPainterPath PortableMotoPumpShape::portableMotoPumpPath() const
     qreal pumpRight{m_portableMotoPumpRect.right() - fourthWidth}; //10.0
     currentPath.lineTo(pumpRight, pumpTop); //10.0, 20.0
     currentPath.lineTo(pumpRight, m_portableMotoPumpRect.bottom()); //10.0, 30.0
+
+    return currentPath;
+}
+
+MobileMotoPumpShape::MobileMotoPumpShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_mobileMotoPumpType{MobileMotoPump}
+    , m_mobileMotoPumpRect{-20.0, -25.0, 40.0, 50.0}
+    , m_mobileMotoPumpText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::NoBrush));
+}
+
+void MobileMotoPumpShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawMobileMotoPumpShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF MobileMotoPumpShape::boundingRect() const
+{
+    QRectF boundingRect{m_mobileMotoPumpRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath MobileMotoPumpShape::shape() const
+{
+    return shapeFromPath(mobileMotoPumpPath());
+}
+
+QPixmap MobileMotoPumpShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawMobileMotoPumpShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType MobileMotoPumpShape::shapeType() const
+{
+    return m_mobileMotoPumpType;
+}
+
+void MobileMotoPumpShape::setRect(const QRectF &rect)
+{
+    if (m_mobileMotoPumpRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_mobileMotoPumpRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_mobileMotoPumpText != nullptr)
+        m_mobileMotoPumpText->setPos(m_mobileMotoPumpRect.right(), m_mobileMotoPumpRect.bottom() - m_mobileMotoPumpRect.width() / 6);
+
+    update();
+}
+
+QRectF MobileMotoPumpShape::rect() const
+{
+    return m_mobileMotoPumpRect;
+}
+
+void MobileMotoPumpShape::setHeight(const qreal &height)
+{
+    if (m_mobileMotoPumpRect.height() == height)
+        return;
+
+    qreal oldHeight{m_mobileMotoPumpRect.height()};
+    prepareGeometryChange();
+    m_mobileMotoPumpRect.setHeight(height);
+    qreal dy{(m_mobileMotoPumpRect.height() - oldHeight) / 2};
+    m_mobileMotoPumpRect.moveTo(QPointF(m_mobileMotoPumpRect.x(), m_mobileMotoPumpRect.y() - dy));
+    update();
+}
+
+qreal MobileMotoPumpShape::height() const
+{
+    return m_mobileMotoPumpRect.height();
+}
+
+void MobileMotoPumpShape::setText(const QString &text)
+{
+    if (m_mobileMotoPumpText == nullptr) {
+        m_mobileMotoPumpText = new QGraphicsTextItem(this);
+        m_mobileMotoPumpText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_mobileMotoPumpText->setRotation(-90);
+    }
+    m_mobileMotoPumpText->setPlainText(text);
+    m_showText = true;
+}
+
+QString MobileMotoPumpShape::text() const
+{
+    if (m_mobileMotoPumpText == nullptr)
+        return "";
+
+    return m_mobileMotoPumpText->toPlainText();
+}
+
+void MobileMotoPumpShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_mobileMotoPumpActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_mobileMotoPumpActionList);
+            m_mobileMotoPumpActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void MobileMotoPumpShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_mobileMotoPumpActionList.append(m_addTextAction.get());
+}
+
+void MobileMotoPumpShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_mobileMotoPumpText == nullptr) {
+            m_mobileMotoPumpText=new QGraphicsTextItem(this);
+            m_mobileMotoPumpText->setPlainText("ПМП-");
+            m_mobileMotoPumpText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_mobileMotoPumpText->setRotation(-90);
+        }
+        m_mobileMotoPumpText->show();
+        m_showText = true;
+    } else {
+        m_mobileMotoPumpText->hide();
+        m_showText = false;
+    }
+}
+
+void MobileMotoPumpShape::drawMobileMotoPumpShape(QPainter *painter)
+{
+    painter->drawPath(mobileMotoPumpPath());
+
+    if (m_showText)
+        m_mobileMotoPumpText->setPos(m_mobileMotoPumpRect.right(), m_mobileMotoPumpRect.bottom());
+}
+
+QPainterPath MobileMotoPumpShape::mobileMotoPumpPath() const
+{
+    QPainterPath currentPath;
+
+    qreal eighthWidth{m_mobileMotoPumpRect.width() / 8.0}; //5.0
+    qreal eighthHeight{m_mobileMotoPumpRect.height() / 8.0}; //6.25
+    //draw cart
+    qreal cartLeft{m_mobileMotoPumpRect.left() + eighthWidth}; //-15.0
+    qreal cartRight{m_mobileMotoPumpRect.right() - eighthWidth}; //15.0
+    qreal cartBottom{m_mobileMotoPumpRect.bottom() - eighthHeight}; //18.75
+    qreal cartwidth{m_mobileMotoPumpRect.width() - eighthWidth * 2.0}; //30.0
+    qreal cartHeight{m_mobileMotoPumpRect.height() - eighthHeight}; //43.75
+    currentPath.addRect(cartLeft, m_mobileMotoPumpRect.top(), cartwidth, cartHeight); //-20.0, -25.0, 30.0, 43.75.0
+    //draw pump
+    qreal pumpLeft{cartLeft + eighthWidth}; //-10.0
+    currentPath.moveTo(pumpLeft, cartBottom); //-10.0, 18.75
+    qreal pumpTop{cartBottom - eighthHeight * 2.0}; //6.25
+    currentPath.lineTo(pumpLeft, pumpTop); // -10.0, 6.25
+    qreal pumpRight{cartRight - eighthWidth}; //10.0
+    currentPath.lineTo(pumpRight, pumpTop); //10.0, 6.25
+    currentPath.lineTo(pumpRight, cartBottom); //10.0, 18.75
+    //draw left cartwheel
+    currentPath.moveTo(m_mobileMotoPumpRect.bottomLeft()); //-20.0, 25.0
+    qreal cartwheelTop{m_mobileMotoPumpRect.bottom() - eighthHeight * 2.0}; //12.5
+    currentPath.lineTo(m_mobileMotoPumpRect.left(), cartwheelTop); //-20.0, 12.5
+    //draw left axle
+    qreal axleY{m_mobileMotoPumpRect.bottom() - eighthHeight}; //18.75
+    currentPath.moveTo(m_mobileMotoPumpRect.left(), axleY); //-20.0, 18.75
+    currentPath.lineTo(cartLeft, axleY); //-15.0, 18.75
+    //draw right axle
+    currentPath.moveTo(cartRight, axleY); //15.0, 18.75
+    currentPath.lineTo(m_mobileMotoPumpRect.right(), axleY); //20.0, 18.75
+    //draw right cartwheel
+    currentPath.moveTo(m_mobileMotoPumpRect.bottomRight()); //20.0, 25.0
+    currentPath.lineTo(m_mobileMotoPumpRect.right(), cartwheelTop); //20.0, 18.75
 
     return currentPath;
 }

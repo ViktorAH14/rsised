@@ -241,6 +241,11 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             portableMotoPumpShape->setRect(value.toRectF());
         break;
     }
+    case MobileMotoPumpShape::Type: {
+        if (MobileMotoPumpShape *mobileMotoPumpShape = dynamic_cast<MobileMotoPumpShape *>(item))
+            mobileMotoPumpShape->setRect(value.toRectF());
+        break;
+    }
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());
