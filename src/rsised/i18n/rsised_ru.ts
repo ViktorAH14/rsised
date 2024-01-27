@@ -627,6 +627,12 @@
         <translation>МП</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="780"/>
+        <source>MobileMotoPump</source>
+        <translatorcomment>Прицепная мотопомпа пожарная</translatorcomment>
+        <translation>ПМП</translation>
+    </message>
+    <message>
         <location filename="../mainwindow.cpp" line="803"/>
         <source>Barrel 1</source>
         <translation>РС-50</translation>
