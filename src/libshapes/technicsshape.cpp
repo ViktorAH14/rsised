@@ -9050,7 +9050,7 @@ QPainterPath HelicopterShape::helicopterPath() const
 PortableMotoPumpShape::PortableMotoPumpShape(QGraphicsItem *parent)
     : TechnicsShape(parent)
     , m_portableMotoPumpType{PortableMotoPump}
-    , m_portableMotoPumpRect{-20.0, -30.0, 40.0, 60.0}
+    , m_portableMotoPumpRect{-15.0, -20.0, 30.0, 40.0}
     , m_portableMotoPumpText{nullptr}
     , m_showText{false}
 {
@@ -9224,16 +9224,16 @@ QPainterPath PortableMotoPumpShape::portableMotoPumpPath() const
 {
     QPainterPath currentPath;
     currentPath.addRect(m_portableMotoPumpRect.left(), m_portableMotoPumpRect.top()
-                        , m_portableMotoPumpRect.width(), m_portableMotoPumpRect.height()); // -20.0, -30.0, 40.0, 60.0
-    qreal fourthWidth{m_portableMotoPumpRect.width() / 4.0}; //10.0
-    qreal pumpLeft{m_portableMotoPumpRect.left() + fourthWidth}; //-10.0
-    currentPath.moveTo(pumpLeft, m_portableMotoPumpRect.bottom()); //-10.0, 30.0
-    qreal sixthHeight{m_portableMotoPumpRect.height() / 6.0}; //10.0
-    qreal pumpTop{m_portableMotoPumpRect.bottom() - sixthHeight}; //20.0
-    currentPath.lineTo(pumpLeft, pumpTop); // -10.0, 20.0
-    qreal pumpRight{m_portableMotoPumpRect.right() - fourthWidth}; //10.0
-    currentPath.lineTo(pumpRight, pumpTop); //10.0, 20.0
-    currentPath.lineTo(pumpRight, m_portableMotoPumpRect.bottom()); //10.0, 30.0
+                        , m_portableMotoPumpRect.width(), m_portableMotoPumpRect.height()); // -15.0, -20.0, 30.0, 40.0
+    qreal sixthWidth{m_portableMotoPumpRect.width() / 6.0}; //5.0
+    qreal pumpLeft{m_portableMotoPumpRect.left() + sixthWidth}; //-10.0
+    currentPath.moveTo(pumpLeft, m_portableMotoPumpRect.bottom()); //-10.0, 20.0
+    qreal fourthHeight{m_portableMotoPumpRect.height() / 4.0}; //10.0
+    qreal pumpTop{m_portableMotoPumpRect.bottom() - fourthHeight}; //10.0
+    currentPath.lineTo(pumpLeft, pumpTop); // -10.0, 10.0
+    qreal pumpRight{m_portableMotoPumpRect.right() - sixthWidth}; //10.0
+    currentPath.lineTo(pumpRight, pumpTop); //10.0, 10.0
+    currentPath.lineTo(pumpRight, m_portableMotoPumpRect.bottom()); //10.0, 20.0
 
     return currentPath;
 }
