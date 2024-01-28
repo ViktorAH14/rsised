@@ -573,7 +573,7 @@ void tst_TechnicShape::boundingRect()
 
     // PortableMotoPumpShape
     TechnicsShape *p_portableMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::PortableMotoPump);
-    QCOMPARE(p_portableMotoPumpShape->boundingRect(), QRectF(-20.5, -30.5, 41.0, 61.0));
+    QCOMPARE(p_portableMotoPumpShape->boundingRect(), QRectF(-15.5, -20.5, 31.0, 41.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_portableMotoPumpShape);
 
     // MobileMotoPumpShape
@@ -2171,16 +2171,16 @@ void tst_TechnicShape::shape()
     QRectF portableMotoPumpRect{p_portableMotoPumpShape->rect()};
     QPainterPath portableMotoPumpPath;
     portableMotoPumpPath.addRect(portableMotoPumpRect.left(), portableMotoPumpRect.top()
-                        , portableMotoPumpRect.width(), portableMotoPumpRect.height()); // -20.0, -30.0, 40.0, 60.0
-    qreal fourthWidthPMP{portableMotoPumpRect.width() / 4.0}; //10.0
-    qreal pumpLeft{portableMotoPumpRect.left() + fourthWidthPMP}; //-10.0
-    portableMotoPumpPath.moveTo(pumpLeft, portableMotoPumpRect.bottom()); //-10.0, 30.0
-    qreal sixthHeight{portableMotoPumpRect.height() / 6.0}; //10.0
-    qreal pumpTop{portableMotoPumpRect.bottom() - sixthHeight}; //20.0
-    portableMotoPumpPath.lineTo(pumpLeft, pumpTop); // -10.0, 20.0
-    qreal pumpRight{portableMotoPumpRect.right() - fourthWidthPMP}; //10.0
-    portableMotoPumpPath.lineTo(pumpRight, pumpTop); //10.0, 20.0
-    portableMotoPumpPath.lineTo(pumpRight, portableMotoPumpRect.bottom()); //10.0, 30.0
+                        , portableMotoPumpRect.width(), portableMotoPumpRect.height()); // -15.0, -20.0, 30.0, 40.0
+    qreal sixthWidth{portableMotoPumpRect.width() / 6.0}; //5.0
+    qreal pumpLeft{portableMotoPumpRect.left() + sixthWidth}; //-10.0
+    portableMotoPumpPath.moveTo(pumpLeft, portableMotoPumpRect.bottom()); //-10.0, 20.0
+    qreal fourthHeight{portableMotoPumpRect.height() / 4.0}; //10.0
+    qreal pumpTop{portableMotoPumpRect.bottom() - fourthHeight}; //10.0
+    portableMotoPumpPath.lineTo(pumpLeft, pumpTop); // -10.0, 10.0
+    qreal pumpRight{portableMotoPumpRect.right() - sixthWidth}; //10.0
+    portableMotoPumpPath.lineTo(pumpRight, pumpTop); //10.0, 10.0
+    portableMotoPumpPath.lineTo(pumpRight, portableMotoPumpRect.bottom()); //10.0, 20.0
     QPainterPath strokePortableMotoPumpPath = ps_portableMotoPumpShape.createStroke(portableMotoPumpPath);
     strokePortableMotoPumpPath.addPath(portableMotoPumpPath);
     QCOMPARE(p_portableMotoPumpShape->shape(), strokePortableMotoPumpPath);
