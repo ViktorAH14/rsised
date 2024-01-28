@@ -857,9 +857,10 @@
         <translation type="vanished">МПЦ</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="782"/>
         <source>TrailerPowder</source>
         <translatorcomment>Прицеп пожарный порошковый.</translatorcomment>
-        <translation type="vanished">ППЦ</translation>
+        <translation>ППП</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="809"/>

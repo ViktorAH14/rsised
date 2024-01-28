@@ -68,7 +68,7 @@ public:
                      , Helicopter       //Вертолёт пожарный
                      , PortableMotoPump       //Мотопомпа пожарная переносная
                      , MobileMotoPump   //Мотопомпа пожарная прицепная
-                     , TrailerPowder
+                     , TrailerPowder    //Прицеп пожарный порошковый
                      , Adapted
                      , OtherAdapted
                      , Ambulance
@@ -1764,5 +1764,48 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_mobileMotoPumpActionList;
+};
+
+class TrailerPowderShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 238};
+
+    explicit TrailerPowderShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~TrailerPowderShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(TrailerPowderShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawTrailerPowderShape(QPainter *painter);
+    QPainterPath trailerPowderPath() const;
+
+    const ShapeType m_trailerPowderType;
+    QRectF m_trailerPowderRect;
+    QGraphicsTextItem *m_trailerPowderText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_trailerPowderActionList;
 };
 #endif // TECHNICSSHAPE_H
