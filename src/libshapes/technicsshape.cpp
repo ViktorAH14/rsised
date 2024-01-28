@@ -166,6 +166,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case MobileMotoPump:
         p_technicsShape = new MobileMotoPumpShape(parent);
         break;
+    case TrailerPowder:
+        p_technicsShape = new TrailerPowderShape(parent);
+        break;
     default:
         break;
     }
@@ -9446,6 +9449,221 @@ QPainterPath MobileMotoPumpShape::mobileMotoPumpPath() const
     //draw right cartwheel
     currentPath.moveTo(m_mobileMotoPumpRect.bottomRight()); //20.0, 25.0
     currentPath.lineTo(m_mobileMotoPumpRect.right(), cartwheelTop); //20.0, 18.75
+
+    return currentPath;
+}
+
+TrailerPowderShape::TrailerPowderShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_trailerPowderType{TrailerPowder}
+    , m_trailerPowderRect{-20.0, -25.0, 40.0, 50.0}
+    , m_trailerPowderText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::red, 1));
+    setBrush(QBrush(Qt::NoBrush));
+}
+
+void TrailerPowderShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawTrailerPowderShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF TrailerPowderShape::boundingRect() const
+{
+    QRectF boundingRect{m_trailerPowderRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath TrailerPowderShape::shape() const
+{
+    return shapeFromPath(trailerPowderPath());
+}
+
+QPixmap TrailerPowderShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawTrailerPowderShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType TrailerPowderShape::shapeType() const
+{
+    return m_trailerPowderType;
+}
+
+void TrailerPowderShape::setRect(const QRectF &rect)
+{
+    if (m_trailerPowderRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_trailerPowderRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_trailerPowderText != nullptr)
+        m_trailerPowderText->setPos(m_trailerPowderRect.right(), m_trailerPowderRect.bottom() - m_trailerPowderRect.width() / 6);
+
+    update();
+}
+
+QRectF TrailerPowderShape::rect() const
+{
+    return m_trailerPowderRect;
+}
+
+void TrailerPowderShape::setHeight(const qreal &height)
+{
+    if (m_trailerPowderRect.height() == height)
+        return;
+
+    qreal oldHeight{m_trailerPowderRect.height()};
+    prepareGeometryChange();
+    m_trailerPowderRect.setHeight(height);
+    qreal dy{(m_trailerPowderRect.height() - oldHeight) / 2};
+    m_trailerPowderRect.moveTo(QPointF(m_trailerPowderRect.x(), m_trailerPowderRect.y() - dy));
+    update();
+}
+
+qreal TrailerPowderShape::height() const
+{
+    return m_trailerPowderRect.height();
+}
+
+void TrailerPowderShape::setText(const QString &text)
+{
+    if (m_trailerPowderText == nullptr) {
+        m_trailerPowderText = new QGraphicsTextItem(this);
+        m_trailerPowderText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_trailerPowderText->setRotation(-90);
+    }
+    m_trailerPowderText->setPlainText(text);
+    m_showText = true;
+}
+
+QString TrailerPowderShape::text() const
+{
+    if (m_trailerPowderText == nullptr)
+        return "";
+
+    return m_trailerPowderText->toPlainText();
+}
+
+void TrailerPowderShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_trailerPowderActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_trailerPowderActionList);
+            m_trailerPowderActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void TrailerPowderShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_trailerPowderActionList.append(m_addTextAction.get());
+}
+
+void TrailerPowderShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_trailerPowderText == nullptr) {
+            m_trailerPowderText=new QGraphicsTextItem(this);
+            m_trailerPowderText->setPlainText("ППП-");
+            m_trailerPowderText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_trailerPowderText->setRotation(-90);
+        }
+        m_trailerPowderText->show();
+        m_showText = true;
+    } else {
+        m_trailerPowderText->hide();
+        m_showText = false;
+    }
+}
+
+void TrailerPowderShape::drawTrailerPowderShape(QPainter *painter)
+{
+    painter->drawPath(trailerPowderPath());
+    painter->setBrush(QBrush(Qt::red));
+    qreal fourthWidth{m_trailerPowderRect.width() / 4.0};
+    qreal fifthHeight{m_trailerPowderRect.height() / 5.0};
+    QPointF powderTopLeft{m_trailerPowderRect.center().x() - fourthWidth
+                , m_trailerPowderRect.center().y() - fifthHeight};
+    QPointF powderBottomRight{m_trailerPowderRect.center().x() + fourthWidth
+                , m_trailerPowderRect.center().y() +fifthHeight};
+    QRectF powderRect{powderTopLeft, powderBottomRight};
+    painter->drawRect(powderRect);
+    painter->setBrush(QBrush(Qt::NoBrush));
+
+    if (m_showText)
+        m_trailerPowderText->setPos(m_trailerPowderRect.right(), m_trailerPowderRect.bottom());
+}
+
+QPainterPath TrailerPowderShape::trailerPowderPath() const
+{
+    QPainterPath currentPath;
+
+    qreal eighthWidth{m_trailerPowderRect.width() / 8.0}; //5.0
+    qreal eighthHeight{m_trailerPowderRect.height() / 8.0}; //6.25
+    //draw cart
+    qreal cartLeft{m_trailerPowderRect.left() + eighthWidth}; //-15.0
+    qreal cartRight{m_trailerPowderRect.right() - eighthWidth}; //15.0
+    // qreal cartBottom{m_trailerPowderRect.bottom() - eighthHeight}; //18.75
+    qreal cartwidth{m_trailerPowderRect.width() - eighthWidth * 2.0}; //30.0
+    qreal cartHeight{m_trailerPowderRect.height() - eighthHeight}; //43.75
+    currentPath.addRect(cartLeft, m_trailerPowderRect.top(), cartwidth, cartHeight); //-20.0, -25.0, 30.0, 43.75.0
+    //draw left cartwheel
+    currentPath.moveTo(m_trailerPowderRect.bottomLeft()); //-20.0, 25.0
+    qreal cartwheelTop{m_trailerPowderRect.bottom() - eighthHeight * 2.0}; //12.5
+    currentPath.lineTo(m_trailerPowderRect.left(), cartwheelTop); //-20.0, 12.5
+    //draw left axle
+    qreal axleY{m_trailerPowderRect.bottom() - eighthHeight}; //18.75
+    currentPath.moveTo(m_trailerPowderRect.left(), axleY); //-20.0, 18.75
+    currentPath.lineTo(cartLeft, axleY); //-15.0, 18.75
+    //draw right axle
+    currentPath.moveTo(cartRight, axleY); //15.0, 18.75
+    currentPath.lineTo(m_trailerPowderRect.right(), axleY); //20.0, 18.75
+    //draw right cartwheel
+    currentPath.moveTo(m_trailerPowderRect.bottomRight()); //20.0, 25.0
+    currentPath.lineTo(m_trailerPowderRect.right(), cartwheelTop); //20.0, 18.75
+    //draw powder
 
     return currentPath;
 }
