@@ -318,6 +318,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_trailerPowderShape, "trailerPowderShape is nullptr");
     QCOMPARE(int(p_trailerPowderShape->type()), int(QGraphicsItem::UserType + 238));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerPowderShape);
+
+    // AdaptedCarShape
+    TechnicsShape *p_adaptedCarShape = nullptr;
+    p_adaptedCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedCar);
+    QVERIFY2(p_adaptedCarShape, "adaptedCarShape is nullptr");
+    QCOMPARE(int(p_adaptedCarShape->type()), int(QGraphicsItem::UserType + 239));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedCarShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -592,6 +599,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_trailerPowderShape = TechnicsShape::createTechnicsShape(TechnicsShape::TrailerPowder);
     QCOMPARE(p_trailerPowderShape->boundingRect(), QRectF(-20.5, -25.5, 41.0, 51.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerPowderShape);
+
+    // AdaptedCarShape
+    TechnicsShape *p_adaptedCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedCar);
+    QCOMPARE(p_adaptedCarShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedCarShape);
 }
 
 void tst_TechnicShape::shape()
@@ -2273,6 +2285,27 @@ void tst_TechnicShape::shape()
     strokeTrailerPowderPath.addPath(trailerPowderPath);
     QCOMPARE(p_trailerPowderShape->shape(), strokeTrailerPowderPath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerPowderShape);
+
+// AdaptedCarShape
+    TechnicsShape *p_adaptedCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedCar);
+    QPainterPathStroker ps_adaptedCarShape;
+    ps_adaptedCarShape.setWidth(p_adaptedCarShape->pen().widthF());
+    QRectF adaptedCarRect{p_adaptedCarShape->rect()};
+    qreal frontTabAdaptedCar{adaptedCarRect.height() / 3};
+    QPointF frontCenterAdaptedCar{adaptedCarRect.center().x(), adaptedCarRect.top()}; // 0.0, -37.5
+    QPointF frontRightAdaptedCar{adaptedCarRect.right(), adaptedCarRect.top() + frontTabAdaptedCar}; // 15.0, -12.5
+    QPointF frontLeftAdaptedCar{adaptedCarRect.left(), adaptedCarRect.top() + frontTabAdaptedCar}; // -15.0, -12.5
+    QPointF bottomRightAdaptedCar{adaptedCarRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftAdaptedCar{adaptedCarRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF adaptedCarPolygon;
+    adaptedCarPolygon << frontCenterAdaptedCar << frontRightAdaptedCar << bottomRightAdaptedCar << bottomLeftAdaptedCar
+                      << frontLeftAdaptedCar;
+    QPainterPath adaptedCarPath;
+    adaptedCarPath.addPolygon(adaptedCarPolygon);
+    QPainterPath strokeAdaptedCarPath = ps_adaptedCarShape.createStroke(adaptedCarPath);
+    strokeAdaptedCarPath.addPath(adaptedCarPath);
+    QCOMPARE(p_adaptedCarShape->shape(), strokeAdaptedCarPath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedCarShape);
 }
 
 void tst_TechnicShape::image()
@@ -2580,6 +2613,14 @@ void tst_TechnicShape::image()
     QCOMPARE(trailerPowderImage.width(), p_trailerPowderShape->boundingRect().width());
     QCOMPARE(trailerPowderImage.height(), p_trailerPowderShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerPowderShape);
+
+    // AdaptedCarShape
+    TechnicsShape *p_adaptedCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedCar);
+    QPixmap adaptedCarImage{p_adaptedCarShape->image()};
+    QVERIFY2(!adaptedCarImage.isNull(), "adaptedCarShape::image() returned a null pixmap");
+    QCOMPARE(adaptedCarImage.width(), p_adaptedCarShape->boundingRect().width());
+    QCOMPARE(adaptedCarImage.height(), p_adaptedCarShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedCarShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -2833,6 +2874,12 @@ void tst_TechnicShape::rect_setRect()
     p_trailerPowderShape->setRect(rect);
     QCOMPARE(p_trailerPowderShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerPowderShape);
+
+    // AdaptedCarShape
+    TechnicsShape *p_adaptedCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedCar);
+    p_adaptedCarShape->setRect(rect);
+    QCOMPARE(p_adaptedCarShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedCarShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -3073,6 +3120,12 @@ void tst_TechnicShape::height_setHeight()
     p_trailerPowderShape->setHeight(height);
     QCOMPARE(p_trailerPowderShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerPowderShape);
+
+    // AdaptedCarShape
+    TechnicsShape *p_adaptedCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedCar);
+    p_adaptedCarShape->setHeight(height);
+    QCOMPARE(p_adaptedCarShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedCarShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -3322,6 +3375,12 @@ void tst_TechnicShape::text_setText()
     p_trailerPowderShape->setText(text);
     QCOMPARE(p_trailerPowderShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerPowderShape);
+
+    // AdaptedCarShape
+    TechnicsShape *p_adaptedCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedCar);
+    p_adaptedCarShape->setText(text);
+    QCOMPARE(p_adaptedCarShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedCarShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -4665,6 +4724,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_trailerPowderShape);
     delete p_trailerPowderContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerPowderShape);
+
+    // AdaptedCarShape
+    ContextMenuTester *p_adaptedCarContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_adaptedCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedCar);
+    p_adaptedCarShape->setMenu(p_adaptedCarContextMenu);
+    scene.addItem(p_adaptedCarShape);
+
+    mousePressEvent.setScenePos(p_adaptedCarShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_adaptedCarShape->setSelected(true);
+    QSignalSpy adaptedCarContextMenuSpy(p_adaptedCarShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(adaptedCarContextMenuSpy.count(), 0);
+
+    QList<QAction *> adaptedCarMenuActions{p_adaptedCarShape->menu()->actions()};
+    QCOMPARE(adaptedCarMenuActions.size(), 1);
+    adaptedCarMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_adaptedCarShape->boundingRect().center()));
+    adaptedCarMenuActions = p_adaptedCarShape->menu()->actions();
+    QCOMPARE(adaptedCarMenuActions.size(), 1);
+    QCOMPARE(adaptedCarContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_adaptedCarShape);
+    delete p_adaptedCarContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedCarShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
