@@ -9663,7 +9663,6 @@ QPainterPath TrailerPowderShape::trailerPowderPath() const
     //draw right cartwheel
     currentPath.moveTo(m_trailerPowderRect.bottomRight()); //20.0, 25.0
     currentPath.lineTo(m_trailerPowderRect.right(), cartwheelTop); //20.0, 18.75
-    //draw powder
 
     return currentPath;
 }
