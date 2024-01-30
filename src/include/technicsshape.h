@@ -66,10 +66,10 @@ public:
                      , Plane            //Самолёт пожарный
                      , Seaplane         //Гидросамолёт пожарный
                      , Helicopter       //Вертолёт пожарный
-                     , PortableMotoPump       //Мотопомпа пожарная переносная
+                     , PortableMotoPump //Мотопомпа пожарная переносная
                      , MobileMotoPump   //Мотопомпа пожарная прицепная
                      , TrailerPowder    //Прицеп пожарный порошковый
-                     , Adapted
+                     , AdaptedCar       //Приспособленный автомобиль для целей пожаротушения
                      , OtherAdapted
                      , Ambulance
                      , Police };
@@ -1807,5 +1807,48 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_trailerPowderActionList;
+};
+
+class AdaptedCarShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 239};
+
+    explicit AdaptedCarShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~AdaptedCarShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(AdaptedCarShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawAdaptedCarShape(QPainter *painter);
+    QPolygonF adaptedCarPolygon(const QRectF &rect) const;
+
+    const ShapeType m_adaptedCarType;
+    QRectF m_adaptedCarRect;
+    QGraphicsTextItem *m_adaptedCarText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_adaptedCarActionList;
 };
 #endif // TECHNICSSHAPE_H
