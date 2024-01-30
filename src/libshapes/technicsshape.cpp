@@ -169,6 +169,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case TrailerPowder:
         p_technicsShape = new TrailerPowderShape(parent);
         break;
+    case AdaptedCar:
+        p_technicsShape = new AdaptedCarShape(parent);
+        break;
     default:
         break;
     }
@@ -533,7 +536,7 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
 //        painter->drawRect(-10.0, -10.0, 20.0, 20.0);
 //        break;
 //    }
-//    case Adapted: {
+//    case AdaptedCar: {
 //        painter->setPen(QPen(Qt::blue, 1));
 //        painter->drawPolygon(autoBase);
 //        QPolygonF adaptedPolygon;
@@ -9621,7 +9624,6 @@ void TrailerPowderShape::textShow(bool showText)
 void TrailerPowderShape::drawTrailerPowderShape(QPainter *painter)
 {
     painter->drawPath(trailerPowderPath());
-    painter->setBrush(QBrush(Qt::red));
     qreal fourthWidth{m_trailerPowderRect.width() / 4.0};
     qreal fifthHeight{m_trailerPowderRect.height() / 5.0};
     QPointF powderTopLeft{m_trailerPowderRect.center().x() - fourthWidth
@@ -9629,8 +9631,8 @@ void TrailerPowderShape::drawTrailerPowderShape(QPainter *painter)
     QPointF powderBottomRight{m_trailerPowderRect.center().x() + fourthWidth
                 , m_trailerPowderRect.center().y() +fifthHeight};
     QRectF powderRect{powderTopLeft, powderBottomRight};
+    painter->setBrush(QBrush(Qt::red));
     painter->drawRect(powderRect);
-    painter->setBrush(QBrush(Qt::NoBrush));
 
     if (m_showText)
         m_trailerPowderText->setPos(m_trailerPowderRect.right(), m_trailerPowderRect.bottom());
@@ -9665,4 +9667,203 @@ QPainterPath TrailerPowderShape::trailerPowderPath() const
     currentPath.lineTo(m_trailerPowderRect.right(), cartwheelTop); //20.0, 18.75
 
     return currentPath;
+}
+
+AdaptedCarShape::AdaptedCarShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_adaptedCarType{AdaptedCar}
+    , m_adaptedCarRect{-15.0, -37.5, 30.0, 75.0}
+    , m_adaptedCarText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::blue, 1));
+    setBrush(QBrush(Qt::NoBrush));
+}
+
+void AdaptedCarShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawAdaptedCarShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF AdaptedCarShape::boundingRect() const
+{
+    QRectF boundingRect{m_adaptedCarRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath AdaptedCarShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap AdaptedCarShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawAdaptedCarShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType AdaptedCarShape::shapeType() const
+{
+    return m_adaptedCarType;
+}
+
+void AdaptedCarShape::setRect(const QRectF &rect)
+{
+    if (m_adaptedCarRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_adaptedCarRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_adaptedCarText != nullptr)
+        m_adaptedCarText->setPos(m_adaptedCarRect.right(), m_adaptedCarRect.bottom() - m_adaptedCarRect.width() / 6);
+
+    update();
+}
+
+QRectF AdaptedCarShape::rect() const
+{
+    return m_adaptedCarRect;
+}
+
+void AdaptedCarShape::setHeight(const qreal &height)
+{
+    if (m_adaptedCarRect.height() == height)
+        return;
+
+    qreal oldHeight{m_adaptedCarRect.height()};
+    prepareGeometryChange();
+    m_adaptedCarRect.setHeight(height);
+    qreal dy{(m_adaptedCarRect.height() - oldHeight) / 2};
+    m_adaptedCarRect.moveTo(QPointF(m_adaptedCarRect.x(), m_adaptedCarRect.y() - dy));
+    update();
+}
+
+qreal AdaptedCarShape::height() const
+{
+    return m_adaptedCarRect.height();
+}
+
+void AdaptedCarShape::setText(const QString &text)
+{
+    if (m_adaptedCarText == nullptr) {
+        m_adaptedCarText = new QGraphicsTextItem(this);
+        m_adaptedCarText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_adaptedCarText->setRotation(-90);
+    }
+    m_adaptedCarText->setPlainText(text);
+    m_showText = true;
+}
+
+QString AdaptedCarShape::text() const
+{
+    if (m_adaptedCarText == nullptr)
+        return "";
+
+    return m_adaptedCarText->toPlainText();
+}
+
+void AdaptedCarShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_adaptedCarActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_adaptedCarActionList);
+            m_adaptedCarActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void AdaptedCarShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_adaptedCarActionList.append(m_addTextAction.get());
+}
+
+void AdaptedCarShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_adaptedCarText == nullptr) {
+            m_adaptedCarText=new QGraphicsTextItem(this);
+            m_adaptedCarText->setPlainText("АПр-");
+            m_adaptedCarText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_adaptedCarText->setRotation(-90);
+        }
+        m_adaptedCarText->show();
+        m_showText = true;
+    } else {
+        m_adaptedCarText->hide();
+        m_showText = false;
+    }
+}
+
+void AdaptedCarShape::drawAdaptedCarShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+    painter->setPen(QPen(Qt::red, 1));
+    painter->setBrush(QBrush(Qt::red));
+    painter->drawPolygon(adaptedCarPolygon(m_adaptedCarRect));
+
+    if (m_showText)
+        m_adaptedCarText->setPos(m_adaptedCarRect.right(), m_adaptedCarRect.bottom());
+}
+
+QPolygonF AdaptedCarShape::adaptedCarPolygon(const QRectF &rect) const
+{
+    qreal penWidth{pen().widthF()};
+    qreal sixthWidth{rect.width() / 6.0}; //5.0
+    QPointF bottomLeft{rect.left() + sixthWidth, rect.bottom() - penWidth};
+    qreal frontTab{rect.height() / 3};
+    QLineF leftIntersect{rect.left(), rect.top() + frontTab, rect.center().x(), rect.top()};
+    QPointF topLeft{leftIntersect.pointAt(0.33)};
+    topLeft.setY(topLeft.y() + penWidth);
+    QPointF topCenter{rect.center().x(), rect.top() + penWidth};
+    QLineF rightIntesect{rect.right(), rect.top() + frontTab, rect.center().x(), rect.top()};
+    QPointF topRight{rightIntesect.pointAt(0.33)};
+    topRight.setY(topRight.y() + penWidth);
+    QPointF bottomRight{rect.right() - sixthWidth, rect.bottom() - penWidth};
+    QPolygonF adaptedPolygon;
+    adaptedPolygon << bottomLeft << topLeft << topCenter << topRight << bottomRight;
+
+    return adaptedPolygon;
 }

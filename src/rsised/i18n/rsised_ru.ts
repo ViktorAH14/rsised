@@ -523,9 +523,10 @@
         <translation>ГПМ</translation>
     </message>
     <message>
-        <source>Adapted</source>
+        <location filename="../mainwindow.cpp" line="784"/>
+        <source>AdaptedCar</source>
         <translatorcomment>Автомобиль приспособленный для целей пожаротушения</translatorcomment>
-        <translation type="vanished">АРС</translation>
+        <translation>АПр</translation>
     </message>
     <message>
         <source>Ambulance</source>
