@@ -545,9 +545,10 @@
         <translation>ПП</translation>
     </message>
     <message>
-        <source>Other adapted</source>
+        <location filename="../mainwindow.cpp" line="786"/>
+        <source>AdaptedTechnique</source>
         <translatorcomment>Другая приспособленная техника для целей пожаротушения.</translatorcomment>
-        <translation type="vanished">Пр</translation>
+        <translation>Пр</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="819"/>
