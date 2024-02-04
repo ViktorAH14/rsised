@@ -172,6 +172,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case AdaptedCar:
         p_technicsShape = new AdaptedCarShape(parent);
         break;
+    case AdaptedTechnique:
+        p_technicsShape = new AdaptedTechniqueShape(parent);
+        break;
     default:
         break;
     }
@@ -547,7 +550,7 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
 //        painter->drawPolygon(adaptedPolygon);
 //        break;
 //    }
-//    case OtherAdapted: {
+//    case AdaptedTechnique: {
 //        painter->setPen(QPen(Qt::blue, 1));
 //        painter->drawRect(QRectF(-15.0, -10.0, 30.0, 41));
 //        painter->drawLine(QLineF(0.0, -10.0, 0.0, -30.0));
@@ -9866,4 +9869,208 @@ QPolygonF AdaptedCarShape::adaptedCarPolygon(const QRectF &rect) const
     adaptedPolygon << bottomLeft << topLeft << topCenter << topRight << bottomRight;
 
     return adaptedPolygon;
+}
+
+AdaptedTechniqueShape::AdaptedTechniqueShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_adaptedTechniqueType{AdaptedTechnique}
+    , m_adaptedTechniqueRect{-15.0, -37.5, 30.0, 75.0}
+    , m_adaptedTechniqueText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::blue, 1));
+    setBrush(QBrush(Qt::NoBrush));
+}
+
+void AdaptedTechniqueShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawAdaptedTechniqueShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF AdaptedTechniqueShape::boundingRect() const
+{
+    QRectF boundingRect{m_adaptedTechniqueRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2.0};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath AdaptedTechniqueShape::shape() const
+{
+    return shapeFromPath(adaptedTechniquePath());
+}
+
+QPixmap AdaptedTechniqueShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawAdaptedTechniqueShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType AdaptedTechniqueShape::shapeType() const
+{
+    return m_adaptedTechniqueType;
+}
+
+void AdaptedTechniqueShape::setRect(const QRectF &rect)
+{
+    if (m_adaptedTechniqueRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_adaptedTechniqueRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_adaptedTechniqueText != nullptr)
+        m_adaptedTechniqueText->setPos(m_adaptedTechniqueRect.right(), m_adaptedTechniqueRect.bottom() - m_adaptedTechniqueRect.width() / 6);
+
+    update();
+}
+
+QRectF AdaptedTechniqueShape::rect() const
+{
+    return m_adaptedTechniqueRect;
+}
+
+void AdaptedTechniqueShape::setHeight(const qreal &height)
+{
+    if (m_adaptedTechniqueRect.height() == height)
+        return;
+
+    qreal oldHeight{m_adaptedTechniqueRect.height()};
+    prepareGeometryChange();
+    m_adaptedTechniqueRect.setHeight(height);
+    qreal dy{(m_adaptedTechniqueRect.height() - oldHeight) / 2};
+    m_adaptedTechniqueRect.moveTo(QPointF(m_adaptedTechniqueRect.x(), m_adaptedTechniqueRect.y() - dy));
+    update();
+}
+
+qreal AdaptedTechniqueShape::height() const
+{
+    return m_adaptedTechniqueRect.height();
+}
+
+void AdaptedTechniqueShape::setText(const QString &text)
+{
+    if (m_adaptedTechniqueText == nullptr) {
+        m_adaptedTechniqueText = new QGraphicsTextItem(this);
+        m_adaptedTechniqueText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_adaptedTechniqueText->setRotation(-90);
+    }
+    m_adaptedTechniqueText->setPlainText(text);
+    m_showText = true;
+}
+
+QString AdaptedTechniqueShape::text() const
+{
+    if (m_adaptedTechniqueText == nullptr)
+        return "";
+
+    return m_adaptedTechniqueText->toPlainText();
+}
+
+void AdaptedTechniqueShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_adaptedTechniqueActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_adaptedTechniqueActionList);
+            m_adaptedTechniqueActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void AdaptedTechniqueShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_adaptedTechniqueActionList.append(m_addTextAction.get());
+}
+
+void AdaptedTechniqueShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_adaptedTechniqueText == nullptr) {
+            m_adaptedTechniqueText=new QGraphicsTextItem(this);
+            m_adaptedTechniqueText->setPlainText("Пр-");
+            m_adaptedTechniqueText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_adaptedTechniqueText->setRotation(-90);
+        }
+        m_adaptedTechniqueText->show();
+        m_showText = true;
+    } else {
+        m_adaptedTechniqueText->hide();
+        m_showText = false;
+    }
+}
+
+void AdaptedTechniqueShape::drawAdaptedTechniqueShape(QPainter *painter)
+{
+    painter->drawPath(adaptedTechniquePath());
+    qreal sixthWidth{m_adaptedTechniqueRect.width() / 6.0}; //5.0
+    qreal innerLeft{m_adaptedTechniqueRect.left() + sixthWidth}; //-10.0
+    qreal oneHalfHeight{m_adaptedTechniqueRect.height() / 1.5}; //50.0
+    qreal innerTop{m_adaptedTechniqueRect.bottom() - oneHalfHeight}; //-12.5
+    qreal innerRight{m_adaptedTechniqueRect.right() - sixthWidth}; //10.0
+    qreal innerBottom{m_adaptedTechniqueRect.bottom()}; //37.5
+    QRectF innerRect{QPointF(innerLeft, innerTop), QPointF(innerRight, innerBottom)};
+    painter->setPen(QPen(Qt::red, 1));
+    painter->setBrush(QBrush(Qt::red));
+    painter->drawRect(innerRect);
+
+    if (m_showText)
+        m_adaptedTechniqueText->setPos(m_adaptedTechniqueRect.right(), m_adaptedTechniqueRect.bottom());
+}
+
+QPainterPath AdaptedTechniqueShape::adaptedTechniquePath() const
+{
+    QPainterPath currentPuth;
+    qreal oneHalfHeight{m_adaptedTechniqueRect.height() / 1.5}; //50.0
+    qreal outRectTop{m_adaptedTechniqueRect.bottom() - oneHalfHeight}; //-12.5
+    QPointF outRectTopLeft{m_adaptedTechniqueRect.left(), outRectTop};
+    QRectF outerRect{outRectTopLeft, m_adaptedTechniqueRect.bottomRight()};
+    currentPuth.addRect(outerRect);
+    qreal centerX{m_adaptedTechniqueRect.center().x()}; //0.0
+    currentPuth.moveTo(centerX, outRectTop); //0.0, -12.5
+    qreal tenthHeight{m_adaptedTechniqueRect.height() / 10.0}; //7.5
+    currentPuth.lineTo(centerX, m_adaptedTechniqueRect.top() + tenthHeight); //0.0, -30
+    qreal eighthWidth{m_adaptedTechniqueRect.width() / 8.0}; //3.75
+    QPointF ellipseTopLeft{centerX - eighthWidth, m_adaptedTechniqueRect.top()}; //-3.75, -37.5
+    QPointF ellipseBottomRight{centerX + eighthWidth, m_adaptedTechniqueRect.top() + tenthHeight}; //3.75, -30.0
+    QRectF ellipseRect{ellipseTopLeft, ellipseBottomRight};
+    currentPuth.addEllipse(ellipseRect);
+
+    return currentPuth;
 }

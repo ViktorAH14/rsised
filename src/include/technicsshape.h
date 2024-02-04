@@ -70,7 +70,7 @@ public:
                      , MobileMotoPump   //Мотопомпа пожарная прицепная
                      , TrailerPowder    //Прицеп пожарный порошковый
                      , AdaptedCar       //Приспособленный автомобиль для целей пожаротушения
-                     , OtherAdapted
+                     , AdaptedTechnique //Другая приспособленная техника для целей пожаротушения
                      , Ambulance
                      , Police };
 
@@ -1850,5 +1850,48 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_adaptedCarActionList;
+};
+
+class AdaptedTechniqueShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 240};
+
+    explicit AdaptedTechniqueShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~AdaptedTechniqueShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(AdaptedTechniqueShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawAdaptedTechniqueShape(QPainter *painter);
+    QPainterPath adaptedTechniquePath() const;
+
+    const ShapeType m_adaptedTechniqueType;
+    QRectF m_adaptedTechniqueRect;
+    QGraphicsTextItem *m_adaptedTechniqueText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_adaptedTechniqueActionList;
 };
 #endif // TECHNICSSHAPE_H

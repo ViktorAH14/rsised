@@ -783,8 +783,8 @@ void MainWindow::createShapeToolBox()
                                                           , TechnicsShape::TrailerPowder), 9, 1);
    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("AdaptedCar")
                                                       , TechnicsShape::AdaptedCar), 9, 2);
-//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Other adapted")
-//                                                       , TechnicsShape::OtherAdapted), 13, 0);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("AdaptedTechnique")
+                                                      , TechnicsShape::AdaptedTechnique), 9, 3);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Ambulance")
 //                                                       , TechnicsShape::Ambulance), 13, 1);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Police")
