@@ -10056,21 +10056,21 @@ void AdaptedTechniqueShape::drawAdaptedTechniqueShape(QPainter *painter)
 
 QPainterPath AdaptedTechniqueShape::adaptedTechniquePath() const
 {
-    QPainterPath currentPuth;
+    QPainterPath currentPath;
     qreal oneHalfHeight{m_adaptedTechniqueRect.height() / 1.5}; //50.0
     qreal outRectTop{m_adaptedTechniqueRect.bottom() - oneHalfHeight}; //-12.5
     QPointF outRectTopLeft{m_adaptedTechniqueRect.left(), outRectTop};
     QRectF outerRect{outRectTopLeft, m_adaptedTechniqueRect.bottomRight()};
-    currentPuth.addRect(outerRect);
+    currentPath.addRect(outerRect);
     qreal centerX{m_adaptedTechniqueRect.center().x()}; //0.0
-    currentPuth.moveTo(centerX, outRectTop); //0.0, -12.5
+    currentPath.moveTo(centerX, outRectTop); //0.0, -12.5
     qreal tenthHeight{m_adaptedTechniqueRect.height() / 10.0}; //7.5
-    currentPuth.lineTo(centerX, m_adaptedTechniqueRect.top() + tenthHeight); //0.0, -30
+    currentPath.lineTo(centerX, m_adaptedTechniqueRect.top() + tenthHeight); //0.0, -30
     qreal eighthWidth{m_adaptedTechniqueRect.width() / 8.0}; //3.75
     QPointF ellipseTopLeft{centerX - eighthWidth, m_adaptedTechniqueRect.top()}; //-3.75, -37.5
     QPointF ellipseBottomRight{centerX + eighthWidth, m_adaptedTechniqueRect.top() + tenthHeight}; //3.75, -30.0
     QRectF ellipseRect{ellipseTopLeft, ellipseBottomRight};
-    currentPuth.addEllipse(ellipseRect);
+    currentPath.addEllipse(ellipseRect);
 
-    return currentPuth;
+    return currentPath;
 }
