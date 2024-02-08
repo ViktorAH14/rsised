@@ -761,36 +761,36 @@ void MainWindow::createShapeToolBox()
                                                       , TechnicsShape::Laboratory), 6, 2);
    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("StaffCar")
                                                       , TechnicsShape::StaffCar), 6, 3);
-   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Trailer")
-                                                      , TechnicsShape::Trailer), 7, 0);
-   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Ship")
-                                                      , TechnicsShape::Ship), 7, 1);
-   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Boat")
-                                                      , TechnicsShape::Boat), 7, 2);
-   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Train")
-                                                      , TechnicsShape::Train), 7, 3);
-   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Plane")
-                                                          , TechnicsShape::Plane), 8, 0);
-   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Seaplane")
-                                                          , TechnicsShape::Seaplane), 8, 1);
-   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Helicopter")
-                                                          , TechnicsShape::Helicopter), 8, 2);
-   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("PortableMotoPump")
-                                                        , TechnicsShape::PortableMotoPump), 8, 3);
-   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("MobileMotoPump")
-                                                          , TechnicsShape::MobileMotoPump), 9, 0);
-   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("TrailerPowder")
-                                                          , TechnicsShape::TrailerPowder), 9, 1);
    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("AdaptedCar")
-                                                      , TechnicsShape::AdaptedCar), 9, 2);
-   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("AdaptedTechnique")
-                                                      , TechnicsShape::AdaptedTechnique), 9, 3);
+                                                        , TechnicsShape::AdaptedCar), 7, 0);
    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Ambulance")
-                                                      , TechnicsShape::Ambulance), 10, 0);
+                                                        , TechnicsShape::Ambulance), 7, 1);
    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Police")
-                                                      , TechnicsShape::Police), 10, 1);
-    p_technicsLayout->setRowStretch(14, 10);
-    p_technicsLayout->setColumnStretch(3, 10);
+                                                        , TechnicsShape::Police), 7, 2);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("AdaptedTechnique")
+                                                        , TechnicsShape::AdaptedTechnique), 7, 3);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Ship")
+                                                        , TechnicsShape::Ship), 8, 0);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Boat")
+                                                        , TechnicsShape::Boat), 8, 1);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Plane")
+                                                        , TechnicsShape::Plane), 8, 2);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Seaplane")
+                                                        , TechnicsShape::Seaplane), 8, 3);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Helicopter")
+                                                        , TechnicsShape::Helicopter), 9, 0);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Trailer")
+                                                      , TechnicsShape::Trailer), 9, 1);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Train")
+                                                      , TechnicsShape::Train), 9, 2);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("MobileMotoPump")
+                                                          , TechnicsShape::MobileMotoPump), 9, 3);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("TrailerPowder")
+                                                          , TechnicsShape::TrailerPowder), 10, 0);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("PortableMotoPump")
+                                                        , TechnicsShape::PortableMotoPump), 10, 1);
+    p_technicsLayout->setRowStretch(10, 10);
+    p_technicsLayout->setColumnStretch(4, 10);
     QWidget *p_technicsWidget = new QWidget(this);
     p_technicsWidget->setLayout(p_technicsLayout);
 
@@ -842,7 +842,7 @@ void MainWindow::createShapeToolBox()
     p_deviceLayout->addWidget(createDeviceCellWidget(tr("FLift 1"), DeviceShape::FoamLift_1), 9, 1);
     p_deviceLayout->addWidget(createDeviceCellWidget(tr("FLift 2"), DeviceShape::FoamLift_2), 9, 2);
     p_deviceLayout->setRowStretch(10, 10);
-    p_deviceLayout->setColumnStretch(3, 10);
+    p_deviceLayout->setColumnStretch(4, 10);
     QWidget *p_deviceWidget = new QWidget(this);
     p_deviceWidget->setLayout(p_deviceLayout);
 

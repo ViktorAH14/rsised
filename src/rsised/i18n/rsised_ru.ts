@@ -523,31 +523,31 @@
         <translation>ГПМ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="784"/>
+        <location filename="../mainwindow.cpp" line="764"/>
         <source>AdaptedCar</source>
         <translatorcomment>Автомобиль приспособленный для целей пожаротушения</translatorcomment>
         <translation>АПр</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="788"/>
+        <location filename="../mainwindow.cpp" line="766"/>
         <source>Ambulance</source>
         <translatorcomment>Машина скорой медицинской помощи</translatorcomment>
         <translation>МП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="790"/>
+        <location filename="../mainwindow.cpp" line="768"/>
         <source>Police</source>
         <translatorcomment>Полицейская машина</translatorcomment>
         <translation>МВД</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="770"/>
+        <location filename="../mainwindow.cpp" line="784"/>
         <source>Train</source>
         <translatorcomment>Пожарный поезд</translatorcomment>
         <translation>ПП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="786"/>
+        <location filename="../mainwindow.cpp" line="770"/>
         <source>AdaptedTechnique</source>
         <translatorcomment>Другая приспособленная техника для целей пожаротушения.</translatorcomment>
         <translation>Пр</translation>
@@ -625,13 +625,13 @@
         <translation>АЛСП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="778"/>
+        <location filename="../mainwindow.cpp" line="790"/>
         <source>PortableMotoPump</source>
         <translatorcomment>Мотопомпа переносная</translatorcomment>
         <translation>МП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="780"/>
+        <location filename="../mainwindow.cpp" line="786"/>
         <source>MobileMotoPump</source>
         <translatorcomment>Прицепная мотопомпа пожарная</translatorcomment>
         <translation>ПМП</translation>
@@ -815,37 +815,37 @@
         <translation>АШ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="764"/>
+        <location filename="../mainwindow.cpp" line="782"/>
         <source>Trailer</source>
         <translatorcomment>Прицеп пожарный.</translatorcomment>
         <translation>ПЦ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="766"/>
+        <location filename="../mainwindow.cpp" line="772"/>
         <source>Ship</source>
         <translatorcomment>Судно пожарное</translatorcomment>
         <translation>СП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="768"/>
+        <location filename="../mainwindow.cpp" line="774"/>
         <source>Boat</source>
         <translatorcomment>Катер пожарный</translatorcomment>
         <translation>КП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="772"/>
+        <location filename="../mainwindow.cpp" line="776"/>
         <source>Plane</source>
         <translatorcomment>Самолёт пожарный</translatorcomment>
         <translation>СА</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="774"/>
+        <location filename="../mainwindow.cpp" line="778"/>
         <source>Seaplane</source>
         <translatorcomment>Гидросамолёт пожарный</translatorcomment>
         <translation>ГСА</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="776"/>
+        <location filename="../mainwindow.cpp" line="780"/>
         <source>Helicopter</source>
         <translatorcomment>Вертолёт пожарный</translatorcomment>
         <translation>ВП</translation>
@@ -861,7 +861,7 @@
         <translation type="vanished">МПЦ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="782"/>
+        <location filename="../mainwindow.cpp" line="788"/>
         <source>TrailerPowder</source>
         <translatorcomment>Прицеп пожарный порошковый.</translatorcomment>
         <translation>ППП</translation>
