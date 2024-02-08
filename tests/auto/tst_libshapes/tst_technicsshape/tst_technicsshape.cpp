@@ -332,6 +332,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_adaptedTechniqueShape, "adaptedTechniqueShape is nullptr");
     QCOMPARE(int(p_adaptedTechniqueShape->type()), int(QGraphicsItem::UserType + 240));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedTechniqueShape);
+
+    // AmbulanceShape
+    TechnicsShape *p_ambulanceShape = nullptr;
+    p_ambulanceShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ambulance);
+    QVERIFY2(p_ambulanceShape, "ambulanceShape is nullptr");
+    QCOMPARE(int(p_ambulanceShape->type()), int(QGraphicsItem::UserType + 241));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -616,6 +623,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_adaptedTechniqueShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedTechnique);
     QCOMPARE(p_adaptedTechniqueShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedTechniqueShape);
+
+    // AmbulanceShape
+    TechnicsShape *p_ambulanceShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ambulance);
+    QCOMPARE(p_ambulanceShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
 }
 
 void tst_TechnicShape::shape()
@@ -2343,6 +2355,27 @@ void tst_TechnicShape::shape()
     strokeAdaptedTechniquePath.addPath(adaptedTechniquePath);
     QCOMPARE(p_adaptedTechniqueShape->shape(), strokeAdaptedTechniquePath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedTechniqueShape);
+
+// AmbulanceShape
+    TechnicsShape *p_ambulanceShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ambulance);
+    QPainterPathStroker ps_ambulanceShape;
+    ps_ambulanceShape.setWidth(p_ambulanceShape->pen().widthF());
+    QRectF ambulanceRect{p_ambulanceShape->rect()};
+    qreal frontTabAmbulance{ambulanceRect.height() / 3};
+    QPointF frontCenterAmbulance{ambulanceRect.center().x(), ambulanceRect.top()}; // 0.0, -37.5
+    QPointF frontRightAmbulance{ambulanceRect.right(), ambulanceRect.top() + frontTabAmbulance}; // 15.0, -12.5
+    QPointF frontLeftAmbulance{ambulanceRect.left(), ambulanceRect.top() + frontTabAmbulance}; // -15.0, -12.5
+    QPointF bottomRightAmbulance{ambulanceRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftAmbulance{ambulanceRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF ambulancePolygon;
+    ambulancePolygon << frontCenterAmbulance << frontRightAmbulance << bottomRightAmbulance << bottomLeftAmbulance
+                      << frontLeftAmbulance;
+    QPainterPath ambulancePath;
+    ambulancePath.addPolygon(ambulancePolygon);
+    QPainterPath strokeAmbulancePath = ps_ambulanceShape.createStroke(ambulancePath);
+    strokeAmbulancePath.addPath(ambulancePath);
+    QCOMPARE(p_ambulanceShape->shape(), strokeAmbulancePath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
 }
 
 void tst_TechnicShape::image()
@@ -2666,6 +2699,14 @@ void tst_TechnicShape::image()
     QCOMPARE(adaptedTechniqueImage.width(), p_adaptedTechniqueShape->boundingRect().width());
     QCOMPARE(adaptedTechniqueImage.height(), p_adaptedTechniqueShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedTechniqueShape);
+
+    // AmbulanceShape
+    TechnicsShape *p_ambulanceShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ambulance);
+    QPixmap ambulanceImage{p_ambulanceShape->image()};
+    QVERIFY2(!ambulanceImage.isNull(), "ambulanceShape::image() returned a null pixmap");
+    QCOMPARE(ambulanceImage.width(), p_ambulanceShape->boundingRect().width());
+    QCOMPARE(ambulanceImage.height(), p_ambulanceShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -2931,6 +2972,12 @@ void tst_TechnicShape::rect_setRect()
     p_adaptedTechniqueShape->setRect(rect);
     QCOMPARE(p_adaptedTechniqueShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedTechniqueShape);
+
+    // AmbulanceShape
+    TechnicsShape *p_ambulanceShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ambulance);
+    p_ambulanceShape->setRect(rect);
+    QCOMPARE(p_ambulanceShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -3183,6 +3230,12 @@ void tst_TechnicShape::height_setHeight()
     p_adaptedTechniqueShape->setHeight(height);
     QCOMPARE(p_adaptedTechniqueShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedTechniqueShape);
+
+    // AmbulanceShape
+    TechnicsShape *p_ambulanceShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ambulance);
+    p_ambulanceShape->setHeight(height);
+    QCOMPARE(p_ambulanceShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -3444,6 +3497,12 @@ void tst_TechnicShape::text_setText()
     p_adaptedTechniqueShape->setText(text);
     QCOMPARE(p_adaptedTechniqueShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedTechniqueShape);
+
+    // AmbulanceShape
+    TechnicsShape *p_ambulanceShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ambulance);
+    p_ambulanceShape->setText(text);
+    QCOMPARE(p_ambulanceShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -4845,6 +4904,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_adaptedTechniqueShape);
     delete p_adaptedTechniqueContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedTechniqueShape);
+
+    // AmbulanceShape
+    ContextMenuTester *p_ambulanceContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_ambulanceShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ambulance);
+    p_ambulanceShape->setMenu(p_ambulanceContextMenu);
+    scene.addItem(p_ambulanceShape);
+
+    mousePressEvent.setScenePos(p_ambulanceShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_ambulanceShape->setSelected(true);
+    QSignalSpy ambulanceContextMenuSpy(p_ambulanceShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(ambulanceContextMenuSpy.count(), 0);
+
+    QList<QAction *> ambulanceMenuActions{p_ambulanceShape->menu()->actions()};
+    QCOMPARE(ambulanceMenuActions.size(), 1);
+    ambulanceMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_ambulanceShape->boundingRect().center()));
+    ambulanceMenuActions = p_ambulanceShape->menu()->actions();
+    QCOMPARE(ambulanceMenuActions.size(), 1);
+    QCOMPARE(ambulanceContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_ambulanceShape);
+    delete p_ambulanceContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
