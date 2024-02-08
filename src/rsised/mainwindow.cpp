@@ -787,8 +787,8 @@ void MainWindow::createShapeToolBox()
                                                       , TechnicsShape::AdaptedTechnique), 9, 3);
    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Ambulance")
                                                       , TechnicsShape::Ambulance), 10, 0);
-//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Police")
-//                                                       , TechnicsShape::Police), 13, 2);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Police")
+                                                      , TechnicsShape::Police), 10, 1);
     p_technicsLayout->setRowStretch(14, 10);
     p_technicsLayout->setColumnStretch(3, 10);
     QWidget *p_technicsWidget = new QWidget(this);

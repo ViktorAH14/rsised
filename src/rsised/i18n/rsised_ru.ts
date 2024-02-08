@@ -535,9 +535,10 @@
         <translation>МП</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="790"/>
         <source>Police</source>
         <translatorcomment>Полицейская машина</translatorcomment>
-        <translation type="vanished">МВД</translation>
+        <translation>МВД</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="770"/>
