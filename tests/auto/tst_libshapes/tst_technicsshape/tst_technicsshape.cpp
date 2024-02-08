@@ -339,6 +339,13 @@ void tst_TechnicShape::constructor()
     QVERIFY2(p_ambulanceShape, "ambulanceShape is nullptr");
     QCOMPARE(int(p_ambulanceShape->type()), int(QGraphicsItem::UserType + 241));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
+
+    // PoliceShape
+    TechnicsShape *p_policeShape = nullptr;
+    p_policeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Police);
+    QVERIFY2(p_policeShape, "policeShape is nullptr");
+    QCOMPARE(int(p_policeShape->type()), int(QGraphicsItem::UserType + 242));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_policeShape);
 }
 
 void tst_TechnicShape::boundingRect()
@@ -628,6 +635,11 @@ void tst_TechnicShape::boundingRect()
     TechnicsShape *p_ambulanceShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ambulance);
     QCOMPARE(p_ambulanceShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
+
+    // PoliceShape
+    TechnicsShape *p_policeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Police);
+    QCOMPARE(p_policeShape->boundingRect(), QRectF(-15.5, -38.0, 31.0, 76.0));
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_policeShape);
 }
 
 void tst_TechnicShape::shape()
@@ -2376,6 +2388,27 @@ void tst_TechnicShape::shape()
     strokeAmbulancePath.addPath(ambulancePath);
     QCOMPARE(p_ambulanceShape->shape(), strokeAmbulancePath);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
+
+// PoliceShape
+    TechnicsShape *p_policeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Laboratory);
+    QPainterPathStroker ps_policeShape;
+    ps_policeShape.setWidth(p_policeShape->pen().widthF());
+    QRectF policeRect{p_policeShape->rect()};
+    qreal frontTabPolice{policeRect.height() / 3};
+    QPointF frontCenterPolice{policeRect.center().x(), policeRect.top()}; // 0.0, -37.5
+    QPointF frontRightPolice{policeRect.right(), policeRect.top() + frontTabPolice}; // 15.0, -12.5
+    QPointF frontLeftPolice{policeRect.left(), policeRect.top() + frontTabPolice}; // -15.0, -12.5
+    QPointF bottomRightPolice{policeRect.bottomRight()}; // 15.0, 37.5
+    QPointF bottomLeftPolice{policeRect.bottomLeft()}; // -15.0, 37.5
+    QPolygonF policePolygon;
+    policePolygon << frontCenterPolice << frontRightPolice << bottomRightPolice
+                    << bottomLeftPolice << frontLeftPolice;
+    QPainterPath policePath;
+    policePath.addPolygon(policePolygon);
+    QPainterPath strokePolicePath = ps_policeShape.createStroke(policePath);
+    strokePolicePath.addPath(policePath);
+    QCOMPARE(p_policeShape->shape(), strokePolicePath);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_policeShape);
 }
 
 void tst_TechnicShape::image()
@@ -2707,6 +2740,14 @@ void tst_TechnicShape::image()
     QCOMPARE(ambulanceImage.width(), p_ambulanceShape->boundingRect().width());
     QCOMPARE(ambulanceImage.height(), p_ambulanceShape->boundingRect().height());
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
+
+    // PoliceShape
+    TechnicsShape *p_policeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Police);
+    QPixmap policeImage{p_policeShape->image()};
+    QVERIFY2(!policeImage.isNull(), "policeShape::image() returned a null pixmap");
+    QCOMPARE(policeImage.width(), p_policeShape->boundingRect().width());
+    QCOMPARE(policeImage.height(), p_policeShape->boundingRect().height());
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_policeShape);
 }
 
 void tst_TechnicShape::rect_setRect_data()
@@ -2978,6 +3019,12 @@ void tst_TechnicShape::rect_setRect()
     p_ambulanceShape->setRect(rect);
     QCOMPARE(p_ambulanceShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
+
+    // PoliceShape
+    TechnicsShape *p_policeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Police);
+    p_policeShape->setRect(rect);
+    QCOMPARE(p_policeShape->rect(), rect);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_policeShape);
 }
 
 void tst_TechnicShape::height_setHeight_data()
@@ -3236,6 +3283,12 @@ void tst_TechnicShape::height_setHeight()
     p_ambulanceShape->setHeight(height);
     QCOMPARE(p_ambulanceShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
+
+    // PoliceShape
+    TechnicsShape *p_policeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Police);
+    p_policeShape->setHeight(height);
+    QCOMPARE(p_policeShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_policeShape);
 }
 
 void tst_TechnicShape::text_setText_data()
@@ -3503,6 +3556,12 @@ void tst_TechnicShape::text_setText()
     p_ambulanceShape->setText(text);
     QCOMPARE(p_ambulanceShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
+
+    // PoliceShape
+    TechnicsShape *p_policeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Police);
+    p_policeShape->setText(text);
+    QCOMPARE(p_policeShape->text(), text);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_policeShape);
 }
 
 void tst_TechnicShape::pipes_setPipes()
@@ -4933,6 +4992,35 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_ambulanceShape);
     delete p_ambulanceContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
+
+    // PoliceShape
+    ContextMenuTester *p_policeContextMenu = new ContextMenuTester();
+
+    TechnicsShape *p_policeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Police);
+    p_policeShape->setMenu(p_policeContextMenu);
+    scene.addItem(p_policeShape);
+
+    mousePressEvent.setScenePos(p_policeShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_policeShape->setSelected(true);
+    QSignalSpy policeContextMenuSpy(p_policeShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(policeContextMenuSpy.count(), 0);
+
+    QList<QAction *> policeMenuActions{p_policeShape->menu()->actions()};
+    QCOMPARE(policeMenuActions.size(), 1);
+    policeMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_policeShape->boundingRect().center()));
+    policeMenuActions = p_policeShape->menu()->actions();
+    QCOMPARE(policeMenuActions.size(), 1);
+    QCOMPARE(policeContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_policeShape);
+    delete p_policeContextMenu;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_policeShape);
 }
 
 QTEST_MAIN(tst_TechnicShape)
