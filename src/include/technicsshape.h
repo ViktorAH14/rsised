@@ -71,7 +71,7 @@ public:
                      , TrailerPowder    //Прицеп пожарный порошковый
                      , AdaptedCar       //Приспособленный автомобиль для целей пожаротушения
                      , AdaptedTechnique //Другая приспособленная техника для целей пожаротушения
-                     , Ambulance
+                     , Ambulance        //Скорая помощь
                      , Police };
 
     struct TechnicsShapeDeleter
@@ -1893,5 +1893,48 @@ private:
 
     QScopedPointer<QAction> m_addTextAction;
     QList<QAction *> m_adaptedTechniqueActionList;
+};
+
+class AmbulanceShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 241};
+
+    explicit AmbulanceShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~AmbulanceShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(AmbulanceShape)
+
+    void createAction();
+    void textShow(bool showText);
+    void drawAmbulanceShape(QPainter *painter);
+    QPolygonF ambulancePolygon(const QRectF &rect) const;
+
+    const ShapeType m_ambulanceType;
+    QRectF m_ambulanceRect;
+    QGraphicsTextItem *m_ambulanceText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_ambulanceActionList;
 };
 #endif // TECHNICSSHAPE_H
