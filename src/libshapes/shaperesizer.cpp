@@ -228,43 +228,48 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
         break;
     }
     case SeaplaneShape::Type: {
-        if (SeaplaneShape *seaplaneShape = dynamic_cast<SeaplaneShape *>(item))
-            seaplaneShape->setRect(value.toRectF());
+        if (SeaplaneShape *p_seaplaneShape = dynamic_cast<SeaplaneShape *>(item))
+            p_seaplaneShape->setRect(value.toRectF());
         break;
     }
     case HelicopterShape::Type: {
-        if (HelicopterShape *helicopterShape = dynamic_cast<HelicopterShape *>(item))
-            helicopterShape->setRect(value.toRectF());
+        if (HelicopterShape *p_helicopterShape = dynamic_cast<HelicopterShape *>(item))
+            p_helicopterShape->setRect(value.toRectF());
         break;
     }
     case PortableMotoPumpShape::Type: {
-        if (PortableMotoPumpShape *portableMotoPumpShape = dynamic_cast<PortableMotoPumpShape *>(item))
-            portableMotoPumpShape->setRect(value.toRectF());
+        if (PortableMotoPumpShape *p_portableMotoPumpShape = dynamic_cast<PortableMotoPumpShape *>(item))
+            p_portableMotoPumpShape->setRect(value.toRectF());
         break;
     }
     case MobileMotoPumpShape::Type: {
-        if (MobileMotoPumpShape *mobileMotoPumpShape = dynamic_cast<MobileMotoPumpShape *>(item))
-            mobileMotoPumpShape->setRect(value.toRectF());
+        if (MobileMotoPumpShape *p_mobileMotoPumpShape = dynamic_cast<MobileMotoPumpShape *>(item))
+            p_mobileMotoPumpShape->setRect(value.toRectF());
         break;
     }
     case TrailerPowderShape::Type: {
-        if (TrailerPowderShape *trailerPowderShape = dynamic_cast<TrailerPowderShape *>(item))
-            trailerPowderShape->setRect(value.toRectF());
+        if (TrailerPowderShape *p_trailerPowderShape = dynamic_cast<TrailerPowderShape *>(item))
+            p_trailerPowderShape->setRect(value.toRectF());
         break;
     }
     case AdaptedCarShape::Type: {
-        if (AdaptedCarShape *adaptedCarShape = dynamic_cast<AdaptedCarShape *>(item))
-            adaptedCarShape->setRect(value.toRectF());
+        if (AdaptedCarShape *p_adaptedCarShape = dynamic_cast<AdaptedCarShape *>(item))
+            p_adaptedCarShape->setRect(value.toRectF());
         break;
     }
     case AdaptedTechniqueShape::Type: {
-        if (AdaptedTechniqueShape *adaptedTechniqueShape = dynamic_cast<AdaptedTechniqueShape *>(item))
-            adaptedTechniqueShape->setRect(value.toRectF());
+        if (AdaptedTechniqueShape *p_adaptedTechniqueShape = dynamic_cast<AdaptedTechniqueShape *>(item))
+            p_adaptedTechniqueShape->setRect(value.toRectF());
         break;
     }
     case AmbulanceShape::Type: {
-        if (AmbulanceShape *ambulanceShape = dynamic_cast<AmbulanceShape *>(item))
-            ambulanceShape->setRect(value.toRectF());
+        if (AmbulanceShape *p_ambulanceShape = dynamic_cast<AmbulanceShape *>(item))
+            p_ambulanceShape->setRect(value.toRectF());
+        break;
+    }
+    case PoliceShape::Type: {
+        if (PoliceShape *p_policeShape = dynamic_cast<PoliceShape *>(item))
+            p_policeShape->setRect(value.toRectF());
         break;
     }
         //deviseShapes

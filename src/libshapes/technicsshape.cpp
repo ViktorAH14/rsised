@@ -178,6 +178,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case Ambulance:
         p_technicsShape = new AmbulanceShape(parent);
         break;
+    case Police:
+        p_technicsShape = new PoliceShape(parent);
+        break;
     default:
         break;
     }
@@ -10278,4 +10281,188 @@ QPolygonF AmbulanceShape::ambulancePolygon(const QRectF &rect) const
                      << QPointF(ambHalfRight, ambHalfBottom) << QPointF(ambHalfRight, ambBottom);
 
     return ambulancePolygon;
+}
+
+PoliceShape::PoliceShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_policeType{Police}
+    , m_policeRect{-15.0, -37.5, 30.0, 75.0}
+    , m_policeText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::black, 1));
+    setBrush(QBrush(Qt::white));
+}
+
+void PoliceShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawPoliceShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF PoliceShape::boundingRect() const
+{
+    QRectF boundingRect{m_policeRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath PoliceShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap PoliceShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawPoliceShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType PoliceShape::shapeType() const
+{
+    return m_policeType;
+}
+
+void PoliceShape::setRect(const QRectF &rect)
+{
+    if (m_policeRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_policeRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_policeText != nullptr)
+        m_policeText->setPos(m_policeRect.right(), m_policeRect.bottom() - m_policeRect.width() / 6);
+
+    update();
+}
+
+QRectF PoliceShape::rect() const
+{
+    return m_policeRect;
+}
+
+void PoliceShape::setHeight(const qreal &height)
+{
+    if (m_policeRect.height() == height)
+        return;
+
+    qreal oldHeight{m_policeRect.height()};
+    prepareGeometryChange();
+    m_policeRect.setHeight(height);
+    qreal dy{(m_policeRect.height() - oldHeight) / 2};
+    m_policeRect.moveTo(QPointF(m_policeRect.x(), m_policeRect.y() - dy));
+    update();
+}
+
+qreal PoliceShape::height() const
+{
+    return m_policeRect.height();
+}
+
+void PoliceShape::setText(const QString &text)
+{
+    if (m_policeText == nullptr) {
+        m_policeText = new QGraphicsTextItem(this);
+        m_policeText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_policeText->setRotation(-90);
+    }
+    m_policeText->setPlainText(text);
+    m_showText = true;
+}
+
+QString PoliceShape::text() const
+{
+    if (m_policeText == nullptr)
+        return "";
+
+    return m_policeText->toPlainText();
+}
+
+void PoliceShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_policeActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_policeActionList);
+            m_policeActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void PoliceShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_policeActionList.append(m_addTextAction.get());
+}
+
+void PoliceShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_policeText == nullptr) {
+            m_policeText=new QGraphicsTextItem(this);
+            m_policeText->setPlainText("МВД-");
+            m_policeText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_policeText->setRotation(-90);
+        }
+        m_policeText->show();
+        m_showText = true;
+    } else {
+        m_policeText->hide();
+        m_showText = false;
+    }
+}
+
+void PoliceShape::drawPoliceShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+    painter->translate(m_policeRect.center());
+    painter->rotate(270);
+    painter->translate(-m_policeRect.center());
+    QTextOption textOption{Qt::AlignCenter};
+    painter->drawText(m_policeRect, "МВД", textOption);
+    painter->translate(m_policeRect.center());
+    painter->rotate(-270);
+    painter->translate(-m_policeRect.center());
+
+    if (m_showText)
+        m_policeText->setPos(m_policeRect.right(), m_policeRect.bottom());
 }
