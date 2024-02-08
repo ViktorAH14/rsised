@@ -785,8 +785,8 @@ void MainWindow::createShapeToolBox()
                                                       , TechnicsShape::AdaptedCar), 9, 2);
    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("AdaptedTechnique")
                                                       , TechnicsShape::AdaptedTechnique), 9, 3);
-//    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Ambulance")
-//                                                       , TechnicsShape::Ambulance), 13, 1);
+   p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Ambulance")
+                                                      , TechnicsShape::Ambulance), 10, 0);
 //    p_technicsLayout->addWidget(createTechnicsCellWidget(tr("Police")
 //                                                       , TechnicsShape::Police), 13, 2);
     p_technicsLayout->setRowStretch(14, 10);

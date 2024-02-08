@@ -529,9 +529,10 @@
         <translation>АПр</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="788"/>
         <source>Ambulance</source>
         <translatorcomment>Машина скорой медицинской помощи</translatorcomment>
-        <translation type="vanished">МП</translation>
+        <translation>МП</translation>
     </message>
     <message>
         <source>Police</source>

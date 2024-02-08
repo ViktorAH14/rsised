@@ -61,6 +61,7 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             pixmapShape->scalePixmap(value.toRectF());
         break;
     }
+        //technicsShapes
     case TankerShape::Type: {
         if (TankerShape *p_tankerShape = dynamic_cast<TankerShape *>(item))
             p_tankerShape->setRect(value.toRectF());
@@ -261,11 +262,18 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             adaptedTechniqueShape->setRect(value.toRectF());
         break;
     }
+    case AmbulanceShape::Type: {
+        if (AmbulanceShape *ambulanceShape = dynamic_cast<AmbulanceShape *>(item))
+            ambulanceShape->setRect(value.toRectF());
+        break;
+    }
+        //deviseShapes
     case DeviceShape::Type: {
         if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
             deviceShape->scaleShape(value.toRectF());
         break;
     }
+        //buildingShapes
     case WallShape::Type: {
         if (WallShape *wallShape = dynamic_cast<WallShape *>(item))
             wallShape->setRect(value.toRectF());

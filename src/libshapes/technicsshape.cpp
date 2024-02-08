@@ -175,6 +175,9 @@ TechnicsShape *TechnicsShape::createTechnicsShape(ShapeType shapeType, QGraphics
     case AdaptedTechnique:
         p_technicsShape = new AdaptedTechniqueShape(parent);
         break;
+    case Ambulance:
+        p_technicsShape = new AmbulanceShape(parent);
+        break;
     default:
         break;
     }
@@ -10073,4 +10076,206 @@ QPainterPath AdaptedTechniqueShape::adaptedTechniquePath() const
     currentPath.addEllipse(ellipseRect);
 
     return currentPath;
+}
+
+AmbulanceShape::AmbulanceShape(QGraphicsItem *parent)
+    : TechnicsShape(parent)
+    , m_ambulanceType{Ambulance}
+    , m_ambulanceRect{-15.0, -37.5, 30.0, 75.0}
+    , m_ambulanceText{nullptr}
+    , m_showText{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::black, 1));
+    setBrush(QBrush(Qt::NoBrush));
+}
+
+void AmbulanceShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawAmbulanceShape(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+QRectF AmbulanceShape::boundingRect() const
+{
+    QRectF boundingRect{m_ambulanceRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+QPainterPath AmbulanceShape::shape() const
+{
+    QPainterPath path;
+    path.addPolygon(basePolygon(rect()));
+
+    return shapeFromPath(path);
+}
+
+QPixmap AmbulanceShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawAmbulanceShape(&painter);
+
+    return pixmap;
+}
+
+TechnicsShape::ShapeType AmbulanceShape::shapeType() const
+{
+    return m_ambulanceType;
+}
+
+void AmbulanceShape::setRect(const QRectF &rect)
+{
+    if (m_ambulanceRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_ambulanceRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
+    if (m_ambulanceText != nullptr)
+        m_ambulanceText->setPos(m_ambulanceRect.right(), m_ambulanceRect.bottom() - m_ambulanceRect.width() / 6);
+
+    update();
+}
+
+QRectF AmbulanceShape::rect() const
+{
+    return m_ambulanceRect;
+}
+
+void AmbulanceShape::setHeight(const qreal &height)
+{
+    if (m_ambulanceRect.height() == height)
+        return;
+
+    qreal oldHeight{m_ambulanceRect.height()};
+    prepareGeometryChange();
+    m_ambulanceRect.setHeight(height);
+    qreal dy{(m_ambulanceRect.height() - oldHeight) / 2};
+    m_ambulanceRect.moveTo(QPointF(m_ambulanceRect.x(), m_ambulanceRect.y() - dy));
+    update();
+}
+
+qreal AmbulanceShape::height() const
+{
+    return m_ambulanceRect.height();
+}
+
+void AmbulanceShape::setText(const QString &text)
+{
+    if (m_ambulanceText == nullptr) {
+        m_ambulanceText = new QGraphicsTextItem(this);
+        m_ambulanceText->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_ambulanceText->setRotation(-90);
+    }
+    m_ambulanceText->setPlainText(text);
+    m_showText = true;
+}
+
+QString AmbulanceShape::text() const
+{
+    if (m_ambulanceText == nullptr)
+        return "";
+
+    return m_ambulanceText->toPlainText();
+}
+
+void AmbulanceShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_ambulanceActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_ambulanceActionList);
+            m_ambulanceActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+void AmbulanceShape::createAction()
+{
+    QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
+    m_addTextAction.reset(new QAction(addText));
+    m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
+    QObject::connect(m_addTextAction.get(), &QAction::triggered
+                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    m_ambulanceActionList.append(m_addTextAction.get());
+}
+
+void AmbulanceShape::textShow(bool showText)
+{
+    if (showText) {
+        if (m_ambulanceText == nullptr) {
+            m_ambulanceText=new QGraphicsTextItem(this);
+            m_ambulanceText->setPlainText("СМП-");
+            m_ambulanceText->setTextInteractionFlags(Qt::TextEditorInteraction);
+            m_ambulanceText->setRotation(-90);
+        }
+        m_ambulanceText->show();
+        m_showText = true;
+    } else {
+        m_ambulanceText->hide();
+        m_showText = false;
+    }
+}
+
+void AmbulanceShape::drawAmbulanceShape(QPainter *painter)
+{
+    painter->drawPolygon(basePolygon(rect()));
+    painter->setPen(QPen(Qt::red, 1));
+    painter->setBrush(QBrush(Qt::red));
+    painter->drawPolygon(ambulancePolygon(m_ambulanceRect));
+
+    if (m_showText)
+        m_ambulanceText->setPos(m_ambulanceRect.right(), m_ambulanceRect.bottom());
+}
+
+QPolygonF AmbulanceShape::ambulancePolygon(const QRectF &rect) const
+{
+    qreal fifthWidth{rect.width() / 5.0}; //3.0
+    qreal twentyfifthHeight{rect.height() / 25.0}; //3.0
+    qreal ambLeft{rect.left() + fifthWidth}; //-9.0
+    qreal ambHalfLeft{ambLeft + fifthWidth}; //-3.0
+    qreal ambRight{rect.right() - fifthWidth}; //9.0
+    qreal ambHalfRight{ambRight - fifthWidth}; //3.0
+    qreal ambTop{rect.center().y() - twentyfifthHeight * 3.0}; //-9.0
+    qreal ambHalfTop{rect.center().y() - twentyfifthHeight}; //-3.0
+    qreal ambBottom{rect.center().y() + twentyfifthHeight *3.0}; //9.0
+    qreal ambHalfBottom{rect.center().y() +twentyfifthHeight}; //3.0
+    QPolygonF ambulancePolygon;
+    ambulancePolygon << QPointF(ambHalfLeft, ambBottom) << QPointF(ambHalfLeft, ambHalfBottom)
+                     << QPointF(ambLeft, ambHalfBottom) << QPointF(ambLeft, ambHalfTop)
+                     << QPointF(ambHalfLeft, ambHalfTop) << QPointF(ambHalfLeft, ambTop)
+                     << QPointF(ambHalfRight, ambTop) << QPointF(ambHalfRight, ambHalfTop)
+                     << QPointF(ambRight, ambHalfTop) << QPointF(ambRight, ambHalfBottom)
+                     << QPointF(ambHalfRight, ambHalfBottom) << QPointF(ambHalfRight, ambBottom);
+
+    return ambulancePolygon;
 }
