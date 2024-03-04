@@ -31,7 +31,7 @@ TextShape::TextShape(QMenu *contextMenu, QGraphicsItem *parent)
 
 void TextShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    // NOTE переработать
+    // NOTE переработать перенести в mousePressEvent
     if (isSelected()) {
         if (textInteractionFlags() == Qt::NoTextInteraction)
             setTextInteractionFlags(Qt::TextEditorInteraction);

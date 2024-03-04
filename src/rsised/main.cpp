@@ -56,6 +56,7 @@
  */
 
 #include "mainwindow.h"
+#include "config.h"
 
 #include <QApplication>
 #include <QTranslator>
@@ -63,6 +64,9 @@
 int main(int argc, char *argv[])
 {
     QApplication rsised(argc, argv);
+    rsised.setApplicationVersion(VERSION);
+    rsised.setApplicationDisplayName(APPLICATION_NAME);
+    rsised.setApplicationName(APPLICATION_NAME);
 
     QTranslator rsisedTranslator;
     if (rsisedTranslator.load(QString(":/i18n/rsised_" + QLocale::system().name())))

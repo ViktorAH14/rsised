@@ -293,7 +293,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             addItem(m_textItem);
             break;
         case InsertTechnicsShape:
-            m_technicsShape = new TechnicsShape(m_technicsShapeType);
+            m_technicsShape = TechnicsShape::createTechnicsShape(m_technicsShapeType);
             m_technicsShape->setMenu(m_contextShapeMenu);
             m_technicsShape->setPos(mouseEvent->scenePos());
             addItem(m_technicsShape);
@@ -323,7 +323,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         }
     }
 
-        QGraphicsScene::mousePressEvent(mouseEvent);
+    QGraphicsScene::mousePressEvent(mouseEvent);
 }
 
 void DiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)

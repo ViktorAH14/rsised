@@ -32,8 +32,8 @@ private slots:
     void constructor();
     void type();
     void boundingRect();
-    void setRect_data();
-    void setRect();
+    void rect_setRect_data();
+    void rect_setRect();
     void shape();
     void contains();
     void paint();
@@ -99,7 +99,7 @@ void tst_RectShape::boundingRect()
     QCOMPARE(rectShape.boundingRect(), rect);
 }
 
-void tst_RectShape::setRect_data()
+void tst_RectShape::rect_setRect_data()
 {
     QTest::addColumn<QRectF>("rect");
     QTest::newRow("rect_0") << QRectF(0.0, 0.0, 0.0, 0.0);
@@ -119,7 +119,7 @@ void tst_RectShape::setRect_data()
     QTest::newRow("rect_13") << QRectF(999999999.9, 999999999.9, 999999999.9, 999999999.9);
 }
 
-void tst_RectShape::setRect()
+void tst_RectShape::rect_setRect()
 {
     QFETCH(QRectF, rect);
 
@@ -202,9 +202,9 @@ void tst_RectShape::paint()
     QApplication::processEvents();
 #ifdef Q_OS_WIN32
     //we try to switch the desktop: if it fails, we skip the test
-    if (::SwitchDesktop( ::GetThreadDesktop( ::GetCurrentThreadId() ) ) == 0) {
-        QSKIP("The Graphics View doesn't get the paint events");
-    }
+//    if (::SwitchDesktop( ::GetThreadDesktop( ::GetCurrentThreadId() ) ) == 0) {
+//        QSKIP("The Graphics View doesn't get the paint events");
+//    }
 #endif
     QTRY_COMPARE(paintTester.m_widget, view.viewport());
     view.hide();

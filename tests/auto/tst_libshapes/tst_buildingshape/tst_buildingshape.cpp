@@ -24,6 +24,7 @@
 #include <QPen>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QGraphicsSceneMouseEvent>
 
 class tst_BuildingShape : public QObject
 {
@@ -34,11 +35,11 @@ private slots:
     void boundingRect();
     void shape();
     void image();
-    void setRect_data();
-    void setRect();
+    void rect_setRect_data();
+    void rect_setRect();
     void bindingWall();
-    void setHeight_data();
-    void setHeight();
+    void height_setHeight_data();
+    void height_setHeight();
 
     // WallShape
     void collidingWall();
@@ -257,7 +258,7 @@ void tst_BuildingShape::image()
 {
     // WallShape
     BuildingShape *p_wallShape = BuildingShape::createBuildingShape(BuildingShape::Wall);
-    QPixmap wallImage = p_wallShape->image();
+    QPixmap wallImage{p_wallShape->image()};
     QVERIFY2(!wallImage.isNull(), "WallShape::image() returned a null pixmap");
     QCOMPARE(wallImage.width(), p_wallShape->boundingRect().width());
     QCOMPARE(wallImage.height(), p_wallShape->boundingRect().height());
@@ -265,7 +266,7 @@ void tst_BuildingShape::image()
 
     // DoorShape
     BuildingShape *p_doorShape = BuildingShape::createBuildingShape(BuildingShape::Door);
-    QPixmap doorImage = p_doorShape->image();
+    QPixmap doorImage{p_doorShape->image()};
     QVERIFY2(!doorImage.isNull(), "DoorShape::image() returned a null pixmap");
     QCOMPARE(doorImage.width(), p_doorShape->boundingRect().width());
     QCOMPARE(doorImage.height(), p_doorShape->boundingRect().width());
@@ -273,7 +274,7 @@ void tst_BuildingShape::image()
 
     // WindowShape
     BuildingShape *p_windowShape = BuildingShape::createBuildingShape(BuildingShape::Window);
-    QPixmap windowImage = p_windowShape->image();
+    QPixmap windowImage{p_windowShape->image()};
     QVERIFY2(!windowImage.isNull(), "WindowShape::image() returned a null pixmap");
     QCOMPARE(windowImage.width(), p_windowShape->boundingRect().width());
     QCOMPARE(windowImage.height(), p_windowShape->boundingRect().height());
@@ -281,7 +282,7 @@ void tst_BuildingShape::image()
 
     // OpenShape
     BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
-    QPixmap openImage = p_openShape->image();
+    QPixmap openImage{p_openShape->image()};
     QVERIFY2(!openImage.isNull(), "OpenShape::image() returned a null pixmap");
     QCOMPARE(openImage.width(), p_openShape->boundingRect().width());
     QCOMPARE(openImage.height(), p_openShape->boundingRect().height());
@@ -289,7 +290,7 @@ void tst_BuildingShape::image()
 
     // StairwellShape
     BuildingShape *p_stairwellShape = BuildingShape::createBuildingShape(BuildingShape::Stairwell);
-    QPixmap stairwellImage = p_stairwellShape->image();
+    QPixmap stairwellImage{p_stairwellShape->image()};
     QVERIFY2(!stairwellImage.isNull(), "StairwellShape::image() returned a null pixmap");
     QCOMPARE(stairwellImage.width(), p_stairwellShape->boundingRect().width());
     QCOMPARE(stairwellImage.height(), p_stairwellShape->boundingRect().height());
@@ -297,14 +298,14 @@ void tst_BuildingShape::image()
 
     // StairsShape
     BuildingShape *p_stairsShape = BuildingShape::createBuildingShape(BuildingShape::Stairs);
-    QPixmap stairsImage = p_stairsShape->image();
+    QPixmap stairsImage{p_stairsShape->image()};
     QVERIFY2(!stairsImage.isNull(), "StairsShape::image() returned a null pixmap");
     QCOMPARE(stairsImage.width(), p_stairsShape->boundingRect().width());
     QCOMPARE(stairsImage.height(), p_stairsShape->boundingRect().height());
     BuildingShape::BuildingShapeDeleter::cleanup(p_stairsShape);
 }
 
-void tst_BuildingShape::setRect_data()
+void tst_BuildingShape::rect_setRect_data()
 {
     QTest::addColumn<QRectF>("rect");
     QTest::newRow("rect_0") << QRectF(0.0, 0.0, 0.0, 0.0);
@@ -324,7 +325,7 @@ void tst_BuildingShape::setRect_data()
     QTest::newRow("rect_13") << QRectF(999999999.9, 999999999.9, 999999999.9, 999999999.9);
 }
 
-void tst_BuildingShape::setRect()
+void tst_BuildingShape::rect_setRect()
 {
     QFETCH(QRectF, rect);
 
@@ -446,7 +447,7 @@ void tst_BuildingShape::bindingWall()
     BuildingShape::BuildingShapeDeleter::cleanup(p_wallShape3);
 }
 
-void tst_BuildingShape::setHeight_data()
+void tst_BuildingShape::height_setHeight_data()
 {
     QTest::addColumn<qreal>("height");
     QTest::newRow("height_0") << 0.0;
@@ -466,7 +467,7 @@ void tst_BuildingShape::setHeight_data()
     QTest::newRow("height_26") << 26.0;
 }
 
-void tst_BuildingShape::setHeight()
+void tst_BuildingShape::height_setHeight()
 {
     QFETCH(qreal, height);
 

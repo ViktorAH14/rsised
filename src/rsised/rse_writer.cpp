@@ -231,15 +231,18 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> &items, Q
             rseWriter.writeCharacters(strPixmap);
             rseWriter.writeEndElement(); // pixmapitems
         }
-        if (item->type() == TechnicsShape::Type) {
-            TechnicsShape *technicsShape = qgraphicsitem_cast<TechnicsShape *>(item);
+        if (TechnicsShape *p_technicsShape = dynamic_cast<TechnicsShape *>(item)) {
             rseWriter.writeStartElement("technics_shape");
-            rseWriter.writeAttribute("x", QString::number(technicsShape->scenePos().x()));
-            rseWriter.writeAttribute("y", QString::number(technicsShape->scenePos().y()));
-            TechnicsShape::ShapeType shapeType = technicsShape->shapeType();
+            rseWriter.writeAttribute("x", QString::number(p_technicsShape->scenePos().x()));
+            rseWriter.writeAttribute("y", QString::number(p_technicsShape->scenePos().y()));
+            rseWriter.writeAttribute("item_left", QString::number(p_technicsShape->rect().left()));
+            rseWriter.writeAttribute("item_top", QString::number(p_technicsShape->rect().top()));
+            rseWriter.writeAttribute("width", QString::number(p_technicsShape->rect().width()));
+            rseWriter.writeAttribute("height", QString::number(p_technicsShape->rect().height()));
+            TechnicsShape::ShapeType shapeType = p_technicsShape->shapeType();
             rseWriter.writeAttribute("shape_type", QString::number(shapeType));
-            rseWriter.writeAttribute("z", QString::number(technicsShape->zValue()));
-            QTransform transform(technicsShape->transform());
+            rseWriter.writeAttribute("z", QString::number(p_technicsShape->zValue()));
+            QTransform transform(p_technicsShape->transform());
             QString transfomTechnicsShape(QString::number(transform.m11()) + ","
                                           + QString::number(transform.m12()) + ","
                                           + QString::number(transform.m13()) + ","
@@ -250,6 +253,43 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> &items, Q
                                           + QString::number(transform.m32()) + ","
                                           + QString::number(transform.m33()));
             rseWriter.writeAttribute("transform", transfomTechnicsShape);
+            rseWriter.writeAttribute("text", p_technicsShape->text());
+            if (TankerShape *p_tankerShape = dynamic_cast<TankerShape *>(p_technicsShape)) {
+                rseWriter.writeAttribute("pipes", QString::number(p_tankerShape->pipes()));
+                rseWriter.writeAttribute("collector", QString::number(p_tankerShape->collector()));
+            }
+            if (PumpHoseShape *p_pumpHoseShape = dynamic_cast<PumpHoseShape *>(p_technicsShape)) {
+                rseWriter.writeAttribute("pipes", QString::number(p_pumpHoseShape->pipes()));
+                rseWriter.writeAttribute("collector", QString::number(p_pumpHoseShape->collector()));
+            }
+            if (FirstAidShape *p_firstAidShape = dynamic_cast<FirstAidShape *>(p_technicsShape)) {
+                rseWriter.writeAttribute("pipes", QString::number(p_firstAidShape->pipes()));
+                rseWriter.writeAttribute("collector", QString::number(p_firstAidShape->collector()));
+            }
+            if (EmergencyShape *p_emergencyShape = dynamic_cast<EmergencyShape *>(p_technicsShape)) {
+                rseWriter.writeAttribute("pipes", QString::number(p_emergencyShape->pipes()));
+                rseWriter.writeAttribute("collector", QString::number(p_emergencyShape->collector()));
+            }
+            if (PumpStatShape *p_pumpStatShape = dynamic_cast<PumpStatShape *>(p_technicsShape)) {
+                rseWriter.writeAttribute("pipes", QString::number(p_pumpStatShape->pipes()));
+                rseWriter.writeAttribute("collector", QString::number(p_pumpStatShape->collector()));
+            }
+            if (LafetTankerShape *p_lafetTankerShape = dynamic_cast<LafetTankerShape *>(p_technicsShape)) {
+                rseWriter.writeAttribute("pipes", QString::number(p_lafetTankerShape->pipes()));
+                rseWriter.writeAttribute("collector", QString::number(p_lafetTankerShape->collector()));
+            }
+            if (AerodromeShape *p_aerodromeShape = dynamic_cast<AerodromeShape *>(p_technicsShape)) {
+                rseWriter.writeAttribute("pipes", QString::number(p_aerodromeShape->pipes()));
+                rseWriter.writeAttribute("collector", QString::number(p_aerodromeShape->collector()));
+            }
+            if (FoamShape *p_foamShape = dynamic_cast<FoamShape *>(p_technicsShape)) {
+                rseWriter.writeAttribute("pipes", QString::number(p_foamShape->pipes()));
+                rseWriter.writeAttribute("collector", QString::number(p_foamShape->collector()));
+            }
+            if (ComboShape *p_comboShape = dynamic_cast<ComboShape *>(p_technicsShape)) {
+                rseWriter.writeAttribute("pipes", QString::number(p_comboShape->pipes()));
+                rseWriter.writeAttribute("collector", QString::number(p_comboShape->collector()));
+            }
             rseWriter.writeEndElement(); // technicsShapeItem
         }
         if (item->type() == DeviceShape::Type) {

@@ -37,7 +37,7 @@
 
 Q_DECLARE_METATYPE(QPainterPath)
 
-static const double PI {3.14159265358979323846264338327950288419717};
+static const double PI {3.14159265358979323846264338327950288419717}; //TODO put in a separate header (global.h)
 static double TWO_PI {2.0 * PI};
 
 static qreal normalizeAngle(qreal angle)
@@ -297,9 +297,30 @@ SizeGripShape::SizeGripShape(Resizer *resizer, QGraphicsItem *parent)
     , m_startPoint{QPointF()}
     , m_spanPoint{QPointF()}
 {
-    if ((parent->type() == RectShape::Type) || (parent->type() == PixmapShape::Type)
-            || (parent->type() == TechnicsShape::Type) || (parent->type() == DeviceShape::Type)
-            || (parent->type() == StairwellShape::Type) || (parent->type() == StairsShape::Type)) {
+    QList<int> rectTypeList;
+    rectTypeList << RectShape::Type << PixmapShape::Type << BaseShape::Type << TankerShape::Type
+                 << PumpHoseShape::Type << FirstAidShape::Type << EmergencyShape::Type
+                 << AutoLadderShape::Type << CrankLiftShape::Type << TelescopicLiftShape::Type
+                 << HoseCarShape::Type << CommShape::Type << TechServShape::Type
+                 << SmokRemShape::Type << PumpStatShape::Type << LafetTankerShape::Type
+                 << LafetCarShape::Type << AerodromeShape::Type << FoamShape::Type
+                 << ComboShape::Type << AerosolShape::Type << PowderShape::Type
+                 << CarbonShape::Type << GazWaterShape::Type << TrackedShape::Type
+                 << TankShape::Type << GdzsShape::Type << WaterproofShape::Type
+                 << LaboratoryShape::Type << StaffCarShape::Type << TrailerShape::Type
+                 << ShipShape::Type << BoatShape::Type << TrainShape::Type << PlaneShape::Type
+                 << SeaplaneShape::Type << HelicopterShape::Type << PortableMotoPumpShape::Type
+                 << MobileMotoPumpShape::Type << TrailerPowderShape::Type << AdaptedCarShape::Type
+                 << AdaptedTechniqueShape::Type << AmbulanceShape::Type << PoliceShape::Type
+                 << DeviceShape::Type << StairwellShape::Type << StairsShape::Type;
+    bool rectType{false};
+    for (const int itemType : rectTypeList) {
+        if (parent->type() == itemType) {
+                rectType = true;
+        }
+    }
+
+    if (rectType) {
         m_parentItemRect = parentItem()->boundingRect();
         setItemType(Rect);
         int handleNum {-1};
@@ -434,16 +455,15 @@ void SizeGripShape::doResize()
     {
         if ((m_itemType == Rect) || (m_itemType == Pie)) {
             (*m_itemResizer)(parentItem(), m_parentItemRect);
-            if (parentItem()->type() == PixmapShape::Type ||        //TODO изменить, неадекватное масштабирование нижеперечисленных шейпов
-                    parentItem()->type() == TechnicsShape::Type) {
+            if (parentItem()->type() == PixmapShape::Type) { //TODO изменить, неадекватное масштабирование нижеперечисленных шейпов
                 m_parentItemRect = parentItem()->boundingRect();
             }
-            updateHandleItemPositions();
+//            updateHandleItemPositions();
         }
         if (m_itemType == Path) {
             (*m_itemResizer)(parentItem(), QVariant::fromValue(m_parentPath));
-            updateHandleItemPositions();
         }
+        updateHandleItemPositions();
     }
 }
 

@@ -21,7 +21,7 @@
 #ifndef BUILDINGSHAPE_H
 #define BUILDINGSHAPE_H
 
-#include "../include/abstractshape.h"
+#include "abstractshape.h"
 
 #include <QBrush>
 #include <QPen>
@@ -108,7 +108,6 @@ private:
     bool m_leftButtonPressed;
 };
 
-
 class DoorShape :public BuildingShape
 {
 public:
@@ -169,7 +168,7 @@ private:
     QScopedPointer<QAction> m_doorAjarAction;
     QScopedPointer<QAction> m_doorCloseAction;
     QScopedPointer<QActionGroup> m_doorStateActionGroup;
-    QList<QAction *> m_actionList;
+    QList<QAction *> m_doorActionList;
 };
 
 class WindowShape : public BuildingShape
