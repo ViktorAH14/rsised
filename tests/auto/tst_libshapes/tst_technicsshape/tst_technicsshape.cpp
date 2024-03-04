@@ -18,6 +18,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#define TECHNICSSHAPE_TEST
+
 #include "../../../../src/include/technicsshape.h"
 
 #include <QtTest>
@@ -40,12 +42,14 @@ private slots:
     void height_setHeight();
     void text_setText_data();
     void text_setText();
+    void mousePressEvent();
+    void textShow();
+    void paint();
 
     // TankerShape, PumpHoseShape, FirstAidShape, EmergencyShape, PumpStatShape, LafetTankerShape,
     // Aerodromeshape, FoamShape
     void pipes_setPipes();
     void collector_setCollector();
-    void mousePressEvent();
 };
 
 
@@ -65,6 +69,7 @@ void tst_TechnicShape::constructor()
     p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
     QVERIFY2(p_tankerShape, "tankerShape is nullptr");
     QCOMPARE(int(p_tankerShape->type()), int(QGraphicsItem::UserType + 202));
+    QCOMPARE(p_tankerShape->shapeType(), TechnicsShape::Tanker);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
 
     // PumpHoseShape
@@ -72,6 +77,7 @@ void tst_TechnicShape::constructor()
     p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
     QVERIFY2(p_pumpHoseShape, "pumpHoseShape is nullptr");
     QCOMPARE(int(p_pumpHoseShape->type()), int(QGraphicsItem::UserType + 203));
+    QCOMPARE(p_pumpHoseShape->shapeType(), TechnicsShape::PumpHose);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
 
     // FirstAidShape
@@ -79,6 +85,7 @@ void tst_TechnicShape::constructor()
     p_firstAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
     QVERIFY2(p_firstAidShape, "pumpHoseShape is nullptr");
     QCOMPARE(int(p_firstAidShape->type()), int(QGraphicsItem::UserType + 204));
+    QCOMPARE(p_firstAidShape->shapeType(), TechnicsShape::FirstAid);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
 
     // EmergencyShape
@@ -86,6 +93,7 @@ void tst_TechnicShape::constructor()
     p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
     QVERIFY2(p_emergencyShape, "emergencyShape is nullptr");
     QCOMPARE(int(p_emergencyShape->type()), int(QGraphicsItem::UserType + 205));
+    QCOMPARE(p_emergencyShape->shapeType(), TechnicsShape::Emergency);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
 
     // AutoLadderShape
@@ -93,6 +101,7 @@ void tst_TechnicShape::constructor()
     p_autoLadderShape = TechnicsShape::createTechnicsShape(TechnicsShape::AutoLadder);
     QVERIFY2(p_autoLadderShape, "autoLadderShape is nullptr");
     QCOMPARE(int(p_autoLadderShape->type()), int(QGraphicsItem::UserType + 206));
+    QCOMPARE(p_autoLadderShape->shapeType(), TechnicsShape::AutoLadder);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
 
     // CrancLiftShape
@@ -100,6 +109,7 @@ void tst_TechnicShape::constructor()
     p_crankLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::CrankLift);
     QVERIFY2(p_crankLiftShape, "crankLiftShape is nullptr");
     QCOMPARE(int(p_crankLiftShape->type()), int(QGraphicsItem::UserType + 207));
+    QCOMPARE(p_crankLiftShape->shapeType(), TechnicsShape::CrankLift);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
 
     // TelescopicLiftShape
@@ -107,6 +117,7 @@ void tst_TechnicShape::constructor()
     p_telescopicLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::TelescopicLift);
     QVERIFY2(p_telescopicLiftShape, "telescopicLiftShape is nullptr");
     QCOMPARE(int(p_telescopicLiftShape->type()), int(QGraphicsItem::UserType + 208));
+    QCOMPARE(p_telescopicLiftShape->shapeType(), TechnicsShape::TelescopicLift);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_telescopicLiftShape);
 
     // HoseCarShape
@@ -114,6 +125,7 @@ void tst_TechnicShape::constructor()
     p_hoseCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::HoseCar);
     QVERIFY2(p_hoseCarShape, "hoseCarShape is nullptr");
     QCOMPARE(int(p_hoseCarShape->type()), int(QGraphicsItem::UserType + 209));
+    QCOMPARE(p_hoseCarShape->shapeType(), TechnicsShape::HoseCar);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_hoseCarShape);
 
     // CommShape
@@ -121,6 +133,7 @@ void tst_TechnicShape::constructor()
     p_commShape = TechnicsShape::createTechnicsShape(TechnicsShape::Comm);
     QVERIFY2(p_commShape, "commShape is nullptr");
     QCOMPARE(int(p_commShape->type()), int(QGraphicsItem::UserType + 210));
+    QCOMPARE(p_commShape->shapeType(), TechnicsShape::Comm);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
 
     // TechServShape
@@ -128,6 +141,7 @@ void tst_TechnicShape::constructor()
     p_techServShape = TechnicsShape::createTechnicsShape(TechnicsShape::TechServ);
     QVERIFY2(p_techServShape, "techServShape is nullptr");
     QCOMPARE(int(p_techServShape->type()), int(QGraphicsItem::UserType + 211));
+    QCOMPARE(p_techServShape->shapeType(), TechnicsShape::TechServ);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_techServShape);
 
     // SmokRemShape
@@ -135,6 +149,7 @@ void tst_TechnicShape::constructor()
     p_smokRemShape = TechnicsShape::createTechnicsShape(TechnicsShape::SmokRem);
     QVERIFY2(p_smokRemShape, "smokRemShape is nullptr");
     QCOMPARE(int(p_smokRemShape->type()), int(QGraphicsItem::UserType + 212));
+    QCOMPARE(p_smokRemShape->shapeType(), TechnicsShape::SmokRem);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_smokRemShape);
 
     // PumpStatShape
@@ -142,6 +157,7 @@ void tst_TechnicShape::constructor()
     p_pumpStatShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpStat);
     QVERIFY2(p_pumpStatShape, "pumpStatShape is nullptr");
     QCOMPARE(int(p_pumpStatShape->type()), int(QGraphicsItem::UserType + 213));
+    QCOMPARE(p_pumpStatShape->shapeType(), TechnicsShape::PumpStat);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
 
     // LafetTankerShape
@@ -149,6 +165,7 @@ void tst_TechnicShape::constructor()
     p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
     QVERIFY2(p_lafetTankerShape, "lafetTankerShape is nullptr");
     QCOMPARE(int(p_lafetTankerShape->type()), int(QGraphicsItem::UserType + 214));
+    QCOMPARE(p_lafetTankerShape->shapeType(), TechnicsShape::LafetTanker);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
 
     // LafetCarShape
@@ -156,6 +173,7 @@ void tst_TechnicShape::constructor()
     p_lafetCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
     QVERIFY2(p_lafetCarShape, "lafetCarShape is nullptr");
     QCOMPARE(int(p_lafetCarShape->type()), int(QGraphicsItem::UserType + 215));
+    QCOMPARE(p_lafetCarShape->shapeType(), TechnicsShape::LafetCar);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetCarShape);
 
     // AerodromeShape
@@ -163,6 +181,7 @@ void tst_TechnicShape::constructor()
     p_aerodromeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerodrome);
     QVERIFY2(p_aerodromeShape, "aerodromeShape is nullptr");
     QCOMPARE(int(p_aerodromeShape->type()), int(QGraphicsItem::UserType + 216));
+    QCOMPARE(p_aerodromeShape->shapeType(), TechnicsShape::Aerodrome);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
 
     // FoamShape
@@ -170,6 +189,7 @@ void tst_TechnicShape::constructor()
     p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Foam);
     QVERIFY2(p_foamShape, "foamShape is nullptr");
     QCOMPARE(int(p_foamShape->type()), int(QGraphicsItem::UserType + 217));
+    QCOMPARE(p_foamShape->shapeType(), TechnicsShape::Foam);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
 
     // ComboShape
@@ -177,6 +197,7 @@ void tst_TechnicShape::constructor()
     p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Combo);
     QVERIFY2(p_comboShape, "comboShape is nullptr");
     QCOMPARE(int(p_comboShape->type()), int(QGraphicsItem::UserType + 218));
+    QCOMPARE(p_comboShape->shapeType(), TechnicsShape::Combo);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
 
     // AerosolShape
@@ -184,6 +205,7 @@ void tst_TechnicShape::constructor()
     p_aerosolShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerosol);
     QVERIFY2(p_aerosolShape, "aerosolShape is nullptr");
     QCOMPARE(int(p_aerosolShape->type()), int(QGraphicsItem::UserType + 219));
+    QCOMPARE(p_aerosolShape->shapeType(), TechnicsShape::Aerosol);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerosolShape);
 
     // PowderShape
@@ -191,6 +213,7 @@ void tst_TechnicShape::constructor()
     p_powderShape = TechnicsShape::createTechnicsShape(TechnicsShape::Powder);
     QVERIFY2(p_powderShape, "powderShape is nullptr");
     QCOMPARE(int(p_powderShape->type()), int(QGraphicsItem::UserType + 220));
+    QCOMPARE(p_powderShape->shapeType(), TechnicsShape::Powder);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
 
     // CarbonShape
@@ -198,6 +221,7 @@ void tst_TechnicShape::constructor()
     p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
     QVERIFY2(p_carbonShape, "carbonShape is nullptr");
     QCOMPARE(int(p_carbonShape->type()), int(QGraphicsItem::UserType + 221));
+    QCOMPARE(p_carbonShape->shapeType(), TechnicsShape::Carbon);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
 
     // GazWaterShape
@@ -205,6 +229,7 @@ void tst_TechnicShape::constructor()
     p_gazWaterShape = TechnicsShape::createTechnicsShape(TechnicsShape::GazWater);
     QVERIFY2(p_gazWaterShape, "gazWaterShape is nullptr");
     QCOMPARE(int(p_gazWaterShape->type()), int(QGraphicsItem::UserType + 222));
+    QCOMPARE(p_gazWaterShape->shapeType(), TechnicsShape::GazWater);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
 
     // TrackedShape
@@ -212,6 +237,7 @@ void tst_TechnicShape::constructor()
     p_trackedShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tracked);
     QVERIFY2(p_trackedShape, "trackedShape is nullptr");
     QCOMPARE(int(p_trackedShape->type()), int(QGraphicsItem::UserType + 223));
+    QCOMPARE(p_trackedShape->shapeType(), TechnicsShape::Tracked);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
 
     // TankShape
@@ -219,6 +245,7 @@ void tst_TechnicShape::constructor()
     p_tankShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tank);
     QVERIFY2(p_tankShape, "tankShape is nullptr");
     QCOMPARE(int(p_tankShape->type()), int(QGraphicsItem::UserType + 224));
+    QCOMPARE(p_tankShape->shapeType(), TechnicsShape::Tank);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
 
     // GdzsShape
@@ -226,6 +253,7 @@ void tst_TechnicShape::constructor()
     p_gdzsShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
     QVERIFY2(p_gdzsShape, "gdzsShape is nullptr");
     QCOMPARE(int(p_gdzsShape->type()), int(QGraphicsItem::UserType + 225));
+    QCOMPARE(p_gdzsShape->shapeType(), TechnicsShape::GDZS);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
 
     // WaterproofShape
@@ -233,6 +261,7 @@ void tst_TechnicShape::constructor()
     p_waterproofShape = TechnicsShape::createTechnicsShape(TechnicsShape::Waterproof);
     QVERIFY2(p_waterproofShape, "waterproofShape is nullptr");
     QCOMPARE(int(p_waterproofShape->type()), int(QGraphicsItem::UserType + 226));
+    QCOMPARE(p_waterproofShape->shapeType(), TechnicsShape::Waterproof);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
 
     // LaboratoryShape
@@ -240,6 +269,7 @@ void tst_TechnicShape::constructor()
     p_laboratoryShape = TechnicsShape::createTechnicsShape(TechnicsShape::Laboratory);
     QVERIFY2(p_laboratoryShape, "laboratoryShape is nullptr");
     QCOMPARE(int(p_laboratoryShape->type()), int(QGraphicsItem::UserType + 227));
+    QCOMPARE(p_laboratoryShape->shapeType(), TechnicsShape::Laboratory);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
 
     // StaffCarShape
@@ -247,6 +277,7 @@ void tst_TechnicShape::constructor()
     p_staffCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::StaffCar);
     QVERIFY2(p_staffCarShape, "staffCarShape is nullptr");
     QCOMPARE(int(p_staffCarShape->type()), int(QGraphicsItem::UserType + 228));
+    QCOMPARE(p_staffCarShape->shapeType(), TechnicsShape::StaffCar);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_staffCarShape);
 
     // TrailerShape
@@ -254,6 +285,7 @@ void tst_TechnicShape::constructor()
     p_trailerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Trailer);
     QVERIFY2(p_trailerShape, "trailerShape is nullptr");
     QCOMPARE(int(p_trailerShape->type()), int(QGraphicsItem::UserType + 229));
+    QCOMPARE(p_trailerShape->shapeType(), TechnicsShape::Trailer);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerShape);
 
     // ShipShape
@@ -261,6 +293,7 @@ void tst_TechnicShape::constructor()
     p_shipShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ship);
     QVERIFY2(p_shipShape, "shipShape is nullptr");
     QCOMPARE(int(p_shipShape->type()), int(QGraphicsItem::UserType + 230));
+    QCOMPARE(p_shipShape->shapeType(), TechnicsShape::Ship);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_shipShape);
 
     // BoatShape
@@ -268,6 +301,7 @@ void tst_TechnicShape::constructor()
     p_boatShape = TechnicsShape::createTechnicsShape(TechnicsShape::Boat);
     QVERIFY2(p_boatShape, "boatShape is nullptr");
     QCOMPARE(int(p_boatShape->type()), int(QGraphicsItem::UserType + 231));
+    QCOMPARE(p_boatShape->shapeType(), TechnicsShape::Boat);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
 
     // TrainShape
@@ -275,6 +309,7 @@ void tst_TechnicShape::constructor()
     p_trainShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
     QVERIFY2(p_trainShape, "trainShape is nullptr");
     QCOMPARE(int(p_trainShape->type()), int(QGraphicsItem::UserType + 232));
+    QCOMPARE(p_trainShape->shapeType(), TechnicsShape::Train);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
 
     // PlaneShape
@@ -282,6 +317,7 @@ void tst_TechnicShape::constructor()
     p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Plane);
     QVERIFY2(p_planeShape, "planeShape is nullptr");
     QCOMPARE(int(p_planeShape->type()), int(QGraphicsItem::UserType + 233));
+    QCOMPARE(p_planeShape->shapeType(), TechnicsShape::Plane);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
 
     // SeaplaneShape
@@ -289,6 +325,7 @@ void tst_TechnicShape::constructor()
     p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
     QVERIFY2(p_seaplaneShape, "seaplaneShape is nullptr");
     QCOMPARE(int(p_seaplaneShape->type()), int(QGraphicsItem::UserType + 234));
+    QCOMPARE(p_seaplaneShape->shapeType(), TechnicsShape::Seaplane);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
 
     // HelicopterShape
@@ -296,6 +333,7 @@ void tst_TechnicShape::constructor()
     p_helicopterShape = TechnicsShape::createTechnicsShape(TechnicsShape::Helicopter);
     QVERIFY2(p_helicopterShape, "helicopterShape is nullptr");
     QCOMPARE(int(p_helicopterShape->type()), int(QGraphicsItem::UserType + 235));
+    QCOMPARE(p_helicopterShape->shapeType(), TechnicsShape::Helicopter);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
 
     // PortableMotoPumpShape
@@ -303,6 +341,7 @@ void tst_TechnicShape::constructor()
     p_portableMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::PortableMotoPump);
     QVERIFY2(p_portableMotoPumpShape, "portableMotoPumpShape is nullptr");
     QCOMPARE(int(p_portableMotoPumpShape->type()), int(QGraphicsItem::UserType + 236));
+    QCOMPARE(p_portableMotoPumpShape->shapeType(), TechnicsShape::PortableMotoPump);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_portableMotoPumpShape);
 
     // MobileMotoPumpShape
@@ -310,6 +349,7 @@ void tst_TechnicShape::constructor()
     p_mobileMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::MobileMotoPump);
     QVERIFY2(p_mobileMotoPumpShape, "mobileMotoPumpShape is nullptr");
     QCOMPARE(int(p_mobileMotoPumpShape->type()), int(QGraphicsItem::UserType + 237));
+    QCOMPARE(p_mobileMotoPumpShape->shapeType(), TechnicsShape::MobileMotoPump);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_mobileMotoPumpShape);
 
     // TrailerPowderShape
@@ -317,6 +357,7 @@ void tst_TechnicShape::constructor()
     p_trailerPowderShape = TechnicsShape::createTechnicsShape(TechnicsShape::TrailerPowder);
     QVERIFY2(p_trailerPowderShape, "trailerPowderShape is nullptr");
     QCOMPARE(int(p_trailerPowderShape->type()), int(QGraphicsItem::UserType + 238));
+    QCOMPARE(p_trailerShape->shapeType(), TechnicsShape::TrailerPowder);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerPowderShape);
 
     // AdaptedCarShape
@@ -324,6 +365,7 @@ void tst_TechnicShape::constructor()
     p_adaptedCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedCar);
     QVERIFY2(p_adaptedCarShape, "adaptedCarShape is nullptr");
     QCOMPARE(int(p_adaptedCarShape->type()), int(QGraphicsItem::UserType + 239));
+    QCOMPARE(p_adaptedCarShape->shapeType(), TechnicsShape::AdaptedCar);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedCarShape);
 
     // AdaptedTechniqueShape
@@ -331,6 +373,7 @@ void tst_TechnicShape::constructor()
     p_adaptedTechniqueShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedTechnique);
     QVERIFY2(p_adaptedTechniqueShape, "adaptedTechniqueShape is nullptr");
     QCOMPARE(int(p_adaptedTechniqueShape->type()), int(QGraphicsItem::UserType + 240));
+    QCOMPARE(p_adaptedTechniqueShape->shapeType(), TechnicsShape::AdaptedTechnique);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedTechniqueShape);
 
     // AmbulanceShape
@@ -338,6 +381,7 @@ void tst_TechnicShape::constructor()
     p_ambulanceShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ambulance);
     QVERIFY2(p_ambulanceShape, "ambulanceShape is nullptr");
     QCOMPARE(int(p_ambulanceShape->type()), int(QGraphicsItem::UserType + 241));
+    QCOMPARE(p_ambulanceShape->shapeType(), TechnicsShape::Ambulance);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
 
     // PoliceShape
@@ -345,6 +389,7 @@ void tst_TechnicShape::constructor()
     p_policeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Police);
     QVERIFY2(p_policeShape, "policeShape is nullptr");
     QCOMPARE(int(p_policeShape->type()), int(QGraphicsItem::UserType + 242));
+    QCOMPARE(p_policeShape->shapeType(), TechnicsShape::Police);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_policeShape);
 }
 
@@ -1563,7 +1608,7 @@ void tst_TechnicShape::shape()
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
 
 // FoamShape
-    TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerodrome);
+    TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Foam);
     QPainterPathStroker ps_foamShape;
     ps_foamShape.setWidth(p_foamShape->pen().widthF());
     QRectF foamRect{p_foamShape->rect()};
@@ -1583,7 +1628,7 @@ void tst_TechnicShape::shape()
     QCOMPARE(p_foamShape->shape(), strokeFoamPath);
 
     // FoamShape show pipes
-    AerodromeShape *p_foam = dynamic_cast<AerodromeShape *>(p_foamShape);
+    FoamShape *p_foam = dynamic_cast<FoamShape *>(p_foamShape);
     foamPath.clear();
     strokeFoamPath.clear();
     p_foam->setPipes(true);
@@ -1659,7 +1704,7 @@ void tst_TechnicShape::shape()
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
 
 // ComboShape
-    TechnicsShape *p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerodrome);
+    TechnicsShape *p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Combo);
     QPainterPathStroker ps_comboShape;
     ps_comboShape.setWidth(p_comboShape->pen().widthF());
     QRectF comboRect{p_comboShape->rect()};
@@ -1679,7 +1724,7 @@ void tst_TechnicShape::shape()
     QCOMPARE(p_comboShape->shape(), strokeComboPath);
 
     // ComboShape show pipes
-    AerodromeShape *p_combo = dynamic_cast<AerodromeShape *>(p_comboShape);
+    ComboShape *p_combo = dynamic_cast<ComboShape *>(p_comboShape);
     comboPath.clear();
     strokeComboPath.clear();
     p_combo->setPipes(true);
@@ -2776,252 +2821,294 @@ void tst_TechnicShape::rect_setRect()
 
     // BaseShape
     TechnicsShape *p_baseShape = TechnicsShape::createTechnicsShape(TechnicsShape::Base);
+    p_baseShape->setText("Base");
     p_baseShape->setRect(rect);
     QCOMPARE(p_baseShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_baseShape);
 
     // TankerShape
     TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
+    p_tankerShape->setText("Tanker");
     p_tankerShape->setRect(rect);
     QCOMPARE(p_tankerShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
 
     // PumpHoseShape
     TechnicsShape *p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
+    p_pumpHoseShape->setText("PumpHose");
     p_pumpHoseShape->setRect(rect);
     QCOMPARE(p_pumpHoseShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
 
     // FirstAidShape
     TechnicsShape *p_firstAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
+    p_firstAidShape->setText("FirstAid");
     p_firstAidShape->setRect(rect);
     QCOMPARE(p_firstAidShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
 
     // EmergencyShape
     TechnicsShape *p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
+    p_emergencyShape->setText("Emergency");
     p_emergencyShape->setRect(rect);
     QCOMPARE(p_emergencyShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
 
     // AutoLadderShape
     TechnicsShape *p_autoLadderShape = TechnicsShape::createTechnicsShape(TechnicsShape::AutoLadder);
+    p_autoLadderShape->setText("AutoLadder");
     p_autoLadderShape->setRect(rect);
     QCOMPARE(p_autoLadderShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
 
     // CrankLIftShape
     TechnicsShape *p_crankLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::CrankLift);
+    p_crankLiftShape->setText("CrankLift");
     p_crankLiftShape->setRect(rect);
     QCOMPARE(p_crankLiftShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
 
     // TelescopicLIftShape
     TechnicsShape *p_telescopicLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::TelescopicLift);
+    p_telescopicLiftShape->setText("TelescopicLift");
     p_telescopicLiftShape->setRect(rect);
     QCOMPARE(p_telescopicLiftShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_telescopicLiftShape);
 
     // HoseCarShape
     TechnicsShape *p_hoseCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::HoseCar);
+    p_hoseCarShape->setText("HoseCar");
     p_hoseCarShape->setRect(rect);
     QCOMPARE(p_hoseCarShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_hoseCarShape);
 
     // CommShape
     TechnicsShape *p_commShape = TechnicsShape::createTechnicsShape(TechnicsShape::Comm);
+    p_commShape->setText("Comm");
     p_commShape->setRect(rect);
     QCOMPARE(p_commShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
 
     // TechServShape
     TechnicsShape *p_techServShape = TechnicsShape::createTechnicsShape(TechnicsShape::TechServ);
+    p_techServShape->setText("TechServ");
     p_techServShape->setRect(rect);
     QCOMPARE(p_techServShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_techServShape);
 
     // SmokRemShape
     TechnicsShape *p_smokRemShape = TechnicsShape::createTechnicsShape(TechnicsShape::SmokRem);
+    p_smokRemShape->setText("SmokRem");
     p_smokRemShape->setRect(rect);
     QCOMPARE(p_smokRemShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_smokRemShape);
 
     // PumpStatShape
     TechnicsShape *p_pumpStatShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpStat);
+    p_pumpStatShape->setText("PumpStat");
     p_pumpStatShape->setRect(rect);
     QCOMPARE(p_pumpStatShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
 
     // LafetTankerShape
     TechnicsShape *p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
+    p_lafetTankerShape->setText("LafetTanker");
     p_lafetTankerShape->setRect(rect);
     QCOMPARE(p_lafetTankerShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
 
     // LafetCarShape
     TechnicsShape *p_lafetCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
+    p_lafetCarShape->setText("LafetCar");
     p_lafetCarShape->setRect(rect);
     QCOMPARE(p_lafetCarShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetCarShape);
 
     // AerodromeShape
     TechnicsShape *p_aerodromeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerodrome);
+    p_aerodromeShape->setText("Aerodrome");
     p_aerodromeShape->setRect(rect);
     QCOMPARE(p_aerodromeShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
 
     // FoamShape
     TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Foam);
+    p_foamShape->setText("Foam");
     p_foamShape->setRect(rect);
     QCOMPARE(p_foamShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
 
     // ComboShape
     TechnicsShape *p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Combo);
+    p_comboShape->setText("Combo");
     p_comboShape->setRect(rect);
     QCOMPARE(p_comboShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
 
     // AerosolShape
     TechnicsShape *p_aerosolShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerosol);
+    p_aerosolShape->setText("Aerosol");
     p_aerosolShape->setRect(rect);
     QCOMPARE(p_aerosolShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerosolShape);
 
     // PowderShape
     TechnicsShape *p_powderShape = TechnicsShape::createTechnicsShape(TechnicsShape::Powder);
+    p_powderShape->setText("Powder");
     p_powderShape->setRect(rect);
     QCOMPARE(p_powderShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
 
     // CarbonShape
     TechnicsShape *p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
+    p_carbonShape->setText("Carbon");
     p_carbonShape->setRect(rect);
     QCOMPARE(p_carbonShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
 
     // GazWaterShape
     TechnicsShape *p_gazWaterShape = TechnicsShape::createTechnicsShape(TechnicsShape::GazWater);
+    p_gazWaterShape->setText("GazWater");
     p_gazWaterShape->setRect(rect);
     QCOMPARE(p_gazWaterShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
 
     // TrackedShape
     TechnicsShape *p_trackedShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tracked);
+    p_trackedShape->setText("Tracked");
     p_trackedShape->setRect(rect);
     QCOMPARE(p_trackedShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
 
     // TankShape
     TechnicsShape *p_tankShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tank);
+    p_tankShape->setText("Tank");
     p_tankShape->setRect(rect);
     QCOMPARE(p_tankShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
 
     // GdzsShape
     TechnicsShape *p_gdzsShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
+    p_gdzsShape->setText("GDZS");
     p_gdzsShape->setRect(rect);
     QCOMPARE(p_gdzsShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
 
     // WaterproofShape
     TechnicsShape *p_waterproofShape = TechnicsShape::createTechnicsShape(TechnicsShape::Waterproof);
+    p_waterproofShape->setText("Waterproof");
     p_waterproofShape->setRect(rect);
     QCOMPARE(p_waterproofShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
 
     // LaboratoryShape
     TechnicsShape *p_laboratoryShape = TechnicsShape::createTechnicsShape(TechnicsShape::Laboratory);
+    p_laboratoryShape->setText("Laboratory");
     p_laboratoryShape->setRect(rect);
     QCOMPARE(p_laboratoryShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
 
     // StaffCarShape
     TechnicsShape *p_staffCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::StaffCar);
+    p_staffCarShape->setText("StaffCar");
     p_staffCarShape->setRect(rect);
     QCOMPARE(p_staffCarShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_staffCarShape);
 
     // TrailerShape
     TechnicsShape *p_trailerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Trailer);
+    p_trailerShape->setText("Trailer");
     p_trailerShape->setRect(rect);
     QCOMPARE(p_trailerShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerShape);
 
     // ShipShape
     TechnicsShape *p_shipShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ship);
+    p_shipShape->setText("Ship");
     p_shipShape->setRect(rect);
     QCOMPARE(p_shipShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_shipShape);
 
     // BoatShape
     TechnicsShape *p_boatShape = TechnicsShape::createTechnicsShape(TechnicsShape::Boat);
+    p_boatShape->setText("Boat");
     p_boatShape->setRect(rect);
     QCOMPARE(p_boatShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
 
     // TrainShape
     TechnicsShape *p_trainShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    p_trainShape->setText("Train");
     p_trainShape->setRect(rect);
     QCOMPARE(p_trainShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
 
     // PlaneShape
     TechnicsShape *p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Plane);
+    p_planeShape->setText("Plane");
     p_planeShape->setRect(rect);
     QCOMPARE(p_planeShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
 
     // SeaplaneShape
     TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
+    p_seaplaneShape->setText("Seaplane");
     p_seaplaneShape->setRect(rect);
     QCOMPARE(p_seaplaneShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
 
     // HelicopterShape
     TechnicsShape *p_helicopterShape = TechnicsShape::createTechnicsShape(TechnicsShape::Helicopter);
+    p_helicopterShape->setText("Helicopter");
     p_helicopterShape->setRect(rect);
     QCOMPARE(p_helicopterShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
 
     // PortableMotoPumpShape
     TechnicsShape *p_portableMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::PortableMotoPump);
+    p_portableMotoPumpShape->setText("PortableMOtoPump");
     p_portableMotoPumpShape->setRect(rect);
     QCOMPARE(p_portableMotoPumpShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_portableMotoPumpShape);
 
     // MobileMotoPumpShape
     TechnicsShape *p_mobileMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::MobileMotoPump);
+    p_mobileMotoPumpShape->setText("MobileMotoPump");
     p_mobileMotoPumpShape->setRect(rect);
     QCOMPARE(p_mobileMotoPumpShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_mobileMotoPumpShape);
 
     // TrailerPowderShape
     TechnicsShape *p_trailerPowderShape = TechnicsShape::createTechnicsShape(TechnicsShape::TrailerPowder);
+    p_trailerPowderShape->setText("TrilerPowder");
     p_trailerPowderShape->setRect(rect);
     QCOMPARE(p_trailerPowderShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerPowderShape);
 
     // AdaptedCarShape
     TechnicsShape *p_adaptedCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedCar);
+    p_adaptedCarShape->setText("AdaptedCar");
     p_adaptedCarShape->setRect(rect);
     QCOMPARE(p_adaptedCarShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedCarShape);
 
     // AdaptedTechniqueShape
     TechnicsShape *p_adaptedTechniqueShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedTechnique);
+    p_adaptedTechniqueShape->setText("AdaptedTechnique");
     p_adaptedTechniqueShape->setRect(rect);
     QCOMPARE(p_adaptedTechniqueShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedTechniqueShape);
 
     // AmbulanceShape
     TechnicsShape *p_ambulanceShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ambulance);
+    p_ambulanceShape->setText("Ambulance");
     p_ambulanceShape->setRect(rect);
     QCOMPARE(p_ambulanceShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
 
     // PoliceShape
     TechnicsShape *p_policeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Police);
+    p_policeShape->setText("Police");
     p_policeShape->setRect(rect);
     QCOMPARE(p_policeShape->rect(), rect);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_policeShape);
@@ -3103,6 +3190,12 @@ void tst_TechnicShape::height_setHeight()
     p_commShape->setHeight(height);
     QCOMPARE(p_commShape->height(), height);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
+
+    // TechServShape
+    TechnicsShape *p_techServShape = TechnicsShape::createTechnicsShape(TechnicsShape::TechServ);
+    p_techServShape->setHeight(height);
+    QCOMPARE(p_techServShape->height(), height);
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_techServShape);
 
     // SmokRemShape
     TechnicsShape *p_smokRemShape = TechnicsShape::createTechnicsShape(TechnicsShape::SmokRem);
@@ -3313,252 +3406,294 @@ void tst_TechnicShape::text_setText()
 
     // BaseShape
     TechnicsShape *p_baseShape = TechnicsShape::createTechnicsShape(TechnicsShape::Base);
+    QCOMPARE(p_baseShape->text(), "");
     p_baseShape->setText(text);
     QCOMPARE(p_baseShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_baseShape);
 
     // TankerShape
     TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
+    QCOMPARE(p_tankerShape->text(), "");
     p_tankerShape->setText(text);
     QCOMPARE(p_tankerShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
 
     // PumpHoseShape
     TechnicsShape *p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
+    QCOMPARE(p_pumpHoseShape->text(), "");
     p_pumpHoseShape->setText(text);
     QCOMPARE(p_pumpHoseShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
 
     // FirstAidShape
     TechnicsShape *p_firstAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
+    QCOMPARE(p_firstAidShape->text(), "");
     p_firstAidShape->setText(text);
     QCOMPARE(p_firstAidShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
 
     // EmergencyShape
     TechnicsShape *p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
+    QCOMPARE(p_emergencyShape->text(), "");
     p_emergencyShape->setText(text);
     QCOMPARE(p_emergencyShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
 
     // AutoLadderShape
     TechnicsShape *p_autoLadderShape = TechnicsShape::createTechnicsShape(TechnicsShape::AutoLadder);
+    QCOMPARE(p_autoLadderShape->text(), "");
     p_autoLadderShape->setText(text);
     QCOMPARE(p_autoLadderShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
 
     // CrankLIftShape
     TechnicsShape *p_crankLIftShape = TechnicsShape::createTechnicsShape(TechnicsShape::CrankLift);
+    QCOMPARE(p_crankLIftShape->text(), "");
     p_crankLIftShape->setText(text);
     QCOMPARE(p_crankLIftShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLIftShape);
 
     // TelescopicLIftShape
     TechnicsShape *p_telescopicLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::TelescopicLift);
+    QCOMPARE(p_telescopicLiftShape->text(), "");
     p_telescopicLiftShape->setText(text);
     QCOMPARE(p_telescopicLiftShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_telescopicLiftShape);
 
     // HoseCarShape
     TechnicsShape *p_hoseCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::HoseCar);
+    QCOMPARE(p_hoseCarShape->text(), "");
     p_hoseCarShape->setText(text);
     QCOMPARE(p_hoseCarShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_hoseCarShape);
 
     // CommShape
     TechnicsShape *p_commShape = TechnicsShape::createTechnicsShape(TechnicsShape::Comm);
+    QCOMPARE(p_commShape->text(), "");
     p_commShape->setText(text);
     QCOMPARE(p_commShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
 
     // TechServShape
     TechnicsShape *p_techServShape = TechnicsShape::createTechnicsShape(TechnicsShape::TechServ);
+    QCOMPARE(p_techServShape->text(), "");
     p_techServShape->setText(text);
     QCOMPARE(p_techServShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_techServShape);
 
     // SmokRemShape
     TechnicsShape *p_smokRemShape = TechnicsShape::createTechnicsShape(TechnicsShape::SmokRem);
+    QCOMPARE(p_smokRemShape->text(), "");
     p_smokRemShape->setText(text);
     QCOMPARE(p_smokRemShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_smokRemShape);
 
     // PumpStatShape
     TechnicsShape *p_pumpStatShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpStat);
+    QCOMPARE(p_pumpStatShape->text(), "");
     p_pumpStatShape->setText(text);
     QCOMPARE(p_pumpStatShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
 
     // LafetTankerShape
     TechnicsShape *p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
+    QCOMPARE(p_lafetTankerShape->text(), "");
     p_lafetTankerShape->setText(text);
     QCOMPARE(p_lafetTankerShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
 
     // LafetCarShape
     TechnicsShape *p_lafetCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
+    QCOMPARE(p_lafetCarShape->text(), "");
     p_lafetCarShape->setText(text);
     QCOMPARE(p_lafetCarShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetCarShape);
 
     // AerodromeShape
     TechnicsShape *p_aerodromeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerodrome);
+    QCOMPARE(p_aerodromeShape->text(), "");
     p_aerodromeShape->setText(text);
     QCOMPARE(p_aerodromeShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
 
     // FoamShape
     TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Foam);
+    QCOMPARE(p_foamShape->text(), "");
     p_foamShape->setText(text);
     QCOMPARE(p_foamShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
 
     // ComboShape
     TechnicsShape *p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Combo);
+    QCOMPARE(p_comboShape->text(), "");
     p_comboShape->setText(text);
     QCOMPARE(p_comboShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
 
     // AerosolShape
     TechnicsShape *p_aerosolShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerosol);
+    QCOMPARE(p_aerosolShape->text(), "");
     p_aerosolShape->setText(text);
     QCOMPARE(p_aerosolShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerosolShape);
 
     // PowderShape
     TechnicsShape *p_powderShape = TechnicsShape::createTechnicsShape(TechnicsShape::Powder);
+    QCOMPARE(p_powderShape->text(), "");
     p_powderShape->setText(text);
     QCOMPARE(p_powderShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
 
     // CarbonShape
     TechnicsShape *p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
+    QCOMPARE(p_carbonShape->text(), "");
     p_carbonShape->setText(text);
     QCOMPARE(p_carbonShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
 
     // GazWaterShape
     TechnicsShape *p_gazWaterShape = TechnicsShape::createTechnicsShape(TechnicsShape::GazWater);
+    QCOMPARE(p_gazWaterShape->text(), "");
     p_gazWaterShape->setText(text);
     QCOMPARE(p_gazWaterShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
 
     // TrackedShape
     TechnicsShape *p_trackedShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tracked);
+    QCOMPARE(p_trackedShape->text(), "");
     p_trackedShape->setText(text);
     QCOMPARE(p_trackedShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
 
     // TankShape
     TechnicsShape *p_tankShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tank);
+    QCOMPARE(p_tankShape->text(), "");
     p_tankShape->setText(text);
     QCOMPARE(p_tankShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
 
     // GdzsShape
     TechnicsShape *p_gdzsShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
+    QCOMPARE(p_gdzsShape->text(), "");
     p_gdzsShape->setText(text);
     QCOMPARE(p_gdzsShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
 
     // WaterproofShape
     TechnicsShape *p_waterproofShape = TechnicsShape::createTechnicsShape(TechnicsShape::Waterproof);
+    QCOMPARE(p_waterproofShape->text(), "");
     p_waterproofShape->setText(text);
     QCOMPARE(p_waterproofShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
 
     // LaboratoryShape
     TechnicsShape *p_laboratoryShape = TechnicsShape::createTechnicsShape(TechnicsShape::Laboratory);
+    QCOMPARE(p_laboratoryShape->text(), "");
     p_laboratoryShape->setText(text);
     QCOMPARE(p_laboratoryShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
 
     // StaffCarShape
     TechnicsShape *p_staffCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::StaffCar);
+    QCOMPARE(p_staffCarShape->text(), "");
     p_staffCarShape->setText(text);
     QCOMPARE(p_staffCarShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_staffCarShape);
 
     // TrailerShape
     TechnicsShape *p_trailerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Trailer);
+    QCOMPARE(p_trailerShape->text(), "");
     p_trailerShape->setText(text);
     QCOMPARE(p_trailerShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerShape);
 
     // ShipShape
     TechnicsShape *p_shipShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ship);
+    QCOMPARE(p_shipShape->text(), "");
     p_shipShape->setText(text);
     QCOMPARE(p_shipShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_shipShape);
 
     // BoatShape
     TechnicsShape *p_boatShape = TechnicsShape::createTechnicsShape(TechnicsShape::Boat);
+    QCOMPARE(p_boatShape->text(), "");
     p_boatShape->setText(text);
     QCOMPARE(p_boatShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
 
     // TrainShape
     TechnicsShape *p_trainShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    QCOMPARE(p_trainShape->text(), "");
     p_trainShape->setText(text);
     QCOMPARE(p_trainShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
 
     // PlaneShape
     TechnicsShape *p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Plane);
+    QCOMPARE(p_planeShape->text(), "");
     p_planeShape->setText(text);
     QCOMPARE(p_planeShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
 
     // SeaplaneShape
     TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
+    QCOMPARE(p_seaplaneShape->text(), "");
     p_seaplaneShape->setText(text);
     QCOMPARE(p_seaplaneShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
 
     // HelicopterShape
     TechnicsShape *p_helicopterShape = TechnicsShape::createTechnicsShape(TechnicsShape::Helicopter);
+    QCOMPARE(p_helicopterShape->text(), "");
     p_helicopterShape->setText(text);
     QCOMPARE(p_helicopterShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
 
     // PortableMotoPumpShape
     TechnicsShape *p_portableMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::PortableMotoPump);
+    QCOMPARE(p_portableMotoPumpShape->text(), "");
     p_portableMotoPumpShape->setText(text);
     QCOMPARE(p_portableMotoPumpShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_portableMotoPumpShape);
 
     // MobileMotoPumpShape
     TechnicsShape *p_mobileMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::MobileMotoPump);
+    QCOMPARE(p_mobileMotoPumpShape->text(), "");
     p_mobileMotoPumpShape->setText(text);
     QCOMPARE(p_mobileMotoPumpShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_mobileMotoPumpShape);
 
     // TrailerPowderShape
     TechnicsShape *p_trailerPowderShape = TechnicsShape::createTechnicsShape(TechnicsShape::TrailerPowder);
+    QCOMPARE(p_trailerPowderShape->text(), "");
     p_trailerPowderShape->setText(text);
     QCOMPARE(p_trailerPowderShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerPowderShape);
 
     // AdaptedCarShape
     TechnicsShape *p_adaptedCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedCar);
+    QCOMPARE(p_adaptedCarShape->text(), "");
     p_adaptedCarShape->setText(text);
     QCOMPARE(p_adaptedCarShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedCarShape);
 
     // AdaptedTechniqueShape
     TechnicsShape *p_adaptedTechniqueShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedTechnique);
+    QCOMPARE(p_adaptedTechniqueShape->text(), "");
     p_adaptedTechniqueShape->setText(text);
     QCOMPARE(p_adaptedTechniqueShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedTechniqueShape);
 
     // AmbulanceShape
     TechnicsShape *p_ambulanceShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ambulance);
+    QCOMPARE(p_ambulanceShape->text(), "");
     p_ambulanceShape->setText(text);
     QCOMPARE(p_ambulanceShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
 
     // PoliceShape
     TechnicsShape *p_policeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Police);
+    QCOMPARE(p_policeShape->text(), "");
     p_policeShape->setText(text);
     QCOMPARE(p_policeShape->text(), text);
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_policeShape);
@@ -5021,6 +5156,1098 @@ void tst_TechnicShape::mousePressEvent()
     scene.removeItem(p_policeShape);
     delete p_policeContextMenu;
     TechnicsShape::TechnicsShapeDeleter::cleanup(p_policeShape);
+}
+
+void tst_TechnicShape::textShow()
+{
+    // BaseShape
+    TechnicsShape *p_baseShape = TechnicsShape::createTechnicsShape(TechnicsShape::Base);
+    BaseShape *p_base = dynamic_cast<BaseShape *>(p_baseShape);
+    QVERIFY(!p_base->m_showText);
+    p_base->textShow(true);
+    QVERIFY(p_base->m_showText);
+    p_base->textShow(false);
+    QVERIFY(!p_base->m_showText);
+    p_base = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_baseShape);
+
+    // TankerShape
+    TechnicsShape *p_tankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tanker);
+    TankerShape *p_tanker = dynamic_cast<TankerShape *>(p_tankerShape);
+    QVERIFY(!p_tanker->m_showText);
+    p_tanker->textShow(true);
+    QVERIFY(p_tanker->m_showText);
+    p_tanker->textShow(false);
+    QVERIFY(!p_tanker->m_showText);
+    p_tanker = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankerShape);
+
+    // PumpHoseShape
+    TechnicsShape *p_pumpHoseShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpHose);
+    PumpHoseShape *p_pumpHose = dynamic_cast<PumpHoseShape *>(p_pumpHoseShape);
+    QVERIFY(!p_pumpHose->m_showText);
+    p_pumpHose->textShow(true);
+    QVERIFY(p_pumpHose->m_showText);
+    p_pumpHose->textShow(false);
+    QVERIFY(!p_pumpHose->m_showText);
+    p_pumpHose = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpHoseShape);
+
+    // FirstAidShape
+    TechnicsShape *p_firstAidShape = TechnicsShape::createTechnicsShape(TechnicsShape::FirstAid);
+    FirstAidShape *p_firstAid = dynamic_cast<FirstAidShape *>(p_firstAidShape);
+    QVERIFY(!p_firstAid->m_showText);
+    p_firstAid->textShow(true);
+    QVERIFY(p_firstAid->m_showText);
+    p_firstAid->textShow(false);
+    QVERIFY(!p_firstAid->m_showText);
+    p_firstAid = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_firstAidShape);
+
+    // EmergencyShape
+    TechnicsShape *p_emergencyShape = TechnicsShape::createTechnicsShape(TechnicsShape::Emergency);
+    EmergencyShape *p_emergency = dynamic_cast<EmergencyShape *>(p_emergencyShape);
+    QVERIFY(!p_emergency->m_showText);
+    p_emergency->textShow(true);
+    QVERIFY(p_emergency->m_showText);
+    p_emergency->textShow(false);
+    QVERIFY(!p_emergency->m_showText);
+    p_emergency = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_emergencyShape);
+
+    // AutoLadderShape
+    TechnicsShape *p_autoLadderShape = TechnicsShape::createTechnicsShape(TechnicsShape::AutoLadder);
+    AutoLadderShape *p_autoLadder = dynamic_cast<AutoLadderShape *>(p_autoLadderShape);
+    QVERIFY(!p_autoLadder->m_showText);
+    p_autoLadder->textShow(true);
+    QVERIFY(p_autoLadder->m_showText);
+    p_autoLadder->textShow(false);
+    QVERIFY(!p_autoLadder->m_showText);
+    p_autoLadder = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_autoLadderShape);
+
+    // CrankLiftShape
+    TechnicsShape *p_crankLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::CrankLift);
+    CrankLiftShape *p_crankLift = dynamic_cast<CrankLiftShape *>(p_crankLiftShape);
+    QVERIFY(!p_crankLift->m_showText);
+    p_crankLift->textShow(true);
+    QVERIFY(p_crankLift->m_showText);
+    p_crankLift->textShow(false);
+    QVERIFY(!p_crankLift->m_showText);
+    p_crankLift = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_crankLiftShape);
+
+    // TelescopicLiftShape
+    TechnicsShape *p_telescopicLiftShape = TechnicsShape::createTechnicsShape(TechnicsShape::TelescopicLift);
+    TelescopicLiftShape *p_telescopicLift = dynamic_cast<TelescopicLiftShape *>(p_telescopicLiftShape);
+    QVERIFY(!p_telescopicLift->m_showText);
+    p_telescopicLift->textShow(true);
+    QVERIFY(p_telescopicLift->m_showText);
+    p_telescopicLift->textShow(false);
+    QVERIFY(!p_telescopicLift->m_showText);
+    p_telescopicLift = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_telescopicLiftShape);
+
+    // HoseCarShape
+    TechnicsShape *p_hoseCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::HoseCar);
+    HoseCarShape *p_hoseCar = dynamic_cast<HoseCarShape *>(p_hoseCarShape);
+    QVERIFY(!p_hoseCar->m_showText);
+    p_hoseCar->textShow(true);
+    QVERIFY(p_hoseCar->m_showText);
+    p_hoseCar->textShow(false);
+    QVERIFY(!p_hoseCar->m_showText);
+    p_hoseCar = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_hoseCarShape);
+
+    // CommShape
+    TechnicsShape *p_commShape = TechnicsShape::createTechnicsShape(TechnicsShape::Comm);
+    CommShape *p_comm = dynamic_cast<CommShape *>(p_commShape);
+    QVERIFY(!p_comm->m_showText);
+    p_comm->textShow(true);
+    QVERIFY(p_comm->m_showText);
+    p_comm->textShow(false);
+    QVERIFY(!p_comm->m_showText);
+    p_comm = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_commShape);
+
+    // TechServShape
+    TechnicsShape *p_techServShape = TechnicsShape::createTechnicsShape(TechnicsShape::TechServ);
+    TechServShape *p_techServ = dynamic_cast<TechServShape *>(p_techServShape);
+    QVERIFY(!p_techServ->m_showText);
+    p_techServ->textShow(true);
+    QVERIFY(p_techServ->m_showText);
+    p_techServ->textShow(false);
+    QVERIFY(!p_techServ->m_showText);
+    p_techServ = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_techServShape);
+
+    // SmokRemShape
+    TechnicsShape *p_smokRemShape = TechnicsShape::createTechnicsShape(TechnicsShape::SmokRem);
+    SmokRemShape *p_smokRem = dynamic_cast<SmokRemShape *>(p_smokRemShape);
+    QVERIFY(!p_smokRem->m_showText);
+    p_smokRem->textShow(true);
+    QVERIFY(p_smokRem->m_showText);
+    p_smokRem->textShow(false);
+    QVERIFY(!p_smokRem->m_showText);
+    p_smokRem = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_smokRemShape);
+
+    // PumpStatShape
+    TechnicsShape *p_pumpStatShape = TechnicsShape::createTechnicsShape(TechnicsShape::PumpStat);
+    PumpStatShape *p_pumpStat = dynamic_cast<PumpStatShape *>(p_pumpStatShape);
+    QVERIFY(!p_pumpStat->m_showText);
+    p_pumpStat->textShow(true);
+    QVERIFY(p_pumpStat->m_showText);
+    p_pumpStat->textShow(false);
+    QVERIFY(!p_pumpStat->m_showText);
+    p_pumpStat = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_pumpStatShape);
+
+    // LafetTankerShape
+    TechnicsShape *p_lafetTankerShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetTanker);
+    LafetTankerShape *p_lafetTanker = dynamic_cast<LafetTankerShape *>(p_lafetTankerShape);
+    QVERIFY(!p_lafetTanker->m_showText);
+    p_lafetTanker->textShow(true);
+    QVERIFY(p_lafetTanker->m_showText);
+    p_lafetTanker->textShow(false);
+    QVERIFY(!p_lafetTanker->m_showText);
+    p_lafetTanker = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetTankerShape);
+
+    // LafetCarShape
+    TechnicsShape *p_lafetCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::LafetCar);
+    LafetCarShape *p_lafetCar = dynamic_cast<LafetCarShape *>(p_lafetCarShape);
+    QVERIFY(!p_lafetCar->m_showText);
+    p_lafetCar->textShow(true);
+    QVERIFY(p_lafetCar->m_showText);
+    p_lafetCar->textShow(false);
+    QVERIFY(!p_lafetCar->m_showText);
+    p_lafetCar = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_lafetCarShape);
+
+    // AerodromeShape
+    TechnicsShape *p_aerodromeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerodrome);
+    AerodromeShape *p_aerodrome = dynamic_cast<AerodromeShape *>(p_aerodromeShape);
+    QVERIFY(!p_aerodrome->m_showText);
+    p_aerodrome->textShow(true);
+    QVERIFY(p_aerodrome->m_showText);
+    p_aerodrome->textShow(false);
+    QVERIFY(!p_aerodrome->m_showText);
+    p_aerodrome = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerodromeShape);
+
+    // FoamShape
+    TechnicsShape *p_foamShape = TechnicsShape::createTechnicsShape(TechnicsShape::Foam);
+    FoamShape *p_foam = dynamic_cast<FoamShape *>(p_foamShape);
+    QVERIFY(!p_foam->m_showText);
+    p_foam->textShow(true);
+    QVERIFY(p_foam->m_showText);
+    p_foam->textShow(false);
+    QVERIFY(!p_foam->m_showText);
+    p_foam = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_foamShape);
+
+    // ComboShape
+    TechnicsShape *p_comboShape = TechnicsShape::createTechnicsShape(TechnicsShape::Combo);
+    ComboShape *p_combo = dynamic_cast<ComboShape *>(p_comboShape);
+    QVERIFY(!p_combo->m_showText);
+    p_combo->textShow(true);
+    QVERIFY(p_combo->m_showText);
+    p_combo->textShow(false);
+    QVERIFY(!p_combo->m_showText);
+    p_combo = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_comboShape);
+
+    // AerosolShape
+    TechnicsShape *p_aerosolShape = TechnicsShape::createTechnicsShape(TechnicsShape::Aerosol);
+    AerosolShape *p_aerosol = dynamic_cast<AerosolShape *>(p_aerosolShape);
+    QVERIFY(!p_aerosol->m_showText);
+    p_aerosol->textShow(true);
+    QVERIFY(p_aerosol->m_showText);
+    p_aerosol->textShow(false);
+    QVERIFY(!p_aerosol->m_showText);
+    p_aerosol = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_aerosolShape);
+
+    // PowderShape
+    TechnicsShape *p_powderShape = TechnicsShape::createTechnicsShape(TechnicsShape::Powder);
+    PowderShape *p_powder = dynamic_cast<PowderShape *>(p_powderShape);
+    QVERIFY(!p_powder->m_showText);
+    p_powder->textShow(true);
+    QVERIFY(p_powder->m_showText);
+    p_powder->textShow(false);
+    QVERIFY(!p_powder->m_showText);
+    p_powder = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_powderShape);
+
+    // CarbonShape
+    TechnicsShape *p_carbonShape = TechnicsShape::createTechnicsShape(TechnicsShape::Carbon);
+    CarbonShape *p_carbon = dynamic_cast<CarbonShape *>(p_carbonShape);
+    QVERIFY(!p_carbon->m_showText);
+    p_carbon->textShow(true);
+    QVERIFY(p_carbon->m_showText);
+    p_carbon->textShow(false);
+    QVERIFY(!p_carbon->m_showText);
+    p_carbon = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_carbonShape);
+
+    // GazWaterShape
+    TechnicsShape *p_gazWaterShape = TechnicsShape::createTechnicsShape(TechnicsShape::GazWater);
+    GazWaterShape *p_gazWater = dynamic_cast<GazWaterShape *>(p_gazWaterShape);
+    QVERIFY(!p_gazWater->m_showText);
+    p_gazWater->textShow(true);
+    QVERIFY(p_gazWater->m_showText);
+    p_gazWater->textShow(false);
+    QVERIFY(!p_gazWater->m_showText);
+    p_gazWater = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gazWaterShape);
+
+    // TrackedShape
+    TechnicsShape *p_trackedShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tracked);
+    TrackedShape *p_tracked = dynamic_cast<TrackedShape *>(p_trackedShape);
+    QVERIFY(!p_tracked->m_showText);
+    p_tracked->textShow(true);
+    QVERIFY(p_tracked->m_showText);
+    p_tracked->textShow(false);
+    QVERIFY(!p_tracked->m_showText);
+    p_tracked = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trackedShape);
+
+    // TankShape
+    TechnicsShape *p_tankShape = TechnicsShape::createTechnicsShape(TechnicsShape::Tank);
+    TankShape *p_tank = dynamic_cast<TankShape *>(p_tankShape);
+    QVERIFY(!p_tank->m_showText);
+    p_tank->textShow(true);
+    QVERIFY(p_tank->m_showText);
+    p_tank->textShow(false);
+    QVERIFY(!p_tank->m_showText);
+    p_tank = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_tankShape);
+
+    // GdzsShape
+    TechnicsShape *p_gdzsShape = TechnicsShape::createTechnicsShape(TechnicsShape::GDZS);
+    GdzsShape *p_gdzs = dynamic_cast<GdzsShape *>(p_gdzsShape);
+    QVERIFY(!p_gdzs->m_showText);
+    p_gdzs->textShow(true);
+    QVERIFY(p_gdzs->m_showText);
+    p_gdzs->textShow(false);
+    QVERIFY(!p_gdzs->m_showText);
+    p_gdzs = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_gdzsShape);
+
+    // WaterproofShape
+    TechnicsShape *p_waterproofShape = TechnicsShape::createTechnicsShape(TechnicsShape::Waterproof);
+    WaterproofShape *p_waterproof = dynamic_cast<WaterproofShape *>(p_waterproofShape);
+    QVERIFY(!p_waterproof->m_showText);
+    p_waterproof->textShow(true);
+    QVERIFY(p_waterproof->m_showText);
+    p_waterproof->textShow(false);
+    QVERIFY(!p_waterproof->m_showText);
+    p_waterproof = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_waterproofShape);
+
+    // LaboratoryShape
+    TechnicsShape *p_laboratoryShape = TechnicsShape::createTechnicsShape(TechnicsShape::Laboratory);
+    LaboratoryShape *p_laboratory = dynamic_cast<LaboratoryShape *>(p_laboratoryShape);
+    QVERIFY(!p_laboratory->m_showText);
+    p_laboratory->textShow(true);
+    QVERIFY(p_laboratory->m_showText);
+    p_laboratory->textShow(false);
+    QVERIFY(!p_laboratory->m_showText);
+    p_laboratory = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_laboratoryShape);
+
+    // StaffCarShape
+    TechnicsShape *p_staffCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::StaffCar);
+    StaffCarShape *p_staffCar = dynamic_cast<StaffCarShape *>(p_staffCarShape);
+    QVERIFY(!p_staffCar->m_showText);
+    p_staffCar->textShow(true);
+    QVERIFY(p_staffCar->m_showText);
+    p_staffCar->textShow(false);
+    QVERIFY(!p_staffCar->m_showText);
+    p_staffCar = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_staffCarShape);
+
+    // TrailerShape
+    TechnicsShape *p_trailerShape = TechnicsShape::createTechnicsShape(TechnicsShape::Trailer);
+    TrailerShape *p_trailer = dynamic_cast<TrailerShape *>(p_trailerShape);
+    QVERIFY(!p_trailer->m_showText);
+    p_trailer->textShow(true);
+    QVERIFY(p_trailer->m_showText);
+    p_trailer->textShow(false);
+    QVERIFY(!p_trailer->m_showText);
+    p_trailer = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerShape);
+
+    // ShipShape
+    TechnicsShape *p_shipShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ship);
+    ShipShape *p_ship = dynamic_cast<ShipShape *>(p_shipShape);
+    QVERIFY(!p_ship->m_showText);
+    p_ship->textShow(true);
+    QVERIFY(p_ship->m_showText);
+    p_ship->textShow(false);
+    QVERIFY(!p_ship->m_showText);
+    p_ship = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_shipShape);
+
+    // BoatShape
+    TechnicsShape *p_boatShape = TechnicsShape::createTechnicsShape(TechnicsShape::Boat);
+    BoatShape *p_boat = dynamic_cast<BoatShape *>(p_boatShape);
+    QVERIFY(!p_boat->m_showText);
+    p_boat->textShow(true);
+    QVERIFY(p_boat->m_showText);
+    p_boat->textShow(false);
+    QVERIFY(!p_boat->m_showText);
+    p_boat = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_boatShape);
+
+    // TrainShape
+    TechnicsShape *p_trainShape = TechnicsShape::createTechnicsShape(TechnicsShape::Train);
+    TrainShape *p_train = dynamic_cast<TrainShape *>(p_trainShape);
+    QVERIFY(!p_train->m_showText);
+    p_train->textShow(true);
+    QVERIFY(p_train->m_showText);
+    p_train->textShow(false);
+    QVERIFY(!p_train->m_showText);
+    p_train = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trainShape);
+
+    // PlaneShape
+    TechnicsShape *p_planeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Plane);
+    PlaneShape *p_plane = dynamic_cast<PlaneShape *>(p_planeShape);
+    QVERIFY(!p_plane->m_showText);
+    p_plane->textShow(true);
+    QVERIFY(p_plane->m_showText);
+    p_plane->textShow(false);
+    QVERIFY(!p_plane->m_showText);
+    p_plane = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_planeShape);
+
+    // SeaplaneShape
+    TechnicsShape *p_seaplaneShape = TechnicsShape::createTechnicsShape(TechnicsShape::Seaplane);
+    SeaplaneShape *p_seaplane = dynamic_cast<SeaplaneShape *>(p_seaplaneShape);
+    QVERIFY(!p_seaplane->m_showText);
+    p_seaplane->textShow(true);
+    QVERIFY(p_seaplane->m_showText);
+    p_seaplane->textShow(false);
+    QVERIFY(!p_seaplane->m_showText);
+    p_seaplane = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_seaplaneShape);
+
+    // HelicopterShape
+    TechnicsShape *p_helicopterShape = TechnicsShape::createTechnicsShape(TechnicsShape::Helicopter);
+    HelicopterShape *p_helicopter = dynamic_cast<HelicopterShape *>(p_helicopterShape);
+    QVERIFY(!p_helicopter->m_showText);
+    p_helicopter->textShow(true);
+    QVERIFY(p_helicopter->m_showText);
+    p_helicopter->textShow(false);
+    QVERIFY(!p_helicopter->m_showText);
+    p_helicopter = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_helicopterShape);
+
+    // PortableMotoPumpShape
+    TechnicsShape *p_portableMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::PortableMotoPump);
+    PortableMotoPumpShape *p_portableMotoPump = dynamic_cast<PortableMotoPumpShape *>(p_portableMotoPumpShape);
+    QVERIFY(!p_portableMotoPump->m_showText);
+    p_portableMotoPump->textShow(true);
+    QVERIFY(p_portableMotoPump->m_showText);
+    p_portableMotoPump->textShow(false);
+    QVERIFY(!p_portableMotoPump->m_showText);
+    p_portableMotoPump = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_portableMotoPumpShape);
+
+    // MobileMotoPumpShape
+    TechnicsShape *p_mobileMotoPumpShape = TechnicsShape::createTechnicsShape(TechnicsShape::MobileMotoPump);
+    MobileMotoPumpShape *p_mobileMotoPump = dynamic_cast<MobileMotoPumpShape *>(p_mobileMotoPumpShape);
+    QVERIFY(!p_mobileMotoPump->m_showText);
+    p_mobileMotoPump->textShow(true);
+    QVERIFY(p_mobileMotoPump->m_showText);
+    p_mobileMotoPump->textShow(false);
+    QVERIFY(!p_mobileMotoPump->m_showText);
+    p_mobileMotoPump = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_mobileMotoPumpShape);
+
+    // TrailerPowderShape
+    TechnicsShape *p_trailerPowderShape = TechnicsShape::createTechnicsShape(TechnicsShape::TrailerPowder);
+    TrailerPowderShape *p_trailerPowder = dynamic_cast<TrailerPowderShape *>(p_trailerPowderShape);
+    QVERIFY(!p_trailerPowder->m_showText);
+    p_trailerPowder->textShow(true);
+    QVERIFY(p_trailerPowder->m_showText);
+    p_trailerPowder->textShow(false);
+    QVERIFY(!p_trailerPowder->m_showText);
+    p_trailerPowder = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_trailerPowderShape);
+
+    // AdaptedCarShape
+    TechnicsShape *p_adaptedCarShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedCar);
+    AdaptedCarShape *p_adaptedCar = dynamic_cast<AdaptedCarShape *>(p_adaptedCarShape);
+    QVERIFY(!p_adaptedCar->m_showText);
+    p_adaptedCar->textShow(true);
+    QVERIFY(p_adaptedCar->m_showText);
+    p_adaptedCar->textShow(false);
+    QVERIFY(!p_adaptedCar->m_showText);
+    p_adaptedCar = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedCarShape);
+
+    // AdaptedTechniqueShape
+    TechnicsShape *p_adaptedTechniqueShape = TechnicsShape::createTechnicsShape(TechnicsShape::AdaptedTechnique);
+    AdaptedTechniqueShape *p_adaptedTechnique = dynamic_cast<AdaptedTechniqueShape *>(p_adaptedTechniqueShape);
+    QVERIFY(!p_adaptedTechnique->m_showText);
+    p_adaptedTechnique->textShow(true);
+    QVERIFY(p_adaptedTechnique->m_showText);
+    p_adaptedTechnique->textShow(false);
+    QVERIFY(!p_adaptedTechnique->m_showText);
+    p_adaptedTechnique = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_adaptedTechniqueShape);
+
+    // AmbulanceShape
+    TechnicsShape *p_ambulanceShape = TechnicsShape::createTechnicsShape(TechnicsShape::Ambulance);
+    AmbulanceShape *p_ambulance = dynamic_cast<AmbulanceShape *>(p_ambulanceShape);
+    QVERIFY(!p_ambulance->m_showText);
+    p_ambulance->textShow(true);
+    QVERIFY(p_ambulance->m_showText);
+    p_ambulance->textShow(false);
+    QVERIFY(!p_ambulance->m_showText);
+    p_ambulance = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_ambulanceShape);
+
+    // PoliceShape
+    TechnicsShape *p_policeShape = TechnicsShape::createTechnicsShape(TechnicsShape::Police);
+    PoliceShape *p_police = dynamic_cast<PoliceShape *>(p_policeShape);
+    QVERIFY(!p_police->m_showText);
+    p_police->textShow(true);
+    QVERIFY(p_police->m_showText);
+    p_police->textShow(false);
+    QVERIFY(!p_police->m_showText);
+    p_police = nullptr;
+    TechnicsShape::TechnicsShapeDeleter::cleanup(p_policeShape);
+}
+
+#define PAINT_TESTER(NAME)                                                      \
+    class NAME ## PaintTester : public NAME ## Shape                            \
+    {                                                                           \
+    public:                                                                     \
+        NAME ## PaintTester() : m_widget(NULL), m_painted(0) {}                 \
+        void paint(QPainter *p, const QStyleOptionGraphicsItem *s, QWidget *w) {\
+            NAME ## Shape::paint(p, s, w);                                      \
+            m_widget = w;                                                       \
+            m_painted++;                                                        \
+        }                                                                       \
+        QWidget*  m_widget;                                                     \
+        int m_painted;                                                          \
+    };
+
+PAINT_TESTER(Base)
+PAINT_TESTER(Tanker)
+PAINT_TESTER(PumpHose)
+PAINT_TESTER(FirstAid)
+PAINT_TESTER(Emergency)
+PAINT_TESTER(AutoLadder)
+PAINT_TESTER(CrankLift)
+PAINT_TESTER(TelescopicLift)
+PAINT_TESTER(HoseCar)
+PAINT_TESTER(Comm)
+PAINT_TESTER(TechServ)
+PAINT_TESTER(SmokRem)
+PAINT_TESTER(PumpStat)
+PAINT_TESTER(LafetTanker)
+PAINT_TESTER(LafetCar)
+PAINT_TESTER(Aerodrome)
+PAINT_TESTER(Foam)
+PAINT_TESTER(Combo)
+PAINT_TESTER(Aerosol)
+PAINT_TESTER(Powder)
+PAINT_TESTER(Carbon)
+PAINT_TESTER(GazWater)
+PAINT_TESTER(Tracked)
+PAINT_TESTER(Tank)
+PAINT_TESTER(Gdzs)
+PAINT_TESTER(Waterproof)
+PAINT_TESTER(Laboratory)
+PAINT_TESTER(StaffCar)
+PAINT_TESTER(Trailer)
+PAINT_TESTER(Ship)
+PAINT_TESTER(Boat)
+PAINT_TESTER(Train)
+PAINT_TESTER(Plane)
+PAINT_TESTER(Seaplane)
+PAINT_TESTER(Helicopter)
+PAINT_TESTER(PortableMotoPump)
+PAINT_TESTER(MobileMotoPump)
+PAINT_TESTER(TrailerPowder)
+PAINT_TESTER(AdaptedCar)
+PAINT_TESTER(AdaptedTechnique)
+PAINT_TESTER(Ambulance)
+PAINT_TESTER(Police)
+
+void tst_TechnicShape::paint()
+{
+    QGraphicsScene scene;
+    QGraphicsView view(&scene);
+
+    // BaseShape
+    BasePaintTester basePaintTester;
+    basePaintTester.setText("Base");
+    scene.addItem(&basePaintTester);
+    QCOMPARE(basePaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(basePaintTester.m_painted > 0);
+    QTRY_COMPARE(basePaintTester.m_widget, view.viewport());
+    basePaintTester.hide();
+    view.hide();
+
+    // TankerShape
+    TankerPaintTester tankerPaintTester;
+    tankerPaintTester.setText("Tanker");
+    tankerPaintTester.setPipes(true);
+    tankerPaintTester.setCollector(true);
+    scene.addItem(&tankerPaintTester);
+    QCOMPARE(tankerPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(tankerPaintTester.m_painted > 0);
+    QTRY_COMPARE(tankerPaintTester.m_widget, view.viewport());
+    tankerPaintTester.hide();
+    view.hide();
+
+    // PumpHoseShape
+    PumpHosePaintTester pumpHosePaintTester;
+    pumpHosePaintTester.setText("PumpHose");
+    pumpHosePaintTester.setPipes(true);
+    pumpHosePaintTester.setCollector(true);
+    scene.addItem(&pumpHosePaintTester);
+    QCOMPARE(pumpHosePaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(pumpHosePaintTester.m_painted > 0);
+    QTRY_COMPARE(pumpHosePaintTester.m_widget, view.viewport());
+    pumpHosePaintTester.hide();
+    view.hide();
+
+    // FirstAidShape
+    FirstAidPaintTester firstAidPaintTester;
+    firstAidPaintTester.setText("FirstAid");
+    firstAidPaintTester.setPipes(true);
+    firstAidPaintTester.setCollector(true);
+    scene.addItem(&firstAidPaintTester);
+    QCOMPARE(firstAidPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(firstAidPaintTester.m_painted > 0);
+    QTRY_COMPARE(firstAidPaintTester.m_widget, view.viewport());
+    firstAidPaintTester.hide();
+    view.hide();
+
+    // EmergencyShape
+    EmergencyPaintTester emergencyPaintTester;
+    emergencyPaintTester.setText("Emergency");
+    emergencyPaintTester.setPipes(true);
+    emergencyPaintTester.setCollector(true);
+    scene.addItem(&emergencyPaintTester);
+    QCOMPARE(emergencyPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(emergencyPaintTester.m_painted > 0);
+    QTRY_COMPARE(emergencyPaintTester.m_widget, view.viewport());
+    emergencyPaintTester.hide();
+    view.hide();
+
+    // AutoLadderShape
+    AutoLadderPaintTester autoLadderPaintTester;
+    autoLadderPaintTester.setText("AutoLadder");
+    scene.addItem(&autoLadderPaintTester);
+    QCOMPARE(autoLadderPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(autoLadderPaintTester.m_painted > 0);
+    QTRY_COMPARE(autoLadderPaintTester.m_widget, view.viewport());
+    autoLadderPaintTester.hide();
+    view.hide();
+
+    // CrankLiftShape
+    CrankLiftPaintTester crankLiftPaintTester;
+    crankLiftPaintTester.setText("CrankLift");
+    scene.addItem(&crankLiftPaintTester);
+    QCOMPARE(crankLiftPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(crankLiftPaintTester.m_painted > 0);
+    QTRY_COMPARE(crankLiftPaintTester.m_widget, view.viewport());
+    crankLiftPaintTester.hide();
+    view.hide();
+
+    // TelescopicLiftShape
+    TelescopicLiftPaintTester telescopicLiftPaintTester;
+    telescopicLiftPaintTester.setText("TelescopicLift");
+    scene.addItem(&telescopicLiftPaintTester);
+    QCOMPARE(telescopicLiftPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(telescopicLiftPaintTester.m_painted > 0);
+    QTRY_COMPARE(telescopicLiftPaintTester.m_widget, view.viewport());
+    telescopicLiftPaintTester.hide();
+    view.hide();
+
+    // HoseCarShape
+    HoseCarPaintTester hoseCarPaintTester;
+    hoseCarPaintTester.setText("HoseCar");
+    scene.addItem(&hoseCarPaintTester);
+    QCOMPARE(hoseCarPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(hoseCarPaintTester.m_painted > 0);
+    QTRY_COMPARE(hoseCarPaintTester.m_widget, view.viewport());
+    hoseCarPaintTester.hide();
+    view.hide();
+
+    // CommShape
+    CommPaintTester commPaintTester;
+    commPaintTester.setText("Comm");
+    scene.addItem(&commPaintTester);
+    QCOMPARE(commPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(commPaintTester.m_painted > 0);
+    QTRY_COMPARE(commPaintTester.m_widget, view.viewport());
+    commPaintTester.hide();
+    view.hide();
+
+    // TechServShape
+    TechServPaintTester techServPaintTester;
+    techServPaintTester.setText("TechServ");
+    scene.addItem(&techServPaintTester);
+    QCOMPARE(techServPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(techServPaintTester.m_painted > 0);
+    QTRY_COMPARE(techServPaintTester.m_widget, view.viewport());
+    techServPaintTester.hide();
+    view.hide();
+
+    // SmokRemShape
+    SmokRemPaintTester smokRemPaintTester;
+    smokRemPaintTester.setText("SmokRem");
+    scene.addItem(&smokRemPaintTester);
+    QCOMPARE(smokRemPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(smokRemPaintTester.m_painted > 0);
+    QTRY_COMPARE(smokRemPaintTester.m_widget, view.viewport());
+    smokRemPaintTester.hide();
+    view.hide();
+
+    // PumpStatShape
+    PumpStatPaintTester pumpStatPaintTester;
+    pumpStatPaintTester.setText("PumpStat");
+    pumpStatPaintTester.setPipes(true);
+    pumpStatPaintTester.setCollector(true);
+    scene.addItem(&pumpStatPaintTester);
+    QCOMPARE(pumpStatPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(pumpStatPaintTester.m_painted > 0);
+    QTRY_COMPARE(pumpStatPaintTester.m_widget, view.viewport());
+    pumpStatPaintTester.hide();
+    view.hide();
+
+    // LafetTankerShape
+    LafetTankerPaintTester lafetTankerPaintTester;
+    lafetTankerPaintTester.setText("LafetTanker");
+    lafetTankerPaintTester.setPipes(true);
+    lafetTankerPaintTester.setCollector(true);
+    scene.addItem(&lafetTankerPaintTester);
+    QCOMPARE(lafetTankerPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(lafetTankerPaintTester.m_painted > 0);
+    QTRY_COMPARE(lafetTankerPaintTester.m_widget, view.viewport());
+    lafetTankerPaintTester.hide();
+    view.hide();
+
+    // LafetCarShape
+    LafetCarPaintTester lafetCarPaintTester;
+    lafetCarPaintTester.setText("LafetCAr");
+    scene.addItem(&lafetCarPaintTester);
+    QCOMPARE(lafetCarPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(lafetCarPaintTester.m_painted > 0);
+    QTRY_COMPARE(lafetCarPaintTester.m_widget, view.viewport());
+    lafetCarPaintTester.hide();
+    view.hide();
+
+    // AerodromeShape
+    AerodromePaintTester aerodromePaintTester;
+    aerodromePaintTester.setText("Aerodrome");
+    aerodromePaintTester.setPipes(true);
+    aerodromePaintTester.setCollector(true);
+    scene.addItem(&aerodromePaintTester);
+    QCOMPARE(aerodromePaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(aerodromePaintTester.m_painted > 0);
+    QTRY_COMPARE(aerodromePaintTester.m_widget, view.viewport());
+    aerodromePaintTester.hide();
+    view.hide();
+
+    // FoamShape
+    FoamPaintTester foamPaintTester;
+    foamPaintTester.setText("Foam");
+    foamPaintTester.setPipes(true);
+    foamPaintTester.setCollector(true);
+    scene.addItem(&foamPaintTester);
+    QCOMPARE(foamPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(foamPaintTester.m_painted > 0);
+    QTRY_COMPARE(foamPaintTester.m_widget, view.viewport());
+    foamPaintTester.hide();
+    view.hide();
+
+    // ComboShape
+    ComboPaintTester comboPaintTester;
+    comboPaintTester.setText("Combo");
+    comboPaintTester.setPipes(true);
+    comboPaintTester.setCollector(true);
+    scene.addItem(&comboPaintTester);
+    QCOMPARE(comboPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(comboPaintTester.m_painted > 0);
+    QTRY_COMPARE(comboPaintTester.m_widget, view.viewport());
+    comboPaintTester.hide();
+    view.hide();
+
+    // AerosolShape
+    AerosolPaintTester aerosolPaintTester;
+    aerosolPaintTester.setText("Aerosol");
+    scene.addItem(&aerosolPaintTester);
+    QCOMPARE(aerosolPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(aerosolPaintTester.m_painted > 0);
+    QTRY_COMPARE(aerosolPaintTester.m_widget, view.viewport());
+    aerosolPaintTester.hide();
+    view.hide();
+
+    // PowderShape
+    PowderPaintTester powderPaintTester;
+    powderPaintTester.setText("Powder");
+    scene.addItem(&powderPaintTester);
+    QCOMPARE(powderPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(powderPaintTester.m_painted > 0);
+    QTRY_COMPARE(powderPaintTester.m_widget, view.viewport());
+    powderPaintTester.hide();
+    view.hide();
+
+    // CarbonShape
+    CarbonPaintTester carbonPaintTester;
+    carbonPaintTester.setText("Carbon");
+    scene.addItem(&carbonPaintTester);
+    QCOMPARE(carbonPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(carbonPaintTester.m_painted > 0);
+    QTRY_COMPARE(carbonPaintTester.m_widget, view.viewport());
+    carbonPaintTester.hide();
+    view.hide();
+
+    // GazWaterShape
+    GazWaterPaintTester gazWaterPaintTester;
+    gazWaterPaintTester.setText("GazWater");
+    scene.addItem(&gazWaterPaintTester);
+    QCOMPARE(gazWaterPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(gazWaterPaintTester.m_painted > 0);
+    QTRY_COMPARE(gazWaterPaintTester.m_widget, view.viewport());
+    gazWaterPaintTester.hide();
+    view.hide();
+
+    // TrackedShape
+    TrackedPaintTester trackedPaintTester;
+    trackedPaintTester.setText("Tracked");
+    scene.addItem(&trackedPaintTester);
+    QCOMPARE(trackedPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(trackedPaintTester.m_painted > 0);
+    QTRY_COMPARE(trackedPaintTester.m_widget, view.viewport());
+    trackedPaintTester.hide();
+    view.hide();
+
+    // TankShape
+    TankPaintTester tankPaintTester;
+    tankPaintTester.setText("Tank");
+    scene.addItem(&tankPaintTester);
+    QCOMPARE(tankPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(tankPaintTester.m_painted > 0);
+    QTRY_COMPARE(tankPaintTester.m_widget, view.viewport());
+    tankPaintTester.hide();
+    view.hide();
+
+    // GdzsShape
+    GdzsPaintTester gdzsPaintTester;
+    gdzsPaintTester.setText("GDZS");
+    scene.addItem(&gdzsPaintTester);
+    QCOMPARE(gdzsPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(gdzsPaintTester.m_painted > 0);
+    QTRY_COMPARE(gdzsPaintTester.m_widget, view.viewport());
+    gdzsPaintTester.hide();
+    view.hide();
+
+    // WaterproofShape
+    WaterproofPaintTester waterproofPaintTester;
+    waterproofPaintTester.setText("Wateproof");
+    scene.addItem(&waterproofPaintTester);
+    QCOMPARE(waterproofPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(waterproofPaintTester.m_painted > 0);
+    QTRY_COMPARE(waterproofPaintTester.m_widget, view.viewport());
+    waterproofPaintTester.hide();
+    view.hide();
+
+    // LaboratoryShape
+    LaboratoryPaintTester laboratoryPaintTester;
+    laboratoryPaintTester.setText("Laboratory");
+    scene.addItem(&laboratoryPaintTester);
+    QCOMPARE(laboratoryPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(laboratoryPaintTester.m_painted > 0);
+    QTRY_COMPARE(laboratoryPaintTester.m_widget, view.viewport());
+    laboratoryPaintTester.hide();
+    view.hide();
+
+    // StaffCarShape
+    StaffCarPaintTester staffCarPaintTester;
+    staffCarPaintTester.setText("StaffCar");
+    scene.addItem(&staffCarPaintTester);
+    QCOMPARE(staffCarPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(staffCarPaintTester.m_painted > 0);
+    QTRY_COMPARE(staffCarPaintTester.m_widget, view.viewport());
+    staffCarPaintTester.hide();
+    view.hide();
+
+    // TrailerShape
+    TrailerPaintTester trailaerPaintTester;
+    trailaerPaintTester.setText("Trailer");
+    scene.addItem(&trailaerPaintTester);
+    QCOMPARE(trailaerPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(trailaerPaintTester.m_painted > 0);
+    QTRY_COMPARE(trailaerPaintTester.m_widget, view.viewport());
+    trailaerPaintTester.hide();
+    view.hide();
+
+    // ShipShape
+    ShipPaintTester shipPaintTester;
+    shipPaintTester.setText("Ship");
+    scene.addItem(&shipPaintTester);
+    QCOMPARE(shipPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(shipPaintTester.m_painted > 0);
+    QTRY_COMPARE(shipPaintTester.m_widget, view.viewport());
+    shipPaintTester.hide();
+    view.hide();
+
+    // BoatShape
+    BoatPaintTester boatPaintTester;
+    boatPaintTester.setText("Boat");
+    scene.addItem(&boatPaintTester);
+    QCOMPARE(boatPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(boatPaintTester.m_painted > 0);
+    QTRY_COMPARE(boatPaintTester.m_widget, view.viewport());
+    boatPaintTester.hide();
+    view.hide();
+
+    // TrainShape
+    TrainPaintTester trainPaintTester;
+    trainPaintTester.setText("Train");
+    scene.addItem(&trainPaintTester);
+    QCOMPARE(trainPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(trainPaintTester.m_painted > 0);
+    QTRY_COMPARE(trainPaintTester.m_widget, view.viewport());
+    trainPaintTester.hide();
+    view.hide();
+
+    // PlaneShape
+    PlanePaintTester planePaintTester;
+    planePaintTester.setText("Plane");
+    scene.addItem(&planePaintTester);
+    QCOMPARE(planePaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(planePaintTester.m_painted > 0);
+    QTRY_COMPARE(planePaintTester.m_widget, view.viewport());
+    planePaintTester.hide();
+    view.hide();
+
+    // SeaplaneShape
+    SeaplanePaintTester seaPlanePaintTester;
+    seaPlanePaintTester.setText("SeaPlane");
+    scene.addItem(&seaPlanePaintTester);
+    QCOMPARE(seaPlanePaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(seaPlanePaintTester.m_painted > 0);
+    QTRY_COMPARE(seaPlanePaintTester.m_widget, view.viewport());
+    seaPlanePaintTester.hide();
+    view.hide();
+
+    // HelicopterShape
+    HelicopterPaintTester helicopterPaintTester;
+    helicopterPaintTester.setText("Helicopter");
+    scene.addItem(&helicopterPaintTester);
+    QCOMPARE(helicopterPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(helicopterPaintTester.m_painted > 0);
+    QTRY_COMPARE(helicopterPaintTester.m_widget, view.viewport());
+    helicopterPaintTester.hide();
+    view.hide();
+
+    // PortableMotoPumpShape
+    PortableMotoPumpPaintTester portableMotoPumpPaintTester;
+    portableMotoPumpPaintTester.setText("PortableMotoPump");
+    scene.addItem(&portableMotoPumpPaintTester);
+    QCOMPARE(portableMotoPumpPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(portableMotoPumpPaintTester.m_painted > 0);
+    QTRY_COMPARE(portableMotoPumpPaintTester.m_widget, view.viewport());
+    portableMotoPumpPaintTester.hide();
+    view.hide();
+
+    // MobileMotoPumpShape
+    MobileMotoPumpPaintTester mobileMotoPumpPaintTester;
+    mobileMotoPumpPaintTester.setText("MobileMotoPump");
+    scene.addItem(&mobileMotoPumpPaintTester);
+    QCOMPARE(mobileMotoPumpPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(mobileMotoPumpPaintTester.m_painted > 0);
+    QTRY_COMPARE(mobileMotoPumpPaintTester.m_widget, view.viewport());
+    mobileMotoPumpPaintTester.hide();
+    view.hide();
+
+    // TrailerPowderShape
+    TrailerPowderPaintTester trailerPowderPaintTester;
+    trailerPowderPaintTester.setText("TrailerPowder");
+    scene.addItem(&trailerPowderPaintTester);
+    QCOMPARE(trailerPowderPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(trailerPowderPaintTester.m_painted > 0);
+    QTRY_COMPARE(trailerPowderPaintTester.m_widget, view.viewport());
+    trailerPowderPaintTester.hide();
+    view.hide();
+
+    // AdaptedCarShape
+    AdaptedCarPaintTester adaptedCarPaintTester;
+    adaptedCarPaintTester.setText("AdaptedCar");
+    scene.addItem(&adaptedCarPaintTester);
+    QCOMPARE(adaptedCarPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(adaptedCarPaintTester.m_painted > 0);
+    QTRY_COMPARE(adaptedCarPaintTester.m_widget, view.viewport());
+    adaptedCarPaintTester.hide();
+    view.hide();
+
+    // AdaptedTechniqueShape
+    AdaptedTechniquePaintTester adaptedTechniquePaintTester;
+    adaptedTechniquePaintTester.setText("AdaptedTechnique");
+    scene.addItem(&adaptedTechniquePaintTester);
+    QCOMPARE(adaptedTechniquePaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(adaptedTechniquePaintTester.m_painted > 0);
+    QTRY_COMPARE(adaptedTechniquePaintTester.m_widget, view.viewport());
+    adaptedTechniquePaintTester.hide();
+    view.hide();
+
+    // AmbulanceShape
+    AmbulancePaintTester ambulancePaintTester;
+    ambulancePaintTester.setText("Ambulance");
+    scene.addItem(&ambulancePaintTester);
+    QCOMPARE(ambulancePaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(ambulancePaintTester.m_painted > 0);
+    QTRY_COMPARE(ambulancePaintTester.m_widget, view.viewport());
+    ambulancePaintTester.hide();
+    view.hide();
+
+    // PoliceShape
+    PolicePaintTester policePaintTester;
+    policePaintTester.setText("Police");
+    scene.addItem(&policePaintTester);
+    QCOMPARE(policePaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_VERIFY(policePaintTester.m_painted > 0);
+    QTRY_COMPARE(policePaintTester.m_widget, view.viewport());
+    policePaintTester.hide();
+    view.hide();
 }
 
 QTEST_MAIN(tst_TechnicShape)

@@ -594,11 +594,11 @@ void TankerShape::setRect(const QRectF &rect)
         m_tankerText->setPos(m_tankerRect.right(), m_tankerRect.bottom()
                                                        - m_tankerRect.width() / 6);
     if (m_showPipes) {
-        qreal pipeLength{m_tankerRect.width() / 6};
+        qreal pipeLength{m_tankerRect.width() / 6.0};
         m_tankerRect.adjust(pipeLength, 0.0, -pipeLength, 0.0);
     }
     if (m_showCollector) {
-        qreal collectorLength{m_tankerRect.width() / 3};
+        qreal collectorLength{m_tankerRect.width() / 3.0};
         m_tankerRect.adjust(0.0, 0.0, 0.0, -collectorLength);
     }
     update();
