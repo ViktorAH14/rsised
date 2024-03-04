@@ -101,7 +101,6 @@ protected:
 
 private:
     Q_DISABLE_COPY(TechnicsShape)
-
 };
 
 class BaseShape : public TechnicsShape
@@ -132,6 +131,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(BaseShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -179,8 +182,12 @@ protected:
 private:
     Q_DISABLE_COPY(TankerShape)
 
-    void createAction();
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void textShow(bool showText);
+    void createAction();
     void drawTankerShape(QPainter *painter);
     void drawPipes(QPainter *painter, qreal sixtWidth);
     void drawCollector(QPainter *painter, qreal sixtWidth);
@@ -231,6 +238,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(PumpHoseShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -285,6 +296,10 @@ protected:
 private:
     Q_DISABLE_COPY(FirstAidShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawFirstAidShape(QPainter *painter);
@@ -338,6 +353,10 @@ protected:
 private:
     Q_DISABLE_COPY(EmergencyShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawEmergencyShape(QPainter *painter);
@@ -386,6 +405,10 @@ protected:
 private:
     Q_DISABLE_COPY(AutoLadderShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawAutoLadderShape(QPainter *painter);
@@ -427,6 +450,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(CrankLiftShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -470,6 +497,10 @@ protected:
 private:
     Q_DISABLE_COPY(TelescopicLiftShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawTelescopicLiftShape(QPainter *painter);
@@ -511,6 +542,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(HoseCarShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -554,6 +589,10 @@ protected:
 private:
     Q_DISABLE_COPY(CommShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawCommShape(QPainter *painter);
@@ -596,6 +635,10 @@ protected:
 private:
     Q_DISABLE_COPY(TechServShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawTechServShape(QPainter *painter);
@@ -637,6 +680,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(SmokRemShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -684,6 +731,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(PumpStatShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -738,6 +789,10 @@ protected:
 private:
     Q_DISABLE_COPY(LafetTankerShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawLafetTankerShape(QPainter *painter);
@@ -786,6 +841,10 @@ protected:
 private:
     Q_DISABLE_COPY(LafetCarShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawLafetCarShape(QPainter *painter);
@@ -832,6 +891,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(AerodromeShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -886,6 +949,10 @@ protected:
 private:
     Q_DISABLE_COPY(FoamShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawFoamShape(QPainter *painter);
@@ -939,6 +1006,10 @@ protected:
 private:
     Q_DISABLE_COPY(ComboShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawComboShape(QPainter *painter);
@@ -987,6 +1058,10 @@ protected:
 private:
     Q_DISABLE_COPY(AerosolShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawAerosolShape(QPainter *painter);
@@ -1028,6 +1103,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(PowderShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -1071,6 +1150,10 @@ protected:
 private:
     Q_DISABLE_COPY(CarbonShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawCarbonShape(QPainter *painter);
@@ -1112,6 +1195,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(GazWaterShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -1155,6 +1242,10 @@ protected:
 private:
     Q_DISABLE_COPY(TrackedShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawTrackedShape(QPainter *painter);
@@ -1196,6 +1287,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(TankShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -1240,6 +1335,10 @@ protected:
 private:
     Q_DISABLE_COPY(GdzsShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawGdzsShape(QPainter *painter);
@@ -1281,6 +1380,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(WaterproofShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -1324,6 +1427,10 @@ protected:
 private:
     Q_DISABLE_COPY(LaboratoryShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawLaboratoryShape(QPainter *painter);
@@ -1366,6 +1473,10 @@ protected:
 private:
     Q_DISABLE_COPY(StaffCarShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawStaffCarShape(QPainter *painter);
@@ -1407,6 +1518,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(TrailerShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -1451,6 +1566,10 @@ protected:
 private:
     Q_DISABLE_COPY(ShipShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawShipShape(QPainter *painter);
@@ -1493,6 +1612,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(BoatShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -1537,6 +1660,10 @@ protected:
 private:
     Q_DISABLE_COPY(TrainShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawTrainShape(QPainter *painter);
@@ -1579,6 +1706,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(PlaneShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -1623,6 +1754,10 @@ protected:
 private:
     Q_DISABLE_COPY(SeaplaneShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawSeaplaneShape(QPainter *painter);
@@ -1665,6 +1800,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(HelicopterShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -1709,6 +1848,10 @@ protected:
 private:
     Q_DISABLE_COPY(PortableMotoPumpShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawPortableMotoPumpShape(QPainter *painter);
@@ -1751,6 +1894,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(MobileMotoPumpShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -1795,6 +1942,10 @@ protected:
 private:
     Q_DISABLE_COPY(TrailerPowderShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawTrailerPowderShape(QPainter *painter);
@@ -1837,6 +1988,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(AdaptedCarShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
@@ -1881,6 +2036,10 @@ protected:
 private:
     Q_DISABLE_COPY(AdaptedTechniqueShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawAdaptedTechniqueShape(QPainter *painter);
@@ -1924,6 +2083,10 @@ protected:
 private:
     Q_DISABLE_COPY(AmbulanceShape)
 
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
     void createAction();
     void textShow(bool showText);
     void drawAmbulanceShape(QPainter *painter);
@@ -1966,6 +2129,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(PoliceShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
 
     void createAction();
     void textShow(bool showText);
