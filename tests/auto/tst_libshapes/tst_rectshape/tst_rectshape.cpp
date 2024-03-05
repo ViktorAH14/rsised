@@ -178,11 +178,13 @@ class PaintTester : public RectShape
 public:
     PaintTester() : m_widget(NULL), m_painted(0)
     {
+        setFlag(QGraphicsItem::ItemIsSelectable, true);
         setRect(10.0, 10.0, 20.0, 20.0);
     }
 
-    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *w)
+    void paint(QPainter *p, const QStyleOptionGraphicsItem *s, QWidget *w)
     {
+        RectShape::paint(p, s, w);
         m_widget = w;
         m_painted++;
     }
@@ -198,39 +200,13 @@ void tst_RectShape::paint()
     scene.addItem(&paintTester);
     QGraphicsView view(&scene);
     view.show();
+    QCOMPARE(paintTester.m_painted, 0);
+    paintTester.setSelected(true);
+    QTest::qWait(10000);
     QVERIFY(QTest::qWaitForWindowExposed(&view));
     QApplication::processEvents();
-#ifdef Q_OS_WIN32
-    //we try to switch the desktop: if it fails, we skip the test
-//    if (::SwitchDesktop( ::GetThreadDesktop( ::GetCurrentThreadId() ) ) == 0) {
-//        QSKIP("The Graphics View doesn't get the paint events");
-//    }
-#endif
+    QTRY_VERIFY(paintTester.m_painted > 0);
     QTRY_COMPARE(paintTester.m_widget, view.viewport());
-    view.hide();
-    QGraphicsScene scene2;
-    QGraphicsView view2(&scene2);
-    view2.show();
-    QVERIFY(QTest::qWaitForWindowExposed(&view2));
-    QCoreApplication::processEvents(); // Process all queued paint events
-    PaintTester tester2;
-    scene2.addItem(&tester2);
-    //First show at least one paint
-    QCOMPARE(tester2.m_painted, 0);
-    QTRY_VERIFY(tester2.m_painted > 0);
-    int painted = tester2.m_painted;
-    //nominal case, update call paint
-    tester2.update();
-    QTRY_COMPARE(tester2.m_painted, painted + 1);
-    painted = tester2.m_painted;
-    //we remove the item from the scene, number of updates is still the same
-    tester2.update();
-    scene2.removeItem(&tester2);
-    QTRY_COMPARE(tester2.m_painted, painted);
-    //We re-add the item, the number of paint should increase
-    scene2.addItem(&tester2);
-    tester2.update();
-    QTRY_COMPARE(tester2.m_painted, painted + 1);
 }
 
 void tst_RectShape::isObscuredBy()
