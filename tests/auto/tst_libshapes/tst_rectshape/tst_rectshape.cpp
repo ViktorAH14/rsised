@@ -202,7 +202,6 @@ void tst_RectShape::paint()
     view.show();
     QCOMPARE(paintTester.m_painted, 0);
     paintTester.setSelected(true);
-    QTest::qWait(10000);
     QVERIFY(QTest::qWaitForWindowExposed(&view));
     QApplication::processEvents();
     QTRY_VERIFY(paintTester.m_painted > 0);
