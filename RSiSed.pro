@@ -27,3 +27,4 @@ tst_technicsshape.depends = libshapes
 OTHER_FILES = \
     COPYING \
     README.md \
+    CHANGELOG.md
