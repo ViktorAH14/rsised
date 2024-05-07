@@ -15,24 +15,24 @@
         <translation>Изменить позицию дверного полотна</translation>
     </message>
     <message>
-        <location filename="../../libshapes/buildingshape.cpp" line="513"/>
+        <location filename="../../libshapes/buildingshape.cpp" line="514"/>
         <source>Open door</source>
         <translation>Открыть дверь</translation>
     </message>
     <message>
-        <location filename="../../libshapes/buildingshape.cpp" line="514"/>
-        <location filename="../../libshapes/buildingshape.cpp" line="520"/>
-        <location filename="../../libshapes/buildingshape.cpp" line="526"/>
+        <location filename="../../libshapes/buildingshape.cpp" line="515"/>
+        <location filename="../../libshapes/buildingshape.cpp" line="523"/>
+        <location filename="../../libshapes/buildingshape.cpp" line="531"/>
         <source>Change the state of the door</source>
         <translation>Изменить положение дверного полотна</translation>
     </message>
     <message>
-        <location filename="../../libshapes/buildingshape.cpp" line="519"/>
+        <location filename="../../libshapes/buildingshape.cpp" line="522"/>
         <source>Ajar door</source>
         <translation>Прикрыть дверь</translation>
     </message>
     <message>
-        <location filename="../../libshapes/buildingshape.cpp" line="525"/>
+        <location filename="../../libshapes/buildingshape.cpp" line="530"/>
         <source>Close door</source>
         <translation>Закрыть дверь</translation>
     </message>
