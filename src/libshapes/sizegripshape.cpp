@@ -314,7 +314,7 @@ SizeGripShape::SizeGripShape(Resizer *resizer, QGraphicsItem *parent)
                  << AdaptedTechniqueShape::Type << AmbulanceShape::Type << PoliceShape::Type
                  << DeviceShape::Type << StairwellShape::Type << StairsShape::Type;
     bool rectType{false};
-    for (const int itemType : rectTypeList) {
+    for (const auto itemType : qAsConst(rectTypeList)) {
         if (parent->type() == itemType) {
                 rectType = true;
         }
