@@ -334,8 +334,9 @@ void BaseShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_baseActionList.append(m_addTextAction.get());
 }
 
@@ -444,23 +445,26 @@ void TankerShape::createAction()
     QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
     m_showPipeAction.reset(new QAction(pipeActionText));
     m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
-    QObject::connect(m_showPipeAction.get(), &QAction::triggered
-                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showPipes{[&]() {m_showPipes ? setPipes(false) : setPipes(true);}};
+    QObject::connect(m_showPipeAction.get(), &QAction::triggered, showPipes);
     m_tankerActionList.append(m_showPipeAction.get());
 
     QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
                                               : QObject::tr("Show collector")};
     m_showCollectorAction.reset(new QAction(collectActionText));
     m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
-    QObject::connect(m_showCollectorAction.get(), &QAction::triggered
-                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showCollector{[&](){m_showCollector ? setCollector(false) : setCollector(true);}};
+    QObject::connect(m_showCollectorAction.get(), &QAction::triggered, showCollector);
     m_tankerActionList.append(m_showCollectorAction.get());
 
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_tankerActionList.append(m_addTextAction.get());
 }
 
@@ -971,23 +975,26 @@ void PumpHoseShape::createAction()
     QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
     m_showPipeAction.reset(new QAction(pipeActionText));
     m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
-    QObject::connect(m_showPipeAction.get(), &QAction::triggered
-                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showPipes{[&]() {m_showPipes ? setPipes(false) : setPipes(true);}};
+    QObject::connect(m_showPipeAction.get(), &QAction::triggered, showPipes);
     m_pumpHoseActionList.append(m_showPipeAction.get());
 
     QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
                                               : QObject::tr("Show collector")};
     m_showCollectorAction.reset(new QAction(collectActionText));
     m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
-    QObject::connect(m_showCollectorAction.get(), &QAction::triggered
-                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showCollector{[&](){m_showCollector ? setCollector(false) : setCollector(true);}};
+    QObject::connect(m_showCollectorAction.get(), &QAction::triggered, showCollector);
     m_pumpHoseActionList.append(m_showCollectorAction.get());
 
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_pumpHoseActionList.append(m_addTextAction.get());
 }
 
@@ -1336,23 +1343,26 @@ void FirstAidShape::createAction()
     QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
     m_showPipeAction.reset(new QAction(pipeActionText));
     m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
-    QObject::connect(m_showPipeAction.get(), &QAction::triggered
-                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showPipes{[&]() {m_showPipes ? setPipes(false) : setPipes(true);}};
+    QObject::connect(m_showPipeAction.get(), &QAction::triggered, showPipes);
     m_firstAidActionList.append(m_showPipeAction.get());
 
     QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
                                               : QObject::tr("Show collector")};
     m_showCollectorAction.reset(new QAction(collectActionText));
     m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
-    QObject::connect(m_showCollectorAction.get(), &QAction::triggered
-                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showCollector{[&](){m_showCollector ? setCollector(false) : setCollector(true);}};
+    QObject::connect(m_showCollectorAction.get(), &QAction::triggered, showCollector);
     m_firstAidActionList.append(m_showCollectorAction.get());
 
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_firstAidActionList.append(m_addTextAction.get());
 }
 
@@ -1698,23 +1708,26 @@ void EmergencyShape::createAction()
     QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
     m_showPipeAction.reset(new QAction(pipeActionText));
     m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
-    QObject::connect(m_showPipeAction.get(), &QAction::triggered
-                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showPipes{[&]() {m_showPipes ? setPipes(false) : setPipes(true);}};
+    QObject::connect(m_showPipeAction.get(), &QAction::triggered, showPipes);
     m_emergencyActionList.append(m_showPipeAction.get());
 
     QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
                                               : QObject::tr("Show collector")};
     m_showCollectorAction.reset(new QAction(collectActionText));
     m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
-    QObject::connect(m_showCollectorAction.get(), &QAction::triggered
-                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showCollector{[&](){m_showCollector ? setCollector(false) : setCollector(true);}};
+    QObject::connect(m_showCollectorAction.get(), &QAction::triggered, showCollector);
     m_emergencyActionList.append(m_showCollectorAction.get());
 
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_emergencyActionList.append(m_addTextAction.get());
 }
 
@@ -1951,8 +1964,9 @@ void AutoLadderShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_autoLadderActionList.append(m_addTextAction.get());
 }
 
@@ -2153,8 +2167,9 @@ void CrankLiftShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_crankLiftActionList.append(m_addTextAction.get());
 }
 
@@ -2350,8 +2365,9 @@ void TelescopicLiftShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_telescopicLiftActionList.append(m_addTextAction.get());
 }
 
@@ -2550,8 +2566,9 @@ void HoseCarShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_hoseCarActionList.append(m_addTextAction.get());
 }
 
@@ -2732,8 +2749,9 @@ void CommShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_commActionList.append(m_addTextAction.get());
 }
 
@@ -2915,8 +2933,9 @@ void TechServShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_techServActionList.append(m_addTextAction.get());
 }
 
@@ -3098,8 +3117,9 @@ void SmokRemShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_smokRemActionList.append(m_addTextAction.get());
 }
 
@@ -3405,23 +3425,26 @@ void PumpStatShape::createAction()
     QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
     m_showPipeAction.reset(new QAction(pipeActionText));
     m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
-    QObject::connect(m_showPipeAction.get(), &QAction::triggered
-                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showPipes{[&]() {m_showPipes ? setPipes(false) : setPipes(true);}};
+    QObject::connect(m_showPipeAction.get(), &QAction::triggered, showPipes);
     m_pumpStatActionList.append(m_showPipeAction.get());
 
     QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
                                               : QObject::tr("Show collector")};
     m_showCollectorAction.reset(new QAction(collectActionText));
     m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
-    QObject::connect(m_showCollectorAction.get(), &QAction::triggered
-                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showCollector{[&](){m_showCollector ? setCollector(false) : setCollector(true);}};
+    QObject::connect(m_showCollectorAction.get(), &QAction::triggered, showCollector);
     m_pumpStatActionList.append(m_showCollectorAction.get());
 
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_pumpStatActionList.append(m_addTextAction.get());
 }
 
@@ -3821,23 +3844,26 @@ void LafetTankerShape::createAction()
     QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
     m_showPipeAction.reset(new QAction(pipeActionText));
     m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
-    QObject::connect(m_showPipeAction.get(), &QAction::triggered
-                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showPipes{[&]() {m_showPipes ? setPipes(false) : setPipes(true);}};
+    QObject::connect(m_showPipeAction.get(), &QAction::triggered, showPipes);
     m_lafetTankerActionList.append(m_showPipeAction.get());
 
     QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
                                               : QObject::tr("Show collector")};
     m_showCollectorAction.reset(new QAction(collectActionText));
     m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
-    QObject::connect(m_showCollectorAction.get(), &QAction::triggered
-                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showCollector{[&](){m_showCollector ? setCollector(false) : setCollector(true);}};
+    QObject::connect(m_showCollectorAction.get(), &QAction::triggered, showCollector);
     m_lafetTankerActionList.append(m_showCollectorAction.get());
 
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_lafetTankerActionList.append(m_addTextAction.get());
 }
 
@@ -4111,8 +4137,9 @@ void LafetCarShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_lafetCarActionList.append(m_addTextAction.get());
 }
 
@@ -4419,23 +4446,26 @@ void AerodromeShape::createAction()
     QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
     m_showPipeAction.reset(new QAction(pipeActionText));
     m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
-    QObject::connect(m_showPipeAction.get(), &QAction::triggered
-                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showPipes{[&]() {m_showPipes ? setPipes(false) : setPipes(true);}};
+    QObject::connect(m_showPipeAction.get(), &QAction::triggered, showPipes);
     m_aerodromeActionList.append(m_showPipeAction.get());
 
     QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
                                               : QObject::tr("Show collector")};
     m_showCollectorAction.reset(new QAction(collectActionText));
     m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
-    QObject::connect(m_showCollectorAction.get(), &QAction::triggered
-                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showCollector{[&](){m_showCollector ? setCollector(false) : setCollector(true);}};
+    QObject::connect(m_showCollectorAction.get(), &QAction::triggered, showCollector);
     m_aerodromeActionList.append(m_showCollectorAction.get());
 
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_aerodromeActionList.append(m_addTextAction.get());
 }
 
@@ -4782,23 +4812,26 @@ void FoamShape::createAction()
     QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
     m_showPipeAction.reset(new QAction(pipeActionText));
     m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
-    QObject::connect(m_showPipeAction.get(), &QAction::triggered
-                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showPipes{[&]() {m_showPipes ? setPipes(false) : setPipes(true);}};
+    QObject::connect(m_showPipeAction.get(), &QAction::triggered, showPipes);
     m_foamActionList.append(m_showPipeAction.get());
 
     QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
                                               : QObject::tr("Show collector")};
     m_showCollectorAction.reset(new QAction(collectActionText));
     m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
-    QObject::connect(m_showCollectorAction.get(), &QAction::triggered
-                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showCollector{[&](){m_showCollector ? setCollector(false) : setCollector(true);}};
+    QObject::connect(m_showCollectorAction.get(), &QAction::triggered, showCollector);
     m_foamActionList.append(m_showCollectorAction.get());
 
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_foamActionList.append(m_addTextAction.get());
 }
 
@@ -5155,23 +5188,26 @@ void ComboShape::createAction()
     QString pipeActionText{m_showPipes ? QObject::tr("Hide pipes") : QObject::tr("Show pipes")};
     m_showPipeAction.reset(new QAction(pipeActionText));
     m_showPipeAction->setToolTip(QObject::tr("Show or hide the pipes"));
-    QObject::connect(m_showPipeAction.get(), &QAction::triggered
-                     , [this]() {m_showPipes ? setPipes(false) : setPipes(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showPipes{[&]() {m_showPipes ? setPipes(false) : setPipes(true);}};
+    QObject::connect(m_showPipeAction.get(), &QAction::triggered, showPipes);
     m_comboActionList.append(m_showPipeAction.get());
 
     QString collectActionText{m_showCollector ? QObject::tr("Hide collector")
                                               : QObject::tr("Show collector")};
     m_showCollectorAction.reset(new QAction(collectActionText));
     m_showCollectorAction->setToolTip(QObject::tr("Show or hide the water collector"));
-    QObject::connect(m_showCollectorAction.get(), &QAction::triggered
-                     , [this](){m_showCollector ? setCollector(false) : setCollector(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showCollector{[&](){m_showCollector ? setCollector(false) : setCollector(true);}};
+    QObject::connect(m_showCollectorAction.get(), &QAction::triggered, showCollector);
     m_comboActionList.append(m_showCollectorAction.get());
 
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_comboActionList.append(m_addTextAction.get());
 }
 
@@ -5429,8 +5465,9 @@ void AerosolShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_aerosolActionList.append(m_addTextAction.get());
 }
 
@@ -5619,8 +5656,9 @@ void PowderShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_powderActionList.append(m_addTextAction.get());
 }
 
@@ -5806,8 +5844,9 @@ void CarbonShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_carbonActionList.append(m_addTextAction.get());
 }
 
@@ -5999,8 +6038,9 @@ void GazWaterShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_gazWaterActionList.append(m_addTextAction.get());
 }
 
@@ -6184,8 +6224,9 @@ void TrackedShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_trackedActionList.append(m_addTextAction.get());
 }
 
@@ -6387,8 +6428,9 @@ void TankShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_tankActionList.append(m_addTextAction.get());
 }
 
@@ -6576,8 +6618,9 @@ void GdzsShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_gdzsActionList.append(m_addTextAction.get());
 }
 
@@ -6760,8 +6803,9 @@ void WaterproofShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_waterproofActionList.append(m_addTextAction.get());
 }
 
@@ -6944,8 +6988,9 @@ void LaboratoryShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_laboratoryActionList.append(m_addTextAction.get());
 }
 
@@ -7128,8 +7173,9 @@ void StaffCarShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_staffCarActionList.append(m_addTextAction.get());
 }
 
@@ -7309,8 +7355,9 @@ void TrailerShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_trailerActionList.append(m_addTextAction.get());
 }
 
@@ -7518,8 +7565,9 @@ void ShipShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_shipActionList.append(m_addTextAction.get());
 }
 
@@ -7718,8 +7766,9 @@ void BoatShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_boatActionList.append(m_addTextAction.get());
 }
 
@@ -7918,8 +7967,9 @@ void TrainShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_trainActionList.append(m_addTextAction.get());
 }
 
@@ -8110,8 +8160,9 @@ void PlaneShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_planeActionList.append(m_addTextAction.get());
 }
 
@@ -8350,8 +8401,9 @@ void SeaplaneShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_seaplaneActionList.append(m_addTextAction.get());
 }
 
@@ -8597,8 +8649,9 @@ void HelicopterShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_helicopterActionList.append(m_addTextAction.get());
 }
 
@@ -8801,8 +8854,9 @@ void PortableMotoPumpShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_portableMotoPumpActionList.append(m_addTextAction.get());
 }
 
@@ -8992,8 +9046,9 @@ void MobileMotoPumpShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_mobileMotoPumpActionList.append(m_addTextAction.get());
 }
 
@@ -9204,8 +9259,9 @@ void TrailerPowderShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_trailerPowderActionList.append(m_addTextAction.get());
 }
 
@@ -9420,8 +9476,9 @@ void AdaptedCarShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_adaptedCarActionList.append(m_addTextAction.get());
 }
 
@@ -9616,8 +9673,9 @@ void AdaptedTechniqueShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_adaptedTechniqueActionList.append(m_addTextAction.get());
 }
 
@@ -9823,8 +9881,9 @@ void AmbulanceShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_ambulanceActionList.append(m_addTextAction.get());
 }
 
@@ -10025,8 +10084,9 @@ void PoliceShape::createAction()
     QString addText{m_showText ? QObject::tr("Hide text") : QObject::tr("Show text")};
     m_addTextAction.reset(new QAction(addText));
     m_addTextAction->setToolTip(QObject::tr("Show or hide text"));
-    QObject::connect(m_addTextAction.get(), &QAction::triggered
-                     , [this](){m_showText ? textShow(false) : textShow(true);});
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showText{[&](){m_showText ? textShow(false) : textShow(true);}};
+    QObject::connect(m_addTextAction.get(), &QAction::triggered, showText);
     m_policeActionList.append(m_addTextAction.get());
 }
 
