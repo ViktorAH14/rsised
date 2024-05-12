@@ -28,8 +28,11 @@
 #include <QStyleOptionGraphicsItem>
 
 /*!
- * Constructs a AbstractShape.
- * \param parent is passed to QGraphicsItem's constructor.
+ * The protected constructor an AbstractShape class.
+ *
+ * \param[in] parent A pointer to the parent object is passed to the
+ * QGraphicsItem constructor. This is part of the memory management strategy
+ * used in Qt-Framework.
  */
 AbstractShape::AbstractShape(QGraphicsItem *parent)
     : QGraphicsItem(parent)
@@ -39,14 +42,15 @@ AbstractShape::AbstractShape(QGraphicsItem *parent)
 }
 
 /*!
- * Destroys a AbstractShape
+ * The potected virtual destructor an AbstractShape class.
  */
 AbstractShape::~AbstractShape()
 {
 }
 
 /*!
- * The shape's pen
+ * The shape's pen.
+ *
  * \return Returns the shape's pen. If no pen has been set, this function
  * returns QPen(), a default black solid line pen with 1 width.
  */
@@ -57,7 +61,8 @@ QPen AbstractShape::pen() const
 
 /*!
  * Sets the pen for this shape.
- * \param pen[in] the pen is used to draw the shape's outline.
+ *
+ * \param pen[in] The pen is used to draw the shape's outline.
  */
 void AbstractShape::setPen(const QPen &pen)
 {
@@ -69,7 +74,8 @@ void AbstractShape::setPen(const QPen &pen)
 }
 
 /*!
- * The shape's brush
+ * The shape's brush.
+ *
  * \return Returns the shape's brush, or an empty brush if no brush has been set.
  */
 QBrush AbstractShape::brush() const
@@ -78,11 +84,10 @@ QBrush AbstractShape::brush() const
 }
 
 /*!
- * Sets the brush for this shape.
- * \param brush[in] the shape's brush is used to fill the shape.
+ * Sets the brush for this shape. If you use a brush with a QGradient, the
+ * gradient is relative to the shape's coordinate system.
  *
- * If you use a brush with a QGradient, the gradient is relative to the shape's
- * coordinate system.
+ * \param brush[in] The shape's brush is used to fill the shape.
  */
 void AbstractShape::setBrush(const QBrush &brush)
 {
@@ -94,14 +99,13 @@ void AbstractShape::setBrush(const QBrush &brush)
 }
 
 /*!
- * Reimplements: QGraphicsItem::isObscuredBy(const QGraphicsItem *item) const.
- * \param item[in] pointer to matched item.
+ * Reimplements: QGraphicsItem::isObscuredBy(). The base implementation maps
+ * item's opaqueArea() to this shape's coordinate system, and then checks if
+ * this shape's boundingRect() is fully contained within the mapped shape.
+ *
+ * \param item[in] The pointer to matched item.
  * \return Returns true if this shape's bounding rect is completely obscured by
  * the opaque shape of item.
- *
- * The base implementation maps item's opaqueArea() to this shape's coordinate
- * system, and then checks if this shape's boundingRect() is fully contained
- * within the mapped shape.
  */
 bool AbstractShape::isObscuredBy(const QGraphicsItem *item) const
 {
@@ -110,14 +114,14 @@ bool AbstractShape::isObscuredBy(const QGraphicsItem *item) const
 
 /*!
  * Reimplements: QGraphicsItem::opaqueArea() const.
+ * This function is used by isObscuredBy(), which is called by underlying
+ * items to determine if they are obscured by this item. The default
+ * implementation returns an empty QPainterPath, indicating that this item is
+ * completely transparent and does not obscure any other items.
+ *
  * \return This virtual function returns a shape representing the area where
  *  this item is opaque. An area is opaque if it is filled using an opaque
  *  brush or color (i.e., not transparent).
- *
- *  This function is used by isObscuredBy(), which is called by underlying
- *  items to determine if they are obscured by this item. The default
- *  implementation returns an empty QPainterPath, indicating that this item is
- *  completely transparent and does not obscure any other items.
  */
 QPainterPath AbstractShape::opaqueArea() const
 {
@@ -128,7 +132,8 @@ QPainterPath AbstractShape::opaqueArea() const
 
 /*!
  * This method is used to resize some shape.
- * \param newRect[in] new shape size.
+ *
+ * \param newRect[in] The new shape size.
  * \bug Incorrect resizing.
  * \deprecated This method will be removed when the shapes that use it are
  *  refactored.
@@ -147,7 +152,8 @@ void AbstractShape::scaleShape(const QRectF &newRect)
 
 /*!
  * Sets the shape's context menu.
- * \param contextMenu[in] context menu pointer.
+ *
+ * \param contextMenu[in] The pointer to context.
  */
 void AbstractShape::setMenu(QMenu *contextMenu)
 {
@@ -155,7 +161,8 @@ void AbstractShape::setMenu(QMenu *contextMenu)
 }
 
 /*!
- * Shape context menu
+ * Shape context menu.
+ *
  * \return Return's a pointer to the shape's context menu.
  */
 QMenu* AbstractShape::menu() const
@@ -164,10 +171,10 @@ QMenu* AbstractShape::menu() const
 }
 
 /*!
- * Adds new actions to the shape's context menu.
- * \param actions[in] list of pointers to add actions.
+ * Adds new actions to the shape's context menu. New actions are inserted
+ * after the separator.
  *
- * New actions are inserted after the separator.
+ * \param actions[in] The list of pointers to actions.
  */
 void AbstractShape::addActions(const QList<QAction *> &actions)
 {
@@ -176,10 +183,9 @@ void AbstractShape::addActions(const QList<QAction *> &actions)
 }
 
 /*!
- * Removes actions from the shape's context menu.
- * \param actions[in] a list of pointers to the actions to be removed.
+ * Removes actions from the shape's context menu. The separator is also removed.
  *
- * The separator is also removed.
+ * \param actions[in] The list of pointers to the actions to be removed.
  */
 void AbstractShape::removeActions(const QList<QAction *> &actions)
 {
@@ -189,14 +195,12 @@ void AbstractShape::removeActions(const QList<QAction *> &actions)
 }
 
 /*!
- * Reimplements:
- * void QGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event).
- * \param mouseEvent[in] pointer to QGraphicsSceneMouseEvent.
- *
+ * Reimplements: QGraphicsItem::mouseDoubleClickEvent().
  * If a shape is selected, then double-clicking on it changes the resize mode
  * to the rotate mode, and vice versa. Otherwise, the event is passed to the
- * default implementation, i.e. to the
- * void QGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event).
+ * default implementation, i.e. to the QGraphicsItem::mouseDoubleClickEvent().
+ *
+ * \param mouseEvent[in] The pointer to QGraphicsSceneMouseEvent.
  */
 void AbstractShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
@@ -210,14 +214,12 @@ void AbstractShape::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 }
 
 /*!
- * Reimplements:
- * void QGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event).
- * \param mouseEvent[in] pointer to QGraphicsSceneMouseEvent.
- *
+ * Reimplements: QGraphicsItem::mouseMoveEvent().
  * If the shape is selected and the left mouse button is pressed, the shape
  * will move following the mouse pointer. Otherwise, the event is passed to
- * the default implementation, i.e. to the
- * void QGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event).
+ * the default implementation, i.e. to the QGraphicsItem::mouseMoveEvent().
+ *
+ * \param mouseEvent[in] The pointer to QGraphicsSceneMouseEvent.
  */
 void AbstractShape::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
@@ -234,14 +236,13 @@ void AbstractShape::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 }
 
 /*!
- * Reimplements:
- * void QGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event).
- * \param mouseEvent[in] pointer to QGraphicsSceneMouseEvent.
- *
+ * Reimplements: QGraphicsItem::mousePressEvent().
  * If the shape is selected and the right mouse button is pressed, then the
  * context menu for all selected shapes is called. Otherwise, the event is
  * passed to the default implementation, i.e. to the
- * void QGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event).
+ * QGraphicsItem::mousePressEvent().
+ *
+ * \param mouseEvent[in] The pointer to QGraphicsSceneMouseEvent.
  */
 void AbstractShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
@@ -256,12 +257,12 @@ void AbstractShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 }
 
 /*!
- * Reimplements: void QGraphicsItem::wheelEvent(QGraphicsSceneWheelEvent *event).
- * \param wheelEvent[in] pointer to QGraphicsSceneWheelEvent.
- *
+ * Reimplements: QGraphicsItem::wheelEvent().
  * If a shape is selected, then rotating the mouse wheel will cause it to scale.
  * Otherwise, the event is passed to the default implementation, i.e. to the
- * void QGraphicsItem::wheelEvent(QGraphicsSceneWheelEvent *event).
+ * QGraphicsItem::wheelEvent().
+ *
+ * \param wheelEvent[in] The pointer to QGraphicsSceneWheelEvent.
  */
 void AbstractShape::wheelEvent(QGraphicsSceneWheelEvent *wheelEvent)
 {
@@ -280,17 +281,16 @@ void AbstractShape::wheelEvent(QGraphicsSceneWheelEvent *wheelEvent)
 }
 
 /*!
- * Reimplements:
- * QVariant QGraphicsItem::itemChange(QGraphicsItem::GraphicsItemChange change,
- *  const QVariant &value)
- * \param change[in] is the parameter of the item that is changing.
- * \param value[in] is the new value; the type of the value depends on change.
- * \return Returns the passed value.
- *
+ * Reimplements: QGraphicsItem::itemChange().
  * If the item's selected state changes, for example, if it is now selected,
  * it will become unselected, and vice versa. A SizeGrippShape object is
  * created, which allows you to transformations the specified shape in a
  * variety of ways.
+ *
+ * \param change[in] The parameter has been changed.
+ * \param value[in] New value of the changed parameter. The type of the value
+ * depends on change.
+ * \return Returns the passed value.
  */
 QVariant AbstractShape::itemChange(GraphicsItemChange change, const QVariant &value)
 {
@@ -306,7 +306,8 @@ QVariant AbstractShape::itemChange(GraphicsItemChange change, const QVariant &va
 
 /*!
  * Creates a contrasting border around the chosen shape.
- * \param painter[in,out] pointer to QPainter.
+ *
+ * \param painter[in,out] The pointer to QPainter.
  * \param option[in]  is used to describe the parameters needed to draw a shape.
  */
 void AbstractShape::highlightSelected(QPainter *painter, const QStyleOptionGraphicsItem *option)
@@ -334,7 +335,8 @@ void AbstractShape::highlightSelected(QPainter *painter, const QStyleOptionGraph
 
 /*!
  * Ignoring dash pattern.
- * \param path[in] original QPainterPath.
+ *
+ * \param path[in] The original QPainterPath.
  * \return  Returns a QPainterPath of path when stroked with the pen.
  */
 QPainterPath AbstractShape::shapeFromPath(const QPainterPath &path) const

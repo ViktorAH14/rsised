@@ -90,7 +90,12 @@ protected:
     QPainterPath shapeFromPath(const QPainterPath &path) const;
 
 private:
-    Q_DISABLE_COPY(AbstractShape) // Defined in the qglobal.h file
+    /*
+     * This class contains a private copy constructor and assignment
+     * operator to disable copying (the compiler gives an error message).
+     * This makros defined in the qlobal.h file
+    */
+    Q_DISABLE_COPY(AbstractShape)
 
     SizeGripShape   *m_sizeGripItem;
     QMenu   *m_contextMenu;
