@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2022 by Viktor Ermolov <ermolovva@gmail.com>.
  *
- * This file is part of the RSiSed project, a editor of the alignment of forces
+ * This file is part of the RSiSed project, an editor of the alignment of forces
  * and means in extinguishing a fire. (RSiSed)
  *
  * RSiSed is free software: you can redistribute it and/or modify
@@ -23,68 +23,2127 @@
 
 #include "abstractshape.h"
 
+QT_BEGIN_NAMESPACE
+class QAction;
+QT_END_NAMESPACE
+
 class TechnicsShape : public AbstractShape
 {
 public:
-    enum { Type = UserType + 20 };
-    enum ShapeType { Base
-                     , Tanker
-                     , AutoPump
-                     , FirstAid
-                     , Emergency
-                     , AutoLadder
-                     , CrankLift
-                     , TelescopicLift
-                     , Hose
-                     , Comm
-                     , Tech_serv
-                     , Smok_rem
-                     , AutoPumpS
-                     , CarriageCar_1
-                     , CarriageCar_2
-                     , Aerodrome
-                     , Foam
-                     , Combo
-                     , Aerosol
-                     , Powder
-                     , Carbon
-                     , GazWater
-                     , Tracked
-                     , Tank
-                     , GDZS
-                     , Waterproof
-                     , Laboratory
-                     , StaffCar
-                     , Trailer
-                     , Vessel
-                     , Boat
-                     , Train
-                     , Plane
-                     , Seaplane
-                     , Helicopter
-                     , MotoPump_1
-                     , MotoPump_2
-                     , TrailerPowder
-                     , Adapted
-                     , OtherAdapted
-                     , Ambulance
-                     , Police };
+    enum { Type = UserType + 200 };
+    enum ShapeType { Base               //Автомобиль пожарный общее обозначение
+                     , Tanker           //АЦ автоцистерна
+                     , PumpHose         //АНР автомобиль насосно-рукавный
+                     , FirstAid         //АПП автомобиль первой помощи
+                     , Emergency        //АСА пожарный аварийно-спасательный автомобиль
+                     , AutoLadder       //АЛ автолестница пожарная
+                     , CrankLift        //АПК автоподъёмник коленчатый
+                     , TelescopicLift   //ТПЛ автоподъёмник телескопический
+                     , HoseCar          //АР автомобиль рукавный
+                     , Comm             //АСО автомобиль связи и освещения
+                     , TechServ         //АТ автомобиль технической службы
+                     , SmokRem          //АД автомобиль дымоудаления
+                     , PumpStat         //ПНС пожарная автонасосная станция
+                     , LafetTanker      //АЛСС автомобиль пожарный со стационарным лафетным стволом
+                     , LafetCar         //АЛСП автомобиль передвижной лафетный ствол
+                     , Aerodrome        //АА автомобиль пожарный аэродромный
+                     , Foam             //АПТ автомобиль пожарный пенного тушения
+                     , Combo            //АКТ автомобиль пожарный комбинированного тушения
+                     , Aerosol          //ABT автомобиль водоаэрозольного тушения
+                     , Powder           //АП автомобиль порошкового тушения
+                     , Carbon           //АГТ автомобиль углекислотного тушения
+                     , GazWater         //АГВТ автомобиль газоводяного тушения
+                     , Tracked          //ГПМ машина на гусеничном ходу
+                     , Tank             //Танк пожарный
+                     , GDZS             //АГ автомобиль газодымозащитной службы
+                     , Waterproof       //АВЗ автомобиль водозащитный
+                     , Laboratory       //АЛП автолаборатория пожарная
+                     , StaffCar         //АШ автомобиль штабной
+                     , Trailer          //Прицеп пожарный
+                     , Ship             //Судно пожарное
+                     , Boat             //Катер пожарный
+                     , Train            //Поезд пожарный
+                     , Plane            //Самолёт пожарный
+                     , Seaplane         //Гидросамолёт пожарный
+                     , Helicopter       //Вертолёт пожарный
+                     , PortableMotoPump //Мотопомпа пожарная переносная
+                     , MobileMotoPump   //Мотопомпа пожарная прицепная
+                     , TrailerPowder    //Прицеп пожарный порошковый
+                     , AdaptedCar       //Приспособленный автомобиль для целей пожаротушения
+                     , AdaptedTechnique //Другая приспособленная техника для целей пожаротушения
+                     , Ambulance        //Скорая помощь
+                     , Police };        //Полиция
 
-    explicit TechnicsShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
+    struct TechnicsShapeDeleter
+    {
+        TechnicsShapeDeleter() = delete;
+        static inline void cleanup(TechnicsShape *technicsShape) {technicsShape->deleter();}
+    };
 
-    QRectF boundingRect() const override;
-    int type() const override { return Type;}
+    static TechnicsShape *createTechnicsShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
-    QPixmap image();
-    ShapeType shapeType() const;
+    inline int type() const override { return Type;}
+    virtual QPixmap image() = 0;
+    virtual ShapeType shapeType() const = 0;
+    virtual void setRect(const QRectF &rect) = 0;
+    virtual QRectF rect() const = 0;
+    virtual void setHeight(const qreal &height) = 0;
+    virtual qreal height() const = 0;
+    virtual void setText(const QString &text) = 0;
+    virtual QString text() const = 0;
 
 protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    explicit TechnicsShape(QGraphicsItem *parent = nullptr);
+    virtual ~TechnicsShape() = 0;
+    virtual void deleter();
+
+    QPolygonF basePolygon(const QRectF &rect) const;
 
 private:
-    void drawShape(QPainter *painter);
-
-    ShapeType m_shapeType;
+    Q_DISABLE_COPY(TechnicsShape)
 };
 
+class BaseShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 201};
+
+    explicit BaseShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~BaseShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(BaseShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+
+    const ShapeType m_baseType;
+    QRectF m_baseRect;
+    QGraphicsTextItem *m_baseText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_baseActionList;
+};
+
+class TankerShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 202};
+
+    explicit TankerShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~TankerShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(TankerShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void textShow(bool showText);
+    void createAction();
+    void drawTankerShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixtWidth);
+    void drawCollector(QPainter *painter, qreal sixtWidth);
+
+    const ShapeType m_tankerType;
+    QGraphicsTextItem *m_tankerText;
+    QRectF m_tankerRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_tankerActionList;
+};
+
+class PumpHoseShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 203};
+
+    explicit PumpHoseShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~PumpHoseShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(PumpHoseShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawPumpHoseShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixtWidth);
+    void drawCollector(QPainter *painter, qreal sixtWidth);
+
+    const ShapeType m_pumpHoseType;
+    QGraphicsTextItem *m_pumpHoseText;
+    QRectF m_pumpHoseRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_pumpHoseActionList;
+};
+
+class FirstAidShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 204};
+
+    explicit FirstAidShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~FirstAidShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(FirstAidShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawFirstAidShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixtWidth);
+    void drawCollector(QPainter *painter, qreal sixtWidth);
+
+    const ShapeType m_firstAidType;
+    QGraphicsTextItem *m_firstAidText;
+    QRectF m_firstAidRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_firstAidActionList;
+};
+
+class EmergencyShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 205};
+
+    explicit EmergencyShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~EmergencyShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(EmergencyShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawEmergencyShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixtWidth);
+    void drawCollector(QPainter *painter, qreal sixtWidth);
+
+    const ShapeType m_emergencyType;
+    QGraphicsTextItem *m_emergencyText;
+    QRectF m_emergencyRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_emergencyActionList;
+};
+
+class AutoLadderShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 206};
+
+    explicit AutoLadderShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~AutoLadderShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(AutoLadderShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawAutoLadderShape(QPainter *painter);
+
+    const ShapeType m_autoLadderType;
+    QRectF m_autoLadderRect;
+    QGraphicsTextItem *m_autoLadderText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_autoLadderActionList;
+};
+
+class CrankLiftShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 207};
+
+    explicit CrankLiftShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~CrankLiftShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(CrankLiftShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawCrankLiftShape(QPainter *painter);
+
+    const ShapeType m_crankLiftType;
+    QRectF m_crankLiftRect;
+    QGraphicsTextItem *m_crankLiftText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_crankLiftActionList;
+};
+
+class TelescopicLiftShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 208};
+
+    explicit TelescopicLiftShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~TelescopicLiftShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(TelescopicLiftShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawTelescopicLiftShape(QPainter *painter);
+
+    const ShapeType m_telescopicLiftType;
+    QRectF m_telescopicLiftRect;
+    QGraphicsTextItem *m_telescopicLiftText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_telescopicLiftActionList;
+};
+
+class HoseCarShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 209};
+
+    explicit HoseCarShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~HoseCarShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(HoseCarShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawHoseCarShape(QPainter *painter);
+
+    const ShapeType m_hoseCarType;
+    QRectF m_hoseCarRect;
+    QGraphicsTextItem *m_hoseCarText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_hoseCarActionList;
+};
+
+class CommShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 210};
+
+    explicit CommShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~CommShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(CommShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawCommShape(QPainter *painter);
+
+    const ShapeType m_commType;
+    QRectF m_commRect;
+    QGraphicsTextItem *m_commText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_commActionList;
+};
+
+class TechServShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 211};
+
+    explicit TechServShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~TechServShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(TechServShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawTechServShape(QPainter *painter);
+
+    const ShapeType m_techServType;
+    QRectF m_techServRect;
+    QGraphicsTextItem *m_techServText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_techServActionList;
+};
+
+class SmokRemShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 212};
+
+    explicit SmokRemShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~SmokRemShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(SmokRemShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawSmokRemShape(QPainter *painter);
+
+    const ShapeType m_smokRemType;
+    QRectF m_smokRemRect;
+    QGraphicsTextItem *m_smokRemText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_smokRemActionList;
+};
+
+class PumpStatShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 213};
+
+    explicit PumpStatShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~PumpStatShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(PumpStatShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawPumpStatShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixtWidth);
+    void drawCollector(QPainter *painter, qreal sixtWidth);
+
+    const ShapeType m_pumpStatType;
+    QGraphicsTextItem *m_pumpStatText;
+    QRectF m_pumpStatRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_pumpStatActionList;
+};
+
+class LafetTankerShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 214};
+
+    explicit LafetTankerShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~LafetTankerShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(LafetTankerShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawLafetTankerShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixthWidth);
+    void drawCollector(QPainter *painter, qreal sixthWidth);
+
+    const ShapeType m_lafetTankerType;
+    QGraphicsTextItem *m_lafetTankerText;
+    QRectF m_lafetTankerRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_lafetTankerActionList;
+};
+
+class LafetCarShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 215};
+
+    explicit LafetCarShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~LafetCarShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(LafetCarShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawLafetCarShape(QPainter *painter);
+
+    const ShapeType m_lafetCarType;
+    QRectF m_lafetCarRect;
+    QGraphicsTextItem *m_lafetCarText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_lafetCarActionList;
+};
+
+class AerodromeShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 216};
+
+    explicit AerodromeShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~AerodromeShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(AerodromeShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawAerodromeShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixtWidth);
+    void drawCollector(QPainter *painter, qreal sixtWidth);
+
+    const ShapeType m_aerodromeType;
+    QGraphicsTextItem *m_aerodromeText;
+    QRectF m_aerodromeRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_aerodromeActionList;
+};
+
+class FoamShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 217};
+
+    explicit FoamShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~FoamShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(FoamShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawFoamShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixtWidth);
+    void drawCollector(QPainter *painter, qreal sixtWidth);
+
+    const ShapeType m_foamType;
+    QGraphicsTextItem *m_foamText;
+    QRectF m_foamRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_foamActionList;
+};
+
+class ComboShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 218};
+
+    explicit ComboShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+    void setPipes(bool showPipes);
+    bool pipes() const;
+    void setCollector(bool showCollector);
+    bool collector();
+
+protected:
+    ~ComboShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(ComboShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawComboShape(QPainter *painter);
+    void drawPipes(QPainter *painter, qreal sixtWidth);
+    void drawCollector(QPainter *painter, qreal sixtWidth);
+
+    const ShapeType m_comboType;
+    QGraphicsTextItem *m_comboText;
+    QRectF m_comboRect;
+    bool m_showPipes;
+    bool m_showCollector;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_showPipeAction;
+    QScopedPointer<QAction> m_showCollectorAction;
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_comboActionList;
+};
+
+class AerosolShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 219};
+
+    explicit AerosolShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~AerosolShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(AerosolShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawAerosolShape(QPainter *painter);
+
+    const ShapeType m_aerosolType;
+    QRectF m_aerosolRect;
+    QGraphicsTextItem *m_aerosolText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_aerosolActionList;
+};
+
+class PowderShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 220};
+
+    explicit PowderShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~PowderShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(PowderShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawPowderShape(QPainter *painter);
+
+    const ShapeType m_powderType;
+    QRectF m_powderRect;
+    QGraphicsTextItem *m_powderText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_powderActionList;
+};
+
+class CarbonShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 221};
+
+    explicit CarbonShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~CarbonShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(CarbonShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawCarbonShape(QPainter *painter);
+
+    const ShapeType m_carbonType;
+    QRectF m_carbonRect;
+    QGraphicsTextItem *m_carbonText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_carbonActionList;
+};
+
+class GazWaterShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 222};
+
+    explicit GazWaterShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~GazWaterShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(GazWaterShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawGazWaterShape(QPainter *painter);
+
+    const ShapeType m_gazWaterType;
+    QRectF m_gazWaterRect;
+    QGraphicsTextItem *m_gazWaterText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_gazWaterActionList;
+};
+
+class TrackedShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 223};
+
+    explicit TrackedShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~TrackedShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(TrackedShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawTrackedShape(QPainter *painter);
+
+    const ShapeType m_trackedType;
+    QRectF m_trackedRect;
+    QGraphicsTextItem *m_trackedText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_trackedActionList;
+};
+
+class TankShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 224};
+
+    explicit TankShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~TankShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(TankShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawTankShape(QPainter *painter);
+    QPolygonF tankPolygon(const QRectF &rect) const;
+
+    const ShapeType m_tankType;
+    QRectF m_tankRect;
+    QGraphicsTextItem *m_tankText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_tankActionList;
+};
+
+class GdzsShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 225};
+
+    explicit GdzsShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~GdzsShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(GdzsShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawGdzsShape(QPainter *painter);
+
+    const ShapeType m_gdzsType;
+    QRectF m_gdzsRect;
+    QGraphicsTextItem *m_gdzsText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_gdzsActionList;
+};
+
+class WaterproofShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 226};
+
+    explicit WaterproofShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~WaterproofShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(WaterproofShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawWaterproofShape(QPainter *painter);
+
+    const ShapeType m_waterproofType;
+    QRectF m_waterproofRect;
+    QGraphicsTextItem *m_waterproofText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_waterproofActionList;
+};
+
+class LaboratoryShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 227};
+
+    explicit LaboratoryShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~LaboratoryShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(LaboratoryShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawLaboratoryShape(QPainter *painter);
+
+    const ShapeType m_laboratoryType;
+    QRectF m_laboratoryRect;
+    QGraphicsTextItem *m_laboratoryText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_laboratoryActionList;
+};
+
+class StaffCarShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 228};
+
+    explicit StaffCarShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~StaffCarShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(StaffCarShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawStaffCarShape(QPainter *painter);
+
+    const ShapeType m_staffCarType;
+    QRectF m_staffCarRect;
+    QGraphicsTextItem *m_staffCarText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_staffCarActionList;
+};
+
+class TrailerShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 229};
+
+    explicit TrailerShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~TrailerShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(TrailerShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawTrailerShape(QPainter *painter);
+    QPainterPath trailerPath() const;
+
+    const ShapeType m_trailerType;
+    QRectF m_trailerRect;
+    QGraphicsTextItem *m_trailerText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_trailerActionList;
+};
+
+class ShipShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 230};
+
+    explicit ShipShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~ShipShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(ShipShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawShipShape(QPainter *painter);
+    QPolygonF shipPolygon(const QRectF &rect) const;
+
+    const ShapeType m_shipType;
+    QRectF m_shipRect;
+    QGraphicsTextItem *m_shipText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_shipActionList;
+};
+
+class BoatShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 231};
+
+    explicit BoatShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~BoatShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(BoatShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawBoatShape(QPainter *painter);
+    QPolygonF boatPolygon(const QRectF &rect) const;
+
+    const ShapeType m_boatType;
+    QRectF m_boatRect;
+    QGraphicsTextItem *m_boatText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_boatActionList;
+};
+
+class TrainShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 232};
+
+    explicit TrainShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~TrainShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(TrainShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawTrainShape(QPainter *painter);
+    QPolygonF trainPolygon(const QRectF &rect) const;
+
+    const ShapeType m_trainType;
+    QRectF m_trainRect;
+    QGraphicsTextItem *m_trainText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_trainActionList;
+};
+
+class PlaneShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 233};
+
+    explicit PlaneShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~PlaneShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(PlaneShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawPlaneShape(QPainter *painter);
+    QPainterPath planePath() const;
+
+    const ShapeType m_planeType;
+    QRectF m_planeRect;
+    QGraphicsTextItem *m_planeText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_planeActionList;
+};
+
+class SeaplaneShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 234};
+
+    explicit SeaplaneShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~SeaplaneShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(SeaplaneShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawSeaplaneShape(QPainter *painter);
+    QPainterPath seaplanePath() const;
+
+    const ShapeType m_seaplaneType;
+    QRectF m_seaplaneRect;
+    QGraphicsTextItem *m_seaplaneText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_seaplaneActionList;
+};
+
+class HelicopterShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 235};
+
+    explicit HelicopterShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~HelicopterShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(HelicopterShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawHelicopterShape(QPainter *painter);
+    QPainterPath helicopterPath() const;
+
+    const ShapeType m_helicopterType;
+    QRectF m_helicopterRect;
+    QGraphicsTextItem *m_helicopterText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_helicopterActionList;
+};
+
+class PortableMotoPumpShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 236};
+
+    explicit PortableMotoPumpShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~PortableMotoPumpShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(PortableMotoPumpShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawPortableMotoPumpShape(QPainter *painter);
+    QPainterPath portableMotoPumpPath() const;
+
+    const ShapeType m_portableMotoPumpType;
+    QRectF m_portableMotoPumpRect;
+    QGraphicsTextItem *m_portableMotoPumpText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_portableMotoPumpActionList;
+};
+
+class MobileMotoPumpShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 237};
+
+    explicit MobileMotoPumpShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~MobileMotoPumpShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(MobileMotoPumpShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawMobileMotoPumpShape(QPainter *painter);
+    QPainterPath mobileMotoPumpPath() const;
+
+    const ShapeType m_mobileMotoPumpType;
+    QRectF m_mobileMotoPumpRect;
+    QGraphicsTextItem *m_mobileMotoPumpText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_mobileMotoPumpActionList;
+};
+
+class TrailerPowderShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 238};
+
+    explicit TrailerPowderShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~TrailerPowderShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(TrailerPowderShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawTrailerPowderShape(QPainter *painter);
+    QPainterPath trailerPowderPath() const;
+
+    const ShapeType m_trailerPowderType;
+    QRectF m_trailerPowderRect;
+    QGraphicsTextItem *m_trailerPowderText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_trailerPowderActionList;
+};
+
+class AdaptedCarShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 239};
+
+    explicit AdaptedCarShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~AdaptedCarShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(AdaptedCarShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawAdaptedCarShape(QPainter *painter);
+    QPolygonF adaptedCarPolygon(const QRectF &rect) const;
+
+    const ShapeType m_adaptedCarType;
+    QRectF m_adaptedCarRect;
+    QGraphicsTextItem *m_adaptedCarText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_adaptedCarActionList;
+};
+
+class AdaptedTechniqueShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 240};
+
+    explicit AdaptedTechniqueShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~AdaptedTechniqueShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(AdaptedTechniqueShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawAdaptedTechniqueShape(QPainter *painter);
+    QPainterPath adaptedTechniquePath() const;
+
+    const ShapeType m_adaptedTechniqueType;
+    QRectF m_adaptedTechniqueRect;
+    QGraphicsTextItem *m_adaptedTechniqueText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_adaptedTechniqueActionList;
+};
+
+class AmbulanceShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 241};
+
+    explicit AmbulanceShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~AmbulanceShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(AmbulanceShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawAmbulanceShape(QPainter *painter);
+    QPolygonF ambulancePolygon(const QRectF &rect) const;
+
+    const ShapeType m_ambulanceType;
+    QRectF m_ambulanceRect;
+    QGraphicsTextItem *m_ambulanceText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_ambulanceActionList;
+};
+
+class PoliceShape : public TechnicsShape
+{
+public:
+    enum {Type = UserType + 242};
+
+    explicit PoliceShape(QGraphicsItem *parent = nullptr);
+
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+    void setText(const QString &text) override;
+    QString text() const override;
+
+protected:
+    ~PoliceShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    Q_DISABLE_COPY(PoliceShape)
+
+#ifdef TECHNICSSHAPE_TEST
+    friend class tst_TechnicShape;
+#endif
+
+    void createAction();
+    void textShow(bool showText);
+    void drawPoliceShape(QPainter *painter);
+
+    const ShapeType m_policeType;
+    QRectF m_policeRect;
+    QGraphicsTextItem *m_policeText;
+    bool m_showText;
+
+    QScopedPointer<QAction> m_addTextAction;
+    QList<QAction *> m_policeActionList;
+};
 #endif // TECHNICSSHAPE_H

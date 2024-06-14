@@ -48,7 +48,7 @@
 #ifndef BUILDINGSHAPE_H
 #define BUILDINGSHAPE_H
 
-#include "../include/abstractshape.h"
+#include "abstractshape.h"
 
 #include <QBrush>
 #include <QPen>
@@ -263,6 +263,7 @@ private:
     bool m_leftButtonPressed;
 };
 
+<<<<<<< HEAD
 /*!
  * \brief The DoorShape class provides an door item.
  *
@@ -273,6 +274,8 @@ private:
  * \sa WallShape, WindowShape, OpenShape, StairwellShape, StairsShape,
  * createBuildingShape().
  */
+=======
+>>>>>>> refs/remotes/origin/develop
 class DoorShape :public BuildingShape
 {
 public:
@@ -354,7 +357,7 @@ private:
     QScopedPointer<QAction> m_doorAjarAction;
     QScopedPointer<QAction> m_doorCloseAction;
     QScopedPointer<QActionGroup> m_doorStateActionGroup;
-    QList<QAction *> m_actionList;
+    QList<QAction *> m_doorActionList;
 };
 
 /*!

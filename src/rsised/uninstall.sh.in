@@ -1,0 +1,74 @@
+#!/bin/bash
+
+#########################################################################################
+# File: uninstall.sh.in                                                                 #
+#                                                                                       #
+# Description: This file is used to automatically generate (rsised.pro section [DEPOY]) #
+# an application uninstallation script (uninstall.sh) from the linux_targz distribution.#
+#                                                                                       #
+# Created: June 30 2023                                                                 #
+#                                                                                       #
+# Copyright: (c) 2022 by Viktor Ermolov <ermolovva@gmail.com>.                          #
+#                                                                                       #
+# This file is part of the RSiSed project, a editor of the alignment of forces          #
+# and means in extinguishing a fire. (RSiSed)                                           #
+#                                                                                       #
+# RSiSed is free software: you can redistribute it and/or modify                        #
+# it under the terms of the GNU General Public License as published by                  #
+# the Free Software Foundation, either version 3 of the License, or                     #
+# (at your option) any later version.                                                   #
+#                                                                                       #
+# RSiSed is distributed in the hope that it will be useful,                             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of                        #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                          #
+# GNU General Public License for more details.                                          #
+#                                                                                       #
+# You should have received a copy of the GNU General Public License                     #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.                #
+#                                                                                       #
+# Email: <ermolovva@gmail.com>                                                          #
+#########################################################################################
+
+set -Eeuo pipefail # stop on error
+
+# [VARIABLE]
+APP='$$APPLICATION_NAME'
+DESKTOP_PATH=/usr/share/applications
+INSTALL_PATH=/opt/${APP}
+LINK_PATH=/usr/bin/${APP}
+
+echo '"The uninstallation of the ${APP} application has begun"'
+
+# [CHECK USER]
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root"
+    exit 1
+fi
+
+# [REMOVE ICONS]
+xdg-icon-resource uninstall --context mimetypes --size 32 application-x-${APP}
+xdg-icon-resource uninstall --context mimetypes --size 48 application-x-${APP}
+xdg-icon-resource uninstall --context mimetypes --size 64 application-x-${APP}
+xdg-icon-resource uninstall --context mimetypes --size 128 application-x-${APP}
+xdg-icon-resource uninstall --context mimetypes --size 256 application-x-${APP}
+echo '"App icons removed"'
+echo '"Please wait"'
+
+# [MIME]
+if [ -f ${INSTALL_PATH}/${APP}-mime.xml ]; then
+    xdg-mime uninstall ${INSTALL_PATH}/${APP}-mime.xml
+    echo '"Removes the file type descriptions provided in ${APP}-mime.xml"'
+fi
+
+# [DESKTOP]
+if [ -f ${DESKTOP_PATH}/${APP}.desktop ]; then
+    rm -v ${DESKTOP_PATH}/${APP}.desktop
+    echo '"File ${APP}.desktop removed"'
+fi
+
+# [REMOVE APP]
+rm -rfv ${INSTALL_PATH}
+rm -v  ${LINK_PATH}
+echo '"Directory ${INSTALL_PATH} removed"'
+
+echo '"Uninstall ${APP} finished!"'

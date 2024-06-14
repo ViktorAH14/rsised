@@ -28,7 +28,6 @@ class EllipseShape;
 class SizeGripShape : public QGraphicsItem
 {
 public:
-public:
     enum ActionType { Resize, Rotate};
     class Resizer
     {

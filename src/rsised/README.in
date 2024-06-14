@@ -1,0 +1,68 @@
+#########################################################################################
+# File: README.in                                                                       #
+#                                                                                       #
+# Description: This file is used to automatically generate (rsised.pro section [DEPOY]) #
+# an application README file from the linux_targz distribution.                         #
+#                                                                                       #
+# Created: July 19 2023                                                                 #
+#                                                                                       #
+# Copyright: (c) 2022 by Viktor Ermolov <ermolovva@gmail.com>.                          #
+#                                                                                       #
+# This file is part of the RSiSed project, a editor of the alignment of forces          #
+# and means in extinguishing a fire. (RSiSed)                                           #
+#                                                                                       #
+# RSiSed is free software: you can redistribute it and/or modify                        #
+# it under the terms of the GNU General Public License as published by                  #
+# the Free Software Foundation, either version 3 of the License, or                     #
+# (at your option) any later version.                                                   #
+#                                                                                       #
+# RSiSed is distributed in the hope that it will be useful,                             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of                        #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                          #
+# GNU General Public License for more details.                                          #
+#                                                                                       #
+# You should have received a copy of the GNU General Public License                     #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.                #
+#                                                                                       #
+# Email: <ermolovva@gmail.com>                                                          #
+#########################################################################################
+
+EN_en
+This file is part of the RSiSed project, a editor of the alignment of forces
+and means in extinguishing a fire. (RSiSed)
+
+Follow the instructions below to install the application.
+1. Unzip the archive.
+    $ tar -xzvf '$$APPLICATION_NAME'-'$$VERSION'.tar.gz
+2. Move to the '$$APPLICATION_NAME'-'$$VERSION' directory.
+    $ cd '$$APPLICATION_NAME'-'$$VERSION'
+3. Make the install.sh script executable.
+    $ chmod a+x install.sh
+4. Run the install.sh script as root.
+    $ sudo ./install.sh
+
+Follow the instructions below to uninstall the application.
+1. Move to the application directory.
+    $ cd /opt/'$$APPLICATION_NAME'
+2. Run the uninstall.sh script as root.
+    $ sudo ./uninstall.sh
+
+RU_ru
+Этот файл является частью проекта RSiSed, редактора расстановки сили средств
+при тушении пожара(РСиСед).
+
+Для установки приложения следуте следующим инструкциям.
+1. Распакуйте архив.
+    $ tar -xzvf '$$APPLICATION_NAME'_'$$VERSION'.tar.gz
+2. Переместитесь в директорию '$$APPLICATION_NAME'-'$$VERSION'.
+    $ cd '$$APPLICATION_NAME'-'$$VERSION'
+3. Сделайте скрипт install.sh исполняемым.
+    $ chmod a+x install.sh
+4. Запустите скрипт install.sh с правами суперпользователя.
+    $ sudo ./install.sh
+
+Для деинсталляции приложения следуйте следующим инструкциям.
+1. Переместитесь в дирректорию приложения.
+    $ cd /opt/'$$APPLICATION_NAME'
+2. Запустите скрипт uninstall.sh с правами суперпользователя.
+    $ sudo ./uninstall.sh

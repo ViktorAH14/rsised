@@ -24,6 +24,7 @@
 #include <QPen>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QGraphicsSceneMouseEvent>
 
 class tst_BuildingShape : public QObject
 {
@@ -34,11 +35,12 @@ private slots:
     void boundingRect();
     void shape();
     void image();
-    void setRect_data();
-    void setRect();
+    void rect_setRect_data();
+    void rect_setRect();
     void bindingWall();
-    void setHeight_data();
-    void setHeight();
+    void height_setHeight_data();
+    void height_setHeight();
+    void paint();
 
     // WallShape
     void collidingWall();
@@ -46,6 +48,7 @@ private slots:
     // DoorShape
     void doorState();
     void leafPosition();
+    void mousePressEvent();
 };
 
 
@@ -257,7 +260,7 @@ void tst_BuildingShape::image()
 {
     // WallShape
     BuildingShape *p_wallShape = BuildingShape::createBuildingShape(BuildingShape::Wall);
-    QPixmap wallImage = p_wallShape->image();
+    QPixmap wallImage{p_wallShape->image()};
     QVERIFY2(!wallImage.isNull(), "WallShape::image() returned a null pixmap");
     QCOMPARE(wallImage.width(), p_wallShape->boundingRect().width());
     QCOMPARE(wallImage.height(), p_wallShape->boundingRect().height());
@@ -265,7 +268,7 @@ void tst_BuildingShape::image()
 
     // DoorShape
     BuildingShape *p_doorShape = BuildingShape::createBuildingShape(BuildingShape::Door);
-    QPixmap doorImage = p_doorShape->image();
+    QPixmap doorImage{p_doorShape->image()};
     QVERIFY2(!doorImage.isNull(), "DoorShape::image() returned a null pixmap");
     QCOMPARE(doorImage.width(), p_doorShape->boundingRect().width());
     QCOMPARE(doorImage.height(), p_doorShape->boundingRect().width());
@@ -273,7 +276,7 @@ void tst_BuildingShape::image()
 
     // WindowShape
     BuildingShape *p_windowShape = BuildingShape::createBuildingShape(BuildingShape::Window);
-    QPixmap windowImage = p_windowShape->image();
+    QPixmap windowImage{p_windowShape->image()};
     QVERIFY2(!windowImage.isNull(), "WindowShape::image() returned a null pixmap");
     QCOMPARE(windowImage.width(), p_windowShape->boundingRect().width());
     QCOMPARE(windowImage.height(), p_windowShape->boundingRect().height());
@@ -281,7 +284,7 @@ void tst_BuildingShape::image()
 
     // OpenShape
     BuildingShape *p_openShape = BuildingShape::createBuildingShape(BuildingShape::Open);
-    QPixmap openImage = p_openShape->image();
+    QPixmap openImage{p_openShape->image()};
     QVERIFY2(!openImage.isNull(), "OpenShape::image() returned a null pixmap");
     QCOMPARE(openImage.width(), p_openShape->boundingRect().width());
     QCOMPARE(openImage.height(), p_openShape->boundingRect().height());
@@ -289,7 +292,7 @@ void tst_BuildingShape::image()
 
     // StairwellShape
     BuildingShape *p_stairwellShape = BuildingShape::createBuildingShape(BuildingShape::Stairwell);
-    QPixmap stairwellImage = p_stairwellShape->image();
+    QPixmap stairwellImage{p_stairwellShape->image()};
     QVERIFY2(!stairwellImage.isNull(), "StairwellShape::image() returned a null pixmap");
     QCOMPARE(stairwellImage.width(), p_stairwellShape->boundingRect().width());
     QCOMPARE(stairwellImage.height(), p_stairwellShape->boundingRect().height());
@@ -297,14 +300,14 @@ void tst_BuildingShape::image()
 
     // StairsShape
     BuildingShape *p_stairsShape = BuildingShape::createBuildingShape(BuildingShape::Stairs);
-    QPixmap stairsImage = p_stairsShape->image();
+    QPixmap stairsImage{p_stairsShape->image()};
     QVERIFY2(!stairsImage.isNull(), "StairsShape::image() returned a null pixmap");
     QCOMPARE(stairsImage.width(), p_stairsShape->boundingRect().width());
     QCOMPARE(stairsImage.height(), p_stairsShape->boundingRect().height());
     BuildingShape::BuildingShapeDeleter::cleanup(p_stairsShape);
 }
 
-void tst_BuildingShape::setRect_data()
+void tst_BuildingShape::rect_setRect_data()
 {
     QTest::addColumn<QRectF>("rect");
     QTest::newRow("rect_0") << QRectF(0.0, 0.0, 0.0, 0.0);
@@ -324,7 +327,7 @@ void tst_BuildingShape::setRect_data()
     QTest::newRow("rect_13") << QRectF(999999999.9, 999999999.9, 999999999.9, 999999999.9);
 }
 
-void tst_BuildingShape::setRect()
+void tst_BuildingShape::rect_setRect()
 {
     QFETCH(QRectF, rect);
 
@@ -446,7 +449,7 @@ void tst_BuildingShape::bindingWall()
     BuildingShape::BuildingShapeDeleter::cleanup(p_wallShape3);
 }
 
-void tst_BuildingShape::setHeight_data()
+void tst_BuildingShape::height_setHeight_data()
 {
     QTest::addColumn<qreal>("height");
     QTest::newRow("height_0") << 0.0;
@@ -466,7 +469,7 @@ void tst_BuildingShape::setHeight_data()
     QTest::newRow("height_26") << 26.0;
 }
 
-void tst_BuildingShape::setHeight()
+void tst_BuildingShape::height_setHeight()
 {
     QFETCH(qreal, height);
 
@@ -505,6 +508,202 @@ void tst_BuildingShape::setHeight()
     p_stairsShape->setHeight(height);
     QCOMPARE(p_stairsShape->height(), height);
     BuildingShape::BuildingShapeDeleter::cleanup(p_stairsShape);
+}
+
+#define PAINT_TESTER(NAME)                                                  \
+class NAME ## PaintTester : public NAME ## Shape                            \
+{                                                                           \
+public:                                                                     \
+    NAME ## PaintTester() : m_widget(NULL), m_painted(0)                    \
+    {                  \
+        setFlag(QGraphicsItem::ItemIsSelectable, true);                     \
+    }                                                                       \
+    void paint(QPainter *p, const QStyleOptionGraphicsItem *s, QWidget *w)  \
+    {\
+        NAME ## Shape::paint(p, s, w);                                      \
+        m_widget = w;                                                       \
+        m_painted++;                                                        \
+    }                                                                       \
+    QWidget*  m_widget;                                                     \
+    int m_painted;                                                          \
+};
+
+PAINT_TESTER(Wall)
+PAINT_TESTER(Door)
+PAINT_TESTER(Window)
+PAINT_TESTER(Open)
+PAINT_TESTER(Stairwell)
+PAINT_TESTER(Stairs)
+
+void tst_BuildingShape::paint()
+{
+    QGraphicsScene scene;
+    QGraphicsView view(&scene);
+
+    // WallShape
+    WallPaintTester wallPaintTester;
+    scene.addItem(&wallPaintTester);
+    QCOMPARE(wallPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    wallPaintTester.setSelected(true);
+    QTRY_VERIFY(wallPaintTester.m_painted > 0);
+    QTRY_COMPARE(wallPaintTester.m_widget, view.viewport());
+    wallPaintTester.hide();
+    view.hide();
+
+    // DoorShape
+    DoorPaintTester doorPaintTester;
+    scene.addItem(&doorPaintTester);
+    QCOMPARE(doorPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    QTRY_COMPARE(doorPaintTester.m_widget, view.viewport());
+    doorPaintTester.setSelected(true);
+    QTRY_VERIFY(doorPaintTester.m_painted > 0);
+    int doorPainted{doorPaintTester.m_painted};
+    doorPaintTester.setDoorState(DoorShape::Ajar);
+    doorPaintTester.update();
+    QTRY_COMPARE(doorPaintTester.m_painted, doorPainted + 1);
+    doorPainted = doorPaintTester.m_painted;
+    doorPaintTester.setDoorState(DoorShape::Close);
+    doorPaintTester.update();
+    QTRY_COMPARE(doorPaintTester.m_painted, doorPainted + 1);
+    doorPainted = doorPaintTester.m_painted;
+    doorPaintTester.setDoorState(DoorShape::Open);
+    doorPaintTester.setLeafPosition(DoorShape::Left);
+    doorPaintTester.update();
+    QTRY_COMPARE(doorPaintTester.m_painted, doorPainted + 1);
+    doorPainted = doorPaintTester.m_painted;
+    doorPaintTester.setDoorState(DoorShape::Ajar);
+    doorPaintTester.update();
+    QTRY_COMPARE(doorPaintTester.m_painted, doorPainted + 1);
+    doorPainted = doorPaintTester.m_painted;
+    doorPaintTester.setDoorState(DoorShape::Close);
+    doorPaintTester.update();
+    QTRY_COMPARE(doorPaintTester.m_painted, doorPainted + 1);
+    doorPaintTester.hide();
+    view.hide();
+
+    // WindowShape
+    WindowPaintTester windowPaintTester;
+    scene.addItem(&windowPaintTester);
+    QCOMPARE(windowPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    windowPaintTester.setSelected(true);
+    QTRY_VERIFY(windowPaintTester.m_painted > 0);
+    QTRY_COMPARE(windowPaintTester.m_widget, view.viewport());
+    windowPaintTester.hide();
+    view.hide();
+
+    // OpenShape
+    OpenPaintTester openPaintTester;
+    scene.addItem(&openPaintTester);
+    QCOMPARE(openPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    openPaintTester.setSelected(true);
+    QTRY_VERIFY(openPaintTester.m_painted > 0);
+    QTRY_COMPARE(openPaintTester.m_widget, view.viewport());
+    openPaintTester.hide();
+    view.hide();
+
+    // StairwellShape
+    StairwellPaintTester stairwellPaintTester;
+    scene.addItem(&stairwellPaintTester);
+    QCOMPARE(stairwellPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    stairwellPaintTester.setSelected(true);
+    QTRY_VERIFY(stairwellPaintTester.m_painted > 0);
+    QTRY_COMPARE(stairwellPaintTester.m_widget, view.viewport());
+    stairwellPaintTester.hide();
+    view.hide();
+
+    // StairsShape
+    StairsPaintTester stairsPaintTester;
+    scene.addItem(&stairsPaintTester);
+    QCOMPARE(stairsPaintTester.m_painted, 0);
+    view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
+    QApplication::processEvents();
+    stairsPaintTester.setSelected(true);
+    QTRY_VERIFY(stairsPaintTester.m_painted > 0);
+    QTRY_COMPARE(stairsPaintTester.m_widget, view.viewport());
+    stairsPaintTester.hide();
+    view.hide();
+}
+
+class ContextMenuTester : public QMenu
+{
+    Q_OBJECT
+public:
+    ContextMenuTester() : QMenu("Menu-Title"), m_timerId(-1)
+    {
+        addAction("Item 1");
+    }
+
+protected:
+    void showEvent(QShowEvent *shEvent) override
+    {
+        m_timerId = startTimer(50);
+        QMenu::showEvent(shEvent);
+    }
+    void timerEvent(QTimerEvent *tEvent) override
+    {
+        if (tEvent->timerId() == m_timerId)
+            close();
+    }
+
+private:
+    int m_timerId;
+};
+
+void tst_BuildingShape::mousePressEvent()
+{
+    QGraphicsScene scene;
+    QGraphicsView view(&scene);
+    view.show();
+    view.fitInView(scene.sceneRect());
+    QVERIFY(QTest::qWaitForWindowActive(&view));
+
+    QGraphicsSceneMouseEvent mousePressEvent(QEvent::GraphicsSceneMouseMove);
+    mousePressEvent.setButton(Qt::LeftButton);
+
+    // DoorShape
+    ContextMenuTester *p_doorContextMenu = new ContextMenuTester();
+
+    BuildingShape *p_doorShape = BuildingShape::createBuildingShape(BuildingShape::Door);
+    p_doorShape->setMenu(p_doorContextMenu);
+    scene.addItem(p_doorShape);
+
+    mousePressEvent.setScenePos(p_doorShape->pos());
+    QApplication::sendEvent(&scene, &mousePressEvent);
+    QVERIFY(mousePressEvent.isAccepted());
+
+    p_doorShape->setSelected(true);
+    QSignalSpy doorContextMenuSpy(p_doorShape->menu(), &QMenu::aboutToShow);
+    QCOMPARE(doorContextMenuSpy.count(), 0);
+
+    QList<QAction *> doorMenuActions{p_doorShape->menu()->actions()};
+    QCOMPARE(doorMenuActions.size(), 1);
+    doorMenuActions.clear();
+
+    QTest::mouseClick(view.viewport(), Qt::RightButton, Qt::NoModifier
+                      , view.mapFromScene(p_doorShape->boundingRect().center()));
+    doorMenuActions = p_doorShape->menu()->actions();
+    QCOMPARE(doorMenuActions.size(), 1);
+    QCOMPARE(doorContextMenuSpy.count(), 1);
+
+    scene.removeItem(p_doorShape);
+    delete p_doorContextMenu;
+    BuildingShape::BuildingShapeDeleter::cleanup(p_doorShape);
 }
 
 void tst_BuildingShape::collidingWall()

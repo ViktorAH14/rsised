@@ -555,6 +555,10 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
             if (rseItemReader.name() == "technics_shape") {
                 qreal x {0.0};
                 qreal y {0.0};
+                qreal itemLeft {0.0};
+                qreal itemTop {0.0};
+                qreal width {0.0};
+                qreal height {0.0};
                 TechnicsShape::ShapeType shapeType = TechnicsShape::Base;
                 qreal zValue {0.0};
                 qreal m11 {0.0};
@@ -566,6 +570,9 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 qreal m31 {0.0};
                 qreal m32 {0.0};
                 qreal m33 {0.0};
+                QString shapeText;
+                bool pipes{false};
+                bool collector{false};
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
                 for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
                     if (attr.name() == "x") {
@@ -573,6 +580,18 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     }
                     if (attr.name() == "y") {
                         y = attr.value().toFloat();
+                    }
+                    if (attr.name() == "item_left") {
+                        itemLeft = attr.value().toFloat();
+                    }
+                    if (attr.name() == "item_top") {
+                        itemTop = attr.value().toFloat();
+                    }
+                    if (attr.name() == "width") {
+                        width = attr.value().toFloat();
+                    }
+                    if (attr.name() == "height") {
+                        height = attr.value().toFloat();
                     }
                     if (attr.name() == "shape_type") {
                         shapeType = TechnicsShape::ShapeType(attr.value().toInt());
@@ -592,16 +611,74 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         m32 = transList.at(7).toFloat();
                         m33 = transList.at(8).toFloat();
                     }
+                    if (attr.name() == "text") {
+                        shapeText.append(attr.value());
+                    }
+                    if (shapeType == TechnicsShape::Tanker
+                        || shapeType == TechnicsShape::PumpHose
+                        || shapeType == TechnicsShape::FirstAid
+                        || shapeType == TechnicsShape::Emergency
+                        || shapeType == TechnicsShape::PumpStat
+                        || shapeType == TechnicsShape::LafetTanker
+                        || shapeType == TechnicsShape::Aerodrome
+                        || shapeType == TechnicsShape::Foam
+                        || shapeType == TechnicsShape::Combo) {
+                        if (attr.name() == "pipes") {
+                            pipes = attr.value().toInt();
+                        }
+                        if (attr.name() == "collector") {
+                            collector = attr.value().toInt();
+                        }
+                    }
                 }
 
-                TechnicsShape *technicsShape = new TechnicsShape(shapeType);
-                technicsShape->setMenu(m_itemMenu);
-                technicsShape->setPos(QPointF(x, y));
-                technicsShape->setZValue(zValue);
+                TechnicsShape *p_technicsShape = TechnicsShape::createTechnicsShape(shapeType);
+                p_technicsShape->setMenu(m_itemMenu);
+                p_technicsShape->setPos(QPointF(x, y));
+                p_technicsShape->setRect(QRectF(itemLeft, itemTop, width, height));
+                p_technicsShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
-                technicsShape->setTransform(trans);
+                p_technicsShape->setTransform(trans);
+                if (!shapeText.isEmpty())
+                    p_technicsShape->setText(shapeText);
+                if (TankerShape *p_tankershape = dynamic_cast<TankerShape *>(p_technicsShape)) {
+                    p_tankershape->setPipes(pipes);
+                    p_tankershape->setCollector(collector);
+                }
+                if (PumpHoseShape *p_pumpHoseShape = dynamic_cast<PumpHoseShape *>(p_technicsShape)) {
+                    p_pumpHoseShape->setPipes(pipes);
+                    p_pumpHoseShape->setCollector(collector);
+                }
+                if (FirstAidShape *p_firstAidShape = dynamic_cast<FirstAidShape *>(p_technicsShape)) {
+                    p_firstAidShape->setPipes(pipes);
+                    p_firstAidShape->setCollector(collector);
+                }
+                if (EmergencyShape *p_emergencyShape = dynamic_cast<EmergencyShape *>(p_technicsShape)) {
+                    p_emergencyShape->setPipes(pipes);
+                    p_emergencyShape->setCollector(collector);
+                }
+                if (PumpStatShape *p_pumpStatShape = dynamic_cast<PumpStatShape *>(p_technicsShape)) {
+                    p_pumpStatShape->setPipes(pipes);
+                    p_pumpStatShape->setCollector(collector);
+                }
+                if (LafetTankerShape *p_lafetTankerShape = dynamic_cast<LafetTankerShape *>(p_technicsShape)) {
+                    p_lafetTankerShape->setPipes(pipes);
+                    p_lafetTankerShape->setCollector(collector);
+                }
+                if (AerodromeShape *p_aerodromeShape = dynamic_cast<AerodromeShape *>(p_technicsShape)) {
+                    p_aerodromeShape->setPipes(pipes);
+                    p_aerodromeShape->setCollector(collector);
+                }
+                if (FoamShape *p_foamShape = dynamic_cast<FoamShape *>(p_technicsShape)) {
+                    p_foamShape->setPipes(pipes);
+                    p_foamShape->setCollector(collector);
+                }
+                if (ComboShape *p_comboShape = dynamic_cast<ComboShape *>(p_technicsShape)) {
+                    p_comboShape->setPipes(pipes);
+                    p_comboShape->setCollector(collector);
+                }
 
-                itemList.append(technicsShape);
+                itemList.append(p_technicsShape);
             }
             if (rseItemReader.name() == "device_shape") {
                 qreal x {0.0};

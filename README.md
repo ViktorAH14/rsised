@@ -8,14 +8,6 @@ You should have received a copy of the GNU General Public License along with thi
 Requirements:
 * QT 5.15.2 <br>
 
-You need to add the following dirrectories:
-* bin/debug
-* bin/profile
-* bin/release
-* build/debug
-* build/profile
-* build/release
-
 In QtCreator, you need to disable shadow assembly for all configurations.
 
 ## Bug reports
