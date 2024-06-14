@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2022 by Viktor Ermolov <ermolovva@gmail.com>.
  *
- * This file is part of the RSiSed project, a editor of the alignment of forces
+ * This file is part of the RSiSed project, an editor of the alignment of forces
  * and means in extinguishing a fire. (RSiSed)
  *
  * RSiSed is free software: you can redistribute it and/or modify
@@ -27,18 +27,50 @@
 #include <QGraphicsSceneEvent>
 #include <QStyleOptionGraphicsItem>
 
+/*!
+ * Constructs a BuildingShape. The constructor is declared protected because
+ * creating an abstract class is prohibited.
+ *
+ * \param parent[in] A pointer to the parent object is passed to the AbtractShape
+ * constructor. This is part of the memory management strategy used in
+ * Qt-Framework.
+ */
 BuildingShape::BuildingShape(QGraphicsItem *parent)
     : AbstractShape(parent)
 {
 }
 
+/*!
+ * Destoys the BuildingShape. Protected purely virtual destructor.
+ * Defined as default.
+ */
 BuildingShape::~BuildingShape() = default;
 
+/*!
+ * The remover method is declared protected. This prevents the client from
+ * calling deleter() directly and thus reduces the likelihood of errors
+ * associated with deleting an object. Deleting objects involves the use of
+ * the BuildingShapeDeleter deleter class and is oriented towards the use of
+ * smart pointers.
+ *
+ * \sa BuildingShapeDeleter::cleanup()
+ */
 void BuildingShape::deleter()
 {
     delete this;
 }
 
+/*!
+ * This method creates a new object of the specified type and returns a pointer
+ * to it cast to the BuildingShape type.
+ *
+ * \param shapeType[in] The type of object being created.
+ * \param parent[in] A pointer to the parent object is passed to the
+ * AbtractShape constructor. This is part of the memory management strategy used
+ * in Qt-Framework.
+ * \return Returns a pointer to the created object cast to the BuildingShape
+ *  type
+ */
 BuildingShape *BuildingShape::createBuildingShape(ShapeType shapeType, QGraphicsItem *parent)
 {
     BuildingShape *p_buildingShape{nullptr};
@@ -67,6 +99,15 @@ BuildingShape *BuildingShape::createBuildingShape(ShapeType shapeType, QGraphics
     return p_buildingShape;
 }
 
+/*!
+ * Constructs an WallShape class. The default wall dimensions are 60x10 pixels.
+ * The outline is black, thickness 1 pixel. The fill is light gray. The
+ * ItemSendsGeometryChanges and AcceptHoverEvents flags are set to true.
+ *
+ * \param parent[in] A pointer to the parent object is passed to the
+ * QGraphicsItem constructor. This is part of the memory management strategy
+ * used in Qt-Framework.
+ */
 WallShape::WallShape(QGraphicsItem *parent)
     : BuildingShape(parent)
     , m_wallType{Wall}
@@ -79,6 +120,17 @@ WallShape::WallShape(QGraphicsItem *parent)
     setBrush(Qt::lightGray);
 }
 
+/*!
+ * Reimplements: QGraphicsItem::paint(). This function, which is usually called
+ * by QGraphicsView, paints the contents of an item in local coordinates.
+ *
+ * \param painter[in] The pointer to used painter.
+ * \param option[in] This option provides style options for the item, such as
+ * its state, exposed area and its level-of-detail hints.
+ * \param widget[in] The argument is optional. If provided, it points to the
+ * widget that is being painted on; otherwise, it is 0. For cached painting,
+ * widget is always 0.
+ */
 void WallShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget);
@@ -109,6 +161,23 @@ void WallShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         highlightSelected(painter, option);
 }
 
+/*!
+ * Reimplements: QGraphicsItem::boundingRect().
+ * This function defines the outer bounds of the item as a rectangle. All
+ * painting restricted to inside an item's bounding rect. QGraphicsView uses
+ * this to determine whether the item requires redrawing. Although the item's
+ * shape can be arbitrary, the bounding rect is always rectangular, and it is
+ * unaffected by the items' transformation. For change the item's bounding
+ * rectangle, must first call prepareGeometryChange(). This notifies the scene
+ * of the imminent change, so that it can update its item geometry index.
+ * Otherwise, the scene will be unaware of the item's new geometry, and the
+ * results are undefined (typically, rendering artifacts are left within the
+ * view). Half the pen width include in the bounding rect.
+ *
+ * \return Returns the outer bounds of the wall as a rectangle.
+ *
+ * \sa shape(), contains().
+ */
 QRectF WallShape::boundingRect() const
 {
     QRectF boundingRect{m_wallRect};
@@ -119,6 +188,18 @@ QRectF WallShape::boundingRect() const
     return boundingRect;
 }
 
+
+/*!
+ * Reimplements: QGraphicsItem::shape().
+ * The shape is used for many things, including collision detection, hit tests,
+ * and for the QGraphicsScene::items() functions. This function is called by
+ * the default implementations of contains() and collidesWithPath(). The wall
+ * outline is included in the element shape.
+ *
+ * \return Returns the shape of this item as a QPainterPath in local coordinates.
+ *
+ * \sa boundingRect(), contains().
+ */
 QPainterPath WallShape::shape() const
 {
     QPainterPath path;
@@ -127,6 +208,14 @@ QPainterPath WallShape::shape() const
     return shapeFromPath(path);
 }
 
+/*!
+ * Reimplements: BuildingShape::image().
+ * Required to create a shape icon in ShapeToolBox. Used by the
+ * MainWindow::createBuildingShapeCellWidget() method to create an wall icon
+ * in the ShapeToolBox.
+ *
+ * \return Returns a QPixmap object containing the shape image.
+ */
 QPixmap WallShape::image()
 {
     qreal pixmapWidth{boundingRect().width()};
@@ -143,11 +232,25 @@ QPixmap WallShape::image()
     return pixmap;
 }
 
+/*!
+ * Reimplements: BuildingShape::shapeType().
+ * Required to determine the actual type of the object.
+ *
+ * \return Returns the type of building shape "Wall".
+ * \sa ShapeType.
+ */
 BuildingShape::ShapeType WallShape::shapeType() const
 {
     return m_wallType;
 }
 
+/*!
+ * Reimplements: BuildingShape::setRect().
+ * This method is used to set the size of the shape.
+ *
+ * \param rect[in] Sets the shape's size to be the given  rectangle.
+ * \sa rect().
+ */
 void WallShape::setRect(const QRectF &rect)
 {
     if (m_wallRect == rect)
@@ -158,11 +261,25 @@ void WallShape::setRect(const QRectF &rect)
     update();
 }
 
+/*!
+ * Reimplements: BuildingShape::rect().
+ * This is the outer bounds shape whitout pen width.
+ *
+ * \return Returns the shape's rectangle.
+ * \sa setRect().
+ */
 QRectF WallShape::rect() const
 {
     return m_wallRect;
 }
 
+/*!
+ * Reimplements: BuildingShape::setHeight().
+ * Sets the height of the shape.
+ *
+ * \param height[in] Sets the height of the shape to the given height.
+ * \sa height().
+ */
 void WallShape::setHeight(const qreal &height)
 {
     if (m_wallRect.height() == height)
@@ -176,21 +293,49 @@ void WallShape::setHeight(const qreal &height)
     update();
 }
 
+/*!
+ * Reimplements: BuildingShape::height().
+ *
+ * \return Returns the shape's height.
+ * \sa setHeight().
+ */
 qreal WallShape::height() const
 {
     return m_wallRect.height();
 }
 
+/*!
+ * The method is necessary to determine the walls intersecting with a given wall.
+ *
+ * \return Returns a set of pointers to walls intersecting with a given wall.
+ * \sa removeCollidingWall().
+ */
 QSet<WallShape *> WallShape::collidingWalls()
 {
     return m_collidingWallSet;
 }
 
+/*!
+ * Removes a wall from the set that intersects the given wall.
+ *
+ * \param wallShape[in] Pointer to the wall that needs to be removed from the
+ * set.
+ * \return In case of successful deletion, returns true and vice versa.
+ * \sa collidingWalls().
+ */
 bool WallShape::removeCollidingWall(WallShape *wallShape)
 {
     return m_collidingWallSet.remove(wallShape);
 }
 
+/*!
+ * Reimplements: AbstractShape::mousePressEvent().
+ * This method sets the left mouse button click flag to true. Used to tie walls
+ * to each other.
+ *
+ * \param mouseEvent[in] Pointer to the QGraphicsSceneMouseEvent class.
+ * \sa mouseReleaseEvent().
+ */
 void WallShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->buttons() == Qt::LeftButton) {
@@ -200,6 +345,13 @@ void WallShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
+/*!
+ * Reimplements: AbstractShape::mouseReleaseEvent().
+ * This method is used to tie closely spaced walls to each other.
+ *
+ * \param mouseEvent[in] Pointer to the QGraphicsSceneMouseEvent class.
+ * \sa mousePressEvent().
+ */
 void WallShape::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (m_leftButtonPressed && !collidingWallsIsEmpty()) {
@@ -210,6 +362,10 @@ void WallShape::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsItem::mouseReleaseEvent(mouseEvent);
 }
 
+/*
+ * Creates a set of intersecting walls. Necessary to create a common boundary of
+ *intersecting walls.
+ */
 void WallShape::setCollidingWalls()
 {
     m_collidingWallSet.clear();
@@ -229,6 +385,9 @@ bool WallShape::collidingWallsIsEmpty()
     return m_collidingWallSet.isEmpty() ? true : false;
 }
 
+/*
+ *Ties nearby walls to each other.
+ */
 void WallShape::bindingWall()
 {
     qreal bindingOffset{m_wallRect.height() < 10 ? m_wallRect.height() - 1 : m_wallRect.height() / 2};
@@ -247,6 +406,13 @@ void WallShape::bindingWall()
     update();
 }
 
+/*!
+ * Constructs a DoorShape class.
+ *
+ * \param parent[in] A pointer to the parent object is passed to the
+ * QGraphicsItem constructor. This is part of the memory management strategy
+ * used in Qt-Framework.
+ */
 DoorShape::DoorShape(QGraphicsItem *parent)
     : BuildingShape(parent)
     , m_doorType{Door}
@@ -282,6 +448,17 @@ DoorShape::DoorShape(QGraphicsItem *parent)
     createAction();
 }
 
+/*!
+ * Reimplements: QGraphicsItem::paint(). This function, which is usually called
+ * by QGraphicsView, paints the contents of an item in local coordinates.
+ *
+ * \param painter[in] The pointer to used painter.
+ * \param option[in] This option provides style options for the item, such as
+ * its state, exposed area and its level-of-detail hints.
+ * \param widget[in] The argument is optional. If provided, it points to the
+ * widget that is being painted on; otherwise, it is 0. For cached painting,
+ * widget is always 0. 
+ */
 void DoorShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget);
@@ -299,6 +476,23 @@ void DoorShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         highlightSelected(painter, option);
 }
 
+/*!
+ * Reimplements: QGraphicsItem::boundingRect().
+ * This function defines the outer bounds of the item as a rectangle. All
+ * painting restricted to inside an item's bounding rect. QGraphicsView uses
+ * this to determine whether the item requires redrawing. Although the item's
+ * shape can be arbitrary, the bounding rect is always rectangular, and it is
+ * unaffected by the items' transformation. For change the item's bounding
+ * rectangle, must first call prepareGeometryChange(). This notifies the scene
+ * of the imminent change, so that it can update its item geometry index.
+ * Otherwise, the scene will be unaware of the item's new geometry, and the
+ * results are undefined (typically, rendering artifacts are left within the
+ * view). Half the pen width include in the bounding rect.
+ *
+ * \return Returns the outer bounds of the door as a rectangle.
+ *
+ * \sa shape(), contains().
+ */
 QRectF DoorShape::boundingRect() const
 {
     QRectF boundingRect{m_leftFrame.left(), m_leftFrame.top() - qFabs(m_doorLeaf.dy())
@@ -310,6 +504,17 @@ QRectF DoorShape::boundingRect() const
     return boundingRect;
 }
 
+/*!
+ * Reimplements: QGraphicsItem::shape().
+ * The shape is used for many things, including collision detection, hit tests,
+ * and for the QGraphicsScene::items() functions. This function is called by
+ * the default implementations of contains() and collidesWithPath(). The door
+ * outline is included in the element shape.
+ *
+ * \return Returns the shape of this item as a QPainterPath in local coordinates.
+ *
+ *  \sa boundingRect(), contains().
+ */
 QPainterPath DoorShape::shape() const
 {
     QPainterPath doorPath;
@@ -323,6 +528,14 @@ QPainterPath DoorShape::shape() const
     return shapeFromPath(doorPath);
 }
 
+/*!
+ * Reimplements: BuildingShape::image().
+ * Required to create a shape icon in ShapeToolBox. Used by the
+ * MainWindow::createBuildingShapeCellWidget() method to create a door
+ * icon in the ShapeToolBox.
+ *
+ * \return Returns a QPixmap object containing the shape image.
+ */
 QPixmap DoorShape::image()
 {
     qreal pixmapWidth{boundingRect().width()};
@@ -337,11 +550,25 @@ QPixmap DoorShape::image()
     return pixmap;
 }
 
+/*!
+ * Reimplements: BuildingShape::shapeType().
+ * Required to determine the actual type of the object.
+ *
+ * \return Returns the type of building shape "Door".
+ * \sa ShapeType.
+ */
 BuildingShape::ShapeType DoorShape::shapeType() const
 {
     return m_doorType;
 }
 
+/*!
+ * Reimplements: BuildingShape::setRect().
+ * This method is used to set the size of the shape.
+ *
+ * \param rect[in] Sets the shape's size to be the given  rectangle.
+ * \sa rect().
+ */
 void DoorShape::setRect(const QRectF &rect)
 {
     prepareGeometryChange();
@@ -349,26 +576,58 @@ void DoorShape::setRect(const QRectF &rect)
     update();
 }
 
+/*!
+ * Reimplements: BuildingShape::rect().
+ * This is the outer bounds shape whitout pen width.
+ *
+ * \return Returns the shape's rectangle.
+ * \sa setRect().
+ */
 QRectF DoorShape::rect() const
 {
     return m_doorRect;
 }
 
+/*!
+ * Reimplements: BuildingShape::setHeight().
+ * Sets the height of the shape.
+ *
+ * \param height[in] Sets the height of the shape to the given height.
+ * \sa height().
+ */
 void DoorShape::setHeight(const qreal &height)
 {
     m_doorRect.setHeight(height);
 }
 
+/*!
+ * Reimplements: BuildingShape::height().
+ *
+ * \return Returns the shape's height.
+ * \sa setHeight().
+ */
 qreal DoorShape::height() const
 {
     return m_doorRect.height();
 }
 
+/*!
+ * Returns the current state of the door.
+ *
+ * \return Returns current door state (open or ajar or close).
+ * \sa setDoorState(), DoorShape::DoorState.
+ */
 DoorShape::DoorState DoorShape::doorState() const
 {
     return m_doorState;
 }
 
+/*!
+ * Sets state of the door.
+ *
+ * \param doorState[in] Sets the current door state according to the doorState.
+ * \sa doorState(), DoorShape::DoorState.
+ */
 void DoorShape::setDoorState(DoorState doorState)
 {
     prepareGeometryChange();
@@ -376,11 +635,24 @@ void DoorShape::setDoorState(DoorState doorState)
     update();
 }
 
+/*!
+ * Returns the current position of the door leaf.
+ *
+ * \return Returns the current position of the door leaf (Left or Right).
+ * \sa setLeafPosition(), DoorShape::LeafPosition.
+ */
 DoorShape::LeafPosition DoorShape::leafPosition() const
 {
     return m_leafPosition;
 }
 
+/*!
+ * Sets the current position of the door leaf (left or right).
+ *
+ * \param leafPosition[in] The current position of the door leaf is set in
+ * accordance with the parameter.
+ * \sa leafPosition(), DoorShape::LeafPosition.
+ */
 void DoorShape::setLeafPosition(LeafPosition leafPosition)
 {
     prepareGeometryChange();
@@ -388,6 +660,15 @@ void DoorShape::setLeafPosition(LeafPosition leafPosition)
     update();
 }
 
+/*!
+ * Reimplements: AbstractShape::mousePressEvent().
+ * If the left mouse button is pressed, this method is used to snap the door to
+ * the wall it intersects. The right mouse button pressed is used to create a
+ * door context menu.
+ *
+ * \param mouseEvent[in] Pointer to the QGraphicsSceneMouseEvent class.
+ * \sa mouseReleaseEvent().
+ */
 void DoorShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     switch (mouseEvent->buttons()) {
@@ -405,6 +686,13 @@ void DoorShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
+/*!
+ * Reimplements: AbstractShape::mouseReleaseEvent().
+ * The method is used to position and link a door to an intersecting wall.
+ *
+ * \param mouseEvent[in] Pointer to the QGraphicsSceneMouseEvent class.
+ * \sa mousePressEvent().
+ */
 void DoorShape::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (m_leftButtonPressed) {
@@ -425,6 +713,10 @@ void DoorShape::drawDoor(QPainter *painter)
     painter->drawArc(m_arcRectangle, m_startAngle, m_spanAngle);
 }
 
+/*
+ * Sets door parameters such as the degree of opening (open, ajar or closed) and
+ * the location of the door leaf (left or right).
+ */
 void DoorShape::setDoor()
 {
     qreal frameWidth{m_doorRect.height() / 2};
@@ -476,6 +768,10 @@ void DoorShape::setDoor()
     }
 }
 
+/*
+ * Binds the door to the wall with which it intersects, and sets the width of
+ * the door according to the width of the wall.
+ */
 void DoorShape::bindingWall()
 {
     QList<QGraphicsItem *> collidingShapeList{collidingItems()};
@@ -492,6 +788,10 @@ void DoorShape::bindingWall()
     }
 }
 
+/*
+ * Creates the actions “Open the door”, “Ajar the door”, “Close the door” and
+ * “Change the position of the door leaf”.
+ */
 void DoorShape::createAction()
 {
     m_doorLeafPosAction.reset(new QAction(QObject::tr("Leaf change")));
@@ -526,7 +826,13 @@ void DoorShape::createAction()
     m_doorOpenAction->setChecked(true);
 }
 
-
+/*!
+ * Constructs a WindowShape class.
+ *
+ * \param parent[in] A pointer to the parent object is passed to the
+ * QGraphicsItem constructor. This is part of the memory management strategy
+ * used in Qt-Framework.
+ */
 WindowShape::WindowShape(QGraphicsItem *parent)
     : BuildingShape(parent)
     , m_windowType{Window}
@@ -539,6 +845,17 @@ WindowShape::WindowShape(QGraphicsItem *parent)
     setBrush(Qt::white);
 }
 
+/*!
+ * Reimplements: QGraphicsItem::paint(). This function, which is usually called
+ * by QGraphicsView, paints the contents of an item in local coordinates.
+ *
+ * \param painter[in] The pointer to used painter.
+ * \param option[in] This option provides style options for the item, such as
+ * its state, exposed area and its level-of-detail hints.
+ * \param widget[in] The argument is optional. If provided, it points to the
+ * widget that is being painted on; otherwise, it is 0. For cached painting,
+ * widget is always 0.
+ */
 void WindowShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget);
@@ -558,6 +875,23 @@ void WindowShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         highlightSelected(painter, option);
 }
 
+/*!
+ * Reimplements: QGraphicsItem::boundingRect().
+ * This function defines the outer bounds of the item as a rectangle. All
+ * painting restricted to inside an item's bounding rect. QGraphicsView uses
+ * this to determine whether the item requires redrawing. Although the item's
+ * shape can be arbitrary, the bounding rect is always rectangular, and it is
+ * unaffected by the items' transformation. For change the item's bounding
+ * rectangle, must first call prepareGeometryChange(). This notifies the scene
+ * of the imminent change, so that it can update its item geometry index.
+ * Otherwise, the scene will be unaware of the item's new geometry, and the
+ * results are undefined (typically, rendering artifacts are left within the
+ * view). Half the pen width include in the bounding rect.
+ *
+ * \return Returns the outer bounds of the window as a rectangle.
+ *
+ * \sa shape(), contains().
+ */
 QRectF WindowShape::boundingRect() const
 {
     QRectF boundingRect{m_windowRect};
@@ -568,6 +902,17 @@ QRectF WindowShape::boundingRect() const
     return boundingRect;
 }
 
+/*!
+ * Reimplements: QGraphicsItem::shape().
+ * The shape is used for many things, including collision detection, hit tests,
+ * and for the QGraphicsScene::items() functions. This function is called by
+ * the default implementations of contains() and collidesWithPath(). The window
+ * outline is included in the element shape.
+ *
+ * \return Returns the shape of this item as a QPainterPath in local coordinates.
+ *
+ *  \sa boundingRect(), contains().
+ */
 QPainterPath WindowShape::shape() const
 {
     QPainterPath path;
@@ -576,6 +921,14 @@ QPainterPath WindowShape::shape() const
     return shapeFromPath(path);
 }
 
+/*!
+ * Reimplements: BuildingShape::image().
+ * Required to create a shape icon in ShapeToolBox. Used by the
+ * MainWindow::createBuildingShapeCellWidget() method to create an window
+ * icon in the ShapeToolBox.
+ *
+ * \return Returns a QPixmap object containing the shape image.
+ */
 QPixmap WindowShape::image()
 {
     qreal pixmapWidth{boundingRect().width()};
@@ -596,11 +949,25 @@ QPixmap WindowShape::image()
     return pixmap;
 }
 
+/*!
+ * Reimplements: BuildingShape::shapeType().
+ * Required to determine the actual type of the object.
+ *
+ * \return Returns the type of building shape "Window".
+ * \sa ShapeType.
+ */
 BuildingShape::ShapeType WindowShape::shapeType() const
 {
     return m_windowType;
 }
 
+/*!
+ * Reimplements: BuildingShape::setRect().
+ * This method is used to set the size of the shape.
+ *
+ * \param rect[in] Sets the shape's size to be the given  rectangle.
+ * \sa rect().
+ */
 void WindowShape::setRect(const QRectF &rect)
 {
     if (m_windowRect == rect)
@@ -611,11 +978,25 @@ void WindowShape::setRect(const QRectF &rect)
     update();
 }
 
+/*!
+ * Reimplements: BuildingShape::rect().
+ * This is the outer bounds shape whitout pen width.
+ *
+ * \return Returns the shape's rectangle.
+ * \sa setRect().
+ */
 QRectF WindowShape::rect() const
 {
     return m_windowRect;
 }
 
+/*!
+ * Reimplements: BuildingShape::setHeight().
+ * Sets the height of the shape.
+ *
+ * \param height[in] Sets the height of the shape to the given height.
+ * \sa height().
+ */
 void WindowShape::setHeight(const qreal &height)
 {
     if (m_windowRect.height() == height)
@@ -629,11 +1010,25 @@ void WindowShape::setHeight(const qreal &height)
     update();
 }
 
+/*!
+ * Reimplements: BuildingShape::height().
+ *
+ * \return Returns the shape's height.
+ * \sa setHeight().
+ */
 qreal WindowShape::height() const
 {
     return m_windowRect.height();
 }
 
+/*!
+ * Reimplements: AbstractShape::mousePressEvent().
+ * If the left mouse button is pressed, this method is used to snap the window to
+ * the wall it intersects.
+ *
+ * \param mouseEvent[in] Pointer to the QGraphicsSceneMouseEvent class.
+ * \sa mouseReleaseEvent().
+ */
 void WindowShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->buttons() == Qt::LeftButton) {
@@ -643,6 +1038,13 @@ void WindowShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
+/*!
+ * Reimplements: AbstractShape::mouseReleaseEvent().
+ * The method is used to position and link a window to an intersecting wall.
+ *
+ * \param mouseEvent[in] Pointer to the QGraphicsSceneMouseEvent class.
+ * \sa mousePressEvent().
+ */
 void WindowShape::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (m_leftButtonPressed) {
@@ -653,6 +1055,10 @@ void WindowShape::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsItem::mouseReleaseEvent(mouseEvent);
 }
 
+/*
+ * Binds the window to the wall with which it intersects, and sets the width of
+ * the window according to the width of the wall.
+ */
 void WindowShape::bindingWall()
 {
     QList<QGraphicsItem *> collidingShapeList{collidingItems()};
@@ -669,6 +1075,13 @@ void WindowShape::bindingWall()
     }
 }
 
+/*!
+ * Constructs an OpenShape class.
+ *
+ * \param parent[in] A pointer to the parent object is passed to the
+ * QGraphicsItem constructor. This is part of the memory management strategy
+ * used in Qt-Framework.
+ */
 OpenShape::OpenShape(QGraphicsItem *parent)
     : BuildingShape(parent)
     , m_openType{Open}
@@ -681,6 +1094,17 @@ OpenShape::OpenShape(QGraphicsItem *parent)
     setBrush(Qt::white);
 }
 
+/*!
+ * Reimplements: QGraphicsItem::paint(). This function, which is usually called
+ * by QGraphicsView, paints the contents of an item in local coordinates.
+ *
+ * \param painter[in] The pointer to used painter.
+ * \param option[in] This option provides style options for the item, such as
+ * its state, exposed area and its level-of-detail hints.
+ * \param widget[in] The argument is optional. If provided, it points to the
+ * widget that is being painted on; otherwise, it is 0. For cached painting,
+ * widget is always 0.
+ */
 void OpenShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget);
@@ -696,6 +1120,23 @@ void OpenShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         highlightSelected(painter, option);
 }
 
+/*!
+ * Reimplements: QGraphicsItem::boundingRect().
+ * This function defines the outer bounds of the item as a rectangle. All
+ * painting restricted to inside an item's bounding rect. QGraphicsView uses
+ * this to determine whether the item requires redrawing. Although the item's
+ * shape can be arbitrary, the bounding rect is always rectangular, and it is
+ * unaffected by the items' transformation. For change the item's bounding
+ * rectangle, must first call prepareGeometryChange(). This notifies the scene
+ * of the imminent change, so that it can update its item geometry index.
+ * Otherwise, the scene will be unaware of the item's new geometry, and the
+ * results are undefined (typically, rendering artifacts are left within the
+ * view). Half the pen width include in the bounding rect.
+ *
+ * \return Returns the outer bounds of the wall opening as a rectangle.
+ *
+ * \sa shape(), contains().
+ */
 QRectF OpenShape::boundingRect() const
 {
     QRectF boundingRect{m_openRect};
@@ -706,6 +1147,17 @@ QRectF OpenShape::boundingRect() const
     return boundingRect;
 }
 
+/*!
+ * Reimplements: QGraphicsItem::shape().
+ * The shape is used for many things, including collision detection, hit tests,
+ * and for the QGraphicsScene::items() functions. This function is called by
+ * the default implementations of contains() and collidesWithPath(). The wall
+ * opening outline is included in the element shape.
+ *
+ * \return Returns the shape of this item as a QPainterPath in local coordinates.
+ *
+ *  \sa boundingRect(), contains().
+ */
 QPainterPath OpenShape::shape() const
 {
     QPainterPath path;
@@ -714,6 +1166,14 @@ QPainterPath OpenShape::shape() const
     return shapeFromPath(path);
 }
 
+/*!
+ * Reimplements: BuildingShape::image().
+ * Required to create a shape icon in ShapeToolBox. Used by the
+ * MainWindow::createBuildingShapeCellWidget() method to create an wall opening
+ * icon in the ShapeToolBox.
+ *
+ * \return Returns a QPixmap object containing the shape image.
+ */
 QPixmap OpenShape::image()
 {
     qreal pixmapWidth{boundingRect().width()};
@@ -730,11 +1190,25 @@ QPixmap OpenShape::image()
     return pixmap;
 }
 
+/*!
+ * Reimplements: BuildingShape::shapeType().
+ * Required to determine the actual type of the object.
+ *
+ * \return Returns the type of building shape "Open".
+ * \sa ShapeType.
+ */
 BuildingShape::ShapeType OpenShape::shapeType() const
 {
     return m_openType;
 }
 
+/*!
+ * Reimplements: BuildingShape::setRect().
+ * This method is used to set the size of the shape.
+ *
+ * \param rect[in] Sets the shape's size to be the given  rectangle.
+ * \sa rect().
+ */
 void OpenShape::setRect(const QRectF &rect)
 {
     if (m_openRect == rect)
@@ -745,11 +1219,25 @@ void OpenShape::setRect(const QRectF &rect)
     update();
 }
 
+/*!
+ * Reimplements: BuildingShape::rect().
+ * This is the outer bounds shape whitout pen width.
+ *
+ * \return Returns the shape's rectangle.
+ * \sa setRect().
+ */
 QRectF OpenShape::rect() const
 {
     return m_openRect;
 }
 
+/*!
+ * Reimplements: BuildingShape::setHeight().
+ * Sets the height of the shape.
+ *
+ * \param height[in] Sets the height of the shape to the given height.
+ * \sa height().
+ */
 void OpenShape::setHeight(const qreal &height)
 {
     if (m_openRect.height() == height)
@@ -763,11 +1251,25 @@ void OpenShape::setHeight(const qreal &height)
     update();
 }
 
+/*!
+ * Reimplements: BuildingShape::height().
+ *
+ * \return Returns the shape's height.
+ * \sa setHeight().
+ */
 qreal OpenShape::height() const
 {
     return m_openRect.height();
 }
 
+/*!
+ * Reimplements: AbstractShape::mousePressEvent().
+ * If the left mouse button is pressed, this method is used to snap the wall
+ * opening to the wall it intersects.
+ *
+ * \param mouseEvent[in] Pointer to the QGraphicsSceneMouseEvent class.
+ * \sa mouseReleaseEvent().
+ */
 void OpenShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->buttons() == Qt::LeftButton) {
@@ -777,6 +1279,14 @@ void OpenShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
+/*!
+ * Reimplements: AbstractShape::mouseReleaseEvent().
+ * The method is used to position and link a wall opening to an intersecting
+ * wall.
+ *
+ * \param mouseEvent[in] Pointer to the QGraphicsSceneMouseEvent class.
+ * \sa mousePressEvent().
+ */
 void OpenShape::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (m_leftButtonPressed) {
@@ -787,6 +1297,10 @@ void OpenShape::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsItem::mouseReleaseEvent(mouseEvent);
 }
 
+/*
+ * Binds the wall opening to the wall with which it intersects, and sets the
+ * width of the wall opening according to the width of the wall.
+ */
 void OpenShape::bindingWall()
 {
     QList<QGraphicsItem *> collidingShapeList{collidingItems()};
@@ -803,6 +1317,13 @@ void OpenShape::bindingWall()
     }
 }
 
+/*!
+ * Constructs a StairwellShape class.
+ *
+ * \param parent[in] A pointer to the parent object is passed to the
+ * QGraphicsItem constructor. This is part of the memory management strategy
+ * used in Qt-Framework.
+ */
 StairwellShape::StairwellShape(QGraphicsItem *parent)
     : BuildingShape(parent)
     , m_stairwellType{Stairwell}
@@ -814,6 +1335,17 @@ StairwellShape::StairwellShape(QGraphicsItem *parent)
     setBrush(Qt::white);
 }
 
+/*!
+ * Reimplements: QGraphicsItem::paint(). This function, which is usually called
+ * by QGraphicsView, paints the contents of an item in local coordinates.
+ *
+ * \param painter[in] The pointer to used painter.
+ * \param option[in] This option provides style options for the item, such as
+ * its state, exposed area and its level-of-detail hints.
+ * \param widget[in] The argument is optional. If provided, it points to the
+ * widget that is being painted on; otherwise, it is 0. For cached painting,
+ * widget is always 0.
+ */
 void StairwellShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget);
@@ -829,6 +1361,23 @@ void StairwellShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
         highlightSelected(painter, option);
 }
 
+/*!
+ * Reimplements: QGraphicsItem::boundingRect().
+ * This function defines the outer bounds of the item as a rectangle. All
+ * painting restricted to inside an item's bounding rect. QGraphicsView uses
+ * this to determine whether the item requires redrawing. Although the item's
+ * shape can be arbitrary, the bounding rect is always rectangular, and it is
+ * unaffected by the items' transformation. For change the item's bounding
+ * rectangle, must first call prepareGeometryChange(). This notifies the scene
+ * of the imminent change, so that it can update its item geometry index.
+ * Otherwise, the scene will be unaware of the item's new geometry, and the
+ * results are undefined (typically, rendering artifacts are left within the
+ * view). Half the pen width include in the bounding rect.
+ *
+ * \return Returns the outer bounds of the stairwell as a rectangle.
+ *
+ * \sa shape(), contains().
+ */
 QRectF StairwellShape::boundingRect() const
 {
     QRectF boundingRect{m_stairwellRect};
@@ -839,6 +1388,17 @@ QRectF StairwellShape::boundingRect() const
     return boundingRect;
 }
 
+/*!
+ * Reimplements: QGraphicsItem::shape().
+ * The shape is used for many things, including collision detection, hit tests,
+ * and for the QGraphicsScene::items() functions. This function is called by
+ * the default implementations of contains() and collidesWithPath(). The
+ * stairwell outline is included in the element shape.
+ *
+ * \return Returns the shape of this item as a QPainterPath in local coordinates.
+ *
+ *  \sa boundingRect(), contains().
+ */
 QPainterPath StairwellShape::shape() const
 {
     QPainterPath path;
@@ -862,6 +1422,14 @@ QPainterPath StairwellShape::shape() const
     return shapeFromPath(path);
 }
 
+/*!
+ * Reimplements: BuildingShape::image().
+ * Required to create a shape icon in ShapeToolBox. Used by the
+ * MainWindow::createBuildingShapeCellWidget() method to create a stairwell
+ * icon in the ShapeToolBox.
+ *
+ * \return Returns a QPixmap object containing the shape image.
+ */
 QPixmap StairwellShape::image()
 {
     qreal pixmapWidth{boundingRect().width()};
@@ -878,11 +1446,25 @@ QPixmap StairwellShape::image()
     return pixmap;
 }
 
+/*!
+ * Reimplements: BuildingShape::shapeType().
+ * Required to determine the actual type of the object.
+ *
+ * \return Returns the type of building shape "Stairwell".
+ * \sa ShapeType.
+ */
 BuildingShape::ShapeType StairwellShape::shapeType() const
 {
     return m_stairwellType;
 }
 
+/*!
+ * Reimplements: BuildingShape::setRect().
+ * This method is used to set the size of the shape.
+ *
+ * \param rect[in] Sets the shape's size to be the given  rectangle.
+ * \sa rect().
+ */
 void StairwellShape::setRect(const QRectF &rect)
 {
     if (m_stairwellRect == rect)
@@ -893,11 +1475,25 @@ void StairwellShape::setRect(const QRectF &rect)
     update();
 }
 
+/*!
+ * Reimplements: BuildingShape::rect().
+ * This is the outer bounds shape whitout pen width.
+ *
+ * \return Returns the shape's rectangle.
+ * \sa setRect().
+ */
 QRectF StairwellShape::rect() const
 {
     return m_stairwellRect;
 }
 
+/*!
+ * Reimplements: BuildingShape::setHeight().
+ * Sets the height of the shape.
+ *
+ * \param height[in] Sets the height of the shape to the given height.
+ * \sa height().
+ */
 void StairwellShape::setHeight(const qreal &height)
 {
     if (m_stairwellRect.height() == height)
@@ -911,11 +1507,21 @@ void StairwellShape::setHeight(const qreal &height)
     update();
 }
 
+/*!
+ * Reimplements: BuildingShape::height().
+ *
+ * \return Returns the shape's height.
+ * \sa setHeight().
+ */
 qreal StairwellShape::height() const
 {
     return m_stairwellRect.height();
 }
 
+/*
+ * Draws a stairwell and, when resizing, automatically adjusts the number of
+ * steps and the distance between them.
+ */
 void StairwellShape::drawStairwell(QPainter *painter)
 {
     QPointF stBottomLeft{m_stairwellRect.bottomLeft()};
@@ -969,6 +1575,13 @@ void StairwellShape::drawStairwell(QPainter *painter)
     painter->drawLine(topStep);
 }
 
+/*!
+ * Constructs a StairsShape class.
+ *
+ * \param parent[in] A pointer to the parent object is passed to the
+ * QGraphicsItem constructor. This is part of the memory management strategy
+ * used in Qt-Framework.
+ */
 StairsShape::StairsShape(QGraphicsItem *parent)
     : BuildingShape(parent)
     , m_stairsType{Stairs}
@@ -980,6 +1593,17 @@ StairsShape::StairsShape(QGraphicsItem *parent)
     setBrush(Qt::white);
 }
 
+/*!
+ * Reimplements: QGraphicsItem::paint(). This function, which is usually called
+ * by QGraphicsView, paints the contents of an item in local coordinates.
+ *
+ * \param painter[in] The pointer to used painter.
+ * \param option[in] This option provides style options for the item, such as
+ * its state, exposed area and its level-of-detail hints.
+ * \param widget[in] The argument is optional. If provided, it points to the
+ * widget that is being painted on; otherwise, it is 0. For cached painting,
+ * widget is always 0.
+ */
 void StairsShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget);
@@ -995,6 +1619,23 @@ void StairsShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         highlightSelected(painter, option);
 }
 
+/*!
+ * Reimplements: QGraphicsItem::boundingRect().
+ * This function defines the outer bounds of the item as a rectangle. All
+ * painting restricted to inside an item's bounding rect. QGraphicsView uses
+ * this to determine whether the item requires redrawing. Although the item's
+ * shape can be arbitrary, the bounding rect is always rectangular, and it is
+ * unaffected by the items' transformation. For change the item's bounding
+ * rectangle, must first call prepareGeometryChange(). This notifies the scene
+ * of the imminent change, so that it can update its item geometry index.
+ * Otherwise, the scene will be unaware of the item's new geometry, and the
+ * results are undefined (typically, rendering artifacts are left within the
+ * view). Half the pen width include in the bounding rect.
+ *
+ * \return Returns the outer bounds of the stair as a rectangle.
+ *
+ * \sa shape(), contains().
+ */
 QRectF StairsShape::boundingRect() const
 {
     QRectF boundingRect{m_stairsRect};
@@ -1005,6 +1646,17 @@ QRectF StairsShape::boundingRect() const
     return boundingRect;
 }
 
+/*!
+ * Reimplements: QGraphicsItem::shape().
+ * The shape is used for many things, including collision detection, hit tests,
+ * and for the QGraphicsScene::items() functions. This function is called by
+ * the default implementations of contains() and collidesWithPath(). The
+ * stair outline is included in the element shape.
+ *
+ * \return Returns the shape of this item as a QPainterPath in local coordinates.
+ *
+ *  \sa boundingRect(), contains().
+ */
 QPainterPath StairsShape::shape() const
 {
     QPainterPath path;
@@ -1013,6 +1665,14 @@ QPainterPath StairsShape::shape() const
     return shapeFromPath(path);
 }
 
+/*!
+ * Reimplements: BuildingShape::image().
+ * Required to create a shape icon in ShapeToolBox. Used by the
+ * MainWindow::createBuildingShapeCellWidget() method to create a stair icon in
+ * the ShapeToolBox.
+ *
+ * \return Returns a QPixmap object containing the shape image.
+ */
 QPixmap StairsShape::image()
 {
     qreal pixmapWidth{boundingRect().width()};
@@ -1029,11 +1689,25 @@ QPixmap StairsShape::image()
     return pixmap;
 }
 
+/*!
+ * Reimplements: BuildingShape::shapeType().
+ * Required to determine the actual type of the object.
+ *
+ * \return Returns the type of building shape "Stairs".
+ * \sa ShapeType.
+ */
 BuildingShape::ShapeType StairsShape::shapeType() const
 {
     return m_stairsType;
 }
 
+/*!
+ * Reimplements: BuildingShape::setRect().
+ * This method is used to set the size of the shape.
+ *
+ * \param rect[in] Sets the shape's size to be the given  rectangle.
+ * \sa rect().
+ */
 void StairsShape::setRect(const QRectF &rect)
 {
     if (m_stairsRect == rect)
@@ -1044,11 +1718,25 @@ void StairsShape::setRect(const QRectF &rect)
     update();
 }
 
+/*!
+ * Reimplements: BuildingShape::rect().
+ * This is the outer bounds shape whitout pen width.
+ *
+ * \return Returns the shape's rectangle.
+ * \sa setRect().
+ */
 QRectF StairsShape::rect() const
 {
     return m_stairsRect;
 }
 
+/*!
+ * Reimplements: BuildingShape::setHeight().
+ * Sets the height of the shape.
+ *
+ * \param height[in] Sets the height of the shape to the given height.
+ * \sa height().
+ */
 void StairsShape::setHeight(const qreal &height)
 {
     if (m_stairsRect.height() == height)
@@ -1062,11 +1750,21 @@ void StairsShape::setHeight(const qreal &height)
     update();
 }
 
+/*!
+ * Reimplements: BuildingShape::height().
+ *
+ * \return Returns the shape's height.
+ * \sa setHeight().
+ */
 qreal StairsShape::height() const
 {
     return m_stairsRect.height();
 }
 
+/*
+ * Draws a staircase and, when resizing, automatically adjusts the number of
+ * steps and the distance between them.
+ */
 void StairsShape::drawStairs(QPainter *painter)
 {
     QPointF stBottomLeft{m_stairsRect.bottomLeft()};
