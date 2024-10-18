@@ -263,7 +263,6 @@ private:
     bool m_leftButtonPressed;
 };
 
-<<<<<<< HEAD
 /*!
  * \brief The DoorShape class provides an door item.
  *
@@ -274,8 +273,7 @@ private:
  * \sa WallShape, WindowShape, OpenShape, StairwellShape, StairsShape,
  * createBuildingShape().
  */
-=======
->>>>>>> refs/remotes/origin/develop
+
 class DoorShape :public BuildingShape
 {
 public:
