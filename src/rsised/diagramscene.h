@@ -22,7 +22,7 @@
 #define DIAGRAMSCENE_H
 
 #include "../include/technicsshape.h"
-#include "../include/deviceshape.h"
+#include "../include/equipment.h"
 #include "../include/buildingshape.h"
 
 #include <QGraphicsScene>

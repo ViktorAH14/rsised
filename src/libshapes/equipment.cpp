@@ -18,7 +18,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../include/deviceshape.h"
+#include "../include/equipment.h"
 
 #include <QPainter>
 

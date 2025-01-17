@@ -20,7 +20,7 @@
 
 /*!
  * \file
- * \brief This file contains a description of the class methods used by drawing
+ * \brief This file contains a declarations of the class methods used by drawing
  * building structures.
  *
  * The buildingshape.h is a header file that contains a description of the

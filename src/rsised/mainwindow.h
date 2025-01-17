@@ -24,7 +24,7 @@
 #include "diagramscene.h"
 #include "../include/technicsshape.h"
 #include "../include/buildingshape.h"
-#include "../include/deviceshape.h"
+#include "../include/equipment.h"
 
 #include <QMainWindow>
 

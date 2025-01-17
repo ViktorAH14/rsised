@@ -25,7 +25,7 @@
 #include "../include/polylineshape.h"
 #include "../include/pixmapshape.h"
 #include "../include/technicsshape.h"
-#include "../include/deviceshape.h"
+#include "../include/equipment.h"
 #include "../include/buildingshape.h"
 
 #include <QPainterPath>

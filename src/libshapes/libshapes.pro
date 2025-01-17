@@ -17,8 +17,8 @@ SOURCES += \
     abstractshape.cpp \
     buildingshape.cpp \
     curve.cpp \
-    deviceshape.cpp \
     ellipseshape.cpp \
+    equipment.cpp \
     pixmapshape.cpp \
     polylineshape.cpp \
     rectshape.cpp \
@@ -31,8 +31,8 @@ HEADERS += \
     ../include/abstractshape.h \
     ../include/buildingshape.h \
     ../include/curve.h \
-    ../include/deviceshape.h \
     ../include/ellipseshape.h \
+    ../include/equipment.h \
     ../include/pixmapshape.h \
     ../include/polylineshape.h \
     ../include/rectshape.h \

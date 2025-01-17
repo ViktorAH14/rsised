@@ -39,4 +39,4 @@ LIBS += -L$${LIBS_PATH}/
 INCLUDEPATH += $${INC_PATH}/
 INCLUDEPATH += $${IMPORT_PATH}/
 
-#linux-g++: QMAKE_CXXFLAGS += -std=c++17
+linux-g++: QMAKE_CXXFLAGS += -std=c++17
