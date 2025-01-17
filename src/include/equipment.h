@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2022 by Viktor Ermolov <ermolovva@gmail.com>.
  *
- * This file is part of the RSiSed project, a editor of the alignment of forces
+ * This file is part of the RSiSed project, an editor of the alignment of forces
  * and means in extinguishing a fire. (RSiSed)
  *
  * RSiSed is free software: you can redistribute it and/or modify
@@ -18,45 +18,90 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DEVICESHAPE_H
-#define DEVICESHAPE_H
+/*!
+ * \file
+ * \brief This header file contains declarations like classes used to draw fire
+ * equipment.
+ *
+ * The deviceshape.h is a header file that contains a declarations of the Nosepiece,
+ * Branching, Stair, Collector, HoseBridge, HoseReel, Hydroelevator, FoamMixer,
+ * FireColumn, SmokePump, Hose, FoamLift and LiftGPS classes.
+ *
+ *
+ * \copyright (C) 2022 by Viktor Ermolov <ermolovva@gmail.com>.
+ * You can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
+ * \date October 18 2024
+ * \author Ermolov V.A.
+ */
+
+/*!
+ * \defgroup EquipmentShapes Equipment shapes library
+ * \brief This module is a fire equipment library of shapes for the RSiSed application.
+ * \ingroup libshapes
+ *
+ * This module includes elements designed to create fire fighting equipment (nosepieces,
+ * branches, stairs, hoses, etc.).
+ */
+///@{
+
+#ifndef EQUIPMENT_H
+#define EQUIPMENT_H
 
 #include "abstractshape.h"
 
+/*!
+ * \brief The Equipment class is an interface class for creating fire fighting
+ *  equipment shapes.
+ *
+ * The class has an available static factory function that returns a pointer
+ * to the base class, with which instances of the corresponding classes are
+ * created.
+ *
+ * \sa Nosepiece, Branching, Stair, Collector, HoseBridge, HoseReel, Hydroelevator,
+ * FoamMixer, FireColumn, SmokePump, Hose, FoamLift and LiftGPS.
+ */
+//TODO Create an interface class
 class DeviceShape : public AbstractShape
 {
 public:
-    enum {Type = UserType + 30};
-    enum ShapeType { Barrel_0
-                     , Barrel_1
-                     , Barrel_2
-                     , Barrel_3
-                     , Barrel_4
-                     , Barrel_5
-                     , Barrel_6
-                     , Carriage_1
-                     , Carriage_2
-                     , Carriage_3
-                     , Carriage_4
-                     , Carriage_5
-                     , Branches_2
-                     , Branches_3
-                     , Branches_4
-                     , Ladder_1
-                     , Ladder_2
-                     , Ladder_3
-                     , Collector
-                     , Bridge
-                     , Reel
-                     , Reel_mobile
-                     , HydrElevator
-                     , Foam_mix
-                     , Column
-                     , SmokePump_1
-                     , SmokePump_2
-                     , Hose
-                     , FoamLift_1
-                     , FoamLift_2 };
+    //! This type information is used by qgraphicsitem_cast to distinguish between types.
+    enum {Type = UserType + 300};
+//TODO Rename constants
+//TODO Change enum to enum class and use directives using enum ShapeType
+//TODO Combine nosepiece into one class
+//TODO Combine fire monitor into one class
+    enum ShapeType { Barrel_0       //РС (nosepiece)
+                     , Barrel_1     //РС 50
+                     , Barrel_2     //РС 70
+                     , Barrel_3     //Ствол ручной высокого давления
+                     , Barrel_4     //СВП
+                     , Barrel_5     //ГПС
+                     , Barrel_6     //Ствол ручной с добавками
+                     , Carriage_1   //Переносной лафетный ствол (fire monitor)
+                     , Carriage_2   //Лафетный ствол стационарный с водяными насадками
+                     , Carriage_3   //Лафетный ствол стационарный порошковый
+                     , Carriage_4   //Лафетный ствол стационарный с пенными насадками
+                     , Carriage_5   //Лафетный ствол возимый
+                     , Branches_2   //РД
+                     , Branches_3   //РТ
+                     , Branches_4   //РЧ
+                     , Ladder_1     //ЛП
+                     , Ladder_2     //ЛШ
+                     , Ladder_3     //ВПЛ
+                     , Collector    //Водосборник
+                     , Bridge       //Рукавный мостик
+                     , Reel         //Рукавная катушка
+                     , Reel_mobile  //Рукавная катушка возимая
+                     , HydrElevator //Гидроэлеватор
+                     , Foam_mix     //Пеносмеситель
+                     , Column       //Колонка пожарная
+                     , SmokePump_1  //Дымосос переносной
+                     , SmokePump_2  //Дымосос прицепной
+                     , Hose         //Рукав всасывающий
+                     , FoamLift_1   //Подёмник-пенослив
+                     , FoamLift_2 };//Подъёмник пенный с гребёнокой генераторов ГПС-600
 
     explicit DeviceShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
@@ -75,4 +120,6 @@ private:
     ShapeType m_shapeType;
 };
 
-#endif // DEVICESHAPE_H
+//TODO Create a concrete classes
+#endif // EQUIPMENT_H
+///@}
