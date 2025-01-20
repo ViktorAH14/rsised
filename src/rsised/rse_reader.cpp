@@ -683,7 +683,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
             if (rseItemReader.name() == "device_shape") {
                 qreal x {0.0};
                 qreal y {0.0};
-                DeviceShape::ShapeType shapeType = DeviceShape::Barrel_1;
+                Equipment::ShapeType shapeType = Equipment::Barrel_1;
                 qreal zValue{0.0};
                 qreal m11 {0.0};
                 qreal m12 {0.0};
@@ -703,7 +703,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         y = attr.value().toFloat();
                     }
                     if (attr.name() == "shape_type") {
-                        shapeType = DeviceShape::ShapeType(attr.value().toInt());
+                        shapeType = Equipment::ShapeType(attr.value().toInt());
                     }
                     if (attr.name() == "z") {
                         zValue = attr.value().toFloat();
@@ -722,7 +722,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     }
                 }
 
-                DeviceShape *deviceShape = new DeviceShape(shapeType);
+                Equipment *deviceShape = new Equipment(shapeType);
                 deviceShape->setMenu(m_itemMenu);
                 deviceShape->setPos(QPointF(x, y));
                 deviceShape->setZValue(zValue);

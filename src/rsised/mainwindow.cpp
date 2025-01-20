@@ -140,7 +140,7 @@ void MainWindow::loadFile(const QString &fileName)
         if (TechnicsShape *p_technicsShape = dynamic_cast<TechnicsShape *>(p_shape)) {
             m_scene->addItem(p_technicsShape);
         }
-        if (DeviceShape *p_deviceShape = dynamic_cast<DeviceShape *>(p_shape)) {
+        if (Equipment *p_deviceShape = dynamic_cast<Equipment *>(p_shape)) {
             m_scene->addItem(p_deviceShape);
         }
         if (BuildingShape *p_buildingShape = dynamic_cast<BuildingShape *>(p_shape)) {
@@ -294,16 +294,16 @@ void MainWindow::copy()
                 p_newTechnicsShape->setText(shapeText);
             m_copyList.append(p_newTechnicsShape);
         }
-        if (DeviceShape *p_oldDeviceShape = dynamic_cast<DeviceShape *>(p_shape)) {
-            DeviceShape::ShapeType shapeType = p_oldDeviceShape->shapeType();
-            QTransform shapeTransform = p_oldDeviceShape->transform();
-            DeviceShape *p_newDeviceShape = new DeviceShape(shapeType);
-            p_newDeviceShape->setMenu(m_contextMenu);
-            p_newDeviceShape->setPos(QPointF(p_oldDeviceShape->x() + 10
-                                             , p_oldDeviceShape->y() + 10));
-            p_newDeviceShape->setZValue(p_oldDeviceShape->zValue());
-            p_newDeviceShape->setTransform(shapeTransform);
-            m_copyList.append(p_newDeviceShape);
+        if (Equipment *p_oldEquipment = dynamic_cast<Equipment *>(p_shape)) {
+            Equipment::ShapeType shapeType = p_oldEquipment->shapeType();
+            QTransform shapeTransform = p_oldEquipment->transform();
+            Equipment *p_newEquipment = new Equipment(shapeType);
+            p_newEquipment->setMenu(m_contextMenu);
+            p_newEquipment->setPos(QPointF(p_oldEquipment->x() + 10
+                                             , p_oldEquipment->y() + 10));
+            p_newEquipment->setZValue(p_oldEquipment->zValue());
+            p_newEquipment->setTransform(shapeTransform);
+            m_copyList.append(p_newEquipment);
         }
         if (BuildingShape *p_oldBuildingShape = dynamic_cast<BuildingShape *>(p_shape)) {
             BuildingShape::ShapeType shapeType = p_oldBuildingShape->shapeType();
@@ -522,7 +522,7 @@ void MainWindow::insertTechnicsShape(QAbstractButton *button)
     ui->actionDeleteItem->setDisabled(true);
 }
 
-void MainWindow::insertDeviceShape(QAbstractButton *button)
+void MainWindow::insertEquipment(QAbstractButton *button)
 {
     const QList<QAbstractButton *> buttonList = m_deviceButtonGroup->buttons();
     for (const QAbstractButton *p_button : buttonList) {
@@ -530,12 +530,12 @@ void MainWindow::insertDeviceShape(QAbstractButton *button)
             button->setChecked(false);
     }
     const int idButton = m_deviceButtonGroup->id(button);
-    DeviceShape::ShapeType shapeType {DeviceShape::ShapeType(idButton)};
-    DeviceShape deviceShape(shapeType);
+    Equipment::ShapeType shapeType {Equipment::ShapeType(idButton)};
+    Equipment deviceShape(shapeType);
     ui->mainGraphicsView->setCursor(QCursor(deviceShape.image()));
     ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
-    m_scene->setMode(DiagramScene::InsertDeviceShape);
-    m_scene->setDeviceShapeType(DeviceShape::ShapeType(idButton));
+    m_scene->setMode(DiagramScene::InsertEquipment);
+    m_scene->setEquipmentType(Equipment::ShapeType(idButton));
     m_scene->setSelectableItems(false);
     if (m_simpleDrawModeActionGr->checkedAction() != nullptr)
         m_simpleDrawModeActionGr->checkedAction()->setChecked(false);
@@ -797,50 +797,50 @@ void MainWindow::createShapeToolBox()
     m_deviceButtonGroup = new QButtonGroup(this);
     m_deviceButtonGroup->setExclusive(false);
     connect(m_deviceButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked)
-            , this, &MainWindow::insertDeviceShape);
+            , this, &MainWindow::insertEquipment);
     QGridLayout *p_deviceLayout = new QGridLayout(this);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 0"), DeviceShape::Barrel_0), 0, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 1"), DeviceShape::Barrel_1), 0, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 2"), DeviceShape::Barrel_2), 0, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 3"), DeviceShape::Barrel_3), 1, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 4"), DeviceShape::Barrel_4), 1, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 5"), DeviceShape::Barrel_5), 1, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 6"), DeviceShape::Barrel_6), 2, 0);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 0"), Equipment::Barrel_0), 0, 0);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 1"), Equipment::Barrel_1), 0, 1);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 2"), Equipment::Barrel_2), 0, 2);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 3"), Equipment::Barrel_3), 1, 0);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 4"), Equipment::Barrel_4), 1, 1);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 5"), Equipment::Barrel_5), 1, 2);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 6"), Equipment::Barrel_6), 2, 0);
     p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 1")
-                                                   , DeviceShape::Carriage_1), 2, 1);
+                                                   , Equipment::Carriage_1), 2, 1);
     p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 2")
-                                                   , DeviceShape::Carriage_2), 2, 2);
+                                                   , Equipment::Carriage_2), 2, 2);
     p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 3")
-                                                   , DeviceShape::Carriage_3), 3, 0);
+                                                   , Equipment::Carriage_3), 3, 0);
     p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 4")
-                                                   , DeviceShape::Carriage_4), 3, 1);
+                                                   , Equipment::Carriage_4), 3, 1);
     p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 5")
-                                                   , DeviceShape::Carriage_5), 3, 2);
+                                                   , Equipment::Carriage_5), 3, 2);
     p_deviceLayout->addWidget(createDeviceCellWidget(tr("Branch 2")
-                                                   , DeviceShape::Branches_2), 4, 0);
+                                                   , Equipment::Branches_2), 4, 0);
     p_deviceLayout->addWidget(createDeviceCellWidget(tr("Branch 3")
-                                                   , DeviceShape::Branches_3), 4, 1);
+                                                   , Equipment::Branches_3), 4, 1);
     p_deviceLayout->addWidget(createDeviceCellWidget(tr("Branch 4")
-                                                   , DeviceShape::Branches_4), 4, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 1"), DeviceShape::Ladder_1), 5, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 2"), DeviceShape::Ladder_2), 5, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 3"), DeviceShape::Ladder_3), 5, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Reel"), DeviceShape::Reel), 6, 0);
+                                                   , Equipment::Branches_4), 4, 2);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 1"), Equipment::Ladder_1), 5, 0);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 2"), Equipment::Ladder_2), 5, 1);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 3"), Equipment::Ladder_3), 5, 2);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Reel"), Equipment::Reel), 6, 0);
     p_deviceLayout->addWidget(createDeviceCellWidget(tr("Reel_mob")
-                                                   , DeviceShape::Reel_mobile), 6, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Column"), DeviceShape::Column), 6, 2);
+                                                   , Equipment::Reel_mobile), 6, 1);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Column"), Equipment::Column), 6, 2);
     p_deviceLayout->addWidget(createDeviceCellWidget(tr("HydElev")
-                                                   , DeviceShape::HydrElevator), 7, 0);
+                                                   , Equipment::HydrElevator), 7, 0);
     p_deviceLayout->addWidget(createDeviceCellWidget(tr("FoamMix")
-                                                   , DeviceShape::Foam_mix), 7, 1);
+                                                   , Equipment::Foam_mix), 7, 1);
     p_deviceLayout->addWidget(createDeviceCellWidget(tr("Collect")
-                                                   , DeviceShape::Collector), 7, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Bridge"), DeviceShape::Bridge), 8, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Smok 1"), DeviceShape::SmokePump_1), 8, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Smok 2"), DeviceShape::SmokePump_2), 8, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Hose"), DeviceShape::Hose), 9, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("FLift 1"), DeviceShape::FoamLift_1), 9, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("FLift 2"), DeviceShape::FoamLift_2), 9, 2);
+                                                   , Equipment::Collector), 7, 2);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Bridge"), Equipment::Bridge), 8, 0);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Smok 1"), Equipment::SmokePump_1), 8, 1);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Smok 2"), Equipment::SmokePump_2), 8, 2);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Hose"), Equipment::Hose), 9, 0);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("FLift 1"), Equipment::FoamLift_1), 9, 1);
+    p_deviceLayout->addWidget(createDeviceCellWidget(tr("FLift 2"), Equipment::FoamLift_2), 9, 2);
     p_deviceLayout->setRowStretch(10, 10);
     p_deviceLayout->setColumnStretch(4, 10);
     QWidget *p_deviceWidget = new QWidget(this);
@@ -1129,9 +1129,9 @@ QWidget *MainWindow::createTechnicsCellWidget(const QString &text, TechnicsShape
     return p_technicsShapeWidget;
 }
 
-QWidget *MainWindow::createDeviceCellWidget(const QString &text, DeviceShape::ShapeType type)
+QWidget *MainWindow::createDeviceCellWidget(const QString &text, Equipment::ShapeType type)
 {
-    DeviceShape deviceShape(type);
+    Equipment deviceShape(type);
     QIcon icon(deviceShape.image());
     qreal iconWidth{deviceShape.boundingRect().width() / 2.0};
     qreal iconHeight{deviceShape.boundingRect().height() / 2.0};

@@ -63,7 +63,7 @@
  * FoamMixer, FireColumn, SmokePump, Hose, FoamLift and LiftGPS.
  */
 //TODO Create an interface class
-class DeviceShape : public AbstractShape
+class Equipment : public AbstractShape
 {
 public:
     //! This type information is used by qgraphicsitem_cast to distinguish between types.
@@ -103,7 +103,7 @@ public:
                      , FoamLift_1   //Подёмник-пенослив
                      , FoamLift_2 };//Подъёмник пенный с гребёнокой генераторов ГПС-600
 
-    explicit DeviceShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
+    explicit Equipment(ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
     QRectF boundingRect() const override;
     int type() const override {return Type;}

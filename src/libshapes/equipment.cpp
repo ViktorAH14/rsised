@@ -22,7 +22,7 @@
 
 #include <QPainter>
 
-DeviceShape::DeviceShape(ShapeType shapeType, QGraphicsItem *parent)
+Equipment::Equipment(ShapeType shapeType, QGraphicsItem *parent)
     : AbstractShape(parent)
     , m_shapeType{shapeType}
 {
@@ -30,7 +30,7 @@ DeviceShape::DeviceShape(ShapeType shapeType, QGraphicsItem *parent)
     setAcceptHoverEvents(true);
 }
 
-void DeviceShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void Equipment::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
@@ -38,7 +38,7 @@ void DeviceShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     drawShape(painter);
 }
 
-QRectF DeviceShape::boundingRect() const
+QRectF Equipment::boundingRect() const
 {
     qreal pw {2.0};
     qreal halfpw = pw / 2;
@@ -46,7 +46,7 @@ QRectF DeviceShape::boundingRect() const
     return QRectF(-32.0 - halfpw, -45.0 - halfpw, 64.0 + pw, 90.0 + pw);
 }
 
-QPixmap DeviceShape::image()
+QPixmap Equipment::image()
 {
     QPixmap pixmap(boundingRect().width(), boundingRect().height());
     pixmap.fill(Qt::transparent);
@@ -57,12 +57,12 @@ QPixmap DeviceShape::image()
     return pixmap;
 }
 
-DeviceShape::ShapeType DeviceShape::shapeType() const
+Equipment::ShapeType Equipment::shapeType() const
 {
     return m_shapeType;
 }
 
-void DeviceShape::drawShape(QPainter *painter)
+void Equipment::drawShape(QPainter *painter)
 {
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setRenderHint(QPainter::SmoothPixmapTransform);

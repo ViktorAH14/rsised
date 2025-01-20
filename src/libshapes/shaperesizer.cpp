@@ -273,8 +273,8 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
         break;
     }
         //deviseShapes
-    case DeviceShape::Type: {
-        if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
+    case Equipment::Type: {
+        if (Equipment *deviceShape = dynamic_cast<Equipment *>(item))
             deviceShape->scaleShape(value.toRectF());
         break;
     }

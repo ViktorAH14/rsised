@@ -52,7 +52,7 @@ public:
                     , InserText
                     , InsertImage
                     , InsertTechnicsShape
-                    , InsertDeviceShape
+                    , InsertEquipment
                     , InsertBuildingShape
                     , SelectItem };
 
@@ -67,7 +67,7 @@ public:
     void setItemFont(const QFont &font , const QColor &textColor);
     void setSelectableItems(bool selectable);
     void setTechnicsShapeType(TechnicsShape::ShapeType type);
-    void setDeviceShapeType(DeviceShape::ShapeType type);
+    void setEquipmentType(Equipment::ShapeType type);
     void setBuildingShapeType(BuildingShape::ShapeType type);
     void clearPie();
 
@@ -86,8 +86,8 @@ private:
     TechnicsShape::ShapeType m_technicsShapeType;
     TechnicsShape *m_technicsShape;
 
-    DeviceShape::ShapeType m_deviceShapeType;
-    DeviceShape *m_deviceShape;
+    Equipment::ShapeType m_deviceShapeType;
+    Equipment *m_deviceShape;
 
     BuildingShape::ShapeType m_buildingShapeType;
     BuildingShape *m_buildingShape;
