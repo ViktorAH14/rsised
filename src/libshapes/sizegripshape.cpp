@@ -25,7 +25,7 @@
 #include "../include/curve.h"
 #include "../include/pixmapshape.h"
 #include "../include/technicsshape.h"
-#include "../include/equipment.h"
+#include "../include/equipmentshape.h"
 #include "../include/buildingshape.h"
 
 #include <cmath>
@@ -312,7 +312,7 @@ SizeGripShape::SizeGripShape(Resizer *resizer, QGraphicsItem *parent)
                  << SeaplaneShape::Type << HelicopterShape::Type << PortableMotoPumpShape::Type
                  << MobileMotoPumpShape::Type << TrailerPowderShape::Type << AdaptedCarShape::Type
                  << AdaptedTechniqueShape::Type << AmbulanceShape::Type << PoliceShape::Type
-                 << Equipment::Type << StairwellShape::Type << StairsShape::Type;
+                 << EquipmentShape::Type << StairwellShape::Type << StairsShape::Type;
     bool rectType{false};
     for (const auto itemType : qAsConst(rectTypeList)) {
         if (parent->type() == itemType) {

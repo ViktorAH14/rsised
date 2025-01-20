@@ -23,7 +23,7 @@
  * \brief This header file contains declarations like classes used to draw fire
  * equipment.
  *
- * The deviceshape.h is a header file that contains a declarations of the Nosepiece,
+ * The equipmentshape.h is a header file that contains a declarations of the Nosepiece,
  * Branching, Stair, Collector, HoseBridge, HoseReel, Hydroelevator, FoamMixer,
  * FireColumn, SmokePump, Hose, FoamLift and LiftGPS classes.
  *
@@ -46,13 +46,13 @@
  */
 ///@{
 
-#ifndef EQUIPMENT_H
-#define EQUIPMENT_H
+#ifndef EQUIPMENTSHAPE_H
+#define EQUIPMENTSHAPE_H
 
 #include "abstractshape.h"
 
 /*!
- * \brief The Equipment class is an interface class for creating fire fighting
+ * \brief The EquipmentShape class is an interface class for creating fire fighting
  *  equipment shapes.
  *
  * The class has an available static factory function that returns a pointer
@@ -63,7 +63,7 @@
  * FoamMixer, FireColumn, SmokePump, Hose, FoamLift and LiftGPS.
  */
 //TODO Create an interface class
-class Equipment : public AbstractShape
+class EquipmentShape : public AbstractShape
 {
 public:
     //! This type information is used by qgraphicsitem_cast to distinguish between types.
@@ -103,7 +103,7 @@ public:
                      , FoamLift_1   //Подёмник-пенослив
                      , FoamLift_2 };//Подъёмник пенный с гребёнокой генераторов ГПС-600
 
-    explicit Equipment(ShapeType shapeType, QGraphicsItem *parent = nullptr);
+    explicit EquipmentShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
     QRectF boundingRect() const override;
     int type() const override {return Type;}
@@ -121,5 +121,5 @@ private:
 };
 
 //TODO Create a concrete classes
-#endif // EQUIPMENT_H
+#endif // EQUIPMENTSHAPE_H
 ///@}

@@ -26,7 +26,7 @@
 #include "../include/textshape.h"
 #include "../include/pixmapshape.h"
 #include "../include/technicsshape.h"
-#include "../include/equipment.h"
+#include "../include/equipmentshape.h"
 #include "../include/buildingshape.h"
 
 #include <QXmlStreamWriter>
@@ -292,16 +292,16 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> &items, Q
             }
             rseWriter.writeEndElement(); // technicsShapeItem
         }
-        if (item->type() == Equipment::Type) {
-            Equipment *deviceShape = qgraphicsitem_cast<Equipment *>(item);
+        if (item->type() == EquipmentShape::Type) {
+            EquipmentShape *deviceShape = qgraphicsitem_cast<EquipmentShape *>(item);
             rseWriter.writeStartElement("device_shape");
             rseWriter.writeAttribute("x", QString::number(deviceShape->scenePos().x()));
             rseWriter.writeAttribute("y", QString::number(deviceShape->scenePos().y()));
-            Equipment::ShapeType shapeType = deviceShape->shapeType();
+            EquipmentShape::ShapeType shapeType = deviceShape->shapeType();
             rseWriter.writeAttribute("shape_type", QString::number(shapeType));
             rseWriter.writeAttribute("z", QString::number(deviceShape->zValue()));
             QTransform transform(deviceShape->transform());
-            QString transfomEquipment(QString::number(transform.m11()) + ","
+            QString transfomEquipmentShape(QString::number(transform.m11()) + ","
                                           + QString::number(transform.m12()) + ","
                                           + QString::number(transform.m13()) + ","
                                           + QString::number(transform.m21()) + ","
@@ -310,7 +310,7 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> &items, Q
                                           + QString::number(transform.m31()) + ","
                                           + QString::number(transform.m32()) + ","
                                           + QString::number(transform.m33()));
-            rseWriter.writeAttribute("transform", transfomEquipment);
+            rseWriter.writeAttribute("transform", transfomEquipmentShape);
             rseWriter.writeEndElement(); // deviceShapeItem
         }
         if (BuildingShape *buildingShape = dynamic_cast<BuildingShape *>(item)) {

@@ -22,7 +22,7 @@
 #define DIAGRAMSCENE_H
 
 #include "../include/technicsshape.h"
-#include "../include/equipment.h"
+#include "../include/equipmentshape.h"
 #include "../include/buildingshape.h"
 
 #include <QGraphicsScene>
@@ -52,7 +52,7 @@ public:
                     , InserText
                     , InsertImage
                     , InsertTechnicsShape
-                    , InsertEquipment
+                    , InsertEquipmentShape
                     , InsertBuildingShape
                     , SelectItem };
 
@@ -67,7 +67,7 @@ public:
     void setItemFont(const QFont &font , const QColor &textColor);
     void setSelectableItems(bool selectable);
     void setTechnicsShapeType(TechnicsShape::ShapeType type);
-    void setEquipmentType(Equipment::ShapeType type);
+    void setEquipmentShapeType(EquipmentShape::ShapeType type);
     void setBuildingShapeType(BuildingShape::ShapeType type);
     void clearPie();
 
@@ -86,8 +86,8 @@ private:
     TechnicsShape::ShapeType m_technicsShapeType;
     TechnicsShape *m_technicsShape;
 
-    Equipment::ShapeType m_deviceShapeType;
-    Equipment *m_deviceShape;
+    EquipmentShape::ShapeType m_deviceShapeType;
+    EquipmentShape *m_deviceShape;
 
     BuildingShape::ShapeType m_buildingShapeType;
     BuildingShape *m_buildingShape;

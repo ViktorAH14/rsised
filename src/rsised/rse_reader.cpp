@@ -26,7 +26,7 @@
 #include "../include/textshape.h"
 #include "../include/pixmapshape.h"
 #include "../include/technicsshape.h"
-#include "../include/equipment.h"
+#include "../include/equipmentshape.h"
 #include "../include/buildingshape.h"
 
 #include <QXmlStreamReader>
@@ -683,7 +683,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
             if (rseItemReader.name() == "device_shape") {
                 qreal x {0.0};
                 qreal y {0.0};
-                Equipment::ShapeType shapeType = Equipment::Barrel_1;
+                EquipmentShape::ShapeType shapeType = EquipmentShape::Barrel_1;
                 qreal zValue{0.0};
                 qreal m11 {0.0};
                 qreal m12 {0.0};
@@ -703,7 +703,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         y = attr.value().toFloat();
                     }
                     if (attr.name() == "shape_type") {
-                        shapeType = Equipment::ShapeType(attr.value().toInt());
+                        shapeType = EquipmentShape::ShapeType(attr.value().toInt());
                     }
                     if (attr.name() == "z") {
                         zValue = attr.value().toFloat();
@@ -722,7 +722,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     }
                 }
 
-                Equipment *deviceShape = new Equipment(shapeType);
+                EquipmentShape *deviceShape = new EquipmentShape(shapeType);
                 deviceShape->setMenu(m_itemMenu);
                 deviceShape->setPos(QPointF(x, y));
                 deviceShape->setZValue(zValue);

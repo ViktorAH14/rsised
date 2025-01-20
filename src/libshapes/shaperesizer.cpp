@@ -25,7 +25,7 @@
 #include "../include/polylineshape.h"
 #include "../include/pixmapshape.h"
 #include "../include/technicsshape.h"
-#include "../include/equipment.h"
+#include "../include/equipmentshape.h"
 #include "../include/buildingshape.h"
 
 #include <QPainterPath>
@@ -273,8 +273,8 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
         break;
     }
         //deviseShapes
-    case Equipment::Type: {
-        if (Equipment *deviceShape = dynamic_cast<Equipment *>(item))
+    case EquipmentShape::Type: {
+        if (EquipmentShape *deviceShape = dynamic_cast<EquipmentShape *>(item))
             deviceShape->scaleShape(value.toRectF());
         break;
     }

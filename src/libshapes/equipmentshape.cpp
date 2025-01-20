@@ -18,11 +18,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../include/equipment.h"
+#include "../include/equipmentshape.h"
 
 #include <QPainter>
 
-Equipment::Equipment(ShapeType shapeType, QGraphicsItem *parent)
+EquipmentShape::EquipmentShape(ShapeType shapeType, QGraphicsItem *parent)
     : AbstractShape(parent)
     , m_shapeType{shapeType}
 {
@@ -30,7 +30,7 @@ Equipment::Equipment(ShapeType shapeType, QGraphicsItem *parent)
     setAcceptHoverEvents(true);
 }
 
-void Equipment::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void EquipmentShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
@@ -38,7 +38,7 @@ void Equipment::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     drawShape(painter);
 }
 
-QRectF Equipment::boundingRect() const
+QRectF EquipmentShape::boundingRect() const
 {
     qreal pw {2.0};
     qreal halfpw = pw / 2;
@@ -46,7 +46,7 @@ QRectF Equipment::boundingRect() const
     return QRectF(-32.0 - halfpw, -45.0 - halfpw, 64.0 + pw, 90.0 + pw);
 }
 
-QPixmap Equipment::image()
+QPixmap EquipmentShape::image()
 {
     QPixmap pixmap(boundingRect().width(), boundingRect().height());
     pixmap.fill(Qt::transparent);
@@ -57,12 +57,12 @@ QPixmap Equipment::image()
     return pixmap;
 }
 
-Equipment::ShapeType Equipment::shapeType() const
+EquipmentShape::ShapeType EquipmentShape::shapeType() const
 {
     return m_shapeType;
 }
 
-void Equipment::drawShape(QPainter *painter)
+void EquipmentShape::drawShape(QPainter *painter)
 {
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setRenderHint(QPainter::SmoothPixmapTransform);

@@ -24,7 +24,7 @@
 #include "diagramscene.h"
 #include "../include/technicsshape.h"
 #include "../include/buildingshape.h"
-#include "../include/equipment.h"
+#include "../include/equipmentshape.h"
 
 #include <QMainWindow>
 
@@ -84,7 +84,7 @@ private slots:
 
 // Shapes
     void insertTechnicsShape(QAbstractButton *button);
-    void insertEquipment(QAbstractButton *button);
+    void insertEquipmentShape(QAbstractButton *button);
     void insertBuildingShape(QAbstractButton *button);
 
 // Style toolbar
@@ -107,7 +107,7 @@ private:
     void createSimpleDrawToolBar();
     void createSceneScaleToolBar();
     QWidget *createTechnicsCellWidget(const QString &text, TechnicsShape::ShapeType type);
-    QWidget *createDeviceCellWidget(const QString &text, Equipment::ShapeType type);
+    QWidget *createDeviceCellWidget(const QString &text, EquipmentShape::ShapeType type);
     QWidget *createBuildingShapeCellWidget(const QString &text, BuildingShape::ShapeType type);
 
     void loadFile(const QString &fileName);
