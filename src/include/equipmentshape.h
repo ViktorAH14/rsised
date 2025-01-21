@@ -69,10 +69,9 @@ public:
     //! This type information is used by qgraphicsitem_cast to distinguish between types.
     enum {Type = UserType + 300};
 //TODO Rename constants
-//TODO Change enum to enum class and use directives using enum ShapeType
 //TODO Combine nosepiece into one class
 //TODO Combine fire monitor into one class
-    enum ShapeType { Barrel_0       //РС (nosepiece)
+/*    enum ShapeType { Barrel_0       //РС (nosepiece)
                      , Barrel_1     //РС 50
                      , Barrel_2     //РС 70
                      , Barrel_3     //Ствол ручной высокого давления
@@ -102,6 +101,22 @@ public:
                      , Hose         //Рукав всасывающий
                      , FoamLift_1   //Подёмник-пенослив
                      , FoamLift_2 };//Подъёмник пенный с гребёнокой генераторов ГПС-600
+*/
+
+    enum ShapeType { Nosepiece      //!< This type includes all types of firefighting nozzles.
+                     , Branch       //!< This type includes all types of fire branches.
+                     , Ladder       //!< This type includes all types of fire escape ladders.
+                     , Collector    //!< This is a fire collector.
+                     , HoseBridge   //!< This is a bridge for a fire hose.
+                     , HoseReel     //!< This type includes all types of fire hose reels.
+                     , Hydroelevator    //!< This is an inkjet fire pump for water intake.
+                     , FoamMixer    //!< This is a foam mixer.
+                     , FireColumn   //!< This is a fire hydrant column.
+                     , SmokePump    //!< This type includes all types of fire smoke pumps.
+                     , Hose         //!< This type includes all types of fire hoses.
+                     , FoamLift     //!< This lift is foam.
+                     , LiftGPS      //!< This is a lift with several foam generators.
+    };
 
     explicit EquipmentShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
