@@ -102,7 +102,7 @@ public:
                      , FoamLift_1   //Подёмник-пенослив
                      , FoamLift_2 };//Подъёмник пенный с гребёнокой генераторов ГПС-600
 */
-
+    //! Set of possible shapes for fire fighting equipment.
     enum ShapeType { Nosepiece      //!< This type includes all types of firefighting nozzles.
                      , Branch       //!< This type includes all types of fire branches.
                      , Ladder       //!< This type includes all types of fire escape ladders.
@@ -116,6 +116,31 @@ public:
                      , Hose         //!< This type includes all types of fire hoses.
                      , FoamLift     //!< This lift is foam.
                      , LiftGPS      //!< This is a lift with several foam generators.
+    };
+
+    /*!
+     * \brief The EquipmentShapeDeleter struct is a custom cleanup handler.
+     *
+     * EquipmentShapeDeleter is a custom deleter class needed when creating
+     * client-side objects using smart pointers.
+     *
+     * \sa deleter(), cleanup().
+     */
+    struct EquipmentShapeDeleter
+    {
+        /*!
+         * Constructs a EquipmentShapeDeleter.
+         * Creation of the EquipmentShapeDeleter class is prohibited.
+         */
+        EquipmentShapeDeleter() = delete;
+
+        /*!
+         * Static method remover.
+         *
+         * \param *equipmentShape[in] The pointer to the object to be deleted.
+         * \sa deleter().
+         */
+        static inline void cleanup(EquipmentShape *equipmentShape) {equipmentShape->deleter();}
     };
 
     explicit EquipmentShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
