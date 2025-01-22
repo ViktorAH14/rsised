@@ -68,9 +68,6 @@ class EquipmentShape : public AbstractShape
 public:
     //! This type information is used by qgraphicsitem_cast to distinguish between types.
     enum {Type = UserType + 300};
-//TODO Rename constants
-//TODO Combine nosepiece into one class
-//TODO Combine fire monitor into one class
 /*    enum ShapeType { Barrel_0       //РС (nosepiece)
                      , Barrel_1     //РС 50
                      , Barrel_2     //РС 70
@@ -140,24 +137,24 @@ public:
          * \param *equipmentShape[in] The pointer to the object to be deleted.
          * \sa deleter().
          */
-        static inline void cleanup(EquipmentShape *equipmentShape) {equipmentShape->deleter();}
+        // static inline void cleanup(EquipmentShape *equipmentShape) {equipmentShape->deleter();}
     };
 
-    explicit EquipmentShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
+    static EquipmentShape *createEquipmentShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
 
-    QRectF boundingRect() const override;
-    int type() const override {return Type;}
+    // QRectF boundingRect() const override;
+    // int type() const override {return Type;}
 
-    QPixmap image();
-    ShapeType shapeType() const;
+    // QPixmap image();
+    // ShapeType shapeType() const;
 
 protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    // void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 private:
-    void drawShape(QPainter *painter);
+    // void drawShape(QPainter *painter);
 
-    ShapeType m_shapeType;
+    // ShapeType m_shapeType;
 };
 
 //TODO Create a concrete classes
