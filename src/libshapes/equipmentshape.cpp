@@ -23,6 +23,38 @@
 // #include <QPainter>
 
 /*!
+ * Constructs a EquipmentShape. The constructor is declared protected because
+ * creating an abstract class is prohibited.
+ *
+ * \param parent[in] A pointer to the parent object is passed to the AbtractShape
+ * constructor. This is part of the memory management strategy used in
+ * Qt-Framework.
+ */
+EquipmentShape::EquipmentShape(QGraphicsItem *parent) : AbstractShape(parent)
+{
+}
+
+/*!
+ * Destoys the EquipmentShape. Protected purely virtual destructor.
+ * Defined as default.
+ */
+EquipmentShape::~EquipmentShape() = default;
+
+/*!
+ * The remover method is declared protected. This prevents the client from
+ * calling deleter() directly and thus reduces the likelihood of errors
+ * associated with deleting an object. Deleting objects involves the use of
+ * the EquipmentShapeDeleter deleter class and is oriented towards the use of
+ * smart pointers.
+ *
+ * \sa EquipmentShapeDeleter::cleanup()
+ */
+void EquipmentShape::deleter()
+{
+    delete this;
+}
+
+/*!
  * This method creates a new object of the specified type and returns a pointer
  * to it cast to the EquipmentShape type.
  *
@@ -45,38 +77,6 @@ EquipmentShape *EquipmentShape::createEquipmentShape(ShapeType shapeType, QGraph
     }
     return p_equipmentShape;
 }
-
-// void EquipmentShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-// {
-//     Q_UNUSED(option);
-//     Q_UNUSED(widget);
-
-//     drawShape(painter);
-// }
-
-// QRectF EquipmentShape::boundingRect() const
-// {
-//     qreal pw {2.0};
-//     qreal halfpw = pw / 2;
-
-//     return QRectF(-32.0 - halfpw, -45.0 - halfpw, 64.0 + pw, 90.0 + pw);
-// }
-
-// QPixmap EquipmentShape::image()
-// {
-//     QPixmap pixmap(boundingRect().width(), boundingRect().height());
-//     pixmap.fill(Qt::transparent);
-//     QPainter painter(&pixmap);
-//     painter.translate(boundingRect().width() / 2.0, boundingRect().height() / 2.0);
-//     drawShape(&painter);
-
-//     return pixmap;
-// }
-
-// EquipmentShape::ShapeType EquipmentShape::shapeType() const
-// {
-//     return m_shapeType;
-// }
 
 // void EquipmentShape::drawShape(QPainter *painter)
 // {

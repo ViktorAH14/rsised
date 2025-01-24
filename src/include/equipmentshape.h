@@ -137,7 +137,7 @@ public:
          * \param *equipmentShape[in] The pointer to the object to be deleted.
          * \sa deleter().
          */
-        // static inline void cleanup(EquipmentShape *equipmentShape) {equipmentShape->deleter();}
+        static inline void cleanup(EquipmentShape *equipmentShape) {equipmentShape->deleter();}
     };
 
     static EquipmentShape *createEquipmentShape(ShapeType shapeType, QGraphicsItem *parent = nullptr);
@@ -212,7 +212,9 @@ public:
     virtual qreal height() const = 0;
 
 protected:
-    // void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    explicit EquipmentShape(QGraphicsItem *parent = nullptr);
+    virtual ~EquipmentShape() = 0;
+    virtual void deleter();
 
 private:
     // void drawShape(QPainter *painter);
