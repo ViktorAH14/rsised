@@ -163,7 +163,7 @@ public:
     virtual QRectF rect() const = 0;
 
     /*!
-     * A pure virtual method that needs to be overriden in a child class.
+     * A pure virtual method that needs to be overridden in a child class.
      * This method is used to set the height of the shape.
      *
      * \param height[in] Sets the height of the shape to the given height.
@@ -173,7 +173,7 @@ public:
     virtual void setHeight(const qreal &height) = 0;
 
     /*!
-     * A pure virtual method that needs to be overriden in a child class.
+     * A pure virtual method that needs to be overridden in a child class.
      *
      * \return Returns the shape`s height.
      *

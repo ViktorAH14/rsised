@@ -175,6 +175,15 @@ public:
      */
     virtual ShapeType shapeType() const = 0;
 
+    /*!
+     * A purel virtual method that needs to be overridden in a child class.
+     * This method is used to set the size of the shape.
+     *
+     * \param rect[in] Sets the shape's size to be the given  rectangle.
+     * \sa rect().
+     */
+    virtual void setRect(const QRectF &rect) = 0;
+
     // QRectF boundingRect() const override;
     // int type() const override {return Type;}
 
