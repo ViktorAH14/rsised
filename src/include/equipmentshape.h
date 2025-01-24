@@ -156,6 +156,16 @@ public:
      */
     inline int type() const override {return Type;}
 
+    /*!
+     * A pure virtual method that needs to be overridden in a child class.
+     * Required to create a shape icon in ShapeToolBox.
+     * Used by the MainWindow::createEuipmentShapeCellWidget() method to
+     * create a shape icon in the ShapeToolBox.
+     *
+     * \return Returns a QPixmap object containing the shape image.
+     */
+    virtual QPixmap image() = 0;
+
     // QRectF boundingRect() const override;
     // int type() const override {return Type;}
 
