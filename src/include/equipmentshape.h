@@ -202,11 +202,14 @@ public:
      */
     virtual void setHeight(const qreal &height) = 0;
 
-    // QRectF boundingRect() const override;
-    // int type() const override {return Type;}
-
-    // QPixmap image();
-    // ShapeType shapeType() const;
+    /*!
+     * A pure virtual method that needs to be overridden in a child class.
+     *
+     * \return Returns the shape`s height.
+     *
+     * \sa setHeight()
+     */
+    virtual qreal height() const = 0;
 
 protected:
     // void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
