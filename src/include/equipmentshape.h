@@ -184,6 +184,14 @@ public:
      */
     virtual void setRect(const QRectF &rect) = 0;
 
+    /*!
+     * A pure virtual method that needs to be overridden in a child class.
+     *
+     * \return Returns the shape`s rectangle.
+     * \sa setRect()
+     */
+    virtual QRectF rect() const = 0;
+
     // QRectF boundingRect() const override;
     // int type() const override {return Type;}
 
