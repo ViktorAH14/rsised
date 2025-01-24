@@ -166,6 +166,15 @@ public:
      */
     virtual QPixmap image() = 0;
 
+    /*!
+     * A pure virtual method that needs to be overridden in a child class.
+     * Required to determine the actual type of the object.
+     *
+     * \return Returns the ShapeType (Nosepiece or Branch etc.).
+     * \sa ShapeType.
+     */
+    virtual ShapeType shapeType() const = 0;
+
     // QRectF boundingRect() const override;
     // int type() const override {return Type;}
 
