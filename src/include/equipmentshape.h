@@ -217,9 +217,12 @@ protected:
     virtual void deleter();
 
 private:
-    // void drawShape(QPainter *painter);
-
-    // ShapeType m_shapeType;
+    /*
+     * This class contains a private copy constructor and assignment
+     * operator to disable copying (the compiler gives an error message).
+     * This makros defined in the qlobal.h file
+    */
+    Q_DISABLE_COPY(EquipmentShape)
 };
 
 //TODO Create a concrete classes
