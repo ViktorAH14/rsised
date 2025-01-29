@@ -107,7 +107,7 @@ private:
     void createSimpleDrawToolBar();
     void createSceneScaleToolBar();
     QWidget *createTechnicsCellWidget(const QString &text, TechnicsShape::ShapeType type);
-    QWidget *createDeviceCellWidget(const QString &text, EquipmentShape::ShapeType type);
+    QWidget *createEquipmentCellWidget(const QString &text, EquipmentShape::ShapeType type);
     QWidget *createBuildingShapeCellWidget(const QString &text, BuildingShape::ShapeType type);
 
     void loadFile(const QString &fileName);
@@ -149,7 +149,7 @@ private:
 
     QToolBox *m_shapeToolBox;
     QButtonGroup *m_technicsButtonGroup;
-    QButtonGroup *m_deviceButtonGroup;
+    QButtonGroup *m_equipmentButtonGroup;
     QButtonGroup *m_buildingShapeButtonGroup;
 
     // Wall setting
