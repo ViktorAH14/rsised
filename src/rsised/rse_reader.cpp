@@ -680,7 +680,7 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
 
                 itemList.append(p_technicsShape);
             }
-            if (rseItemReader.name() == "device_shape") {
+            if (rseItemReader.name() == "equipment_shape") {
                 qreal x {0.0};
                 qreal y {0.0};
                 EquipmentShape::ShapeType shapeType = EquipmentShape::Barrel_1;
@@ -722,14 +722,14 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     }
                 }
 
-                EquipmentShape *deviceShape = new EquipmentShape(shapeType);
-                deviceShape->setMenu(m_itemMenu);
-                deviceShape->setPos(QPointF(x, y));
-                deviceShape->setZValue(zValue);
+                EquipmentShape *equipmentShape = new EquipmentShape(shapeType);
+                equipmentShape->setMenu(m_itemMenu);
+                equipmentShape->setPos(QPointF(x, y));
+                equipmentShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
-                deviceShape->setTransform(trans);
+                equipmentShape->setTransform(trans);
 
-                itemList.append(deviceShape);
+                itemList.append(equipmentShape);
             }
             if (rseItemReader.name() == "building_shape") {
                 qreal x {0.0};
