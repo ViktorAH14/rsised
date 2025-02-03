@@ -293,14 +293,14 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> &items, Q
             rseWriter.writeEndElement(); // technicsShapeItem
         }
         if (item->type() == EquipmentShape::Type) {
-            EquipmentShape *deviceShape = qgraphicsitem_cast<EquipmentShape *>(item);
-            rseWriter.writeStartElement("device_shape");
-            rseWriter.writeAttribute("x", QString::number(deviceShape->scenePos().x()));
-            rseWriter.writeAttribute("y", QString::number(deviceShape->scenePos().y()));
-            EquipmentShape::ShapeType shapeType = deviceShape->shapeType();
+            EquipmentShape *equipmentShape = qgraphicsitem_cast<EquipmentShape *>(item);
+            rseWriter.writeStartElement("equipment_shape");
+            rseWriter.writeAttribute("x", QString::number(equipmentShape->scenePos().x()));
+            rseWriter.writeAttribute("y", QString::number(equipmentShape->scenePos().y()));
+            EquipmentShape::ShapeType shapeType = equipmentShape->shapeType();
             rseWriter.writeAttribute("shape_type", QString::number(shapeType));
-            rseWriter.writeAttribute("z", QString::number(deviceShape->zValue()));
-            QTransform transform(deviceShape->transform());
+            rseWriter.writeAttribute("z", QString::number(equipmentShape->zValue()));
+            QTransform transform(equipmentShape->transform());
             QString transfomEquipmentShape(QString::number(transform.m11()) + ","
                                           + QString::number(transform.m12()) + ","
                                           + QString::number(transform.m13()) + ","
@@ -311,7 +311,7 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> &items, Q
                                           + QString::number(transform.m32()) + ","
                                           + QString::number(transform.m33()));
             rseWriter.writeAttribute("transform", transfomEquipmentShape);
-            rseWriter.writeEndElement(); // deviceShapeItem
+            rseWriter.writeEndElement(); // equipmentShapeItem
         }
         if (BuildingShape *buildingShape = dynamic_cast<BuildingShape *>(item)) {
             rseWriter.writeStartElement("building_shape");
