@@ -86,8 +86,8 @@ private:
     TechnicsShape::ShapeType m_technicsShapeType;
     TechnicsShape *m_technicsShape;
 
-    EquipmentShape::ShapeType m_deviceShapeType;
-    EquipmentShape *m_deviceShape;
+    EquipmentShape::ShapeType m_equipmentShapeType;
+    EquipmentShape *m_equipmentShape;
 
     BuildingShape::ShapeType m_buildingShapeType;
     BuildingShape *m_buildingShape;

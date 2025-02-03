@@ -36,8 +36,8 @@ DiagramScene::DiagramScene(QMenu *contextShapeMenu, QObject *parent)
     : QGraphicsScene(parent)
     , m_technicsShapeType{TechnicsShape::Base}
     , m_technicsShape{nullptr}
-    , m_deviceShapeType{EquipmentShape::Barrel_0}
-    , m_deviceShape{nullptr}
+    , m_equipmentShapeType{EquipmentShape::Barrel_0}
+    , m_equipmentShape{nullptr}
     , m_buildingShapeType{BuildingShape::Wall}
     , m_buildingShape{nullptr}
     , m_rectShape{nullptr}
@@ -203,7 +203,7 @@ void DiagramScene::setTechnicsShapeType(TechnicsShape::ShapeType type)
 
 void DiagramScene::setEquipmentShapeType(EquipmentShape::ShapeType type)
 {
-    m_deviceShapeType = type;
+    m_equipmentShapeType = type;
 }
 
 void DiagramScene::setBuildingShapeType(BuildingShape::ShapeType type)
@@ -299,10 +299,10 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             addItem(m_technicsShape);
             break;
         case InsertEquipmentShape:
-            m_deviceShape = new EquipmentShape(m_deviceShapeType);
-            m_deviceShape->setMenu(m_contextShapeMenu);
-            m_deviceShape->setPos(mouseEvent->scenePos());
-            addItem(m_deviceShape);
+            m_equipmentShape = new EquipmentShape(m_equipmentShapeType);
+            m_equipmentShape->setMenu(m_contextShapeMenu);
+            m_equipmentShape->setPos(mouseEvent->scenePos());
+            addItem(m_equipmentShape);
             break;
         case InsertBuildingShape:
             m_buildingShape = BuildingShape::createBuildingShape(m_buildingShapeType);
@@ -441,7 +441,7 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         m_technicsShape = nullptr;
         break;
     case InsertEquipmentShape:
-        m_deviceShape = nullptr;
+        m_equipmentShape = nullptr;
         break;
     case InsertBuildingShape:
         m_buildingShape = nullptr;
