@@ -297,12 +297,19 @@ void MainWindow::copy()
         if (EquipmentShape *p_oldEquipmentShape = dynamic_cast<EquipmentShape *>(p_shape)) {
             EquipmentShape::ShapeType shapeType = p_oldEquipmentShape->shapeType();
             QTransform shapeTransform = p_oldEquipmentShape->transform();
-            EquipmentShape *p_newEquipmentShape = new EquipmentShape(shapeType);
+            EquipmentShape *p_newEquipmentShape{EquipmentShape::createEquipmentShape(shapeType)};
             p_newEquipmentShape->setMenu(m_contextMenu);
+            p_newEquipmentShape->setRect(p_oldEquipmentShape->rect());
             p_newEquipmentShape->setPos(QPointF(p_oldEquipmentShape->x() + 10
                                              , p_oldEquipmentShape->y() + 10));
             p_newEquipmentShape->setZValue(p_oldEquipmentShape->zValue());
             p_newEquipmentShape->setTransform(shapeTransform);
+
+            if (NosepieceShape *p_oldNosepieceShape = dynamic_cast<NosepieceShape *>(p_shape)) {
+                NosepieceShape *p_newNosepieceShape = dynamic_cast<NosepieceShape *>(p_newEquipmentShape);
+                p_newNosepieceShape->setConsumption(p_oldNosepieceShape->consumption());
+            }
+
             m_copyList.append(p_newEquipmentShape);
         }
         if (BuildingShape *p_oldBuildingShape = dynamic_cast<BuildingShape *>(p_shape)) {
@@ -531,8 +538,9 @@ void MainWindow::insertEquipmentShape(QAbstractButton *button)
     }
     const int idButton = m_equipmentButtonGroup->id(button);
     EquipmentShape::ShapeType shapeType {EquipmentShape::ShapeType(idButton)};
-    EquipmentShape equipmentShape(shapeType);
-    ui->mainGraphicsView->setCursor(QCursor(equipmentShape.image()));
+    QScopedPointer<EquipmentShape, EquipmentShape::EquipmentShapeDeleter>
+        sc_equipmentShape{EquipmentShape::createEquipmentShape(shapeType)};
+    ui->mainGraphicsView->setCursor(QCursor(sc_equipmentShape->image()));
     ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
     m_scene->setMode(DiagramScene::InsertEquipmentShape);
     m_scene->setEquipmentShapeType(EquipmentShape::ShapeType(idButton));
@@ -799,7 +807,7 @@ void MainWindow::createShapeToolBox()
     connect(m_equipmentButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked)
             , this, &MainWindow::insertEquipmentShape);
     QGridLayout *p_equipmentLayout = new QGridLayout(this);
-    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 0"), EquipmentShape::Barrel_0), 0, 0);
+    p_equipmentLayout->addWidget(createEquipmentCellWidget(tr("Nosepiece"), EquipmentShape::Nosepiece), 0, 0);
     // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 1"), EquipmentShape::Barrel_1), 0, 1);
     // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 2"), EquipmentShape::Barrel_2), 0, 2);
     // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 3"), EquipmentShape::Barrel_3), 1, 0);
@@ -1131,10 +1139,11 @@ QWidget *MainWindow::createTechnicsCellWidget(const QString &text, TechnicsShape
 
 QWidget *MainWindow::createEquipmentCellWidget(const QString &text, EquipmentShape::ShapeType type)
 {
-    EquipmentShape equipmentShape(type);
-    QIcon icon(equipmentShape.image());
-    qreal iconWidth{equipmentShape.boundingRect().width() / 2.0};
-    qreal iconHeight{equipmentShape.boundingRect().height() / 2.0};
+    QScopedPointer<EquipmentShape, EquipmentShape::EquipmentShapeDeleter>
+        sc_equipmentShape{EquipmentShape::createEquipmentShape(type)};
+    QIcon icon(sc_equipmentShape->image());
+    qreal iconWidth{sc_equipmentShape->boundingRect().width() / 2.0};
+    qreal iconHeight{sc_equipmentShape->boundingRect().height() / 2.0};
 
     QToolButton *p_equipmentButtton = new QToolButton(this);
     p_equipmentButtton->setIcon(icon);

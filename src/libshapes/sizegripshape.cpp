@@ -312,7 +312,7 @@ SizeGripShape::SizeGripShape(Resizer *resizer, QGraphicsItem *parent)
                  << SeaplaneShape::Type << HelicopterShape::Type << PortableMotoPumpShape::Type
                  << MobileMotoPumpShape::Type << TrailerPowderShape::Type << AdaptedCarShape::Type
                  << AdaptedTechniqueShape::Type << AmbulanceShape::Type << PoliceShape::Type
-                 << EquipmentShape::Type << StairwellShape::Type << StairsShape::Type;
+                 << NosepieceShape::Type << StairwellShape::Type << StairsShape::Type;
     bool rectType{false};
     for (const auto itemType : qAsConst(rectTypeList)) {
         if (parent->type() == itemType) {

@@ -272,10 +272,10 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             p_policeShape->setRect(value.toRectF());
         break;
     }
-        //equipmentShapes
-    case EquipmentShape::Type: {
-        if (EquipmentShape *equipmentShape = dynamic_cast<EquipmentShape *>(item))
-            equipmentShape->scaleShape(value.toRectF());
+        //nosepieseShapes
+    case NosepieceShape::Type: {
+        if (NosepieceShape *nosepiseShape = dynamic_cast<NosepieceShape *>(item))
+            nosepiseShape->setRect(value.toRectF());
         break;
     }
         //buildingShapes

@@ -20,7 +20,10 @@
 
 #include "../include/equipmentshape.h"
 
-// #include <QPainter>
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
+#include <QGraphicsSceneEvent>
+#include <QMenu>
 
 /*!
  * Constructs a EquipmentShape. The constructor is declared protected because
@@ -70,7 +73,7 @@ EquipmentShape *EquipmentShape::createEquipmentShape(ShapeType shapeType, QGraph
     EquipmentShape *p_equipmentShape{nullptr};
     switch (shapeType) {
     case Nosepiece:
-        // p_equipmentShape = new NosepieceShape(parent);
+        p_equipmentShape = new NosepieceShape(parent);
         break;
     default:
         break;
@@ -478,3 +481,320 @@ EquipmentShape *EquipmentShape::createEquipmentShape(ShapeType shapeType, QGraph
 //         break;
 //     }
 // }
+
+/*!
+ * Constructs a NosepieceShape class.
+ *
+ * \param parent[in] A pointer to the parent object is passed to the
+ * QGraphicsItem constructor. This is part of the memory management strategy
+ * used in Qt-Framework.
+ */
+NosepieceShape::NosepieceShape(QGraphicsItem *parent)
+    : EquipmentShape(parent)
+    , m_equipmentType(Nosepiece)
+    , m_nosepieceType(NosepieceShape::NosepieceType::Hand)
+    , m_nosepieceRect{QRectF(-6.0, -16.0, 12.0, 32.0)}
+    , m_nosepieceConsumption{nullptr}
+    , m_showConsumption{false}
+{
+    setFlag(ItemSendsGeometryChanges, true);
+    setAcceptHoverEvents(true);
+    setPen(QPen(Qt::black, 1));
+}
+
+/*!
+ * Reimplements: QGraphicsItem::paint(). This function, which is usually called
+ * by QGraphicsView, paints the contents of an item in local coordinates.
+ *
+ * \param painter[in] The pointer to used painter.
+ * \param option[in] This option provides style options for the item, such as
+ * its state, exposed area and its level-of-detail hints.
+ * \param widget[in] The argument is optional. If provided, it points to the
+ * widget that is being painted on; otherwise, it is 0. For cached painting,
+ * widget is always 0.
+ */
+void NosepieceShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget);
+
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->setPen(pen());
+    painter->setBrush(brush());
+
+    drawNosepiece(painter);
+
+    if (option->state & QStyle::State_Selected)
+        highlightSelected(painter, option);
+}
+
+/*!
+ * Reimplements: QGraphicsItem::boundingRect().
+ * This function defines the outer bounds of the item as a rectangle. All
+ * painting restricted to inside an item's bounding rect. QGraphicsView uses
+ * this to determine whether the item requires redrawing. Although the item's
+ * shape can be arbitrary, the bounding rect is always rectangular, and it is
+ * unaffected by the items' transformation. For change the item's bounding
+ * rectangle, must first call prepareGeometryChange(). This notifies the scene
+ * of the imminent change, so that it can update its item geometry index.
+ * Otherwise, the scene will be unaware of the item's new geometry, and the
+ * results are undefined (typically, rendering artifacts are left within the
+ * view). Half the pen width include in the bounding rect.
+ *
+ * \return Returns the outer bounds of the nosepiece as a rectangle.
+ *
+ * \sa shape(), contains().
+ */
+QRectF NosepieceShape::boundingRect() const
+{
+    QRectF boundingRect{m_nosepieceRect};
+    qreal halfpw{pen().style() == Qt::NoPen ? qreal(0.0) : pen().widthF() / 2};
+    if (halfpw > 0.0)
+        boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+
+    return boundingRect;
+}
+
+/*!
+ * Reimplements: QGraphicsItem::shape().
+ * The shape is used for many things, including collision detection, hit tests,
+ * and for the QGraphicsScene::items() functions. This function is called by
+ * the default implementations of contains() and collidesWithPath(). The
+ * stairwell outline is included in the element shape.
+ *
+ * \return Returns the shape of this item as a QPainterPath in local coordinates.
+ *
+ *  \sa boundingRect(), contains().
+ */
+QPainterPath NosepieceShape::shape() const
+{
+    QPainterPath path;
+    path.moveTo(m_nosepieceRect.bottomLeft());
+    path.lineTo(m_nosepieceRect.bottomRight());
+    path.moveTo(m_nosepieceRect.center().x(), m_nosepieceRect.bottom());
+    path.lineTo(m_nosepieceRect.center().x(), m_nosepieceRect.top());
+    path.moveTo(m_nosepieceRect.left(), m_nosepieceRect.top() + (m_nosepieceRect.height() / 6.0));
+    path.lineTo(m_nosepieceRect.center().x(), m_nosepieceRect.top());
+    path.lineTo(m_nosepieceRect.right(), m_nosepieceRect.top() + (m_nosepieceRect.height() / 6.0));
+
+    return shapeFromPath(path);
+}
+
+/*!
+ * Reimplements: EquipmentShape::image().
+ * Required to create a shape icon in ShapeToolBox. Used by the
+ * MainWindow::createEquipmentShapeCellWidget() method to create a nosepiece
+ * icon in the ShapeToolBox.
+ *
+ * \return Returns a QPixmap object containing the shape image.
+ */
+QPixmap NosepieceShape::image()
+{
+    qreal pixmapWidth{boundingRect().width()};
+    qreal pixmapHeight{boundingRect().height()};
+    QPixmap pixmap(pixmapWidth, pixmapHeight);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setPen(pen());
+    painter.setBrush(brush());
+    painter.translate(pixmapWidth / 2.0, pixmapHeight / 2.0);
+    drawNosepiece(&painter);
+
+    return pixmap;
+}
+
+/*!
+ * Reimplements: EquipmentShape::setRect().
+ * This method is used to set the size of the shape.
+ *
+ * \param rect[in] Sets the shape's size to be the given  rectangle.
+ * \sa rect().
+ */
+void NosepieceShape::setRect(const QRectF &rect)
+{
+    if (m_nosepieceRect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_nosepieceRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width()
+                            , rect.height());
+    if (m_nosepieceConsumption != nullptr) {
+        qreal consumptionWidth{m_nosepieceConsumption->boundingRect().width()};
+        qreal consumptionHeight{m_nosepieceConsumption->boundingRect().height()};
+        m_nosepieceConsumption->setPos(m_nosepieceRect.center().x() - consumptionWidth
+                                       , m_nosepieceRect.top() + m_nosepieceRect.height() / 6.0 + consumptionHeight);
+    }
+    update();
+}
+
+/*!
+ * Reimplements: EquipmentShape::rect().
+ * This is the outer bounds shape whitout pen width.
+ *
+ * \return Returns the shape's rectangle.
+ * \sa setRect().
+ */
+QRectF NosepieceShape::rect() const
+{
+    return m_nosepieceRect;
+}
+
+/*!
+ * Reimplements: EquipmentShape::setHeight().
+ * Sets the height of the shape.
+ *
+ * \param height[in] Sets the height of the shape to the given height.
+ * \sa height().
+ */
+void NosepieceShape::setHeight(const qreal &height)
+{
+    if (m_nosepieceRect.height() == height)
+        return;
+
+    qreal oldHeight{m_nosepieceRect.height()};
+    prepareGeometryChange();
+    m_nosepieceRect.setHeight(height);
+    qreal dy{(m_nosepieceRect.height() - oldHeight) / 2};
+    m_nosepieceRect.moveTo(QPointF(m_nosepieceRect.x(), m_nosepieceRect.y() - dy));
+    update();
+}
+
+/*!
+ * Reimplements: EquipmentShape::height().
+ *
+ * \return Returns the shape's height.
+ * \sa setHeight().
+ */
+qreal NosepieceShape::height() const
+{
+    return m_nosepieceRect.height();
+}
+
+/*!
+ * The method sets the consumption of the nosepiece.
+ *
+ * \param consumption[in] The consumption of the nosepiece will be established in
+ * accordance with this parameter.
+ * \sa consumption().
+ */
+void NosepieceShape::setConsumption(const QString &consumption)
+{
+    if (m_nosepieceConsumption == nullptr) {
+        m_nosepieceConsumption = new QGraphicsTextItem(this);
+        m_nosepieceConsumption->setTextInteractionFlags(Qt::TextEditorInteraction);
+        m_nosepieceConsumption->setRotation(-90);
+    }
+    m_nosepieceConsumption->setPlainText(consumption);
+    m_showConsumption = true;
+}
+
+/*!
+ * Returns the consumption of the nosepiece.
+ *
+ * \return Returns the consumption of the nosepiece.
+ *
+ * \sa setConsumption()
+ */
+QString NosepieceShape::consumption() const
+{
+    if (m_nosepieceConsumption == nullptr)
+        return "";
+
+    return m_nosepieceConsumption->toPlainText();
+}
+
+/*!
+ * Reimplements: AbstractShape::mousePressEvent().
+ * If the right mouse button is pressed, this method is used to create a nosepiece
+ * context menu.
+ *
+ * \param mouseEvent[in] Pointer to the QGraphicsSceneMouseEvent class.
+ */
+void NosepieceShape::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if (mouseEvent->buttons() == Qt::RightButton) {
+        createAction();
+        addActions(m_nosepieceActionList);
+        QAction menuAction{menu()->exec(mouseEvent->screenPos())};
+        QString menuActionText;
+        if (menuAction.parent()) {
+            menuActionText = menuAction.parent()->objectName();
+        }
+        if ((menuActionText != "actionDeleteItem") && (menuActionText != "actionCut")) {
+            removeActions(m_nosepieceActionList);
+            m_nosepieceActionList.clear();
+        }
+    } else {
+        AbstractShape::mousePressEvent(mouseEvent);
+    }
+}
+
+/*
+ * Create action "Hide consumption" or "Show consumption".
+ */
+void NosepieceShape::createAction()
+{
+    QString addConsumption{m_showConsumption ? QObject::tr("Hide consumption") : QObject::tr("Show consumption")};
+    m_addConsumptionAction.reset(new QAction(addConsumption));
+    m_addConsumptionAction->setToolTip(QObject::tr("Show or hide consumption"));
+    //Allows you to use QObject::connect without inheriting a class from QObject.
+    auto showConsumption{[&](){m_showConsumption ? consumptionShow(false) : consumptionShow(true);}};
+    QObject::connect(m_addConsumptionAction.get(), &QAction::triggered, showConsumption);
+    m_nosepieceActionList.append(m_addConsumptionAction.get());
+}
+
+/*
+ * This method shows or hides the consumption of the nosepiece in the drawing
+ */
+void NosepieceShape::consumptionShow(bool showConsumption)
+{
+    if (showConsumption) {
+            if (m_nosepieceConsumption == nullptr) {
+                m_nosepieceConsumption = new QGraphicsTextItem(this);
+                m_nosepieceConsumption->setPlainText("50");
+                m_nosepieceConsumption->setTextInteractionFlags(Qt::TextEditorInteraction);
+                m_nosepieceConsumption->setRotation(-90);
+            }
+            m_nosepieceConsumption->show();
+            m_showConsumption = true;
+        } else {
+            m_nosepieceConsumption->hide();
+            m_showConsumption = false;
+        }
+}
+
+/*
+ * Draws a nosepiece and, when resizing, automatically adjusts the number of
+ * steps and the distance between them.
+ */
+void NosepieceShape::drawNosepiece(QPainter *painter)
+{
+    painter->setPen(QPen(Qt::black, 2));
+    painter->drawLine(m_nosepieceRect.bottomLeft(), m_nosepieceRect.bottomRight()); //-6.0, 16.0; 6.0, 16.0
+    painter->drawLine(m_nosepieceRect.center().x(), m_nosepieceRect.bottom(),
+                      m_nosepieceRect.center().x(), m_nosepieceRect.top()); //0.0, 16.0; 0.0, -16.0
+    painter->drawLine(m_nosepieceRect.left(), m_nosepieceRect.top() + (m_nosepieceRect.height() / 6.0),
+                      m_nosepieceRect.center().x(), m_nosepieceRect.top()); //-6.0, -10.66; 0.0, -16.0
+    painter->drawLine(m_nosepieceRect.center().x(), m_nosepieceRect.top(),
+                      m_nosepieceRect.right(), m_nosepieceRect.top() + (m_nosepieceRect.height() / 6.0)); //0.0, -16; 6.0, -10.66
+
+    if (m_nosepieceConsumption != nullptr) {
+        qreal consumptionWidth{m_nosepieceConsumption->boundingRect().width()};
+        qreal consumptionHeight{m_nosepieceConsumption->boundingRect().height()};
+        m_nosepieceConsumption->setPos(m_nosepieceRect.center().x() - consumptionWidth
+                                       , m_nosepieceRect.top() + m_nosepieceRect.height() / 6.0 + consumptionHeight);
+    }
+}
+
+/*!
+ * Reimplements: EquipmentShape::shapeType().
+ * Required to determine the actual type of the object.
+ *
+ * \return Returns the type of equipment shape "Nosepiece".
+ * \sa ShapeType.
+ */
+EquipmentShape::ShapeType NosepieceShape::shapeType() const
+{
+    return m_equipmentType;
+}

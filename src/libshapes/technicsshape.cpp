@@ -266,6 +266,7 @@ void BaseShape::setRect(const QRectF &rect)
     m_baseRect.setRect(rect.topLeft().x(), rect.topLeft().y(), rect.width(), rect.height());
     if (m_baseText != nullptr)
         m_baseText->setPos(m_baseRect.right(), m_baseRect.bottom() - m_baseRect.width() / 6);
+    update();
 }
 
 QRectF BaseShape::rect() const

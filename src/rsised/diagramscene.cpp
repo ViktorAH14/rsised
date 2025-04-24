@@ -36,7 +36,7 @@ DiagramScene::DiagramScene(QMenu *contextShapeMenu, QObject *parent)
     : QGraphicsScene(parent)
     , m_technicsShapeType{TechnicsShape::Base}
     , m_technicsShape{nullptr}
-    , m_equipmentShapeType{EquipmentShape::Barrel_0}
+    , m_equipmentShapeType{EquipmentShape::Nosepiece}
     , m_equipmentShape{nullptr}
     , m_buildingShapeType{BuildingShape::Wall}
     , m_buildingShape{nullptr}
@@ -299,7 +299,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             addItem(m_technicsShape);
             break;
         case InsertEquipmentShape:
-            m_equipmentShape = new EquipmentShape(m_equipmentShapeType);
+            m_equipmentShape = EquipmentShape::createEquipmentShape(m_equipmentShapeType);
             m_equipmentShape->setMenu(m_contextShapeMenu);
             m_equipmentShape->setPos(mouseEvent->scenePos());
             addItem(m_equipmentShape);

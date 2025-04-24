@@ -225,6 +225,117 @@ private:
     Q_DISABLE_COPY(EquipmentShape)
 };
 
+/*!
+ * \brief The NosepieceShape class provides nosepice item.
+ *
+ * The
+ *
+ * \sa Branchshape, LadderShape, CollectorShape, HoseBridgeshape, HoseReelShape,
+ * HydroelevatorShape, FoamMixerShape, FireColumnShape, SmokePumpShape, Hoseshape,
+ * FoamLiftShape, LiftGPSShape
+ */
+class NosepieceShape : public EquipmentShape
+{
+public:
+    //! This type information is used by qgraphicsitem_cast to distinguish between types.
+    enum { Type = UserType + 301 };
+
+    //! Sets the nosepiece type.
+    enum class NosepieceType { Hand         //!<
+                               , Stationar  //!<
+                        // , RS_70     //!<
+                        // , SRVD
+                        // , SVP
+                        // , GPS
+                        // , RS_ADD
+    };
+
+    //! Sets the type of extinguishing agent.
+    enum class SubstanceType { NoneSubstance        //!< The fire extinguishing substance is not indicated.
+                               , CompactWater       //!< Compact stream of water.
+                               , Sprayed_Water      //!< Sprayed water stream.
+                               , ThinlySprayedWater //!< Thin-poured stream of water.
+                               , LowFoam            //!< Low multiplicity foam.
+                               , MiddleFoam         //!< Middle multiplicity foam.
+                               , HighFoam           //!< Foam of high multiplicity.
+                               , WaterFoam          //!< Aqueous solution of the foaming agent.
+                               , WaterAdditives     //!< Water with additives.
+                               , Powder             //!< Fire extinguishing powder.
+                               , Powder_BC          //!< Powder designed to extinguish fires of BC classes.
+                               , Powder_ABC         //!< Powder designed to extinguish fires of ABC classes.
+                               , Chladon            //!< Refrigerants for extinguishing fires.
+                               , CarbonDioxide      //!< Carbon dioxide for extinguishing fires.
+                               , WaterVapor         //!< Water steam for extinguishing fires.
+                               , Gas                //!< Gas for extinguishing fires.
+    };
+
+    //! Sets the location of the nosepiece.
+    enum NosepieceLocation { NONE_LOCATION,  //!< The location of the nosepiece is not indicated.
+                             BASEMENT,       //!< Nosepiece in the basement of the building.
+                             ROOF            //!< Nosepiece on the roof of the building.
+    };
+
+
+    explicit NosepieceShape(QGraphicsItem *parent = nullptr);
+
+    /*!
+     * All standard graphicsitem classes are associated with a unique value;
+     * see QGraphicsItem::Type. This type information is used by
+     * qgraphicsitem_cast() to distinguish between types. Custom items must
+     * return a value larger than or equal to UserType (65536).
+     *
+     * \return Returns the type of an item as an int.
+     */
+    inline int type() const override {return Type;}
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+
+    QPixmap image() override;
+    ShapeType shapeType() const override;
+    void setRect(const QRectF &rect) override;
+    QRectF rect() const override;
+    void setHeight(const qreal &height) override;
+    qreal height() const override;
+
+    void setConsumption(const QString &consumption);
+    QString consumption() const;
+    // void setNosepieceType(NosepieceType);
+    // NosepieceType nosepieceType();
+    // void setSubstanceType(SubstanceType);
+    // SubstanceType substanceType();
+    // void setLocation(NosepieceLocation);
+    // NosepieceLocation nosepieceLocation();
+
+protected:
+    ~NosepieceShape() = default;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+
+private:
+    /*
+     * This class contains a private copy constructor and assignment
+     * operator to disable copying (the compiler gives an error message).
+     * This makros defined in the qlobal.h file
+    */
+    Q_DISABLE_COPY(NosepieceShape)
+
+    void createAction();
+    void consumptionShow(bool showConsumption);
+    void drawNosepiece(QPainter *painter);
+
+    const ShapeType m_equipmentType;
+    NosepieceType m_nosepieceType;
+    QRectF m_nosepieceRect;
+    QGraphicsTextItem *m_nosepieceConsumption;
+    bool m_showConsumption;
+    // const SubstanceType m_substanceType;
+    // const NosepieceLocation m_nosepieceLocation;
+
+    QScopedPointer<QAction> m_addConsumptionAction;
+    QList<QAction *> m_nosepieceActionList;
+};
+
 //TODO Create a concrete classes
 #endif // EQUIPMENTSHAPE_H
 ///@}
