@@ -699,6 +699,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 qreal m32 {0.0};
                 qreal m33 {0.0};
                 QString consumption{};
+                QString nominalDiameter{};
+                NosepieceShape::SubstanceType substance{NosepieceShape::NoneSubstance};
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
                 for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
                     if (attr.name() == "x") {
@@ -741,21 +743,28 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         if (attr.name() == "consumption") {
                             consumption = attr.value().toString();
                         }
+                        if (attr.name() == "nominal_diameter") {
+                            nominalDiameter = attr.value().toString();
+                        }
+                        if (attr.name() == "substance") {
+                            substance = NosepieceShape::SubstanceType(attr.value().toInt());
+                        }
                     }
                 }
 
                 EquipmentShape *p_equipmentShape{EquipmentShape::createEquipmentShape(shapeType)};
                 p_equipmentShape->setMenu(m_itemMenu);
+                if (NosepieceShape *p_nosepieceShape = dynamic_cast<NosepieceShape *>(p_equipmentShape)) {
+                    p_nosepieceShape->setTextItem(NosepieceShape::Consumption, consumption);
+                    p_nosepieceShape->setTextItem(NosepieceShape::NominalDiameter, nominalDiameter);
+                    p_nosepieceShape->setSubstanceType(substance);
+                }
                 p_equipmentShape->setPos(QPointF(x, y));
                 p_equipmentShape->setRect(QRectF(itemLeft, itemTop, width, height));
                 p_equipmentShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
                 p_equipmentShape->setTransform(trans);
-                if (NosepieceShape *p_nosepieceShape = dynamic_cast<NosepieceShape *>(p_equipmentShape)) {
-                    p_nosepieceShape->setConsumption(consumption);
-                }
-
-
+                
                 itemList.append(p_equipmentShape);
             }
             if (rseItemReader.name() == "building_shape") {

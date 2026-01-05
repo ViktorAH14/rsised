@@ -36,8 +36,8 @@
  */
 AbstractShape::AbstractShape(QGraphicsItem *parent)
     : QGraphicsItem(parent)
-    , m_sizeGripItem{nullptr}
     , m_contextMenu{nullptr}
+    , m_sizeGripItem{nullptr}
 {
 }
 

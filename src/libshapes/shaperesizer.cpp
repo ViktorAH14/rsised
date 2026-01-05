@@ -274,8 +274,8 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
     }
         //nosepieseShapes
     case NosepieceShape::Type: {
-        if (NosepieceShape *nosepiseShape = dynamic_cast<NosepieceShape *>(item))
-            nosepiseShape->setRect(value.toRectF());
+        if (NosepieceShape *p_nosepiseShape = dynamic_cast<NosepieceShape *>(item))
+            p_nosepiseShape->setRect(value.toRectF());
         break;
     }
         //buildingShapes

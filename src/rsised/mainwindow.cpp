@@ -307,7 +307,11 @@ void MainWindow::copy()
 
             if (NosepieceShape *p_oldNosepieceShape = dynamic_cast<NosepieceShape *>(p_shape)) {
                 NosepieceShape *p_newNosepieceShape = dynamic_cast<NosepieceShape *>(p_newEquipmentShape);
-                p_newNosepieceShape->setConsumption(p_oldNosepieceShape->consumption());
+                QString nosepieceConsamption{p_oldNosepieceShape->consumption()};
+                if (!nosepieceConsamption.isEmpty()) {
+                    p_newNosepieceShape->setTextItem(NosepieceShape::Consumption, nosepieceConsamption);
+                }
+                p_newNosepieceShape->setSubstanceType(p_oldNosepieceShape->substanceType());
             }
 
             m_copyList.append(p_newEquipmentShape);

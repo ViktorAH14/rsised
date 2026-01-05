@@ -316,6 +316,9 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> &items, Q
             rseWriter.writeAttribute("transform", transfomEquipmentShape);
             if (NosepieceShape *p_nosepieceShape = dynamic_cast<NosepieceShape *>(p_equipmentShape)) {
                 rseWriter.writeAttribute("consumption", p_nosepieceShape->consumption());
+                rseWriter.writeAttribute("nominal_diameter", p_nosepieceShape->nominalDiameter());
+                NosepieceShape::SubstanceType substanceType{p_nosepieceShape->substanceType()};
+                rseWriter.writeAttribute("substance", QString::number(substanceType));
             }
             rseWriter.writeEndElement(); // equipmentShapeItem
         }
