@@ -26,7 +26,7 @@
 #include "../include/textshape.h"
 #include "../include/pixmapshape.h"
 #include "../include/technicsshape.h"
-#include "../include/deviceshape.h"
+#include "../include/equipmentshape.h"
 #include "../include/buildingshape.h"
 
 #include <QXmlStreamReader>
@@ -680,10 +680,14 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
 
                 itemList.append(p_technicsShape);
             }
-            if (rseItemReader.name() == "device_shape") {
+            if (rseItemReader.name() == "equipment_shape") {
                 qreal x {0.0};
                 qreal y {0.0};
-                DeviceShape::ShapeType shapeType = DeviceShape::Barrel_1;
+                qreal itemLeft {0.0};
+                qreal itemTop {0.0};
+                qreal width {0.0};
+                qreal height {0.0};
+                EquipmentShape::ShapeType shapeType = EquipmentShape::Nosepiece;
                 qreal zValue{0.0};
                 qreal m11 {0.0};
                 qreal m12 {0.0};
@@ -694,6 +698,9 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 qreal m31 {0.0};
                 qreal m32 {0.0};
                 qreal m33 {0.0};
+                QString consumption{};
+                QString nominalDiameter{};
+                NosepieceShape::SubstanceType substance{NosepieceShape::NoneSubstance};
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
                 for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
                     if (attr.name() == "x") {
@@ -702,8 +709,20 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                     if (attr.name() == "y") {
                         y = attr.value().toFloat();
                     }
+                    if (attr.name() == "item_left") {
+                        itemLeft = attr.value().toFloat();
+                    }
+                    if (attr.name() == "item_top") {
+                        itemTop = attr.value().toFloat();
+                    }
+                    if (attr.name() == "width") {
+                        width = attr.value().toFloat();
+                    }
+                    if (attr.name() == "height") {
+                        height = attr.value().toFloat();
+                    }
                     if (attr.name() == "shape_type") {
-                        shapeType = DeviceShape::ShapeType(attr.value().toInt());
+                        shapeType = EquipmentShape::ShapeType(attr.value().toInt());
                     }
                     if (attr.name() == "z") {
                         zValue = attr.value().toFloat();
@@ -720,16 +739,33 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         m32 = transList.at(7).toFloat();
                         m33 = transList.at(8).toFloat();
                     }
+                    if (shapeType == EquipmentShape::Nosepiece) {
+                        if (attr.name() == "consumption") {
+                            consumption = attr.value().toString();
+                        }
+                        if (attr.name() == "nominal_diameter") {
+                            nominalDiameter = attr.value().toString();
+                        }
+                        if (attr.name() == "substance") {
+                            substance = NosepieceShape::SubstanceType(attr.value().toInt());
+                        }
+                    }
                 }
 
-                DeviceShape *deviceShape = new DeviceShape(shapeType);
-                deviceShape->setMenu(m_itemMenu);
-                deviceShape->setPos(QPointF(x, y));
-                deviceShape->setZValue(zValue);
+                EquipmentShape *p_equipmentShape{EquipmentShape::createEquipmentShape(shapeType)};
+                p_equipmentShape->setMenu(m_itemMenu);
+                if (NosepieceShape *p_nosepieceShape = dynamic_cast<NosepieceShape *>(p_equipmentShape)) {
+                    p_nosepieceShape->setTextItem(NosepieceShape::Consumption, consumption);
+                    p_nosepieceShape->setTextItem(NosepieceShape::NominalDiameter, nominalDiameter);
+                    p_nosepieceShape->setSubstanceType(substance);
+                }
+                p_equipmentShape->setPos(QPointF(x, y));
+                p_equipmentShape->setRect(QRectF(itemLeft, itemTop, width, height));
+                p_equipmentShape->setZValue(zValue);
                 QTransform trans(m11, m12, m13, m21, m22, m23, m31, m32, m33);
-                deviceShape->setTransform(trans);
-
-                itemList.append(deviceShape);
+                p_equipmentShape->setTransform(trans);
+                
+                itemList.append(p_equipmentShape);
             }
             if (rseItemReader.name() == "building_shape") {
                 qreal x {0.0};

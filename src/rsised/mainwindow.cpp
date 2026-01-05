@@ -140,8 +140,8 @@ void MainWindow::loadFile(const QString &fileName)
         if (TechnicsShape *p_technicsShape = dynamic_cast<TechnicsShape *>(p_shape)) {
             m_scene->addItem(p_technicsShape);
         }
-        if (DeviceShape *p_deviceShape = dynamic_cast<DeviceShape *>(p_shape)) {
-            m_scene->addItem(p_deviceShape);
+        if (EquipmentShape *p_equipmentShape = dynamic_cast<EquipmentShape *>(p_shape)) {
+            m_scene->addItem(p_equipmentShape);
         }
         if (BuildingShape *p_buildingShape = dynamic_cast<BuildingShape *>(p_shape)) {
             m_scene->addItem(p_buildingShape);
@@ -294,16 +294,27 @@ void MainWindow::copy()
                 p_newTechnicsShape->setText(shapeText);
             m_copyList.append(p_newTechnicsShape);
         }
-        if (DeviceShape *p_oldDeviceShape = dynamic_cast<DeviceShape *>(p_shape)) {
-            DeviceShape::ShapeType shapeType = p_oldDeviceShape->shapeType();
-            QTransform shapeTransform = p_oldDeviceShape->transform();
-            DeviceShape *p_newDeviceShape = new DeviceShape(shapeType);
-            p_newDeviceShape->setMenu(m_contextMenu);
-            p_newDeviceShape->setPos(QPointF(p_oldDeviceShape->x() + 10
-                                             , p_oldDeviceShape->y() + 10));
-            p_newDeviceShape->setZValue(p_oldDeviceShape->zValue());
-            p_newDeviceShape->setTransform(shapeTransform);
-            m_copyList.append(p_newDeviceShape);
+        if (EquipmentShape *p_oldEquipmentShape = dynamic_cast<EquipmentShape *>(p_shape)) {
+            EquipmentShape::ShapeType shapeType = p_oldEquipmentShape->shapeType();
+            QTransform shapeTransform = p_oldEquipmentShape->transform();
+            EquipmentShape *p_newEquipmentShape{EquipmentShape::createEquipmentShape(shapeType)};
+            p_newEquipmentShape->setMenu(m_contextMenu);
+            p_newEquipmentShape->setRect(p_oldEquipmentShape->rect());
+            p_newEquipmentShape->setPos(QPointF(p_oldEquipmentShape->x() + 10
+                                             , p_oldEquipmentShape->y() + 10));
+            p_newEquipmentShape->setZValue(p_oldEquipmentShape->zValue());
+            p_newEquipmentShape->setTransform(shapeTransform);
+
+            if (NosepieceShape *p_oldNosepieceShape = dynamic_cast<NosepieceShape *>(p_shape)) {
+                NosepieceShape *p_newNosepieceShape = dynamic_cast<NosepieceShape *>(p_newEquipmentShape);
+                QString nosepieceConsamption{p_oldNosepieceShape->consumption()};
+                if (!nosepieceConsamption.isEmpty()) {
+                    p_newNosepieceShape->setTextItem(NosepieceShape::Consumption, nosepieceConsamption);
+                }
+                p_newNosepieceShape->setSubstanceType(p_oldNosepieceShape->substanceType());
+            }
+
+            m_copyList.append(p_newEquipmentShape);
         }
         if (BuildingShape *p_oldBuildingShape = dynamic_cast<BuildingShape *>(p_shape)) {
             BuildingShape::ShapeType shapeType = p_oldBuildingShape->shapeType();
@@ -522,20 +533,21 @@ void MainWindow::insertTechnicsShape(QAbstractButton *button)
     ui->actionDeleteItem->setDisabled(true);
 }
 
-void MainWindow::insertDeviceShape(QAbstractButton *button)
+void MainWindow::insertEquipmentShape(QAbstractButton *button)
 {
-    const QList<QAbstractButton *> buttonList = m_deviceButtonGroup->buttons();
+    const QList<QAbstractButton *> buttonList = m_equipmentButtonGroup->buttons();
     for (const QAbstractButton *p_button : buttonList) {
         if (p_button != button)
             button->setChecked(false);
     }
-    const int idButton = m_deviceButtonGroup->id(button);
-    DeviceShape::ShapeType shapeType {DeviceShape::ShapeType(idButton)};
-    DeviceShape deviceShape(shapeType);
-    ui->mainGraphicsView->setCursor(QCursor(deviceShape.image()));
+    const int idButton = m_equipmentButtonGroup->id(button);
+    EquipmentShape::ShapeType shapeType {EquipmentShape::ShapeType(idButton)};
+    QScopedPointer<EquipmentShape, EquipmentShape::EquipmentShapeDeleter>
+        sc_equipmentShape{EquipmentShape::createEquipmentShape(shapeType)};
+    ui->mainGraphicsView->setCursor(QCursor(sc_equipmentShape->image()));
     ui->mainGraphicsView->setDragMode(QGraphicsView::NoDrag);
-    m_scene->setMode(DiagramScene::InsertDeviceShape);
-    m_scene->setDeviceShapeType(DeviceShape::ShapeType(idButton));
+    m_scene->setMode(DiagramScene::InsertEquipmentShape);
+    m_scene->setEquipmentShapeType(EquipmentShape::ShapeType(idButton));
     m_scene->setSelectableItems(false);
     if (m_simpleDrawModeActionGr->checkedAction() != nullptr)
         m_simpleDrawModeActionGr->checkedAction()->setChecked(false);
@@ -794,57 +806,57 @@ void MainWindow::createShapeToolBox()
     QWidget *p_technicsWidget = new QWidget(this);
     p_technicsWidget->setLayout(p_technicsLayout);
 
-    m_deviceButtonGroup = new QButtonGroup(this);
-    m_deviceButtonGroup->setExclusive(false);
-    connect(m_deviceButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked)
-            , this, &MainWindow::insertDeviceShape);
-    QGridLayout *p_deviceLayout = new QGridLayout(this);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 0"), DeviceShape::Barrel_0), 0, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 1"), DeviceShape::Barrel_1), 0, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 2"), DeviceShape::Barrel_2), 0, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 3"), DeviceShape::Barrel_3), 1, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 4"), DeviceShape::Barrel_4), 1, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 5"), DeviceShape::Barrel_5), 1, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 6"), DeviceShape::Barrel_6), 2, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 1")
-                                                   , DeviceShape::Carriage_1), 2, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 2")
-                                                   , DeviceShape::Carriage_2), 2, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 3")
-                                                   , DeviceShape::Carriage_3), 3, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 4")
-                                                   , DeviceShape::Carriage_4), 3, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 5")
-                                                   , DeviceShape::Carriage_5), 3, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Branch 2")
-                                                   , DeviceShape::Branches_2), 4, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Branch 3")
-                                                   , DeviceShape::Branches_3), 4, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Branch 4")
-                                                   , DeviceShape::Branches_4), 4, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 1"), DeviceShape::Ladder_1), 5, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 2"), DeviceShape::Ladder_2), 5, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 3"), DeviceShape::Ladder_3), 5, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Reel"), DeviceShape::Reel), 6, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Reel_mob")
-                                                   , DeviceShape::Reel_mobile), 6, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Column"), DeviceShape::Column), 6, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("HydElev")
-                                                   , DeviceShape::HydrElevator), 7, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("FoamMix")
-                                                   , DeviceShape::Foam_mix), 7, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Collect")
-                                                   , DeviceShape::Collector), 7, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Bridge"), DeviceShape::Bridge), 8, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Smok 1"), DeviceShape::SmokePump_1), 8, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Smok 2"), DeviceShape::SmokePump_2), 8, 2);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("Hose"), DeviceShape::Hose), 9, 0);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("FLift 1"), DeviceShape::FoamLift_1), 9, 1);
-    p_deviceLayout->addWidget(createDeviceCellWidget(tr("FLift 2"), DeviceShape::FoamLift_2), 9, 2);
-    p_deviceLayout->setRowStretch(10, 10);
-    p_deviceLayout->setColumnStretch(4, 10);
-    QWidget *p_deviceWidget = new QWidget(this);
-    p_deviceWidget->setLayout(p_deviceLayout);
+    m_equipmentButtonGroup = new QButtonGroup(this);
+    m_equipmentButtonGroup->setExclusive(false);
+    connect(m_equipmentButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked)
+            , this, &MainWindow::insertEquipmentShape);
+    QGridLayout *p_equipmentLayout = new QGridLayout(this);
+    p_equipmentLayout->addWidget(createEquipmentCellWidget(tr("Nosepiece"), EquipmentShape::Nosepiece), 0, 0);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 1"), EquipmentShape::Barrel_1), 0, 1);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 2"), EquipmentShape::Barrel_2), 0, 2);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 3"), EquipmentShape::Barrel_3), 1, 0);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 4"), EquipmentShape::Barrel_4), 1, 1);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 5"), EquipmentShape::Barrel_5), 1, 2);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Barrel 6"), EquipmentShape::Barrel_6), 2, 0);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 1")
+    //                                                , EquipmentShape::Carriage_1), 2, 1);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 2")
+    //                                                , EquipmentShape::Carriage_2), 2, 2);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 3")
+    //                                                , EquipmentShape::Carriage_3), 3, 0);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 4")
+    //                                                , EquipmentShape::Carriage_4), 3, 1);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Carriage 5")
+    //                                                , EquipmentShape::Carriage_5), 3, 2);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Branch 2")
+    //                                                , EquipmentShape::Branches_2), 4, 0);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Branch 3")
+    //                                                , EquipmentShape::Branches_3), 4, 1);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Branch 4")
+    //                                                , EquipmentShape::Branches_4), 4, 2);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 1"), EquipmentShape::Ladder_1), 5, 0);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 2"), EquipmentShape::Ladder_2), 5, 1);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Ladder 3"), EquipmentShape::Ladder_3), 5, 2);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Reel"), EquipmentShape::Reel), 6, 0);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Reel_mob")
+    //                                                , EquipmentShape::Reel_mobile), 6, 1);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Column"), EquipmentShape::Column), 6, 2);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("HydElev")
+    //                                                , EquipmentShape::HydrElevator), 7, 0);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("FoamMix")
+    //                                                , EquipmentShape::Foam_mix), 7, 1);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Collect")
+    //                                                , EquipmentShape::Collector), 7, 2);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Bridge"), EquipmentShape::Bridge), 8, 0);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Smok 1"), EquipmentShape::SmokePump_1), 8, 1);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Smok 2"), EquipmentShape::SmokePump_2), 8, 2);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("Hose"), EquipmentShape::Hose), 9, 0);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("FLift 1"), EquipmentShape::FoamLift_1), 9, 1);
+    // p_deviceLayout->addWidget(createDeviceCellWidget(tr("FLift 2"), EquipmentShape::FoamLift_2), 9, 2);
+    p_equipmentLayout->setRowStretch(10, 10);
+    p_equipmentLayout->setColumnStretch(4, 10);
+    QWidget *p_equipmentWidget = new QWidget(this);
+    p_equipmentWidget->setLayout(p_equipmentLayout);
 
     m_buildingShapeButtonGroup = new QButtonGroup(this);
     m_buildingShapeButtonGroup->setExclusive(false);
@@ -872,7 +884,7 @@ void MainWindow::createShapeToolBox()
     m_shapeToolBox = new QToolBox(this);
     m_shapeToolBox->addItem(p_buildingWidget, tr("Building structures"));
     m_shapeToolBox->addItem(p_technicsWidget, tr("Technics"));
-    m_shapeToolBox->addItem(p_deviceWidget, tr("Device"));
+    m_shapeToolBox->addItem(p_equipmentWidget, tr("Equipment"));
     m_shapeToolBox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored);
     m_shapeToolBox->setMinimumWidth(p_technicsWidget->sizeHint().width());
 }
@@ -1129,27 +1141,28 @@ QWidget *MainWindow::createTechnicsCellWidget(const QString &text, TechnicsShape
     return p_technicsShapeWidget;
 }
 
-QWidget *MainWindow::createDeviceCellWidget(const QString &text, DeviceShape::ShapeType type)
+QWidget *MainWindow::createEquipmentCellWidget(const QString &text, EquipmentShape::ShapeType type)
 {
-    DeviceShape deviceShape(type);
-    QIcon icon(deviceShape.image());
-    qreal iconWidth{deviceShape.boundingRect().width() / 2.0};
-    qreal iconHeight{deviceShape.boundingRect().height() / 2.0};
+    QScopedPointer<EquipmentShape, EquipmentShape::EquipmentShapeDeleter>
+        sc_equipmentShape{EquipmentShape::createEquipmentShape(type)};
+    QIcon icon(sc_equipmentShape->image());
+    qreal iconWidth{sc_equipmentShape->boundingRect().width() / 2.0};
+    qreal iconHeight{sc_equipmentShape->boundingRect().height() / 2.0};
 
-    QToolButton *p_deviceButtton = new QToolButton(this);
-    p_deviceButtton->setIcon(icon);
-    p_deviceButtton->setIconSize(QSize(iconWidth, iconHeight));
-    p_deviceButtton->setCheckable(true);
-    m_deviceButtonGroup->addButton(p_deviceButtton, int(type));
+    QToolButton *p_equipmentButtton = new QToolButton(this);
+    p_equipmentButtton->setIcon(icon);
+    p_equipmentButtton->setIconSize(QSize(iconWidth, iconHeight));
+    p_equipmentButtton->setCheckable(true);
+    m_equipmentButtonGroup->addButton(p_equipmentButtton, int(type));
 
-    QGridLayout *p_deviceShapeLayout = new QGridLayout(this);
-    p_deviceShapeLayout->addWidget(p_deviceButtton, 0, 0, Qt::AlignCenter);
-    p_deviceShapeLayout->addWidget(new QLabel(text, this), 1, 0, Qt::AlignCenter);
+    QGridLayout *p_equipmentShapeLayout = new QGridLayout(this);
+    p_equipmentShapeLayout->addWidget(p_equipmentButtton, 0, 0, Qt::AlignCenter);
+    p_equipmentShapeLayout->addWidget(new QLabel(text, this), 1, 0, Qt::AlignCenter);
 
-    QWidget *p_deviceShapeWidget = new QWidget(this);
-    p_deviceShapeWidget->setLayout(p_deviceShapeLayout);
+    QWidget *p_equipmentShapeWidget = new QWidget(this);
+    p_equipmentShapeWidget->setLayout(p_equipmentShapeLayout);
 
-    return p_deviceShapeWidget;
+    return p_equipmentShapeWidget;
 }
 
 QWidget *MainWindow::createBuildingShapeCellWidget(const QString &text

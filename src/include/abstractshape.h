@@ -89,6 +89,7 @@ protected:
     void highlightSelected(QPainter *painter, const QStyleOptionGraphicsItem *option);
     QPainterPath shapeFromPath(const QPainterPath &path) const;
 
+
 private:
     /*
      * This class contains a private copy constructor and assignment
@@ -97,8 +98,8 @@ private:
     */
     Q_DISABLE_COPY(AbstractShape)
 
-    SizeGripShape   *m_sizeGripItem;
     QMenu   *m_contextMenu;
+    SizeGripShape   *m_sizeGripItem;
     QBrush  m_brush;
     QPen    m_pen;
 };

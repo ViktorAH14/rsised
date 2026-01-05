@@ -7,7 +7,7 @@ TARGET = shapes$${LIB_SUFFIX}
 TEMPLATE = lib
 CONFIG += staticlib
 
-CONFIG += c++17
+CONFIG += c++20
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -17,8 +17,8 @@ SOURCES += \
     abstractshape.cpp \
     buildingshape.cpp \
     curve.cpp \
-    deviceshape.cpp \
     ellipseshape.cpp \
+    equipmentshape.cpp \
     pixmapshape.cpp \
     polylineshape.cpp \
     rectshape.cpp \
@@ -31,8 +31,8 @@ HEADERS += \
     ../include/abstractshape.h \
     ../include/buildingshape.h \
     ../include/curve.h \
-    ../include/deviceshape.h \
     ../include/ellipseshape.h \
+    ../include/equipmentshape.h \
     ../include/pixmapshape.h \
     ../include/polylineshape.h \
     ../include/rectshape.h \
@@ -46,7 +46,7 @@ TRANSLATIONS += \
 
 system(lrelease "$$_PRO_FILE_")
 
-tr.commands = lupdate "$$_PRO_FILE_" && lrelease "$$_PRO_FILE_"
+#tr.commands = lupdate "$$_PRO_FILE_" && lrelease "$$_PRO_FILE_"
 PRE_TARGETDEPS += tr
 QMAKE_EXTRA_TARGETS += tr
 

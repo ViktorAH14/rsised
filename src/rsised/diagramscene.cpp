@@ -36,8 +36,8 @@ DiagramScene::DiagramScene(QMenu *contextShapeMenu, QObject *parent)
     : QGraphicsScene(parent)
     , m_technicsShapeType{TechnicsShape::Base}
     , m_technicsShape{nullptr}
-    , m_deviceShapeType{DeviceShape::Barrel_0}
-    , m_deviceShape{nullptr}
+    , m_equipmentShapeType{EquipmentShape::Nosepiece}
+    , m_equipmentShape{nullptr}
     , m_buildingShapeType{BuildingShape::Wall}
     , m_buildingShape{nullptr}
     , m_rectShape{nullptr}
@@ -201,9 +201,9 @@ void DiagramScene::setTechnicsShapeType(TechnicsShape::ShapeType type)
     m_technicsShapeType = type;
 }
 
-void DiagramScene::setDeviceShapeType(DeviceShape::ShapeType type)
+void DiagramScene::setEquipmentShapeType(EquipmentShape::ShapeType type)
 {
-    m_deviceShapeType = type;
+    m_equipmentShapeType = type;
 }
 
 void DiagramScene::setBuildingShapeType(BuildingShape::ShapeType type)
@@ -298,11 +298,11 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             m_technicsShape->setPos(mouseEvent->scenePos());
             addItem(m_technicsShape);
             break;
-        case InsertDeviceShape:
-            m_deviceShape = new DeviceShape(m_deviceShapeType);
-            m_deviceShape->setMenu(m_contextShapeMenu);
-            m_deviceShape->setPos(mouseEvent->scenePos());
-            addItem(m_deviceShape);
+        case InsertEquipmentShape:
+            m_equipmentShape = EquipmentShape::createEquipmentShape(m_equipmentShapeType);
+            m_equipmentShape->setMenu(m_contextShapeMenu);
+            m_equipmentShape->setPos(mouseEvent->scenePos());
+            addItem(m_equipmentShape);
             break;
         case InsertBuildingShape:
             m_buildingShape = BuildingShape::createBuildingShape(m_buildingShapeType);
@@ -440,8 +440,8 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     case InsertTechnicsShape:
         m_technicsShape = nullptr;
         break;
-    case InsertDeviceShape:
-        m_deviceShape = nullptr;
+    case InsertEquipmentShape:
+        m_equipmentShape = nullptr;
         break;
     case InsertBuildingShape:
         m_buildingShape = nullptr;

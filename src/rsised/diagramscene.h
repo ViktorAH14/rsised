@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2022 by Viktor Ermolov <ermolovva@gmail.com>.
  *
- * This file is part of the RSiSed project, a editor of the alignment of forces
+ * This file is part of the RSiSed project, an editor of the alignment of forces
  * and means in extinguishing a fire. (RSiSed)
  *
  * RSiSed is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 #define DIAGRAMSCENE_H
 
 #include "../include/technicsshape.h"
-#include "../include/deviceshape.h"
+#include "../include/equipmentshape.h"
 #include "../include/buildingshape.h"
 
 #include <QGraphicsScene>
@@ -52,7 +52,7 @@ public:
                     , InserText
                     , InsertImage
                     , InsertTechnicsShape
-                    , InsertDeviceShape
+                    , InsertEquipmentShape
                     , InsertBuildingShape
                     , SelectItem };
 
@@ -67,7 +67,7 @@ public:
     void setItemFont(const QFont &font , const QColor &textColor);
     void setSelectableItems(bool selectable);
     void setTechnicsShapeType(TechnicsShape::ShapeType type);
-    void setDeviceShapeType(DeviceShape::ShapeType type);
+    void setEquipmentShapeType(EquipmentShape::ShapeType type);
     void setBuildingShapeType(BuildingShape::ShapeType type);
     void clearPie();
 
@@ -86,8 +86,8 @@ private:
     TechnicsShape::ShapeType m_technicsShapeType;
     TechnicsShape *m_technicsShape;
 
-    DeviceShape::ShapeType m_deviceShapeType;
-    DeviceShape *m_deviceShape;
+    EquipmentShape::ShapeType m_equipmentShapeType;
+    EquipmentShape *m_equipmentShape;
 
     BuildingShape::ShapeType m_buildingShapeType;
     BuildingShape *m_buildingShape;

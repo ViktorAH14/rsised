@@ -210,8 +210,7 @@ distr/
 deploy/win_icons/
 lib.*/
 import/
-doc/dev/dox/html/
-doc/dev/dox/latex/
+doc/dev/dox/
 .qtc_clangd/
 untracked/
 

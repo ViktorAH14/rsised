@@ -25,7 +25,7 @@
 #include "../include/polylineshape.h"
 #include "../include/pixmapshape.h"
 #include "../include/technicsshape.h"
-#include "../include/deviceshape.h"
+#include "../include/equipmentshape.h"
 #include "../include/buildingshape.h"
 
 #include <QPainterPath>
@@ -272,10 +272,10 @@ void ShapeResizer::operator()(QGraphicsItem *item, const QVariant &value)
             p_policeShape->setRect(value.toRectF());
         break;
     }
-        //deviseShapes
-    case DeviceShape::Type: {
-        if (DeviceShape *deviceShape = dynamic_cast<DeviceShape *>(item))
-            deviceShape->scaleShape(value.toRectF());
+        //nosepieseShapes
+    case NosepieceShape::Type: {
+        if (NosepieceShape *p_nosepiseShape = dynamic_cast<NosepieceShape *>(item))
+            p_nosepiseShape->setRect(value.toRectF());
         break;
     }
         //buildingShapes

@@ -13,7 +13,7 @@ PUBLISHER = ErmolovVA
 QT += core gui svg xml printsupport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 QT += KWidgetsAddons
-CONFIG += c++17
+CONFIG += c++20
 
 # [FILES]
 SOURCES += \
@@ -54,8 +54,8 @@ DISTFILES += \
 # [TRANSLATIONS]
 TRANSLATIONS += \
     i18n/rsised_ru.ts
-#system(lrelease "$$_PRO_FILE_")
-tr.commands = lupdate "$$_PRO_FILE_" && lrelease "$$_PRO_FILE_"
+system(lrelease "$$_PRO_FILE_")
+#tr.commands = lupdate "$$_PRO_FILE_" && lrelease "$$_PRO_FILE_"
 PRE_TARGETDEPS += tr
 QMAKE_EXTRA_TARGETS += tr
 

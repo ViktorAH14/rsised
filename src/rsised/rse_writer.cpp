@@ -26,7 +26,7 @@
 #include "../include/textshape.h"
 #include "../include/pixmapshape.h"
 #include "../include/technicsshape.h"
-#include "../include/deviceshape.h"
+#include "../include/equipmentshape.h"
 #include "../include/buildingshape.h"
 
 #include <QXmlStreamWriter>
@@ -292,16 +292,19 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> &items, Q
             }
             rseWriter.writeEndElement(); // technicsShapeItem
         }
-        if (item->type() == DeviceShape::Type) {
-            DeviceShape *deviceShape = qgraphicsitem_cast<DeviceShape *>(item);
-            rseWriter.writeStartElement("device_shape");
-            rseWriter.writeAttribute("x", QString::number(deviceShape->scenePos().x()));
-            rseWriter.writeAttribute("y", QString::number(deviceShape->scenePos().y()));
-            DeviceShape::ShapeType shapeType = deviceShape->shapeType();
+        if (EquipmentShape *p_equipmentShape = dynamic_cast<EquipmentShape *>(item)) {
+            rseWriter.writeStartElement("equipment_shape");
+            rseWriter.writeAttribute("x", QString::number(p_equipmentShape->scenePos().x()));
+            rseWriter.writeAttribute("y", QString::number(p_equipmentShape->scenePos().y()));
+            rseWriter.writeAttribute("item_left", QString::number(p_equipmentShape->rect().left()));
+            rseWriter.writeAttribute("item_top", QString::number(p_equipmentShape->rect().top()));
+            rseWriter.writeAttribute("width", QString::number(p_equipmentShape->rect().width()));
+            rseWriter.writeAttribute("height", QString::number(p_equipmentShape->rect().height()));
+            EquipmentShape::ShapeType shapeType = p_equipmentShape->shapeType();
             rseWriter.writeAttribute("shape_type", QString::number(shapeType));
-            rseWriter.writeAttribute("z", QString::number(deviceShape->zValue()));
-            QTransform transform(deviceShape->transform());
-            QString transfomDeviceShape(QString::number(transform.m11()) + ","
+            rseWriter.writeAttribute("z", QString::number(p_equipmentShape->zValue()));
+            QTransform transform(p_equipmentShape->transform());
+            QString transfomEquipmentShape(QString::number(transform.m11()) + ","
                                           + QString::number(transform.m12()) + ","
                                           + QString::number(transform.m13()) + ","
                                           + QString::number(transform.m21()) + ","
@@ -310,8 +313,14 @@ void RseWriter::writeRse(QIODevice *file, const QList<QGraphicsItem *> &items, Q
                                           + QString::number(transform.m31()) + ","
                                           + QString::number(transform.m32()) + ","
                                           + QString::number(transform.m33()));
-            rseWriter.writeAttribute("transform", transfomDeviceShape);
-            rseWriter.writeEndElement(); // deviceShapeItem
+            rseWriter.writeAttribute("transform", transfomEquipmentShape);
+            if (NosepieceShape *p_nosepieceShape = dynamic_cast<NosepieceShape *>(p_equipmentShape)) {
+                rseWriter.writeAttribute("consumption", p_nosepieceShape->consumption());
+                rseWriter.writeAttribute("nominal_diameter", p_nosepieceShape->nominalDiameter());
+                NosepieceShape::SubstanceType substanceType{p_nosepieceShape->substanceType()};
+                rseWriter.writeAttribute("substance", QString::number(substanceType));
+            }
+            rseWriter.writeEndElement(); // equipmentShapeItem
         }
         if (BuildingShape *buildingShape = dynamic_cast<BuildingShape *>(item)) {
             rseWriter.writeStartElement("building_shape");

@@ -25,7 +25,7 @@
 #include "../include/curve.h"
 #include "../include/pixmapshape.h"
 #include "../include/technicsshape.h"
-#include "../include/deviceshape.h"
+#include "../include/equipmentshape.h"
 #include "../include/buildingshape.h"
 
 #include <cmath>
@@ -312,7 +312,7 @@ SizeGripShape::SizeGripShape(Resizer *resizer, QGraphicsItem *parent)
                  << SeaplaneShape::Type << HelicopterShape::Type << PortableMotoPumpShape::Type
                  << MobileMotoPumpShape::Type << TrailerPowderShape::Type << AdaptedCarShape::Type
                  << AdaptedTechniqueShape::Type << AmbulanceShape::Type << PoliceShape::Type
-                 << DeviceShape::Type << StairwellShape::Type << StairsShape::Type;
+                 << NosepieceShape::Type << StairwellShape::Type << StairsShape::Type;
     bool rectType{false};
     for (const auto itemType : qAsConst(rectTypeList)) {
         if (parent->type() == itemType) {
@@ -458,7 +458,7 @@ void SizeGripShape::doResize()
             if (parentItem()->type() == PixmapShape::Type) { //TODO изменить, неадекватное масштабирование нижеперечисленных шейпов
                 m_parentItemRect = parentItem()->boundingRect();
             }
-//            updateHandleItemPositions();
+           // updateHandleItemPositions();
         }
         if (m_itemType == Path) {
             (*m_itemResizer)(parentItem(), QVariant::fromValue(m_parentPath));
