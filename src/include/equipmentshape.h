@@ -776,6 +776,10 @@ private:
     */
     Q_DISABLE_COPY(NosepieceShape)
 
+#ifdef EQUIPMENTSHAPE_TEST
+    friend class tst_EquipmentShape;
+#endif
+
     // Shape
 
     /*!
