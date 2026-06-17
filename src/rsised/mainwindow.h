@@ -27,6 +27,8 @@
 #include "../include/equipmentshape.h"
 
 #include <QMainWindow>
+#include <QPushButton>
+#include <QColor>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -37,7 +39,6 @@ class QFontComboBox;
 class QToolBox;
 class QButtonGroup;
 class QAbstractButton;
-class KColorButton;
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -97,6 +98,11 @@ private slots:
 // Wall setting
     bool showWallSettingDialog();
 
+//Slots for color selection buttons
+    void onPenColorButtonClicked();
+    void onBrushColorButtonClicked();
+    void onTextColorButtonClicked();
+
 private:
     void createShapeToolBox();
     void disableAction();
@@ -143,9 +149,9 @@ private:
     QComboBox *m_fontSizeCombo;
     QComboBox *m_sceneScaleCombo;
 
-    KColorButton *m_penColorButton;
-    KColorButton *m_brushColorButton;
-    KColorButton *m_textColorButton;
+    QPushButton *m_penColorButton;
+    QPushButton *m_brushColorButton;
+    QPushButton *m_textColorButton;
 
     QToolBox *m_shapeToolBox;
     QButtonGroup *m_technicsButtonGroup;
@@ -156,5 +162,10 @@ private:
     QPen m_wallPen;
     QBrush m_wallBrush;
     qreal m_wallHeight;
+
+    // Current color
+    QColor m_currentPenColor;
+    QColor m_currentBrushColor;
+    QColor m_currentTextColor;
 };
 #endif // MAINWINDOW_H

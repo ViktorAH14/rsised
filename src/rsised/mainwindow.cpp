@@ -34,10 +34,8 @@
 
 #include <QtWidgets>
 #include <QSvgGenerator>
-#include <KColorButton>
 #include <QPrinter>
 #include <QPrintDialog>
-#include <QScopedPointer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -46,6 +44,9 @@ MainWindow::MainWindow(QWidget *parent)
     , m_wallPen(QPen(Qt::black, 1))
     , m_wallBrush(QBrush(Qt::lightGray))
     , m_wallHeight{10}
+    , m_currentPenColor(Qt::black)
+    , m_currentBrushColor(Qt::lightGray)
+    , m_currentTextColor(Qt::black)
 {
     ui->setupUi(this);
 
@@ -64,10 +65,10 @@ MainWindow::MainWindow(QWidget *parent)
 // Create scene and view
     m_scene = new DiagramScene(m_contextMenu, this);
     m_scene->setSceneRect(0, 0, 1240, 877); //A3
-    m_scene->setItemPen(m_penColorButton->color(),
+    m_scene->setItemPen(m_currentPenColor,
                       qvariant_cast<qreal>(m_penSizeCombo->currentText()),
                       qvariant_cast<Qt::PenStyle>(m_penStyleCombo->currentData()));
-    m_scene->setItemBrush(m_brushColorButton->color(),
+    m_scene->setItemBrush(m_currentBrushColor,
                         qvariant_cast<Qt::BrushStyle>(m_brushStyleCombo->currentData()));
     connect(m_scene, &QGraphicsScene::selectionChanged, this, &MainWindow::enableAction);
     ui->mainGraphicsView->setScene(m_scene);
@@ -651,18 +652,28 @@ void MainWindow::aboutQt()
 
 void MainWindow::changedItemPen()
 {
-    QColor currentPenColor = m_penColorButton->color();
-    qreal currentPenWidth = qvariant_cast<qreal>(m_penSizeCombo->currentText());
-    Qt::PenStyle currentPenStyle = qvariant_cast<Qt::PenStyle>(m_penStyleCombo->currentData());
-    m_scene->setItemPen(currentPenColor, currentPenWidth, currentPenStyle);
+    qreal penWidth = qvariant_cast<qreal>(m_penSizeCombo->currentText());
+    Qt::PenStyle penStyle = qvariant_cast<Qt::PenStyle>(m_penStyleCombo->currentData());
+
+    m_wallPen.setColor(m_currentPenColor);
+    m_wallPen.setWidthF(penWidth);
+    m_wallPen.setStyle(penStyle);
+
+    if (m_scene) {
+        m_scene->setItemPen(m_currentPenColor, penWidth, penStyle);
+    }
 }
 
 void MainWindow::changedItemBrush()
 {
-    QColor currentBrushColor = m_brushColorButton->color();
-    Qt::BrushStyle currentBrushStyle = qvariant_cast<Qt::BrushStyle>
-            (m_brushStyleCombo->currentData());
-    m_scene->setItemBrush(currentBrushColor, currentBrushStyle);
+    Qt::BrushStyle brushStyle = qvariant_cast<Qt::BrushStyle>(m_brushStyleCombo->currentData());
+
+    m_wallBrush.setColor(m_currentBrushColor);
+    m_wallBrush.setStyle(brushStyle);
+
+    if (m_scene) {
+        m_scene->setItemBrush(m_currentBrushColor, brushStyle);
+    }
 }
 
 void MainWindow::changedFont()
@@ -672,8 +683,7 @@ void MainWindow::changedFont()
     m_currentFont.setWeight(m_boldAction->isChecked() ? QFont::Bold : QFont::Normal);
     m_currentFont.setItalic(m_italicAction->isChecked());
     m_currentFont.setUnderline(m_underLineAction->isChecked());
-    QColor currentTextColor(m_textColorButton->color());
-    m_scene->setItemFont(m_currentFont, currentTextColor);
+    m_scene->setItemFont(m_currentFont, m_currentTextColor);
 }
 
 bool MainWindow::showWallSettingDialog()
@@ -710,6 +720,35 @@ bool MainWindow::showWallSettingDialog()
     selectedItem();
 
     return true;
+}
+
+void MainWindow::onPenColorButtonClicked()
+{
+    QColor color = QColorDialog::getColor(m_currentPenColor, this, tr("Select Pen Color"));
+    if (color.isValid()) {
+        m_currentPenColor = color;
+        m_penColorButton->setStyleSheet(QString("background-color: %1;").arg(color.name()));
+        changedItemPen();
+    }
+}
+
+void MainWindow::onBrushColorButtonClicked()
+{
+    QColor color = QColorDialog::getColor(m_currentBrushColor, this, tr("Select Brush Color"));
+    if (color.isValid()) {
+        m_currentBrushColor = color;
+        m_brushColorButton->setStyleSheet(QString("background-color: %1;").arg(color.name()));
+        changedItemBrush();
+    }
+}
+
+void MainWindow::onTextColorButtonClicked()
+{
+    QColor color = QColorDialog::getColor(m_currentTextColor, this, tr("Select Text Color"));
+    if (color.isValid()) {
+        m_currentTextColor = color;
+        m_textColorButton->setStyleSheet(QString("background-color: %1;").arg(color.name()));
+    }
 }
 
 void MainWindow::createShapeToolBox()
@@ -981,28 +1020,24 @@ void MainWindow::createStyleToolBar()
     // Pen width
     m_penSizeCombo = new QComboBox(this);
     for (int i = 0; i < 10; ++i) {
-        m_penSizeCombo->insertItem(i, QString().setNum(i), QString(i));
+        m_penSizeCombo->insertItem(i, QString().setNum(i), QString().setNum(i));
     }
     m_penSizeCombo->setCurrentIndex(1);
     m_penSizeCombo->setToolTip(tr("Changing the pen thickness"));
     connect(m_penSizeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &MainWindow::changedItemPen);
 
-    // Pen color
-    QFrame *p_penColorFrame = new QFrame(this);
-    QHBoxLayout *p_penColorHBoxLayout = new QHBoxLayout(this);
-    p_penColorFrame->setLayout(p_penColorHBoxLayout);
-    m_penColorButton = new KColorButton(this);
-    m_penColorButton->setColor(Qt::black);
-    m_penColorButton->setFixedWidth(32);
+
+    // Pen color button
+    m_penColorButton = new QPushButton(this);
+    m_penColorButton->setFixedSize(32, 32);
     m_penColorButton->setToolTip(tr("Changing the color of the pen"));
-    p_penColorHBoxLayout->addWidget(m_penColorButton);
+    m_penColorButton->setStyleSheet(QString("background-color: %1;").arg(m_currentPenColor.name()));
+    connect(m_penColorButton, &QPushButton::clicked, this, &MainWindow::onPenColorButtonClicked);
+
     QLabel *p_penColorLabel = new QLabel(this);
-    p_penColorLabel->setScaledContents(true);
     p_penColorLabel->setPixmap(QPixmap(":/images/icons/pen_l.png"));
     p_penColorLabel->setFixedSize(28, 28);
-    p_penColorHBoxLayout->addWidget(p_penColorLabel);
-    connect(m_penColorButton, &KColorButton::changed, this, &MainWindow::changedItemPen);
 
     // Brush style
     m_brushStyleCombo = new QComboBox(this);
@@ -1026,30 +1061,26 @@ void MainWindow::createStyleToolBar()
     connect(m_brushStyleCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &MainWindow::changedItemBrush);
 
-    // Brush color
-    QFrame *p_brushColorFrame = new QFrame(this);
-    QHBoxLayout *p_brushColorHBoxLayout = new QHBoxLayout(this);
-    p_brushColorFrame->setLayout(p_brushColorHBoxLayout);
-    m_brushColorButton = new KColorButton(this);
-    m_brushColorButton->setColor(Qt::white);
-    m_brushColorButton->setFixedWidth(32);
-    m_brushColorButton->setToolTip(tr("Changing the fill color"));
-    p_brushColorHBoxLayout->addWidget(m_brushColorButton);
-    QLabel *p_brushColorLabel = new QLabel(this);
-    p_brushColorLabel->setScaledContents(true);
-    p_brushColorLabel->setPixmap(QPixmap(":/images/icons/brushpaint_32.png"));
-    p_brushColorLabel->setFixedSize(28, 28);
-    p_brushColorHBoxLayout->addWidget(p_brushColorLabel);
-    connect(m_brushColorButton, &KColorButton::changed, this, &MainWindow::changedItemBrush);
+    // Brush color button
+    m_brushColorButton = new QPushButton(this);
+    m_brushColorButton->setFixedSize(32, 32);
+    m_brushColorButton->setToolTip(tr("Changing the color of the brush"));
+    m_brushColorButton->setStyleSheet(QString("background-color: %1;").arg(m_currentBrushColor.name()));
+    connect(m_brushColorButton, &QPushButton::clicked, this, &MainWindow::onBrushColorButtonClicked);
 
-    // Create item style ToolBar
-    m_styleToolBar = addToolBar(tr("Item style"));
+    QLabel *p_brushColorLabel = new QLabel(this);
+    p_brushColorLabel->setPixmap(QPixmap(":/images/icons/brush_l.png"));
+    p_brushColorLabel->setFixedSize(28, 28);
+
+    // Добавляем в тулбар
+    m_styleToolBar = addToolBar(tr("Style"));
     m_styleToolBar->addWidget(m_penStyleCombo);
     m_styleToolBar->addWidget(m_penSizeCombo);
-    m_styleToolBar->addWidget(p_penColorFrame);
-    m_styleToolBar->addSeparator();
+    m_styleToolBar->addWidget(m_penColorButton);
+    m_styleToolBar->addWidget(p_penColorLabel);
     m_styleToolBar->addWidget(m_brushStyleCombo);
-    m_styleToolBar->addWidget(p_brushColorFrame);
+    m_styleToolBar->addWidget(m_brushColorButton);
+    m_styleToolBar->addWidget(p_brushColorLabel);
 }
 
 void MainWindow::createFontStyleToolBar()
@@ -1069,11 +1100,13 @@ void MainWindow::createFontStyleToolBar()
     m_fontSizeCombo->setToolTip(tr("Change the font size of the text"));
     connect(m_fontSizeCombo, &QComboBox::currentTextChanged, this, &MainWindow::changedFont);
 
-    m_textColorButton = new KColorButton(this);
-    m_textColorButton->setColor(Qt::black);
-    m_textColorButton->setFixedWidth(32);
-    m_textColorButton->setToolTip(tr("Changing the color of the text"));
-    connect(m_textColorButton, &KColorButton::changed, this, &MainWindow::changedFont);
+    // Text color button
+    m_textColorButton = new QPushButton(this);
+    m_textColorButton->setFixedSize(32, 32);
+    m_textColorButton->setToolTip(tr("Changing the text color"));
+    m_textColorButton->setStyleSheet(QString("background-color: %1;").arg(m_currentTextColor.name()));
+    connect(m_textColorButton, &QPushButton::clicked, this, &MainWindow::onTextColorButtonClicked);
+
 
     m_textStyleToolBar = addToolBar(tr("Font style")) ;
     m_textStyleToolBar->addWidget(m_fontCombo);
@@ -1282,7 +1315,7 @@ void MainWindow::selectAll()
 
 void MainWindow::sceneZoomInOut()
 {
-    double oldScale = m_sceneScaleCombo->currentText().leftRef
+    double oldScale = m_sceneScaleCombo->currentText().left
             (m_sceneScaleCombo->currentText().indexOf(tr("%"))).toDouble();
     if (sender() == m_sceneScaleMinAction) {
         oldScale = oldScale - 10;
@@ -1296,7 +1329,7 @@ void MainWindow::sceneZoomInOut()
 
 void MainWindow::sceneScaleChanged(const QString &scale)
 {
-    double newScale = scale.leftRef(scale.indexOf(tr("%"))).toDouble() / 100.0;
+    double newScale = scale.left(scale.indexOf(tr("%"))).toDouble() / 100.0;
     QTransform oldTransform = ui->mainGraphicsView->transform();
     ui->mainGraphicsView->resetTransform();
     ui->mainGraphicsView->translate(oldTransform.dx(), oldTransform.dy());
