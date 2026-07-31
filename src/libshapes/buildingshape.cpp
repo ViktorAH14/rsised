@@ -803,42 +803,42 @@ void DoorShape::bindingWall()
  */
 void DoorShape::createAction()
 {
-    m_doorLeafPosAction.reset(new QAction(QObject::tr("Leaf change")));
+    m_doorLeafPosAction = new QAction(QObject::tr("Leaf change"));
     m_doorLeafPosAction->setToolTip(QObject::tr("Changing the position of the door leaf"));
     //Allows you to use QObject::connect without inheriting a class from QObject.
     auto doorLeaf{[&](){m_leafPosition == Left ? setLeafPosition(Right)
                                                  : setLeafPosition(Left);}};
-    QObject::connect(m_doorLeafPosAction.get(), &QAction::triggered, doorLeaf);
-    m_doorActionList.append(m_doorLeafPosAction.get());
+    QObject::connect(m_doorLeafPosAction, &QAction::triggered, doorLeaf);
+    m_doorActionList.append(m_doorLeafPosAction);
 
-    m_doorOpenAction.reset(new QAction(QObject::tr("Open door")));
+    m_doorOpenAction = new QAction(QObject::tr("Open door"));
     m_doorOpenAction->setToolTip(QObject::tr("Change the state of the door"));
     m_doorOpenAction->setCheckable(true);
     //Allows you to use QObject::connect without inheriting a class from QObject.
     auto setOpenState{[&](){setDoorState(Open);}};
-    QObject::connect(m_doorOpenAction.get(), &QAction::triggered, setOpenState);
-    m_doorActionList.append(m_doorOpenAction.get());
+    QObject::connect(m_doorOpenAction, &QAction::triggered, setOpenState);
+    m_doorActionList.append(m_doorOpenAction);
 
-    m_doorAjarAction.reset(new QAction(QObject::tr("Ajar door")));
+    m_doorAjarAction = new QAction(QObject::tr("Ajar door"));
     m_doorAjarAction->setToolTip(QObject::tr("Change the state of the door"));
     m_doorAjarAction->setCheckable(true);
     //Allows you to use QObject::connect without inheriting a class from QObject.
     auto setAjarState{[&](){setDoorState(Ajar);}};
-    QObject::connect(m_doorAjarAction.get(), &QAction::triggered, setAjarState);
-    m_doorActionList.append(m_doorAjarAction.get());
+    QObject::connect(m_doorAjarAction, &QAction::triggered, setAjarState);
+    m_doorActionList.append(m_doorAjarAction);
 
-    m_doorCloseAction.reset(new QAction(QObject::tr("Close door")));
+    m_doorCloseAction = new QAction(QObject::tr("Close door"));
     m_doorCloseAction->setToolTip(QObject::tr("Change the state of the door"));
     m_doorCloseAction->setCheckable(true);
     //Allows you to use QObject::connect without inheriting a class from QObject.
     auto setCloseState{[&](){setDoorState(Close);}};
-    QObject::connect(m_doorCloseAction.get(), &QAction::triggered, setCloseState);
-    m_doorActionList.append(m_doorCloseAction.get());
+    QObject::connect(m_doorCloseAction, &QAction::triggered, setCloseState);
+    m_doorActionList.append(m_doorCloseAction);
 
-    m_doorStateActionGroup.reset(new QActionGroup(nullptr));
-    m_doorStateActionGroup->addAction(m_doorOpenAction.get());
-    m_doorStateActionGroup->addAction(m_doorAjarAction.get());
-    m_doorStateActionGroup->addAction(m_doorCloseAction.get());
+    m_doorStateActionGroup = new QActionGroup(nullptr);
+    m_doorStateActionGroup->addAction(m_doorOpenAction);
+    m_doorStateActionGroup->addAction(m_doorAjarAction);
+    m_doorStateActionGroup->addAction(m_doorCloseAction);
     switch (m_doorState) {
     case Open:
         m_doorOpenAction->setChecked(true);

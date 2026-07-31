@@ -71,7 +71,7 @@ void WallSetting::createPenWidthCombo()
 {
     m_penWidthCombo = new QComboBox(this);
     for (int i = 0; i < 10; ++i) {
-        m_penWidthCombo->insertItem(i, QString().setNum(i), QString(i));
+        m_penWidthCombo->insertItem(i, QString().setNum(i), QString::number(i));
     }
     m_penWidthCombo->setCurrentText(QString::number(m_penWidth));
     m_penWidthCombo->setToolTip(tr("Change the thickness of the stroke line"));
@@ -167,7 +167,7 @@ void WallSetting::createWallHeightCombo()
 {
     m_wallHeightCombo = new QComboBox(this);
     for (int i = 6; i < 26; i += 2) {
-        m_wallHeightCombo->insertItem(i, QString().setNum(i), QString(i));
+        m_wallHeightCombo->insertItem(i, QString().setNum(i), QString().setNum(i));
     }
     m_wallHeightCombo->setCurrentText(QString::number(m_wallHeight));
     m_wallHeightCombo->setToolTip(tr("Change the wall thickness"));

@@ -350,11 +350,11 @@ private:
     int m_spanAngle;
     bool m_leftButtonPressed;
 
-    QScopedPointer<QAction> m_doorLeafPosAction;
-    QScopedPointer<QAction> m_doorOpenAction;
-    QScopedPointer<QAction> m_doorAjarAction;
-    QScopedPointer<QAction> m_doorCloseAction;
-    QScopedPointer<QActionGroup> m_doorStateActionGroup;
+    QAction *m_doorLeafPosAction;
+    QAction *m_doorOpenAction;
+    QAction *m_doorAjarAction;
+    QAction *m_doorCloseAction;
+    QActionGroup *m_doorStateActionGroup;
     QList<QAction *> m_doorActionList;
 };
 

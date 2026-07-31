@@ -10,9 +10,8 @@ EMAIL = ermolovva@gmail.com
 PUBLISHER = ErmolovVA
 
 # [QT CONFIG]
-QT += core gui svg xml printsupport
+QT += core gui svg xml printsupport core5compat
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-QT += KWidgetsAddons
 CONFIG += c++20
 
 # [FILES]

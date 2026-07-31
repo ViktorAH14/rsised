@@ -33,6 +33,7 @@
 #include <QPen>
 #include <QFont>
 #include <QScopedPointer>
+#include <QStringRef>
 
 RseReader::RseReader(QMenu *itemMenu) : m_itemMenu{itemMenu}
 {
@@ -140,7 +141,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         zValue = attr.value().toFloat();
                     }
                     if (attr.name() == "transform") {
-                        QList<QStringRef> transList(attr.value().split(",").toList());
+                        QString attrValue = attr.value().toString();
+                        QStringList transList = attrValue.split(",");
                         m11 = transList.at(0).toFloat();
                         m12 = transList.at(1).toFloat();
                         m13 = transList.at(2).toFloat();
@@ -221,7 +223,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         zValue = attr.value().toFloat();
                     }
                     if (attr.name() == "transform") {
-                        QList<QStringRef> transList(attr.value().split(",").toList());
+                        QString attrValue = attr.value().toString();
+                        QStringList transList = attrValue.split(",");
                         m11 = transList.at(0).toFloat();
                         m12 = transList.at(1).toFloat();
                         m13 = transList.at(2).toFloat();
@@ -289,7 +292,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         zValue = attr.value().toFloat();
                     }
                     if (attr.name() == "transform") {
-                        QList<QStringRef> transList(attr.value().split(",").toList());
+                        QString attrValue = attr.value().toString();
+                        QStringList transList = attrValue.split(",");
                         m11 = transList.at(0).toFloat();
                         m12 = transList.at(1).toFloat();
                         m13 = transList.at(2).toFloat();
@@ -326,14 +330,16 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
                 for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
                     if (attr.name() == "m") {
-                        QList<QStringRef > point(attr.value().split(",").toList());
+                        QString attrValue = attr.value().toString();
+                        QStringList point = attrValue.split(",");
                         QPointF startPoint(point.at(0).toFloat(), point.at(1).toFloat());
                         path.moveTo(startPoint);
                     }
                     if (attr.name() == "l") {
-                        QList<QStringRef> linePoints(attr.value().split(" ").toList());
+                        QString attrValue = attr.value().toString();
+                        QStringList linePoints = attrValue.split(" ");
                         for (int i = 0; i < linePoints.count(); i++) {
-                            QList<QStringRef> point(linePoints.at(i).split(",").toList());
+                            QStringList point = linePoints.at(i).split(",");
                             QPointF pathPoint(point.at(0).toFloat(), point.at(1).toFloat());
                             path.lineTo(pathPoint);
                         }
@@ -351,7 +357,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         zValue = attr.value().toFloat();
                     }
                     if (attr.name() == "transform") {
-                        QList<QStringRef> transList(attr.value().split(",").toList());
+                        QString attrValue = attr.value().toString();
+                        QStringList transList = attrValue.split(",");
                         m11 = transList.at(0).toFloat();
                         m12 = transList.at(1).toFloat();
                         m13 = transList.at(2).toFloat();
@@ -387,18 +394,20 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                 QXmlStreamAttributes attributes = rseItemReader.attributes();
                 for (const QXmlStreamAttribute &attr : qAsConst(attributes)) {
                     if (attr.name() == "m") {
-                        QList<QStringRef > point(attr.value().split(",").toList());
+                        QString attrValue = attr.value().toString();
+                        QStringList point = attrValue.split(",");
                         QPointF startPoint(point.at(0).toFloat(), point.at(1).toFloat());
                         path.moveTo(startPoint);
                     }
                     if (attr.name() == "c") {
-                        QList<QStringRef> curvePoints(attr.value().split(" ").toList());
+                        QString attrValue = attr.value().toString();
+                        QStringList curvePoints = attrValue.split(" ");
                         for (int i = 0; i < curvePoints.count(); i += 3) {
-                            QList<QStringRef> ctr_1_List(curvePoints.at(i).split(",").toList());
+                            QStringList ctr_1_List = curvePoints.at(i).split(",");
                             QPointF ctr_1_Point(ctr_1_List.at(0).toFloat(), ctr_1_List.at(1).toFloat());
-                            QList<QStringRef> ctr_2_List(curvePoints.at(i + 1).split(",").toList());
+                            QStringList ctr_2_List = curvePoints.at(i + 1).split(",");
                             QPointF ctr_2_Point(ctr_2_List.at(0).toFloat(), ctr_2_List.at(1).toFloat());
-                            QList<QStringRef> curveList(curvePoints.at(i + 2).split(",").toList());
+                            QStringList curveList = curvePoints.at(i + 2).split(",");
                             QPointF curvePoint(curveList.at(0).toFloat(), curveList.at(1).toFloat());
                             path.cubicTo(ctr_1_Point, ctr_2_Point, curvePoint);
                         }
@@ -416,7 +425,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         zValue = attr.value().toFloat();
                     }
                     if (attr.name() == "transform") {
-                        QList<QStringRef> transList(attr.value().split(",").toList());
+                        QString attrValue = attr.value().toString();
+                        QStringList transList = attrValue.split(",");
                         m11 = transList.at(0).toFloat();
                         m12 = transList.at(1).toFloat();
                         m13 = transList.at(2).toFloat();
@@ -527,7 +537,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         zValue = attr.value().toFloat();
                     }
                     if (attr.name() == "transform") {
-                        QList<QStringRef> transList(attr.value().split(",").toList());
+                        QString attrValue = attr.value().toString();
+                        QStringList transList = attrValue.split(",");
                         m11 = transList.at(0).toFloat();
                         m12 = transList.at(1).toFloat();
                         m13 = transList.at(2).toFloat();
@@ -600,7 +611,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         zValue = attr.value().toFloat();
                     }
                     if (attr.name() == "transform") {
-                        QList<QStringRef> transList(attr.value().split(",").toList());
+                        QString attrValue = attr.value().toString();
+                        QStringList transList = attrValue.split(",");
                         m11 = transList.at(0).toFloat();
                         m12 = transList.at(1).toFloat();
                         m13 = transList.at(2).toFloat();
@@ -728,7 +740,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         zValue = attr.value().toFloat();
                     }
                     if (attr.name() == "transform") {
-                        QList<QStringRef> transList(attr.value().split(",").toList());
+                        QString attrValue = attr.value().toString();
+                        QStringList transList = attrValue.split(",");
                         m11 = transList.at(0).toFloat();
                         m12 = transList.at(1).toFloat();
                         m13 = transList.at(2).toFloat();
@@ -828,7 +841,8 @@ QList<QGraphicsItem *> RseReader::getElement(QIODevice *device) const
                         zValue = attr.value().toFloat();
                     }
                     if (attr.name() == "transform") {
-                        QList<QStringRef> transList(attr.value().split(",").toList());
+                        QString attrValue = attr.value().toString();
+                        QStringList transList = attrValue.split(",");
                         m11 = transList.at(0).toFloat();
                         m12 = transList.at(1).toFloat();
                         m13 = transList.at(2).toFloat();
