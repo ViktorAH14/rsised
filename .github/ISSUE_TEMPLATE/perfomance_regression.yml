@@ -67,6 +67,6 @@ body:
     attributes:
       label: Checklist
       options:
-        - I have consistent measurements (multiple runs).
-        - The slowdown is not due to different hardware or background load.
-        - If using QBENCHMARK, I included the benchmark output.
+        - label: I have consistent measurements (multiple runs).
+        - label: The slowdown is not due to different hardware or background load.
+        - label: If using QBENCHMARK, I included the benchmark output.
