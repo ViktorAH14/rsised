@@ -1,0 +1,54 @@
+name: Internal Task
+description: Internal task for the development team (refactor, tech debt, CI setup).
+title: "[Task]: "
+labels: ["internal", "refactor", "tech-debt"]
+body:
+  - type: input
+    id: scope
+    attributes:
+      label: Scope / Area
+      placeholder: e.g., libshapes build system, rsised tests, CI pipeline
+    validations:
+      required: true
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should be achieved and why.
+      placeholder: Consolidate multiple .pri files into a single module config.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: How will we know this task is done?
+      placeholder: All modules use common.pri; no direct INCLUDEPATH in .pro.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Estimated Effort
+      options:
+        - Small (<2h)
+        - Medium (2–8h)
+        - Large (1–3 days)
+        - Very Large (>3 days)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: dependencies
+    attributes:
+      label: Blockers / Dependencies
+      options:
+        - None
+        - Requires other PR/issue
+        - Needs external approval
+        - Waiting for tooling update
+    validations:
+      required: true

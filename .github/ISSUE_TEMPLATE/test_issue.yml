@@ -1,0 +1,87 @@
+name: Test Issue (Qt Test)
+description: Report failures or problems with Qt Test-based tests.
+title: "[Test]: "
+labels: ["tests", "qt-test"]
+body:
+  - type: input
+    id: test-class-method
+    attributes:
+      label: Test Class and Method
+      description: Format: tst_ClassName::testMethodName (or just testMethodName if you prefer)
+      placeholder: e.g., tst_Shapes::testIntersection
+    validations:
+      required: true
+
+  - type: dropdown
+    id: test-type
+    attributes:
+      label: Test Type
+      options:
+        - Unit Test (non-GUI)
+        - GUI Test (mouse/keyboard simulation)
+        - Data-Driven Test
+        - Benchmark Test (QBENCHMARK)
+        - Integration Test
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: OS, Qt version, compiler, build type (Debug/Release)
+    validations:
+      required: true
+
+  - type: textarea
+    id: failure-details
+    attributes:
+      label: Failure Details
+      description: Paste the exact Qt Test output (including QFAIL/QCOMPARE messages, stack traces, timeouts).
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Reproduction Steps
+      description: Exact command to run this test (e.g., path to test binary, arguments, env vars).
+      placeholder: |
+        ./tst_shapes -testfunction testIntersection
+        or
+        QTEST_FUNCTION_TIMEOUT=120000 ./tst_shapes
+      render: shell
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - Flaky (intermittent)
+        - Fails consistently
+        - Blocks CI
+        - Minor / cosmetic
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context (Qt Test specifics)
+      description: Any Qt Test details that matter: timeouts, QSignalSpy usage, GUI simulation, QAbstractItemModelTester, etc.
+      placeholder: |
+        - Test uses QSignalSpy to verify signals.
+        - It simulates mouse clicks on a QWidget.
+        - QBENCHMARK shows regression vs. baseline.
+        - Timeout is close to the limit; consider QTEST_FUNCTION_TIMEOUT.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - I checked if the test is flaky in CI and locally.
+        - I verified the same test passes on another Qt version (if possible).
+        - The failure is not due to race conditions / timing issues.
+        - I included the full Qt Test log (not just “failed”).

@@ -1,0 +1,72 @@
+name: Performance Regression
+description: Report a performance degradation or slowdown in the C++/Qt application.
+title: "[Perf]: "
+labels: ["performance", "regression"]
+body:
+  - type: input
+    id: affected-component
+    attributes:
+      label: Affected Component
+      placeholder: e.g., libshapes rendering, rsised file loading, UI responsiveness
+    validations:
+      required: true
+
+  - type: textarea
+    id: baseline
+    attributes:
+      label: Baseline (Before)
+      description: What was the previous performance (time, FPS, throughput)? Where was it measured?
+      placeholder: |
+        - Loading 10k shapes took ~420 ms on Qt 6.5, Ubuntu 22.04.
+        - Benchmark tst_shapes::testRender dropped from 180 FPS to 95 FPS.
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Current Behavior (After)
+      description: Current measurements and environment.
+      placeholder: |
+        - Now it takes ~980 ms under the same conditions.
+        - Or: only happens in Release build with MinSizeRel.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type of Issue
+      options:
+        - Startup / Load Time Increase
+        - Per-Frame / Render Slowdown
+        - Algorithmic Complexity Regression
+        - Memory Allocation / GC-like Stalls
+        - QBENCHMARK Regression
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction Steps
+      placeholder: Exact command/scenario and how you measured (perf, htop, QElapsedTimer, etc.)
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: OS, Qt version, compiler, CPU/RAM, graphics backend (Raster/OpenGL)
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - I have consistent measurements (multiple runs).
+        - The slowdown is not due to different hardware or background load.
+        - If using QBENCHMARK, I included the benchmark output.

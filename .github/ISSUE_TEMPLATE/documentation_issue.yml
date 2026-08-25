@@ -1,0 +1,42 @@
+name: Documentation Issue
+description: Report issues or suggest improvements for documentation (Doxygen, README, etc.).
+title: "[Docs]: "
+labels: ["documentation"]
+body:
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue Type
+      options:
+        - Missing Information
+        - Incorrect/Outdated Info
+        - Poor Clarity / Hard to Understand
+        - Broken Link
+        - Translation Issue (RU/EN)
+        - Suggestion for Improvement
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      placeholder: File name and line number, or section title in README/Doxygen docs
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Explain what’s wrong or what you’d like to improve.
+      placeholder: Example: "The README section about building is outdated for Qt 6."
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested-fix
+    attributes:
+      label: Suggested Fix (optional)
+      description: If you have a concrete suggestion, paste updated text or a diff.
+      render: diff
