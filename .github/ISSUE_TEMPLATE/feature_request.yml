@@ -1,0 +1,59 @@
+name: Feature Request
+description: Suggest a new feature for the C++/Qt project.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: Clearly describe the feature you want to add.
+      placeholder: What would you like to see added to the project?
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this feature needed? Who benefits?
+      placeholder: Describe the problem this feature solves and the users it benefits.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: How would you implement this feature? Any design ideas?
+      placeholder: High-level design, class structure, or UI mockup description.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected-components
+    attributes:
+      label: Affected Components
+      multiple: true
+      options:
+        - UI / Widgets
+        - libshapes
+        - rsised module
+        - Build System
+        - Tests
+        - Documentation
+        - Other
+    validations:
+      required: true
