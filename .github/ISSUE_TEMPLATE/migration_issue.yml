@@ -1,0 +1,55 @@
+name: Migration Issue
+description: Report issues encountered during migration (Qt version, platform, compiler).
+title: "[Migrate]: "
+labels: ["migration"]
+body:
+  - type: dropdown
+    id: target
+    attributes:
+      label: Migration Target
+      options:
+        - Qt 5 → Qt 6
+        - Compiler Upgrade (g++/clang/MSVC)
+        - OS Port (Windows→Linux, macOS→Windows, etc.)
+        - Build System (qmake→CMake)
+    validations:
+      required: true
+
+  - type: input
+    id: affected-module
+    attributes:
+      label: Affected Module
+      placeholder: libshapes, rsised, UI layer, tests
+    validations:
+      required: true
+
+  - type: textarea
+    id: changes
+    attributes:
+      label: What Changed
+      description: Code changes, removed APIs, new flags, updated .pri/.pro files.
+      placeholder: |
+        - Replaced QDesktopWidget with QScreen.
+        - Removed deprecated QPainter::setBrushOrigin.
+    validations:
+      required: true
+
+  - type: textarea
+    id: errors
+    attributes:
+      label: Errors / Warnings
+      render: shell
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - Blocking Build
+        - Breaking Runtime Behavior
+        - Deprecation Warning Only
+        - Cosmetic / Minor
+    validations:
+      required: true
