@@ -1,0 +1,69 @@
+name: Bug Report
+description: Report a bug in the C++/Qt application.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the bug and what behavior you expected.
+      placeholder: |
+        What went wrong? What did you expect to happen instead?
+        Include any error messages, stack traces, or screenshots.
+    validations:
+      required: true
+
+  - type: input
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: OS (e.g., Ubuntu 22.04, Windows 11), Qt version, compiler, build type (Debug/Release)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected-components
+    attributes:
+      label: Affected Components
+      multiple: true
+      options:
+        - UI / Widgets
+        - libshapes
+        - rsised module
+        - Build System (qmake)
+        - Tests
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Output
+      description: Paste any relevant logs, console output, or build errors.
+      render: shell
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+              - label: "I have searched the existing issues for duplicates."
+                required: true
+              - label: "I can reliably reproduce the issue."
+                required: true
+              - label: "The issue is not caused by my local configuration alone."
+                required: true
