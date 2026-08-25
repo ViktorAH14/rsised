@@ -5,6 +5,7 @@ DISTFILES += \
     $$PWD/.github/ISSUE_TEMPLATE/bug_report.yml \
     $$PWD/.github/ISSUE_TEMPLATE/build_issue.yml \
     $$PWD/.github/ISSUE_TEMPLATE/config.yml \
+    $$PWD/.github/ISSUE_TEMPLATE/dependency_issue.yml \
     $$PWD/.github/ISSUE_TEMPLATE/documentation_issue.yml \
     $$PWD/.github/ISSUE_TEMPLATE/feature_request.yml \
     $$PWD/.github/ISSUE_TEMPLATE/perfomance_regression.yml \
