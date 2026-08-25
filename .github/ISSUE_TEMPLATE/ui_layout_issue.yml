@@ -1,0 +1,71 @@
+name: UI / Layout Issue
+description: Report layout, scaling, or rendering problems in Qt Widgets.
+title: "[UI]: "
+labels: ["ui", "layout"]
+body:
+  - type: input
+    id: widget
+    attributes:
+      label: Widget / Window
+      placeholder: e.g., MainWindow, ShapeEditorDialog, status bar panel
+    validations:
+      required: true
+
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue Type
+      options:
+        - Widget Clipping / Truncated Text
+        - Layout Not Resizing Properly
+        - DPI / Scaling Issues (High DPI / 200%)
+        - Alignment / Spacing Problems
+        - Dynamic Content Not Reflowing
+        - Stylesheet Rendering Differences
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      placeholder: What you expect vs. what you see. Mention if it happens only in certain sizes/DPI.
+    validations:
+      required: true
+
+  - type: input
+    id: screen-info
+    attributes:
+      label: Screen / DPI Info
+      placeholder: Resolution, scale factor (e.g., 3840×2160 @ 200%), OS, theme
+    validations:
+      required: true
+
+  - type: textarea
+    id: layout-details
+    attributes:
+      label: Layout Details
+      description: Which layouts are used (QVBoxLayout, QGridLayout, QFormLayout), any stretch factors, size policies.
+      placeholder: |
+        - Central widget uses QVBoxLayout with stretch 1 on content area.
+        - Some widgets have sizePolicy(MinimumExpanding, Preferred).
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / Links
+      description: Attach or link screenshots (GitHub allows drag-and-drop).
+      placeholder: URL or file attachment.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - Issue is reproducible on different window sizes.
+        - Tested on multiple DPI settings if possible.
+        - Not caused by custom stylesheets overriding layout behavior.
