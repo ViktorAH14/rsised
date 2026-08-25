@@ -7,7 +7,7 @@ body:
     id: test-class-method
     attributes:
       label: Test Class and Method
-      description: Format: tst_ClassName::testMethodName (or just testMethodName if you prefer)
+      description: 'Format: tst_ClassName::testMethodName (or just testMethodName if you prefer)'
       placeholder: e.g., tst_Shapes::testIntersection
     validations:
       required: true

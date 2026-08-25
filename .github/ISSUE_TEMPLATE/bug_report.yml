@@ -61,6 +61,6 @@ body:
     attributes:
       label: Checklist
       options:
-        - I have searched the existing issues for duplicates.
-        - I can reliably reproduce the issue.
-        - The issue is not caused by my local configuration alone.
+        - label: I have searched the existing issues for duplicates.
+        - label: I can reliably reproduce the issue.
+        - label: The issue is not caused by my local configuration alone.
