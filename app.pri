@@ -7,4 +7,5 @@ DISTFILES += \
     $$PWD/.github/ISSUE_TEMPLATE/config.yml \
     $$PWD/.github/ISSUE_TEMPLATE/documentation_issue.yml \
     $$PWD/.github/ISSUE_TEMPLATE/feature_request.yml \
+    $$PWD/.github/ISSUE_TEMPLATE/perfomance_regression.yml \
     $$PWD/.github/ISSUE_TEMPLATE/test_issue.yml
