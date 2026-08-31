@@ -81,7 +81,7 @@ body:
     attributes:
       label: Checklist
       options:
-        - I checked if the test is flaky in CI and locally.
-        - I verified the same test passes on another Qt version (if possible).
-        - The failure is not due to race conditions / timing issues.
-        - I included the full Qt Test log (not just “failed”).
+        - label: I checked if the test is flaky in CI and locally.
+        - label: I verified the same test passes on another Qt version (if possible).
+        - label: The failure is not due to race conditions / timing issues.
+        - label: I included the full Qt Test log (not just “failed”).
