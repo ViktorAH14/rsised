@@ -69,7 +69,7 @@ body:
     id: additional-context
     attributes:
       label: Additional Context (Qt Test specifics)
-      description: Any Qt Test details that matter: timeouts, QSignalSpy usage, GUI simulation, QAbstractItemModelTester, etc.
+      description: 'Any Qt Test details that matter: timeouts, QSignalSpy usage, GUI simulation, QAbstractItemModelTester, etc.'
       placeholder: |
         - Test uses QSignalSpy to verify signals.
         - It simulates mouse clicks on a QWidget.
