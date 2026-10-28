@@ -1,0 +1,52 @@
+name: Build Issue
+description: Report problems with building the C++/Qt project (qmake, dependencies, etc.).
+title: "[Build]: "
+labels: ["build"]
+body:
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      placeholder: Ubuntu 22.04, macOS Ventura, Windows 10, etc.
+    validations:
+      required: true
+
+  - type: input
+    id: qt-version
+    attributes:
+      label: Qt Version
+      placeholder: e.g., 6.5.2, 5.15.2
+    validations:
+      required: true
+
+  - type: input
+    id: compiler
+    attributes:
+      label: Compiler
+      placeholder: g++ 12, clang 16, MSVC 19.x
+    validations:
+      required: true
+
+  - type: input
+    id: build-system
+    attributes:
+      label: Build System & Command
+      placeholder: qmake, cmake; command you ran, e.g. qmake RSiSed.pro && make
+    validations:
+      required: true
+
+  - type: textarea
+    id: error-output
+    attributes:
+      label: Error Output
+      description: Full error log or key lines from the build output.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Info
+      description: Any extra details about your environment (installed packages, PATH, env vars, etc.).
+      render: shell

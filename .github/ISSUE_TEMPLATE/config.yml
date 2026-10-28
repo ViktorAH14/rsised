@@ -1,0 +1,29 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a Question
+    url: https://github.com/ViktorAH14/rsised/discussions
+    about: Have a question about the project? Check discussions first.
+
+default_template: bug_report
+enable_versioned_templates: true
+
+template_help: |
+  Select the template that best matches your issue:
+
+  ### For defects & unexpected behavior
+  * **Bug Report** – for crashes, wrong results, and general bugs.
+  * **UI / Layout Issue** – for scaling, clipping, resizing, and layout problems in Qt Widgets.
+  * **Performance Regression** – for slowdowns, FPS drops, or benchmark regressions.
+
+  ### For build & dependencies
+  * **Build Issue** – for qmake/compiler/linker errors and failed builds.
+  * **Dependency Issue** – for problems with external libraries, version conflicts, or linking.
+  * **Migration Issue** – for issues while moving to Qt 6, new compilers, or different OS.
+
+  ### For tests & docs
+  * **Test Issue (Qt Test)** – for failing, flaky, or unstable Qt Test cases.
+  * **Documentation Issue** – for outdated, missing, or unclear documentation.
+
+  ### Internal & feature work
+  * **Feature Request** – for new functionality ideas.
+  * **Internal Task** – for refactoring, tech debt, CI setup, and team-only tasks.

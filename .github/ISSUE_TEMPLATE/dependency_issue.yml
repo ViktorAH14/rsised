@@ -1,0 +1,53 @@
+name: Dependency Issue
+description: Report problems related to external libraries or system dependencies.
+title: "[Dep]: "
+labels: ["dependency"]
+body:
+  - type: input
+    id: dependency
+    attributes:
+      label: Dependency Name & Version
+      placeholder: e.g., OpenSSL 3.0, libpng 1.6, custom internal lib
+    validations:
+      required: true
+
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue Type
+      options:
+        - Build / Link Failure Due to Dependency
+        - Runtime Missing Symbol / Load Error
+        - Version Conflict Between Libraries
+        - Incompatible ABI / Qt Version
+        - License / Distribution Concern
+    validations:
+      required: true
+
+  - type: textarea
+    id: error
+    attributes:
+      label: Error Message / Logs
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: integration
+    attributes:
+      label: Integration Details
+      description: How the dependency is linked (static/shared, pkg-config, CMake, qmake .pri, custom paths).
+      placeholder: |
+        - Linked via app.pri with INCLUDEPATH/LIBS.
+        - Uses pkg-config for detection.
+        - Custom wrapper around C API.
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: OS, Qt version, compiler, package manager (apt, vcpkg, conan, etc.)
+    validations:
+      required: true
