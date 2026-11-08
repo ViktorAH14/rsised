@@ -1,25 +1,46 @@
-# ![RSiSed](./src/rsised/images/icons/car-48.png) <center>RSiSed</center>
-This application is designed for the alignment of forces  and means in case of fire.
-## License
-**RSiSed** is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.<br>
-**RSiSed** is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.<br>
-You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+<div align="center">
+  <img src="./src/rsised/images/icons/car-48.png" alt="RSiSed logo" width="48"/>
+  <h1>RSiSed</h1>
+</div>
+
+**English** | [Русский](README_RU.md)
+
+RSiSed is an application designed for the deployment of forces and resources in case of fire.
+
+## Features
+<!-- Add a short feature list here if desired -->
+
 ## Building
-Requirements:
-* QT 5.15.2 <br>
 
-You need to add the following dirrectories:
-* bin/debug
-* bin/profile
-* bin/release
-* build/debug
-* build/profile
-* build/release
+Build the project in Qt Creator. **Shadow build must be disabled** for all configurations.
 
-In QtCreator, you need to disable shadow assembly for all configurations.
+## Contributing
 
-## Bug reports
-[GitHub issues]( https://github.com/ViktorAH14/rsised/issues)
-## Requests
-[GitHub pull requests](https://github.com/ViktorAH14/rsised/pulls)
+We welcome contributions! Before opening an Issue or submitting a Pull Request, please read [CONTRIBUTING.md](CONTRIBUTING.md). It covers:
 
+- How to choose the right template for Issues and PRs.
+- Cross-platform verification requirements (Linux/Windows).
+- Qt-specific guidelines: DPI-safe layouts, qmake → CMake migration, performance fixes.
+
+## Bug Reports
+
+Please report bugs via [GitHub Issues](https://github.com/ViktorAH14/rsised/issues).
+
+## Pull Requests
+
+Submit your changes via [GitHub Pull Requests](https://github.com/ViktorAH14/rsised/pulls).
+
+## License
+
+**RSiSed** is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+**RSiSed** is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+[GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.html) for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
