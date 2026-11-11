@@ -48,7 +48,31 @@ DISTFILES += \
     uninstall.sh.in \
     rsised.desktop.in \
     README.in \
-    ../../doc/dev/shape_model.qmodel
+    ../../.github/ISSUE_TEMPLATE/bug_report.yml \
+    ../../.github/ISSUE_TEMPLATE/build_issue.yml \
+    ../../.github/ISSUE_TEMPLATE/config.yml \
+    ../../.github/ISSUE_TEMPLATE/dependency_issue.yml \
+    ../../.github/ISSUE_TEMPLATE/documentation_issue.yml \
+    ../../.github/ISSUE_TEMPLATE/feature_request.yml \
+    ../../.github/ISSUE_TEMPLATE/internal_task.yml \
+    ../../.github/ISSUE_TEMPLATE/migration_issue.yml \
+    ../../.github/ISSUE_TEMPLATE/performance_regression.yml \
+    ../../.github/ISSUE_TEMPLATE/test_issue.yml \
+    ../../.github/ISSUE_TEMPLATE/ui_layout_issue.yml \
+    ../../.github/PULL_REQUEST_TEMPLATE/bug_fix.md \
+    ../../.github/PULL_REQUEST_TEMPLATE/build_change.md \
+    ../../.github/PULL_REQUEST_TEMPLATE/dependency_update.md \
+    ../../.github/PULL_REQUEST_TEMPLATE/docs_update.md \
+    ../../.github/PULL_REQUEST_TEMPLATE/feature.md \
+    ../../.github/PULL_REQUEST_TEMPLATE/internal_task.md \
+    ../../.github/PULL_REQUEST_TEMPLATE/migration.md \
+    ../../.github/PULL_REQUEST_TEMPLATE/performance_fix.md \
+    ../../.github/PULL_REQUEST_TEMPLATE/test_fix.md \
+    ../../.github/PULL_REQUEST_TEMPLATE/ui_layout_change.md \
+    ../../.github/pull_request_template.md \
+    ../../CONTRIBUTING.md \
+    ../../README_RU.md \
+    ../../README.md
 
 # [TRANSLATIONS]
 TRANSLATIONS += \
