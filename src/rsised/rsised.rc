@@ -1,0 +1,20 @@
+#include <windows.h>
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION    0,1,0,0
+ PRODUCTVERSION 0,1,0,0
+ BEGIN
+   BLOCK "StringFileInfo"
+   BEGIN
+     BLOCK "040904B0"
+     BEGIN
+       VALUE "ProductName",      "rsised"
+       VALUE "FileDescription",  "Drawing up schemes for the arrangement of forces and means in case of fire"
+       VALUE "LegalCopyright",   "(c) EVA"
+     END
+   END
+   BLOCK "VarFileInfo"
+   BEGIN
+     VALUE "Translation", 0x0409, 1200
+   END
+ END
