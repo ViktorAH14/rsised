@@ -1,0 +1,77 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build-cmake/${presetName}",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "${sourceDir}/cmake/vendor/qt"
+      }
+    },
+    {
+      "name": "linux-debug",
+      "inherits": "base",
+      "displayName": "Linux Debug (GCC)",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" },
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "linux-release",
+      "inherits": "base",
+      "displayName": "Linux Release (GCC)",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" },
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
+      "name": "linux-profile",
+      "inherits": "base",
+      "displayName": "Linux Profile (--coverage)",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" },
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Profile" }
+    },
+    {
+      "name": "win-msvc-release",
+      "inherits": "base",
+      "displayName": "Windows Release (MSVC)",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" },
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
+      "name": "win-mingw-release",
+      "inherits": "base",
+      "displayName": "Windows Release (MinGW)",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_MAKE_PROGRAM": "mingw32-make"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "linux-debug",       "configurePreset": "linux-debug" },
+    { "name": "linux-release",     "configurePreset": "linux-release" },
+    { "name": "linux-profile",     "configurePreset": "linux-profile" },
+    { "name": "win-msvc-release",  "configurePreset": "win-msvc-release" },
+    { "name": "win-mingw-release", "configurePreset": "win-mingw-release" }
+  ],
+  "testPresets": [
+    {
+      "name": "linux-debug",
+      "configurePreset": "linux-debug",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-release",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "linux-profile",
+      "configurePreset": "linux-profile",
+      "output": { "outputOnFailure": true }
+    }
+  ]
+}

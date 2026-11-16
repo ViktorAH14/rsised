@@ -12,6 +12,40 @@ RSiSed — приложение для расстановки сил и сред
 
 ## Сборка
 
+Проект поддерживает **две системы сборки параллельно**: qmake (исходный способ) и CMake.
+
+### CMake (рекомендуемый)
+
+Использует системный Qt 6.
+
+**Linux:**
+
+```bash
+cmake --preset linux-debug      # или linux-release / linux-profile
+cmake --build --preset linux-debug
+ctest --preset linux-debug
+```
+
+**Windows:** пресеты `win-msvc-release` (Visual Studio + Ninja) и `win-mingw-release`.
+
+Все артефакты и промежуточные файлы попадают в `build-cmake/<пресет>/` — дерево исходников остаётся чистым, специальные настройки среды не требуются.
+
+**Документация** (требуется doxygen):
+
+```bash
+cmake --build --preset linux-release --target docs
+# результат: doc/dev/dox/en/html
+```
+
+**Покрытие тестами** (требуется lcov; только профильная сборка):
+
+```bash
+cmake --build --preset linux-profile --target coverage
+# отчёт: coverage/html/index.html
+```
+
+### qmake (legacy)
+
 Проект собирается в Qt Creator. **Теневую сборку (shadow build) необходимо отключить** для всех конфигураций.
 
 ## Участие в проекте
@@ -20,7 +54,7 @@ RSiSed — приложение для расстановки сил и сред
 
 - Как выбрать подходящий шаблон для Issues и PR.
 - Требования к кроссплатформенной проверке (Linux/Windows).
-- Рекомендации по Qt: layout’и без жёстких пикселей, миграция с qmake на CMake, исправления производительности.
+- Рекомендации по Qt: layout'и без жёстких пикселей, параллельная поддержка сборки qmake и CMake, исправления производительности.
 
 ## Отчёты об ошибках
 
