@@ -1,8 +1,6 @@
-# Эквивалент rsised.pro (без секции [DEPLOY] — деплой выполняет CI/CD)
-
 set(APPLICATION_NAME rsised)
 set(EMAIL "ermolovva@gmail.com")
-# VERSION и DATE приходят из cmake/Version.cmake через корневой CMakeLists.txt
+# VERSION and DATE come from cmake/Version.cmake via the root CMakeLists.txt
 
 qt_add_executable(rsised
     diagramscene.cpp main.cpp mainwindow.cpp rse_reader.cpp
@@ -11,7 +9,7 @@ qt_add_executable(rsised
     diagramscene.h mainwindow.h rse_reader.h rse_writer.h
     svg_reader.h wallsetting.h
 
-    # FORMS + RESOURCES: AUTOUIC и AUTORCC включены глобально
+    # FORMS + RESOURCES: AUTOUIC and AUTORCC are included globally
     mainwindow.ui wallsetting.ui
     resource.qrc
 )
@@ -29,8 +27,8 @@ target_link_libraries(rsised PRIVATE
 )
 
 # --- QMAKE_SUBSTITUTES += config.h.in ---
-# Шаблон написан под qmake ($$VAR): заменяем $$ на @ и подставляем.
-# Один файл-источник обслуживает обе сборки; результат — в build-каталоге.
+# The template is written for qmake ($$VAR): replace $$ with @ and substitute.
+# One source file handles both builds; the result is in the build directory.
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in" _cfg_tpl)
 string(REPLACE "$$" "@" _cfg_tpl "${_cfg_tpl}")
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/config.h.cmake.in" "${_cfg_tpl}")
@@ -40,13 +38,13 @@ configure_file(
     "${CMAKE_CURRENT_BINARY_DIR}/config.h"
 )
 
-# config.h генерируется в build-каталоге — добавляем его в поиск заголовков
+# config.h is generated in the build directory — add it to the header search path.
 target_include_directories(rsised PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
 # --- TRANSLATIONS ---
 qt6_add_translations(rsised TS_FILES i18n/rsised_ru.ts)
 
-# --- Метаданные Windows (замена QMAKE_TARGET_PRODUCT/DESCRIPTION/COPYRIGHT) ---
+# --- Windows metadata (replacement for QMAKE_TARGET_PRODUCT/DESCRIPTION/COPYRIGHT) ---
 if(WIN32)
     target_sources(rsised PRIVATE rsised.rc)
 endif()

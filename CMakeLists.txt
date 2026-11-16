@@ -5,8 +5,8 @@ include(Version)                                  # до project()!
 
 project(RSiSed VERSION ${RSISED_VERSION_NUM} LANGUAGES CXX)
 
-# project() перезаписал VERSION числом — возвращаем полную строку,
-# её ждёт config.h.in
+# project() has overwritten VERSION with a number — we return the full string,
+# config.h.in is waiting for it.
 set(VERSION "${RSISED_VERSION_FULL}")
 
 include(CommonSettings)
@@ -19,7 +19,6 @@ enable_testing()
 add_subdirectory(src/libshapes)
 add_subdirectory(src/rsised)
 
-# Шесть тестовых каталогов из SUBDIRS
 add_subdirectory(tests/auto/tst_libshapes/tst_abstractshape)
 add_subdirectory(tests/auto/tst_libshapes/tst_rectshape)
 add_subdirectory(tests/auto/tst_libshapes/tst_ellipseshape)
@@ -27,18 +26,18 @@ add_subdirectory(tests/auto/tst_libshapes/tst_buildingshape)
 add_subdirectory(tests/auto/tst_libshapes/tst_technicsshape)
 add_subdirectory(tests/auto/tst_libshapes/tst_equipmentshape)
 
-# --- Doxygen: Doxyfile переносится как есть (без подстановок) ---
+# --- Doxygen: Doxyfile is transferred as is (without substitutions) ---
 find_package(Doxygen QUIET)
 if(DOXYGEN_FOUND)
     add_custom_target(docs
-        COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_SOURCE_DIR}/Doxyfile"
+        COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_SOURCE_DIR}/Doxyfile_en"
         WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
         COMMENT "Generating Doxygen documentation to doc/dev/dox/en"
     )
 endif()
 
-# --- Покрытие: только в профильной сборке ---
-# Тесты запускаются (появляются .gcda), затем собирается отчёт lcov/genhtml
+# --- Coverage: only in the profile build ---
+# The tests are run (the .gcda files appear), then the lcov/genhtml report is generated.
 if(BUILD_FLAG STREQUAL "profile" AND UNIX)
     add_custom_target(coverage
         COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure

@@ -1,5 +1,3 @@
-# Эквивалент libshapes.pro: TARGET = shapes$${LIB_SUFFIX}, staticlib
-
 qt_add_library(shapes STATIC
     abstractshape.cpp buildingshape.cpp curve.cpp ellipseshape.cpp
     equipmentshape.cpp pixmapshape.cpp polylineshape.cpp rectshape.cpp
