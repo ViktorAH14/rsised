@@ -12,6 +12,40 @@ RSiSed is an application designed for the deployment of forces and resources in 
 
 ## Building
 
+The project supports **two build systems in parallel**: qmake (the original workflow) and CMake.
+
+### CMake (recommended)
+
+Uses the system Qt 6.
+
+**Linux:**
+
+```bash
+cmake --preset linux-debug      # or linux-release / linux-profile
+cmake --build --preset linux-debug
+ctest --preset linux-debug
+```
+
+**Windows:** presets `win-msvc-release` (Visual Studio + Ninja) and `win-mingw-release`.
+
+All build artifacts and intermediate files go to `build-cmake/<preset>/` — the source tree stays clean, no special IDE settings required.
+
+**Documentation** (requires doxygen):
+
+```bash
+cmake --build --preset linux-release --target docs
+# output: doc/dev/dox/en/html
+```
+
+**Test coverage** (requires lcov; profile builds only):
+
+```bash
+cmake --build --preset linux-profile --target coverage
+# report: coverage/html/index.html
+```
+
+### qmake (legacy)
+
 Build the project in Qt Creator. **Shadow build must be disabled** for all configurations.
 
 ## Contributing
@@ -20,7 +54,7 @@ We welcome contributions! Before opening an Issue or submitting a Pull Request, 
 
 - How to choose the right template for Issues and PRs.
 - Cross-platform verification requirements (Linux/Windows).
-- Qt-specific guidelines: DPI-safe layouts, qmake → CMake migration, performance fixes.
+- Qt-specific guidelines: DPI-safe layouts, dual qmake/CMake build support, performance fixes.
 
 ## Bug Reports
 
