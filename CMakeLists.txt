@@ -42,7 +42,9 @@ endif()
 if(BUILD_FLAG STREQUAL "profile" AND UNIX)
     add_custom_target(coverage
         COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
-        COMMAND "${CMAKE_SOURCE_DIR}/run_coverage.sh"
+        COMMAND ${CMAKE_COMMAND} -E env
+                        COV_SRC_DIR=${CMAKE_BINARY_DIR}
+                        "${CMAKE_SOURCE_DIR}/scripts/run_coverage.sh"
         WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
         DEPENDS tst_abstractshape tst_rectshape tst_ellipseshape
                 tst_buildingshape tst_technicsshape tst_equipmentshape

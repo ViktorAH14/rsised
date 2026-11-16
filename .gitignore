@@ -228,7 +228,9 @@ cqt_linux_targz.json
 README
 
 ### Coverage ###
-*coverage*
+coverage/
+coverage.info
+coverage-filtered.info
 *.gcno
 *.gcda
 
