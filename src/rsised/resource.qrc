@@ -57,7 +57,6 @@
         <file>images/icons/print_48.png</file>
         <file>images/icons/select_rubber_48.png</file>
         <file>images/icons/qt_48.png</file>
-        <file>i18n/rsised_ru.qm</file>
         <file>images/icons/piechart_48.png</file>
         <file>images/icons/white_48.png</file>
         <file>images/icons/black_48.png</file>
@@ -76,6 +75,5 @@
         <file>images/icons/darkmagneta_48.png</file>
         <file>images/icons/yellow_48.png</file>
         <file>images/icons/darkyellow_48.png</file>
-        <file>i18n/libshapes_ru.qm</file>
     </qresource>
 </RCC>

@@ -28,7 +28,7 @@ target_link_libraries(rsised PRIVATE
 
 # --- QMAKE_SUBSTITUTES += config.h.in ---
 # The template is written for qmake ($$VAR): replace $$ with @ and substitute.
-# One source file handles both builds; the result is in the build directory.
+# One source file handles both builds; the result is generated in the build directory.
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in" _cfg_tpl)
 string(REPLACE "$$" "@" _cfg_tpl "${_cfg_tpl}")
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/config.h.cmake.in" "${_cfg_tpl}")
@@ -42,7 +42,14 @@ configure_file(
 target_include_directories(rsised PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
 # --- TRANSLATIONS ---
-qt6_add_translations(rsised TS_FILES i18n/rsised_ru.ts)
+# Only the application's own translations live here.
+# Library (shapes) translations are handled by the shapes target itself
+# and are loaded from its embedded resources at runtime.
+# On Qt >= 6.7 the generated .qm file is automatically embedded
+# into the target's resources (path "/i18n/rsised_ru.qm").
+qt6_add_translations(rsised
+    TS_FILES i18n/rsised_ru.ts
+)
 
 # --- Windows metadata (replacement for QMAKE_TARGET_PRODUCT/DESCRIPTION/COPYRIGHT) ---
 if(WIN32)

@@ -11,18 +11,22 @@ qt_add_library(shapes STATIC
     ../include/technicsshape.h    ../include/textshape.h
 )
 
-# LIB_SUFFIX = d из common.pri: в Debug библиотека станет libshapesd
+# LIB_SUFFIX = d
 set_target_properties(shapes PROPERTIES DEBUG_POSTFIX "d")
 
-# QT += widgets — PUBLIC: потребители наследуют модуль по цепочке
+# QT += widgets — PUBLI:
 target_link_libraries(shapes PUBLIC Qt6::Widgets)
 
-# Публичные заголовки — как в qmake
+# Public headers
 target_include_directories(shapes PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/../include"
 )
 
-# TRANSLATIONS: ts-файл лежит в src/rsised/i18n
+# --- TRANSLATIONS ---
+# Translations belong to the library itself and live with it in i18n/.
+# On Qt >= 6.7 the generated .qm files are automatically embedded
+# into the target's resources (prefix "/i18n", path "/i18n/<name>.qm").
+# No separate .qrc and no .qm files in the source tree are needed.
 qt6_add_translations(shapes
-    TS_FILES "${CMAKE_SOURCE_DIR}/src/rsised/i18n/libshapes_ru.ts"
+    TS_FILES i18n/libshapes_ru.ts
 )
