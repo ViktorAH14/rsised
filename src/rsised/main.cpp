@@ -68,12 +68,19 @@ int main(int argc, char *argv[])
     rsised.setApplicationDisplayName(APPLICATION_NAME);
     rsised.setApplicationName(APPLICATION_NAME);
 
-    QTranslator rsisedTranslator;
-    if (rsisedTranslator.load(QString(":/i18n/rsised_" + QLocale::system().name())))
-        rsised.installTranslator(&rsisedTranslator);
-    QTranslator libshapesTranslator;
-    if (libshapesTranslator.load(QString(":/i18n/libshapes_" + QLocale::system().name())))
-        rsised.installTranslator(&libshapesTranslator);
+    // Install every available translation: application and library resources.
+    // Translators are heap-allocated and parented to the app, so they live
+    // as long as the application itself; a missing locale is skipped quietly.
+    auto installTranslation = [](const char *baseName) {
+        auto *translator = new QTranslator(qApp);
+        if (translator->load(QStringLiteral(":/i18n/") + baseName
+                             + QLocale::system().name()))
+            qApp->installTranslator(translator);
+        else
+            delete translator; // no translation for this locale — nothing to install
+    };
+    installTranslation("rsised_");
+    installTranslation("libshapes_");
 
     MainWindow mainwindow;
     mainwindow.show();
