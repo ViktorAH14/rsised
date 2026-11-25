@@ -26,16 +26,13 @@ target_link_libraries(rsised PRIVATE
     Qt6::Widgets
 )
 
-# --- QMAKE_SUBSTITUTES += config.h.in ---
-# The template is written for qmake ($$VAR): replace $$ with @ and substitute.
-# One source file handles both builds; the result is generated in the build directory.
-file(READ "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in" _cfg_tpl)
-string(REPLACE "$$" "@" _cfg_tpl "${_cfg_tpl}")
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/config.h.cmake.in" "${_cfg_tpl}")
-
+# --- config.h ---
+# The template uses CMake-style @VAR@ placeholders and is configured
+# directly into the build directory.
 configure_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/config.h.cmake.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
     "${CMAKE_CURRENT_BINARY_DIR}/config.h"
+    @ONLY
 )
 
 # config.h is generated in the build directory — add it to the header search path.
