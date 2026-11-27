@@ -29,9 +29,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define VERSION "$$VERSION"
-#define DATE "$$DATE"
-#define EMAIL "$$EMAIL"
-#define APPLICATION_NAME "$$APPLICATION_NAME"
+#define VERSION "@VERSION@"
+#define DATE "@DATE@"
+#define EMAIL "@EMAIL@"
+#define APPLICATION_NAME "@APPLICATION_NAME@"
 
 #endif //CONFIG_H

@@ -2,19 +2,21 @@ set(APPLICATION_NAME rsised)
 set(EMAIL "ermolovva@gmail.com")
 # VERSION and DATE come from cmake/Version.cmake via the root CMakeLists.txt
 
-qt_add_executable(rsised
+# WIN32: GUI subsystem on Windows - no console window next to the main window
+# Ignored on non-Windows platforms, so the Linux build is unaffected
+qt_add_executable(rsised WIN32
     diagramscene.cpp main.cpp mainwindow.cpp rse_reader.cpp
     rse_writer.cpp svg_reader.cpp wallsetting.cpp
 
     diagramscene.h mainwindow.h rse_reader.h rse_writer.h
     svg_reader.h wallsetting.h
 
-    # FORMS + RESOURCES: AUTOUIC and AUTORCC are included globally
+    # FORMS + RESOURCES: AUTOUIC and AUTORCC are enabled globally
     mainwindow.ui wallsetting.ui
     resource.qrc
 )
 
-# QT += core gui svg xml printsupport core5compat widgets
+# qmake equivalent: QT += core gui svg xml printsupport core5compat widgets
 target_link_libraries(rsised PRIVATE
     shapes
     Qt6::Core
@@ -29,13 +31,17 @@ target_link_libraries(rsised PRIVATE
 # --- config.h ---
 # The template uses CMake-style @VAR@ placeholders and is configured
 # directly into the build directory.
+
+# DATE alias for config.h.in - Version.cmake exposes it as RSISED_DATE
+set(DATE "${RSISED_DATE}")
+
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
     "${CMAKE_CURRENT_BINARY_DIR}/config.h"
     @ONLY
 )
 
-# config.h is generated in the build directory — add it to the header search path.
+# config.h is generated in the build directory - add it to the header search path.
 target_include_directories(rsised PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
 # --- TRANSLATIONS ---
