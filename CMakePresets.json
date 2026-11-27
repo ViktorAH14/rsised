@@ -6,10 +6,7 @@
       "name": "base",
       "hidden": true,
       "binaryDir": "${sourceDir}/build-cmake/${presetName}",
-      "generator": "Ninja",
-      "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "${sourceDir}/cmake/vendor/qt"
-      }
+      "generator": "Ninja"
     },
     {
       "name": "linux-debug",
